@@ -1,66 +1,42 @@
-# 🌌 StreamHeavens
+# 🌌 StreamHeavens (Development Repository)
 
-> A premium, modern web application for discovering and streaming movies and TV series.
+![Home Screen](./assets/home.png)
 
-![StreamHeavens Banner](https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1200&auto=format&fit=crop)
+This is the private codebase for **StreamHeavens**, a modern web application for discovering and streaming movies and TV series. 
+**⚠️ DO NOT MAKE THIS REPOSITORY PUBLIC.**
 
-**StreamHeavens** is a highly responsive, aesthetically pleasing streaming platform built with modern web standards. It offers a seamless user experience with fluid animations, a beautiful dark mode, and an intuitive interface designed to provide a top-tier cinematic experience. 
+## 🏗️ Architecture & Deployment
+This project is built for Edge deployment using **Cloudflare Pages**. 
+- **Frontend:** Vanilla HTML/CSS/JS.
+- **Backend/Proxy:** Cloudflare Pages Functions (`/functions/api/tmdb/[[path]].js`).
 
-## ✨ Features
+The Cloudflare function intercepts `/api/tmdb/*`, injects the secret `TMDB_API_KEY`, and forwards the request to the official TMDB API. This ensures the API key is never exposed to the client browser.
 
-- **🎬 Extensive Library:** Browse through trending, top-rated, and upcoming movies and TV shows.
-- **🔍 Advanced Search & Filtering:** Find exactly what you want with real-time search and smart genre filtering.
-- **📺 Multi-Server Streaming:** Integrated with multiple reliable third-party streaming providers (VidLink, VidSrc, AutoEmbed) for uninterrupted viewing.
-- **📚 Personal Library:** Keep track of what you want to watch with a built-in **Watchlist** and view your previously watched content in **History**.
-- **📱 Fully Responsive:** Carefully crafted to work flawlessly on desktop, tablet, and mobile devices, complete with touch-friendly navigation and dynamic sidebars.
-- **🎨 Premium UI/UX:** Features a sleek dark theme, elegant glassmorphism effects, and smooth micro-animations for an app-like feel.
-- **⚡ Fast & Lightweight:** Built with robust Vanilla JavaScript for maximum performance without the overhead of heavy frameworks.
-
-## 🛠️ Technologies Used
-
-- **Frontend:** HTML5, CSS3 (Custom Variables, Flexbox/Grid, Animations), Vanilla JavaScript (ES6+)
-- **Assets:** FontAwesome 6 (Icons), Google Fonts (Plus Jakarta Sans)
-- **Data Provider:** [The Movie Database (TMDB) API](https://www.themoviedb.org/) for rich media metadata, images, and descriptions.
-
-## 🚀 Getting Started
+## 🚀 Setup & Local Development
 
 ### Prerequisites
-- A modern web browser.
-- A [TMDB API Key](https://developer.themoviedb.org/docs/getting-started).
+- [Node.js](https://nodejs.org/) & npm
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) (for local Cloudflare Functions testing)
 
-### Local Development
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/streamheavens.git
-   cd streamheavens
-   ```
-
-2. **Configure API Key**
-   The application utilizes the TMDB API for fetching content. If you are deploying via Cloudflare Workers or a similar serverless platform (as planned), configure your environment variable in your deployment dashboard:
+### Running Locally
+To test the API proxy locally along with the frontend, you should use Wrangler (Cloudflare's local development tool):
+1. Install Wrangler globally if you haven't: `npm install -g wrangler`
+2. Create a file named `.dev.vars` in the root directory and add your key:
    ```env
-   TMDB_API_KEY=your_api_key_here
+   TMDB_API_KEY=your_actual_key_here
    ```
-   *Note: For local testing, ensure your local dev server or proxy (if implemented) is set up to append this API key to TMDB requests.*
-
-3. **Run the App**
-   Serve the directory using any local web server (e.g., VS Code Live Server, Python's `http.server`, or `serve`).
+3. Run the dev server from the root directory:
    ```bash
-   npx serve .
+   npx wrangler pages dev .
    ```
-   Navigate to the local URL (e.g., `http://localhost:3000`) in your browser to view the app.
+4. Press `b` in the terminal to open the browser.
 
-## 🌐 Deployment & Architecture
+## 📸 Screenshots
 
-StreamHeavens is architected to be edge-ready, making it perfect for deployment on platforms like **Cloudflare Pages** or **Vercel**. By utilizing serverless functions or edge workers, you can securely store your `TMDB_API_KEY` and proxy API requests without exposing your credentials to the client.
+| Home | Trending |
+|------|----------|
+| ![Home](./assets/home.png) | ![Trending](./assets/trending.png) |
 
-## ⚖️ Disclaimer
-
-This project is created for **educational purposes** and as a personal portfolio piece to demonstrate frontend web development skills, advanced UI/UX design, and third-party API integration. The developer does not host, store, or distribute any of the video content. All streaming media is embedded from external third-party services.
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the issues page if you want to contribute.
-
-## 📜 License
-
-Distributed under the MIT License.
+| Watchlist | Sign In |
+|-----------|---------|
+| ![Watchlist](./assets/watchlist.png) | ![Sign In](./assets/signin.png) |
