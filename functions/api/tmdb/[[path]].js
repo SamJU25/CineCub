@@ -8,7 +8,7 @@
  * SETUP: In your Cloudflare Pages dashboard, go to:
  *   Settings → Environment Variables → Add:
  *     Variable name:  TMDB_API_KEY
- *     Value:          33bf365806ae7e0e92646db86424b0e8
+ *     Value:          <YOUR_TMDB_API_KEY>
  * 
  * Then remove the API key from script.js (it's already been removed).
  */
