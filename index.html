@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  <meta content="#000000" name="theme-color">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https://image.tmdb.org; frame-src 'self' https://vidlink.pro https://vidsrc.me https://autoembed.co; connect-src 'self' https://api.themoviedb.org;">
+  <title>StreamHeavens &#8212; Watch Movies &amp; TV Series</title>
+  
+  <!-- FONTS & ICONS -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+  <!-- PWA / ADD TO HOME SCREEN WITH EMBEDDED PURPLE CLOUD ICON -->
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style">
+  <meta content="StreamHeavens" name="apple-mobile-web-app-title">
+  <meta content="yes" name="mobile-web-app-capable">
+  <meta content="StreamHeavens" name="application-name">
+  <link href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22%3E%3Cstop offset=%220%25%22 stop-color=%22%23b55fe6%22/%3E%3Cstop offset=%22100%25%22 stop-color=%22%236b1fad%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%22512%22 height=%22512%22 rx=%22112%22 fill=%22url(%23g)%22/%3E%3Cpath fill=%22%23ffffff%22 d=%22M384 216a130 130 0 0 0-252-32A104 104 0 0 0 96 288a104 104 0 0 0 104 104h184a88 88 0 0 0 0-176z%22/%3E%3C/svg%3E" rel="apple-touch-icon">
+
+  <!-- STYLESHEET -->
+  <link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Progress Bar -->
+  <div id="cv-progress"><div id="cv-progress-bar"></div></div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="Sidebar.close()"></div>
+
+  <!-- ============================================================ 
+       LEFT PANEL / SIDEBAR NAVIGATION (With Profile Footer)
+  ============================================================ -->
+  <aside class="cv-sidebar" id="cv-sidebar">
+    <div class="sidebar-logo" onclick="App.goHome()">
+      <div class="sidebar-logo-icon"><i class="fas fa-cloud"></i></div>
+      <span class="sidebar-logo-text">StreamHeavens</span>
+      <button class="sidebar-toggle" onclick="Sidebar.toggle(event)"><i class="fas fa-chevron-left"></i></button>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <div class="nav-section-label">Discover</div>
+      <div class="nav-item active" id="nav-home" onclick="App.goHome()">
+        <span class="nav-item-icon"><i class="fas fa-home"></i></span><span class="nav-item-text">Home</span>
+      </div>
+      <div class="nav-item" id="nav-movies" onclick="App.browseMovies()">
+        <span class="nav-item-icon"><i class="fas fa-film"></i></span><span class="nav-item-text">Movies</span>
+      </div>
+      <div class="nav-item" id="nav-tv" onclick="App.browseTVShows()">
+        <span class="nav-item-icon"><i class="fas fa-tv"></i></span><span class="nav-item-text">TV Shows</span>
+      </div>
+      <div class="nav-item" id="nav-trending" onclick="App.browseTrending()">
+        <span class="nav-item-icon"><i class="fas fa-fire"></i></span><span class="nav-item-text">Trending</span>
+        <span class="nav-badge">HOT</span>
+      </div>
+      <div class="nav-item" id="nav-toprated" onclick="App.browseTopRated()">
+        <span class="nav-item-icon"><i class="fas fa-star"></i></span><span class="nav-item-text">Top Rated</span>
+      </div>
+      <div class="nav-item" id="nav-upcoming" onclick="App.browseUpcoming()">
+        <span class="nav-item-icon"><i class="fas fa-calendar-alt"></i></span><span class="nav-item-text">Upcoming</span>
+      </div>
+
+      <div class="nav-section-label library-label">My Library</div>
+      <div class="nav-item" id="nav-watchlist" onclick="App.showWatchlist()">
+        <span class="nav-item-icon"><i class="fas fa-heart"></i></span><span class="nav-item-text">Watchlist</span>
+      </div>
+      <div class="nav-item" id="nav-history" onclick="App.showHistory()">
+        <span class="nav-item-icon"><i class="fas fa-history"></i></span><span class="nav-item-text">History</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user guest" id="sidebar-user" onclick="Auth.toggleProfile(event)">
+        <div class="sidebar-avatar" id="sidebar-avatar">G</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebar-user-name">Guest Mode</div>
+          <div class="sidebar-user-sub" id="sidebar-user-sub">Sign in / Sign up</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================ 
+       MAIN CONTENT CONTAINER
+  ============================================================ -->
+  <div class="cv-main" id="cv-main">
+    
+    <!-- TOP HEADER -->
+    <header class="cv-header" id="cv-header">
+      <div class="header-title-area">
+        <button class="mob-hamburger" onclick="Sidebar.open()"><i class="fas fa-bars"></i></button>
+        <div>
+          <div class="header-page-title" id="header-page-title">Discover</div>
+          <div class="header-breadcrumb" id="header-breadcrumb"><span>StreamHeavens</span><span> &#8250; </span><span id="breadcrumb-current">Home</span></div>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="header-center-area">
+        <div class="search-container" id="search-container">
+          <div class="search-input-wrap">
+            <i class="fas fa-search" style="color:var(--text-4); font-size:12px;"></i>
+            <input autocomplete="off" class="search-input" id="search-input" oninput="Search.onInput(this.value)" placeholder="Search movies, shows..." type="text">
+          </div>
+          <div class="search-results-dropdown" id="search-dropdown">
+            <div class="srd-header"><span>Search Results</span><span onclick="Search.closeDropdown()" style="cursor:pointer;"><i class="fas fa-times"></i></span></div>
+            <div class="srd-results" id="srd-results"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="header-action-btn" onclick="App.showWatchlist()" title="Watchlist"><i class="fas fa-heart"></i></button>
+        <button class="profile-trigger logged-out" id="profile-trigger" onclick="Auth.toggleProfile(event)" title="Account">G</button>
+      </div>
+    </header>
+
+    <!-- ============================================================ 
+         HOME PAGE
+    ============================================================ -->
+    <div class="cv-page active" id="page-home">
+      
+      <!-- HERO SPOTLIGHT -->
+      <section class="spotlight-section" id="spotlight-section">
+        <div class="spotlight-track" id="spotlight-track"></div>
+        <div class="spotlight-thumbstrip" id="spotlight-thumbstrip"></div>
+        <div class="spotlight-controls">
+          <button class="spotlight-arrow" onclick="Spotlight.prev()"><i class="fas fa-chevron-left"></i></button>
+          <div class="spotlight-dots" id="spotlight-dots"></div>
+          <button class="spotlight-arrow" onclick="Spotlight.next()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="spotlight-progress"><div class="spotlight-progress-bar" id="spotlight-progress-bar"></div></div>
+      </section>
+
+      <div class="cv-container">
+        
+        <!-- TRENDING TICKER -->
+        <div class="trending-ribbon" id="trending-ribbon">
+          <div class="tr-label"><i class="fas fa-bolt"></i> Trending</div>
+          <div class="tr-scroll-wrap">
+            <div class="tr-scroll" id="trending-scroll"></div>
+          </div>
+        </div>
+
+        <!-- STATS BAR -->
+        <div class="stats-bar">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-film"></i></div>
+            <div><div class="stat-value" id="stat-movies">1.2M</div><div class="stat-label">Total Movies</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-tv"></i></div>
+            <div><div class="stat-value" id="stat-shows">230K+</div><div class="stat-label">TV Shows</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-globe"></i></div>
+            <div><div class="stat-value">50+</div><div class="stat-label">Languages</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-video"></i></div>
+            <div><div class="stat-value">4K</div><div class="stat-label">Ultra HD Quality</div></div>
+          </div>
+        </div>
+
+        <!-- CATEGORY CHIP STRIP -->
+        <div class="genre-chips-wrap" id="genre-chips"></div>
+
+        <!-- TRENDING NOW ROW -->
+        <section class="section-wrapper">
+          <div class="section-header">
+            <div class="section-title-group">
+              <div class="section-icon"><i class="fas fa-fire-alt"></i></div>
+              <div><div class="section-title">Trending Now</div><div class="section-subtitle">What everyone is watching</div></div>
+            </div>
+            <div class="section-view-all" onclick="App.browseTrending()">View All <i class="fas fa-arrow-right"></i></div>
+          </div>
+          <div class="cv-hscroll" id="row-trending"></div> 
+        </section>
+
+        <!-- TOP 10 TODAY RANKING -->
+        <section class="section-wrapper">
+          <div class="section-header">
+            <div class="section-title-group">
+              <div class="section-icon" style="background:var(--cv-gold-dim); color:var(--cv-gold);"><i class="fas fa-crown"></i></div>
+              <div><div class="section-title">Top 10 Today</div><div class="section-subtitle">Most viewed in the last 24 hours</div></div>
+            </div>
+          </div>
+          <div class="compact-list" id="list-top10"></div>
+        </section>
+
+        <!-- TOP RATED ROW -->
+        <section class="section-wrapper">
+          <div class="section-header">
+            <div class="section-title-group">
+              <div class="section-icon" style="background:var(--cv-purple-dim); color:var(--cv-purple-light);"><i class="fas fa-trophy"></i></div>
+              <div><div class="section-title">Top Rated Films</div><div class="section-subtitle">Critically acclaimed masterpieces</div></div>
+            </div>
+            <div class="section-view-all" onclick="App.browseTopRated()">View All <i class="fas fa-arrow-right"></i></div>
+          </div>
+          <div class="landscape-grid" id="grid-toprated"></div>
+        </section>
+
+        <!-- TV SHOWS ROW -->
+        <section class="section-wrapper">
+          <div class="section-header">
+            <div class="section-title-group">
+              <div class="section-icon" style="background:var(--cv-pink-dim); color:var(--cv-pink);"><i class="fas fa-tv"></i></div>
+              <div><div class="section-title">Popular TV Shows</div><div class="section-subtitle">Binge-worthy series</div></div>
+            </div>
+            <div class="section-view-all" onclick="App.browseTVShows()">View All <i class="fas fa-arrow-right"></i></div>
+          </div>
+          <div class="cv-hscroll" id="row-tvshows"></div>
+        </section>
+
+        <!-- NEW RELEASES ROW -->
+        <section class="section-wrapper">
+          <div class="section-header">
+            <div class="section-title-group">
+              <div class="section-icon"><i class="fas fa-star"></i></div>
+              <div><div class="section-title">New Releases</div><div class="section-subtitle">Just added to StreamHeavens</div></div>
+            </div>
+            <div class="section-view-all" onclick="App.browseMovies()">View All <i class="fas fa-arrow-right"></i></div>
+          </div>
+          <div class="cv-hscroll" id="row-newreleases"></div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- BROWSE CATALOG PAGE -->
+    <div class="cv-page" id="page-browse">
+      <div class="page-inner">
+        <div class="cv-container">
+          <div class="poster-grid" id="browse-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WATCHLIST PAGE -->
+    <div class="cv-page" id="page-watchlist">
+      <div class="page-inner">
+        <div class="cv-container">
+          <div class="section-title" style="margin-bottom:20px;">My Watchlist</div>
+          <div class="poster-grid" id="wl-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY PAGE -->
+    <div class="cv-page" id="page-history">
+      <div class="page-inner">
+        <div class="cv-container">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <div class="section-title">Watch History</div>
+            <button onclick="History.clearAll()" style="background:transparent; color:var(--cv-red); border:1px solid rgba(230,57,70,0.2); padding:6px 16px; border-radius:var(--r-pill); font-size:12px;"><i class="fas fa-trash"></i> Clear All</button>
+          </div>
+          <div class="poster-grid" id="history-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ 
+         FOOTER
+    ============================================================ -->
+    <footer class="cv-footer">
+      <div class="cv-container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <div class="footer-logo">
+              <div class="sidebar-logo-icon"><i class="fas fa-cloud"></i></div>
+              <span class="sidebar-logo-text">StreamHeavens</span>
+            </div>
+            <p class="footer-desc">Your ultimate high-definition destination for movies, TV series, and classics. Discover trending cinema anytime, anywhere.</p>
+          </div>
+          <div>
+            <div class="footer-col-title">Navigation</div>
+            <div class="footer-links">
+              <span class="footer-link" onclick="App.goHome()">Home</span>
+              <span class="footer-link" onclick="App.browseMovies()">Movies</span>
+              <span class="footer-link" onclick="App.browseTVShows()">TV Series</span>
+              <span class="footer-link" onclick="Browse.byGenre(16, 'Animation')">Animation</span>
+            </div>
+          </div>
+          <div>
+            <div class="footer-col-title">Top Genres</div>
+            <div class="footer-links">
+              <span class="footer-link" onclick="Browse.byGenre(28, 'Action')">Action</span>
+              <span class="footer-link" onclick="Browse.byGenre(35, 'Comedy')">Comedy</span>
+              <span class="footer-link" onclick="Browse.byGenre(27, 'Horror')">Horror</span>
+              <span class="footer-link" onclick="Browse.byGenre(878, 'Sci-Fi')">Sci-Fi</span>
+            </div>
+          </div>
+          <div>
+            <div class="footer-col-title">Legal</div>
+            <div class="footer-links">
+              <span class="footer-link" onclick="Legal.open('dmca')">DMCA Policy</span>
+              <span class="footer-link" onclick="Legal.open('privacy')">Privacy Policy</span>
+              <span class="footer-link" onclick="Legal.open('terms')">Terms of Service</span>
+              <span class="footer-link" onclick="Legal.open('contact')">Contact</span>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <div class="footer-copy">&copy; 2026 StreamHeavens. All rights reserved. Powered by TMDB API.</div>
+          <div class="footer-disclaimer">Disclaimer: StreamHeavens does not store any files on its servers. All contents are provided by non-affiliated third parties.</div>
+        </div>
+      </div>
+    </footer>
+
+  </div> <!-- /cv-main -->
+
+  <!-- ============================================================
+       PROFILE MENU
+  ============================================================ -->
+  <div class="profile-popup" id="profile-popup" onclick="event.stopPropagation()">
+    <div class="profile-popup-head">
+      <div class="profile-popup-avatar" id="profile-popup-avatar">G</div>
+      <div style="min-width:0; flex:1;">
+        <div class="profile-popup-title" id="profile-popup-title">Guest Mode</div>
+        <div class="profile-popup-email" id="profile-popup-email">You are not signed in</div>
+        <div class="profile-active-badge" id="profile-active-badge" style="display:none;"><span class="profile-active-dot"></span>Active Session</div>
+      </div>
+    </div>
+    <div class="profile-popup-body" id="profile-popup-body">
+      <div class="profile-guest-text">Sign in to sync your watchlist, history, and account session on this browser.</div>
+      <div class="profile-popup-actions">
+        <button class="profile-auth-btn primary" onclick="event.preventDefault(); event.stopPropagation(); Auth.open('login')" type="button"><i class="fas fa-right-to-bracket"></i> Login</button>
+        <button class="profile-auth-btn secondary" onclick="event.preventDefault(); event.stopPropagation(); Auth.open('signup')" type="button"><i class="fas fa-user-plus"></i> Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       AUTHENTICATION MODAL
+  ============================================================ -->
+  <div class="auth-overlay" id="auth-overlay" onclick="Auth.overlayClick(event)">
+    <div class="auth-modal" onclick="event.stopPropagation()">
+      <div class="auth-top">
+        <div class="auth-brand">
+          <div class="auth-brand-icon"><i class="fas fa-cloud"></i></div>
+          <div class="auth-brand-name">StreamHeavens</div>
+        </div>
+        <button class="auth-close" onclick="event.preventDefault(); Auth.close()" type="button"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div class="auth-content">
+        <div class="auth-message" id="auth-message"></div>
+
+        <!-- LOGIN -->
+        <div class="auth-step active" id="auth-login-step">
+          <div class="auth-eyebrow">Welcome back</div>
+          <div class="auth-title">Sign in</div>
+          <div class="auth-subtitle">Use your username or registered email address with your password.</div>
+          <form class="auth-form" onsubmit="Auth.login(event)">
+            <div class="auth-field">
+              <label for="login-identity">Username or email</label>
+              <input autocomplete="username" class="auth-input" id="login-identity" placeholder="Enter username or email" required>
+              <i class="fas fa-user input-icon"></i>
+            </div>
+            <div class="auth-field">
+              <label for="login-password">Password</label>
+              <input autocomplete="current-password" class="auth-input" id="login-password" placeholder="Enter password" required type="password">
+              <button class="auth-password-toggle" onclick="Auth.togglePassword('login-password',this)" type="button"><i class="fas fa-eye"></i></button>
+            </div>
+            <div class="auth-forgot-row"><span class="auth-link" onclick="Auth.open('forgot')">Forgot password?</span></div>
+            <button class="auth-submit" id="login-submit" type="submit"><i class="fas fa-right-to-bracket"></i> Login</button>
+          </form>
+          <div class="auth-switch-row">Don't have an account? <span class="auth-link" onclick="Auth.open('signup')">Sign Up</span></div>
+        </div>
+
+        <!-- SIGN UP -->
+        <div class="auth-step" id="auth-signup-step">
+          <div class="auth-eyebrow">Create account</div>
+          <div class="auth-title">Join StreamHeavens</div>
+          <div class="auth-subtitle">Create a local account for this browser. Your username and email must be unique.</div>
+          <form class="auth-form" onsubmit="Auth.signup(event)">
+            <div class="auth-field">
+              <label for="signup-username">Username</label>
+              <input autocomplete="username" class="auth-input" id="signup-username" maxlength="24" minlength="3" placeholder="Choose a username" required>
+              <i class="fas fa-at input-icon"></i>
+            </div>
+            <div class="auth-field">
+              <label for="signup-email">Email address</label>
+              <input autocomplete="email" class="auth-input" id="signup-email" maxlength="120" placeholder="you@example.com" required type="email">
+              <i class="fas fa-envelope input-icon"></i>
+            </div>
+            <div class="auth-field">
+              <label for="signup-password">Password</label>
+              <input autocomplete="new-password" class="auth-input" id="signup-password" maxlength="128" minlength="4" placeholder="At least 4 characters" required type="password">
+              <button class="auth-password-toggle" onclick="Auth.togglePassword('signup-password',this)" type="button"><i class="fas fa-eye"></i></button>
+            </div>
+            <div class="auth-field">
+              <label for="signup-confirm">Confirm password</label>
+              <input autocomplete="new-password" class="auth-input" id="signup-confirm" maxlength="128" minlength="4" placeholder="Re-enter your password" required type="password">
+              <button class="auth-password-toggle" onclick="Auth.togglePassword('signup-confirm',this)" type="button"><i class="fas fa-eye"></i></button>
+            </div>
+            <button class="auth-submit" id="signup-submit" type="submit"><i class="fas fa-user-plus"></i> Create Account</button>
+          </form>
+          <div class="auth-switch-row">Already have an account? <span class="auth-link" onclick="Auth.open('login')">Login</span></div>
+        </div>
+
+        <!-- FORGOT / RESTORE -->
+        <div class="auth-step" id="auth-forgot-step">
+          <div class="auth-eyebrow">Account recovery</div>
+          <div class="auth-title" id="forgot-title">Reset password</div>
+          <div class="auth-subtitle" id="forgot-subtitle">Enter the username and registered email address for the same account. Both values must match before a new password can be saved.</div>
+
+          <div class="auth-step active" id="forgot-verify">
+            <div class="auth-note"><i class="fas fa-shield-halved"></i> Browser-only demo authentication: account records are stored in this browser. Use server-side auth for production.</div>
+            <form class="auth-form" onsubmit="Auth.verifyRecovery(event)">
+              <div class="auth-field">
+                <label for="forgot-username">Username</label>
+                <input autocomplete="username" class="auth-input" id="forgot-username" placeholder="Enter your username" required>
+                <i class="fas fa-user input-icon"></i>
+              </div>
+              <div class="auth-field">
+                <label for="forgot-email">Registered email</label>
+                <input autocomplete="email" class="auth-input" id="forgot-email" placeholder="Enter your registered email" required type="email">
+                <i class="fas fa-envelope input-icon"></i>
+              </div>
+              <button class="auth-submit" type="submit"><i class="fas fa-check"></i> Verify Account</button>
+            </form>
+            <div class="auth-switch-row">Remembered your password? <span class="auth-link" onclick="Auth.open('login')">Back to Login</span></div>
+          </div>
+
+          <div class="auth-step" id="forgot-reset">
+            <div class="auth-note"><i class="fas fa-circle-check"></i> Username and email matched. Choose a new password.</div>
+            <form class="auth-form" onsubmit="Auth.resetPassword(event)">
+              <div class="auth-field">
+                <label for="reset-password">New password</label>
+                <input autocomplete="new-password" class="auth-input" id="reset-password" maxlength="128" minlength="4" placeholder="At least 4 characters" required type="password">
+                <button class="auth-password-toggle" onclick="Auth.togglePassword('reset-password',this)" type="button"><i class="fas fa-eye"></i></button>
+              </div>
+              <div class="auth-field">
+                <label for="reset-confirm">Confirm new password</label>
+                <input autocomplete="new-password" class="auth-input" id="reset-confirm" maxlength="128" minlength="4" placeholder="Re-enter your new password" required type="password">
+                <button class="auth-password-toggle" onclick="Auth.togglePassword('reset-confirm',this)" type="button"><i class="fas fa-eye"></i></button>
+              </div>
+              <button class="auth-submit" type="submit"><i class="fas fa-key"></i> Save New Password</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM BAR -->
+  <nav class="mobile-bottom-bar">
+    <button class="mbb-btn active" id="mbb-home" onclick="App.goHome(); MobNav.set(this)"><i class="fas fa-home"></i><span>Home</span></button>
+    <button class="mbb-btn" id="mbb-movies" onclick="App.browseMovies(); MobNav.set(this)"><i class="fas fa-film"></i><span>Movies</span></button>
+    <button class="mbb-btn" id="mbb-tv" onclick="App.browseTVShows(); MobNav.set(this)"><i class="fas fa-tv"></i><span>TV Shows</span></button>
+    <button class="mbb-btn" id="mbb-search" onclick="Search.focusMobile()"><i class="fas fa-search"></i><span>Search</span></button>
+    <button class="mbb-btn" id="mbb-watchlist" onclick="App.showWatchlist(); MobNav.set(this)"><i class="fas fa-heart"></i><span>Watchlist</span></button>
+  </nav>
+
+  <!-- ============================================================ 
+       MODAL & STREAMING PLAYER OVERLAY
+  ============================================================ -->
+  <div class="modal-overlay" id="modal-overlay" onclick="Modal.overlayClick(event)">
+    <div class="fv-modal" id="fv-modal">
+      <div class="fv-hero">
+        <img alt="backdrop" class="fv-backdrop" id="fv-backdrop" src="">
+        <div class="fv-hero-grad"></div>
+        <img alt="poster" class="fv-hero-poster" id="fv-poster" src="">
+        <button class="fv-hero-close" onclick="Modal.closeAll()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="fv-body">
+        <div class="fv-title-row">
+          <div class="fv-title-main">
+            <div class="fv-title" id="fv-title"></div>
+            <div class="fv-meta-row">
+              <span class="fv-meta-badge fv-mb-rating"><i class="fas fa-star"></i> <span id="fv-rating"></span></span>
+              <span class="fv-meta-badge fv-mb-year" id="fv-year"></span>
+              <span class="fv-meta-badge fv-mb-quality">4K HD</span>
+            </div>
+          </div>
+        </div>
+        <div class="fv-actions-row">
+          <button class="btn-fv-play" onclick="FVTabs.showTab('watch')"><i class="fas fa-play"></i> Watch Now</button>
+          <button class="btn-fv-icon" id="fv-wl-btn" onclick="Watchlist.toggleCurrent(event)" title="Add to watchlist"><i class="fas fa-heart"></i></button>
+          <button class="btn-fv-icon" id="fv-share-btn" onclick="App.shareCurrent()" title="Share Link"><i class="fas fa-share-alt"></i></button>
+        </div>
+        <div class="fv-tabs">
+          <div class="fv-tab active" onclick="FVTabs.showTab('overview', this)">Overview</div>
+          <div class="fv-tab" onclick="FVTabs.showTab('watch', this)">Watch</div>
+          <div class="fv-tab" onclick="FVTabs.showTab('cast', this)">Cast</div>
+        </div>
+        
+        <!-- Overview Pane -->
+        <div class="fv-tab-pane active" id="tab-overview">
+          <div class="fv-overview-grid">
+            <p class="fv-desc" id="fv-desc"></p>
+            <div>
+              <div class="fv-info-item"><span class="fv-info-key">Genre</span><span class="fv-info-val" id="fv-genre"></span></div>
+              <div class="fv-info-item"><span class="fv-info-key">Runtime</span><span class="fv-info-val" id="fv-runtime"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Watch Streaming Pane -->
+        <div class="fv-tab-pane" id="tab-watch">
+          <!-- Server Selection -->
+          <div class="server-tabs" id="server-tabs"></div>
+          
+          <!-- Season/Episode Selector -->
+          <div class="ep-row hidden" id="ep-row">
+            <select class="ep-select" id="ep-season"></select>
+            <select class="ep-select" id="ep-episode"></select>
+            <button class="ep-btn-play" onclick="Player.loadVideo()">Play</button>
+          </div>
+          
+          <!-- Responsive Video Player -->
+          <div class="player-wrap">
+            <iframe allow="encrypted-media; picture-in-picture" allowfullscreen id="main-player" scrolling="no"></iframe>
+          </div>
+        </div>
+
+        <!-- Cast Pane -->
+        <div class="fv-tab-pane" id="tab-cast"><div class="fv-cast-scroll" id="fv-cast"></div></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- ============================================================ 
+       LEGAL MODAL OVERLAY
+  ============================================================ -->
+  <div class="legal-modal-overlay" id="legal-modal-overlay" onclick="Legal.overlayClick(event)">
+    <div class="legal-modal" onclick="event.stopPropagation()">
+      <button class="legal-close" onclick="Legal.close()" type="button">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="legal-title" id="legal-modal-title">Policy</div>
+      <div class="legal-body" id="legal-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT -->
+  <script src="script.js"></script>
+</body>
+</html>
