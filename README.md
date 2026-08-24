@@ -1,6 +1,6 @@
 # 🌌 StreamHeavens (Development Repository)
 
-![Home Screen](./assets/home.png)
+![Home Screen](./assets/Home.png)
 
 This is the private codebase for **StreamHeavens**, a modern web application for discovering and streaming movies and TV series. 
 **⚠️ DO NOT MAKE THIS REPOSITORY PUBLIC.**
@@ -35,8 +35,8 @@ To test the API proxy locally along with the frontend, you should use Wrangler (
 
 | Home | Trending |
 |------|----------|
-| ![Home](./assets/home.png) | ![Trending](./assets/trending.png) |
+| ![Home](./assets/Home.png) | ![Trending](./assets/Trending.png) |
 
 | Watchlist | Sign In |
 |-----------|---------|
-| ![Watchlist](./assets/watchlist.png) | ![Sign In](./assets/signin.png) |
+| ![Watchlist](./assets/Watchlist.png) | ![Sign In](./assets/Sign%20In.png) |
