@@ -388,10 +388,10 @@
           <!-- Responsive Video Player -->
           <div class="player-wrap">
             <div id="unlock-overlay" class="unlock-overlay" style="display:none;">
-              <i class="fas fa-lock" style="font-size:40px; color:var(--cv-purple); margin-bottom:15px;"></i>
-              <h2 style="margin:0 0 10px; font-size:22px; font-weight:800;">Video Locked</h2>
-              <p style="margin:0 0 20px; font-size:14px; color:var(--text-3); text-align:center; max-width:300px;">Unlock this video for 24 hours by completing a quick, free ad supported by Linkvertise.</p>
-              <button id="unlock-btn" class="unlock-btn" onclick="Player.unlock()"><i class="fas fa-key"></i> Unlock Player (Free)</button>
+              <i class="fas fa-play-circle" style="font-size:48px; color:var(--cv-purple); margin-bottom:15px; text-shadow: 0 0 20px rgba(181, 95, 230, 0.5);"></i>
+              <h2 id="unlock-text" style="margin:0 0 10px; font-size:24px; font-weight:800;">Video Locked</h2>
+              <p id="unlock-sub" style="margin:0 0 20px; font-size:14px; color:var(--text-3); text-align:center; max-width:350px; line-height:1.5;">Support this free site by clicking Watch below. An ad will open in a new tab, and your video will start in 5 seconds.</p>
+              <button id="unlock-btn" class="unlock-btn" onclick="Player.unlock()"><i class="fas fa-play"></i> Watch Now</button>
             </div>
             <iframe allow="encrypted-media; picture-in-picture" allowfullscreen id="main-player" scrolling="no"></iframe>
           </div>

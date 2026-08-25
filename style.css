@@ -385,6 +385,7 @@ iframe {border:none}
 .unlock-overlay {position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(10,10,15,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;backdrop-filter:blur(10px)}
 .unlock-btn {background:var(--cv-gradient-1);color:#fff;border:none;padding:12px 24px;font-size:15px;font-weight:700;border-radius:var(--r-pill);cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform var(--t-fast), box-shadow var(--t-fast);box-shadow:0 4px 15px rgba(181,95,230,0.3)}
 .unlock-btn:hover {transform:translateY(-2px);box-shadow:0 6px 20px rgba(181,95,230,0.5)}
+#ad-timer {font-size:1.2em; font-weight:800; color:var(--cv-purple); margin-left:5px;}
 
 .cast-card {flex-shrink:0;text-align:center;width:80px}
 .cast-avatar {width:64px;height:64px;border-radius:50%;object-fit:cover;margin:0 auto 6px}

@@ -25,8 +25,9 @@ const CFG = {
   IMG342:  'https://image.tmdb.org/t/p/w342',
   IMG500:  'https://image.tmdb.org/t/p/w500',
   ORIG:    'https://image.tmdb.org/t/p/original',
-  LINKVERTISE_ENABLED: true,
-  LINKVERTISE_ID: '6155956',
+  AD_ENABLED: true,
+  AD_DIRECT_LINK: 'YOUR_ADSTERRA_DIRECT_LINK_HERE',
+  AD_COOLDOWN_HOURS: 24,
   SERVERS: [
     { name: 'VidLink', icon: 'fa-play-circle',
       movie: function(id){ return 'https://vidlink.pro/movie/'+id+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff'; },
@@ -228,27 +229,16 @@ var App = {
   }
 };
 
-/* Linkvertise Module */
-var Linkvertise = {
-  checkUrl: function(){
-    var params = new URLSearchParams(window.location.search);
-    var unlockId = params.get('lv_unlock');
-    if(unlockId){
-      localStorage.setItem('lv_unlocked_'+unlockId, 'true');
-      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0a0f;color:#fff;font-family:sans-serif;flex-direction:column;text-align:center;padding:20px;">'
-        + '<i class="fas fa-unlock" style="font-size:48px;color:var(--cv-purple);margin-bottom:20px;"></i>'
-        + '<h1 style="margin:0 0 10px;font-size:24px;">Video Unlocked! 🍿</h1>'
-        + '<p style="margin:0;color:var(--text-3);">You can close this tab and return to your movie.</p></div>';
-      throw new Error("Unlock complete. Halting normal execution.");
-    }
-  },
-  generateUrl: function(id){
-    var dest = window.location.protocol + "//" + window.location.host + "/?lv_unlock=" + id;
-    var b64 = btoa(dest);
-    return 'https://link-to.net/' + CFG.LINKVERTISE_ID + '/' + Math.floor(Math.random()*1000000) + '/dynamic?r=' + b64;
-  },
+/* AdSystem Module */
+var AdSystem = {
   isUnlocked: function(id){
-    return localStorage.getItem('lv_unlocked_'+id) === 'true';
+    var unlockTime = localStorage.getItem('ad_unlocked_'+id);
+    if(!unlockTime) return false;
+    var hoursPassed = (Date.now() - parseInt(unlockTime)) / (1000 * 60 * 60);
+    return hoursPassed < CFG.AD_COOLDOWN_HOURS;
+  },
+  unlock: function(id){
+    localStorage.setItem('ad_unlocked_'+id, Date.now().toString());
   }
 };
 
@@ -597,13 +587,32 @@ var Player = {
   },
   unlock: function(){
     if(!State.activeId) return;
-    var url = Linkvertise.generateUrl(State.activeId);
-    window.open(url, '_blank');
     
-    // Start listening for the unlock from the other tab
-    var checkInterval = setInterval(function(){
-      if(Linkvertise.isUnlocked(State.activeId)){
-        clearInterval(checkInterval);
+    // Open the Adsterra Direct Link in a new tab
+    if(CFG.AD_ENABLED && CFG.AD_DIRECT_LINK) {
+      window.open(CFG.AD_DIRECT_LINK, '_blank');
+    }
+    
+    // Disable the button to prevent spam clicking
+    var btn = document.getElementById('unlock-btn');
+    if(btn) btn.style.display = 'none';
+    
+    var countdown = 5;
+    var overlayText = document.getElementById('unlock-text');
+    var overlaySub = document.getElementById('unlock-sub');
+    
+    if(overlayText) overlayText.innerHTML = 'Ad playing in background... <span id="ad-timer">5</span>';
+    if(overlaySub) overlaySub.innerHTML = 'Please wait. Video will automatically start shortly.';
+    
+    var timerSpan = document.getElementById('ad-timer');
+    
+    var interval = setInterval(function(){
+      countdown--;
+      if(timerSpan) timerSpan.innerText = countdown;
+      
+      if(countdown <= 0) {
+        clearInterval(interval);
+        AdSystem.unlock(State.activeId);
         Player.loadVideo();
       }
     }, 1000);
@@ -617,10 +626,19 @@ var Player = {
     var iframe = document.getElementById('main-player');
     var overlay = document.getElementById('unlock-overlay');
     
-    // Check Linkvertise Lock
-    if(CFG.LINKVERTISE_ENABLED && !Linkvertise.isUnlocked(State.activeId)) {
+    // Check Ad System Lock
+    if(CFG.AD_ENABLED && !AdSystem.isUnlocked(State.activeId)) {
       iframe.style.display = 'none';
       overlay.style.display = 'flex';
+      
+      // Reset overlay UI in case they come back to it
+      var btn = document.getElementById('unlock-btn');
+      var overlayText = document.getElementById('unlock-text');
+      var overlaySub = document.getElementById('unlock-sub');
+      
+      if(btn) btn.style.display = 'inline-block';
+      if(overlayText) overlayText.innerHTML = 'Video Locked';
+      if(overlaySub) overlaySub.innerHTML = 'Support this free site by clicking Watch below. An ad will open in a new tab, and your video will start in 5 seconds.';
       return;
     }
     
@@ -799,7 +817,6 @@ var Library = (function(){
    10. INITIALIZATION
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function(){
-  try { Linkvertise.checkUrl(); } catch(e) { return; }
   Prog.init();
   Library.init();
   AdPass.init();
