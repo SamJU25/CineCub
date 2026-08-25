@@ -1087,6 +1087,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     Prog.done();
+    History.renderContinueWatching();
   }).catch(err => {
     console.error('Initialization error:', err);
     Prog.done();

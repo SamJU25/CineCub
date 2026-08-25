@@ -118,7 +118,7 @@
         <div class="search-container" id="search-container">
           <div class="search-input-wrap">
             <i class="fas fa-search" style="color:var(--text-4); font-size:12px;"></i>
-            <input autocomplete="off" class="search-input" id="search-input" oninput="Search.onInput(this.value)" placeholder="Search movies, shows..." type="text">
+            <input autocomplete="off" class="search-input" id="search-input" oninput="Search.onInput(this.value)" onkeypress="if(event.key==='Enter') { event.preventDefault(); Search.executeFullSearch(this.value); this.blur(); }" placeholder="Search movies, shows..." type="text">
           </div>
           <div class="search-results-dropdown" id="search-dropdown">
             <div class="srd-header"><span>Search Results</span><span onclick="Search.closeDropdown()" style="cursor:pointer;"><i class="fas fa-times"></i></span></div>
@@ -167,11 +167,19 @@
         
         <!-- TRENDING TICKER -->
         <div class="trending-ribbon" id="trending-ribbon">
-          <div class="tr-label"><i class="fas fa-bolt"></i> Trending</div>
-          <div class="tr-scroll-wrap">
-            <div class="tr-scroll" id="trending-scroll"></div>
-          </div>
+          <div class="trending-label"><i class="fas fa-fire"></i> TRENDING NOW</div>
+          <div class="trending-scroll" id="trending-scroll"></div>
         </div>
+
+        <!-- CONTINUE WATCHING ROW -->
+        <section class="section-wrapper hidden" id="cw-section">
+          <div class="section-header">
+            <div class="section-title-group">
+              <h2 class="section-title"><i class="fas fa-play-circle" style="color:var(--cv-purple);margin-right:8px;"></i>Continue Watching</h2>
+            </div>
+          </div>
+          <div class="poster-scroll-row" id="cw-grid"></div>
+        </section>
 
         <!-- STATS BAR -->
         <div class="stats-bar">
@@ -292,6 +300,19 @@
         <div class="cv-container">
           <div class="section-title" style="margin-bottom:20px;">My Watchlist</div>
           <div class="poster-grid" id="wl-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEARCH PAGE -->
+    <div class="cv-page" id="page-search">
+      <div class="cv-container" style="padding-top:20px;">
+        <div class="browse-header" id="search-header" style="margin-bottom:20px; display:flex;">
+          <h2 class="browse-title" id="search-title">Search Results</h2>
+        </div>
+        <div class="poster-grid" id="search-full-grid"></div>
+        <div class="loading-spinner hidden" id="search-spinner">
+          <i class="fas fa-circle-notch fa-spin"></i>
         </div>
       </div>
     </div>
@@ -431,8 +452,13 @@
           
           <!-- Responsive Video Player -->
           <div class="player-wrap">
-
             <iframe allow="encrypted-media; picture-in-picture; clipboard-write" allowfullscreen id="main-player" scrolling="no"></iframe>
+            
+            <!-- UP NEXT TOAST -->
+            <div id="up-next-toast" class="hidden">
+              <div class="up-next-text">Next Episode in <span id="up-next-time">10</span></div>
+              <button class="up-next-btn" onclick="Player.nextEpisode(); document.getElementById('up-next-toast').classList.add('hidden');"><i class="fas fa-play"></i> Play Now</button>
+            </div>
           </div>
           
           <div style="margin-top:16px; background:var(--cv-dark-4); border:1px solid var(--b-2); border-left:4px solid var(--cv-purple); border-radius:var(--r-sm); padding:14px; font-size:13px; color:var(--text-2); line-height:1.5;">
