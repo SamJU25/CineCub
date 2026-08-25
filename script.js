@@ -257,6 +257,10 @@ var App = {
     document.querySelectorAll('.cv-page').forEach(function(p){ p.classList.remove('active'); });
     var page=document.getElementById(id); if(page) page.classList.add('active');
     window.scrollTo({top:0}); Sidebar.close();
+    
+    if (id === 'page-home' && typeof History !== 'undefined' && History.renderContinueWatching) {
+      History.renderContinueWatching();
+    }
   },
   setNav: function(id, title){
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -360,6 +364,29 @@ var Search = {
     });
   },
   closeDropdown: function(){ document.getElementById('search-dropdown').classList.remove('open'); },
+  executeFullSearch: function(q) {
+    if(!q || !q.trim()) return;
+    this.closeDropdown();
+    App.showPage('page-search');
+    var titleEl = document.getElementById('search-title');
+    if(titleEl) titleEl.innerText = 'Search Results for "'+q+'"';
+    var spinner = document.getElementById('search-spinner');
+    if(spinner) spinner.classList.remove('hidden');
+    var grid = document.getElementById('search-full-grid');
+    if(grid) grid.innerHTML = '';
+    
+    API.search(q).then(data => {
+      if(spinner) spinner.classList.add('hidden');
+      var r = ((data && data.results) || []).filter(x => x.poster_path && x.media_type!=='person');
+      if(grid) {
+        if(!r.length) { 
+          grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No results found.</div>';
+        } else {
+          grid.innerHTML = r.map(item => Render.posterCard(item, item.media_type||'movie')).join('');
+        }
+      }
+    });
+  },
   focusMobile: function(){
     window.scrollTo({top:0,behavior:'smooth'});
     setTimeout(function() { document.getElementById('search-input').focus(); }, 300);
@@ -918,7 +945,60 @@ var History = {
     Library.saveUserData();
   },
   render: function(){var el=document.getElementById('history-grid');if(!el)return;el.innerHTML=State.history.map(function(x){return Render.posterCard(x,x.type);}).join('')||'<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">Your watch history is empty.</div>';},
-  clearAll: function(){if(!State.history.length){Toast.show('Watch history is already empty.','info');return;}State.history=[];Library.saveUserData();this.render();Toast.show('History cleared successfully.','success');}
+  clearAll: function(){if(!State.history.length){Toast.show('Watch history is already empty.','info');return;}State.history=[];Library.saveUserData();this.render();Toast.show('History cleared successfully.','success');},
+  renderContinueWatching: function(){
+    var cwSection = document.getElementById('cw-section');
+    var cwGrid = document.getElementById('cw-grid');
+    if (!cwSection || !cwGrid) return;
+    
+    var vlData = {};
+    try { vlData = JSON.parse(localStorage.getItem('vidLinkProgress') || '{}'); } catch(e){}
+    
+    var cwItems = [];
+    for(var i=0; i<State.history.length; i++) {
+      var h = State.history[i];
+      var p = vlData[h.id];
+      if (!p) continue;
+      
+      var progObj = null;
+      if (h.type === 'tv' && p.show_progress) {
+        var s = (h.season !== undefined && h.season !== null) ? h.season : 1;
+        var e = (h.episode !== undefined && h.episode !== null) ? h.episode : 1;
+        var epKey = 's' + s + 'e' + e;
+        if (p.show_progress[epKey] && p.show_progress[epKey].progress) {
+          progObj = p.show_progress[epKey].progress;
+        }
+      } else if (h.type === 'movie' && p.progress) {
+        progObj = p.progress;
+      }
+      
+      if (progObj && progObj.watched > 0) {
+        var pct = 50;
+        if (progObj.duration > 0) {
+           pct = (progObj.watched / progObj.duration) * 100;
+           if (pct > 95) continue;
+        }
+        var itemCopy = Object.assign({}, h);
+        itemCopy.progressPercent = pct;
+        cwItems.push(itemCopy);
+      }
+      if (cwItems.length >= 6) break;
+    }
+    
+    if (cwItems.length > 0) {
+      cwSection.classList.remove('hidden');
+      cwGrid.innerHTML = cwItems.map(function(item){ 
+        var card = Render.posterCard(item, item.type);
+        if (item.progressPercent) {
+           var progHtml = '<div class="cw-progress"><div class="cw-progress-bar" style="width:'+item.progressPercent+'%"></div></div>';
+           card = card.replace('<div class="poster-card-grad"></div>', '<div class="poster-card-grad"></div>' + progHtml);
+        }
+        return card;
+      }).join('');
+    } else {
+      cwSection.classList.add('hidden');
+    }
+  }
 };
 
 
@@ -1162,7 +1242,33 @@ window.addEventListener('message', (event) => {
 
   if (event.data?.type === 'PLAYER_EVENT') {
     const { event: eventType, currentTime, duration } = event.data.data;
-    // Handle the event
-    console.log(`Player ${eventType} at ${currentTime}s of ${duration}s`);
+    
+    if (eventType === 'timeupdate' && State.activeType === 'tv') {
+      var timeLeft = duration - currentTime;
+      var toast = document.getElementById('up-next-toast');
+      
+      var sSelect = document.getElementById('ep-season');
+      var eSelect = document.getElementById('ep-episode');
+      var isLastEpisode = false;
+      if (sSelect && eSelect) {
+         var maxEp = eSelect.options.length;
+         if (Number(eSelect.value) >= maxEp && sSelect.options.selectedIndex >= sSelect.options.length - 1) {
+           isLastEpisode = true;
+         }
+      }
+      
+      if (!isLastEpisode && timeLeft > 0 && timeLeft <= 15) {
+        if(toast) {
+          toast.classList.remove('hidden');
+          document.getElementById('up-next-time').innerText = Math.floor(timeLeft);
+        }
+        if (Math.floor(timeLeft) === 0) {
+           Player.nextEpisode();
+           if(toast) toast.classList.add('hidden');
+        }
+      } else {
+        if(toast) toast.classList.add('hidden');
+      }
+    }
   }
 });
