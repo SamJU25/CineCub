@@ -262,7 +262,7 @@
     <div class="cv-page" id="page-browse">
       <div class="page-inner">
         <div class="cv-container">
-          <div class="browse-header" id="browse-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <div class="browse-header" id="browse-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:20px;">
             <h2 class="section-title" id="browse-title" style="margin:0;">Discover</h2>
             <div class="browse-filters-wrap" style="display:flex; gap:12px; align-items:center;">
               <div class="custom-select" id="wrap-browse-genre" style="width:140px;">
@@ -364,7 +364,7 @@
     <button class="mbb-btn active" id="mbb-home" onclick="App.goHome(); MobNav.set(this)"><i class="fas fa-home"></i><span>Home</span></button>
     <button class="mbb-btn" id="mbb-movies" onclick="App.browseMovies(); MobNav.set(this)"><i class="fas fa-film"></i><span>Movies</span></button>
     <button class="mbb-btn" id="mbb-tv" onclick="App.browseTVShows(); MobNav.set(this)"><i class="fas fa-tv"></i><span>TV Shows</span></button>
-    <button class="mbb-btn" id="mbb-search" onclick="Search.focusMobile()"><i class="fas fa-search"></i><span>Search</span></button>
+    <button class="mbb-btn" id="mbb-anime" onclick="App.browseAnime(); MobNav.set(this)"><i class="fas fa-dragon"></i><span>Anime</span></button>
     <button class="mbb-btn" id="mbb-watchlist" onclick="App.showWatchlist(); MobNav.set(this)"><i class="fas fa-heart"></i><span>Watchlist</span></button>
   </nav>
 
