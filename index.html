@@ -396,7 +396,7 @@
           
           <!-- Season/Episode Selector -->
           <div class="ep-row hidden" id="ep-row">
-            <select class="ep-select" id="ep-season"></select>
+            <select class="ep-select" id="ep-season" onchange="Player.updateEpisodes()"></select>
             <select class="ep-select" id="ep-episode"></select>
             <button class="ep-btn-prev hidden" id="ep-btn-prev" onclick="Player.prevEpisode()"><i class="fas fa-backward"></i> Prev Ep</button>
             <button class="ep-btn-play" onclick="Player.loadVideo()">Play</button>

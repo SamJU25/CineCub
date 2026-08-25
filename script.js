@@ -515,15 +515,28 @@ var Modal = {
       var epRow = document.getElementById('ep-row');
       if(type==='tv'){
         epRow.className = 'ep-row';
-        var seasonsCount = data.number_of_seasons || 1;
-        document.getElementById('ep-season').innerHTML = Array.from({length: seasonsCount}, (_,i) => '<option value="'+(i+1)+'">Season '+(i+1)+'</option>').join('');
-        document.getElementById('ep-episode').innerHTML = Array.from({length: 24}, (_,i) => '<option value="'+(i+1)+'">Episode '+(i+1)+'</option>').join('');
+        var validSeasons = (data.seasons || []).filter(function(s) { return s.season_number > 0; });
+        if (validSeasons.length === 0) {
+          var maxS = data.number_of_seasons || 1;
+          validSeasons = Array.from({length: maxS}, function(_,i) { return {season_number: i+1, episode_count: 24}; });
+        }
+        
+        document.getElementById('ep-season').innerHTML = validSeasons.map(function(s) {
+           return '<option value="'+s.season_number+'">Season '+s.season_number+'</option>';
+        }).join('');
         
         var hist = State.history.find(function(h){return h.id===id && h.type==='tv';});
-        if(hist){
-          if(hist.season) document.getElementById('ep-season').value = hist.season;
-          if(hist.episode) document.getElementById('ep-episode').value = hist.episode;
+        if(hist && hist.season) {
+          document.getElementById('ep-season').value = hist.season;
         }
+        
+        Player.updateEpisodes();
+        
+        if(hist && hist.episode) {
+          var maxEp = document.getElementById('ep-episode').options.length;
+          document.getElementById('ep-episode').value = Math.min(hist.episode, maxEp);
+        }
+        
         document.getElementById('ep-btn-next').classList.remove('hidden');
         document.getElementById('ep-btn-prev').classList.remove('hidden');
       } else { 
@@ -607,24 +620,43 @@ var Player = {
       }
     }, 1000);
   },
+  updateEpisodes: function() {
+    if (State.activeType !== 'tv' || !State.activeData || !State.activeData.seasons) return;
+    var sSelect = document.getElementById('ep-season');
+    var eSelect = document.getElementById('ep-episode');
+    var sNumber = Number(sSelect.value || 1);
+    
+    var season = State.activeData.seasons.find(function(s) { return s.season_number === sNumber; });
+    var count = season ? season.episode_count : 24; 
+    if (count === 0) count = 1;
+    
+    var currentEp = Number(eSelect.value || 1);
+    eSelect.innerHTML = Array.from({length: count}, function(_,i) { 
+      return '<option value="'+(i+1)+'">Episode '+(i+1)+'</option>'; 
+    }).join('');
+    
+    if (currentEp <= count) eSelect.value = currentEp;
+  },
   nextEpisode: function(){
     if(State.activeType !== 'tv') return;
     var sSelect = document.getElementById('ep-season');
     var eSelect = document.getElementById('ep-episode');
     var s = Number(sSelect.value || 1);
     var e = Number(eSelect.value || 1);
+    var maxEpisodes = eSelect.options.length;
     
-    if(e >= 24) {
-      // Jump to next season
-      sSelect.value = s + 1;
-      eSelect.value = 1;
+    if(e >= maxEpisodes) {
+      if (sSelect.options.selectedIndex < sSelect.options.length - 1) {
+         sSelect.selectedIndex += 1;
+         this.updateEpisodes();
+         eSelect.value = 1;
+      } else {
+         Toast.show('You have reached the final episode!', 'info');
+         return;
+      }
     } else {
       eSelect.value = e + 1;
     }
-    
-    // Check if new season exists in options
-    if(!sSelect.value) sSelect.value = s; 
-    
     this.loadVideo();
   },
   prevEpisode: function(){
@@ -635,18 +667,17 @@ var Player = {
     var e = Number(eSelect.value || 1);
     
     if(e <= 1) {
-      if(s > 1) {
-        // Jump to previous season, last episode
-        sSelect.value = s - 1;
-        eSelect.value = 24; // Standard fallback for max episodes
+      if (sSelect.options.selectedIndex > 0) {
+        sSelect.selectedIndex -= 1;
+        this.updateEpisodes();
+        eSelect.value = eSelect.options.length;
+      } else {
+        Toast.show('You are at the very first episode!', 'info');
+        return;
       }
     } else {
       eSelect.value = e - 1;
     }
-    
-    // Check if new season exists in options
-    if(!sSelect.value) sSelect.value = s; 
-    
     this.loadVideo();
   },
   loadVideo: function(){
