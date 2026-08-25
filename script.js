@@ -503,6 +503,7 @@ var Render = {
     var year = Utils.year(item.release_date||item.first_air_date);
     var yearHtml = year && year !== 'N/A' ? '<span>'+year+'</span>' : '';
     var genre = Utils.genreNames(item.genre_ids);
+    var genreHtml = genre !== 'General' ? '<span class="pc-genre">'+Utils.escape(genre.split(',')[0])+'</span>' : '';
     var isNew = item.release_date && (new Date(item.release_date) > new Date(Date.now()-60*24*60*60*1000));
     var badge = isNew ? '<span class="pc-badge pc-badge-new">NEW</span>' : '<span class="pc-badge pc-badge-quality">'+(mType==='tv'?'SERIES':'HD')+'</span>';
     var inWl = State.watchlist.some(function(w){return w.id===item.id;});
@@ -515,7 +516,7 @@ var Render = {
       + '<div class="pc-play-wrap"><div class="pc-play-btn"><i class="fas fa-play"></i></div></div>'
       + '<div class="pc-wl-btn wl-btn-'+item.id+' '+wlClass+'" title="'+(inWl?'Remove from watchlist':'Add to watchlist')+'" onclick="Watchlist.toggleById(event,'+item.id+','+Utils.jsAttr(mType)+','+Utils.jsAttr(title)+','+Utils.jsAttr(item.poster_path||'')+','+Number(item.vote_average||0)+','+Utils.jsAttr(item.release_date||item.first_air_date||'')+')"><i class="fas '+wlIcon+'"></i></div>'
       + '</div>'
-      + '<div class="poster-card-info"><div class="pc-title" title="'+Utils.escape(title)+'">'+Utils.escape(title)+'</div><div class="pc-meta">'+yearHtml+'<span class="pc-genre">'+Utils.escape(genre.split(',')[0])+'</span>'+(item.season?' <span class="pc-genre">S'+item.season+(item.episode?' E'+item.episode:'')+'</span>':'')+'</div></div>'
+      + '<div class="poster-card-info"><div class="pc-title" title="'+Utils.escape(title)+'">'+Utils.escape(title)+'</div><div class="pc-meta">'+yearHtml+genreHtml+(item.season?' <span class="pc-genre">S'+item.season+(item.episode?' E'+item.episode:'')+'</span>':'')+'</div></div>'
       + '</div>';
   },
   landscapeCard: function(item, type){
@@ -525,16 +526,17 @@ var Render = {
     var rating=item.vote_average?item.vote_average.toFixed(1):''; 
     var ratingHtml = rating ? '<span class="pc-rating"><i class="fas fa-star"></i>'+rating+'</span>' : '';
     var genre=Utils.genreNames(item.genre_ids);
+    var genreHtml = genre !== 'General' ? Utils.escape(genre) : '';
     var inWl=State.watchlist.some(function(w){return w.id===item.id;}); var wlClass=inWl?'in-list':''; var wlIcon=inWl?'fa-check':'fa-heart';
     var year = Utils.year(item.release_date||item.first_air_date);
-    var yearHtml = year && year !== 'N/A' ? Utils.escape(year)+' &middot; ' : '';
+    var yearHtml = year && year !== 'N/A' ? Utils.escape(year)+(genreHtml?' &middot; ':'') : '';
     return '<div class="landscape-card" onclick="Modal.openFull('+item.id+', '+Utils.jsAttr(mType)+')">'
       + '<div class="lc-img-wrap"><img class="lc-img" src="'+img+'" loading="lazy" decoding="async" alt="'+Utils.escape(title)+'"/><div class="lc-overlay"></div>'
       + '<div class="lc-top"><span class="pc-badge pc-badge-quality">'+(mType==='tv'?'SERIES':'MOVIE')+'</span>'+ratingHtml+'</div>'
       + '<div class="pc-play-wrap"><div class="pc-play-btn"><i class="fas fa-play"></i></div></div>'
       + '<div class="pc-wl-btn wl-btn-'+item.id+' '+wlClass+'" title="'+(inWl?'Remove from watchlist':'Add to watchlist')+'" onclick="Watchlist.toggleById(event,'+item.id+','+Utils.jsAttr(mType)+','+Utils.jsAttr(title)+','+Utils.jsAttr(item.poster_path||'')+','+Number(item.vote_average||0)+','+Utils.jsAttr(item.release_date||item.first_air_date||'')+')"><i class="fas '+wlIcon+'"></i></div>'
       + '</div>'
-      + '<div class="lc-info"><div class="lc-title">'+Utils.escape(title)+'</div><div class="lc-meta">'+yearHtml+Utils.escape(genre)+'</div></div>'
+      + '<div class="lc-info"><div class="lc-title">'+Utils.escape(title)+'</div><div class="lc-meta">'+yearHtml+genreHtml+'</div></div>'
       + '</div>';
   },
   compactCard: function(item, rank){
