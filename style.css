@@ -377,8 +377,17 @@ iframe {border:none}
 
 .ep-row {display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;width:100%;align-items:center}
 .ep-row.hidden {display:none !important}
-.ep-select {flex:0 0 auto;width:140px;background:var(--cv-dark-4);color:var(--text-2);border:1px solid var(--b-2);padding:9px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239d4edd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 14px center;background-size:14px;transition:var(--t-fast);outline:none;}
-.ep-select:hover {background:var(--cv-dark-5);color:var(--text-1);border-color:var(--cv-purple-light);}
+.custom-select {position:relative; font-size:13px; font-weight:700;}
+.custom-select select {display:none;}
+.select-selected {background:var(--cv-dark-4); color:var(--text-2); border:1px solid var(--b-2); padding:9px 16px; border-radius:var(--r-pill); cursor:pointer; transition:var(--t-fast); display:flex; justify-content:space-between; align-items:center; user-select:none;}
+.select-selected:hover {background:var(--cv-dark-5); color:var(--text-1); border-color:var(--cv-purple-light);}
+.select-selected:after {content:"\f107"; font-family:"Font Awesome 5 Free"; font-weight:900; color:var(--cv-purple); font-size:14px;}
+.select-selected.select-arrow-active {border-color:var(--cv-purple); box-shadow:0 0 0 2px rgba(181,95,230,0.2);}
+.select-selected.select-arrow-active:after {content:"\f106";}
+.select-items {position:absolute; background-color:var(--cv-dark-4); border:1px solid var(--cv-purple-dim); box-shadow:0 8px 24px rgba(0,0,0,0.5); top:100%; left:0; right:0; z-index:99; border-radius:12px; margin-top:6px; overflow:hidden;}
+.select-items div {color:var(--text-2); padding:10px 16px; cursor:pointer; user-select:none; transition:var(--t-fast);}
+.select-items div:hover, .same-as-selected {background-color:var(--cv-purple-dim); color:var(--text-1);}
+.select-hide {display:none;}
 .ep-select:focus {border-color:var(--cv-purple);box-shadow:0 0 0 2px rgba(181,95,230,0.2);}
 .ep-select option {background:var(--bg);color:var(--text-1);font-weight:600;}
 .ep-controls {display:flex;gap:10px;flex:1;justify-content:flex-end;align-items:center}

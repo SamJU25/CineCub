@@ -265,15 +265,19 @@
           <div class="browse-header" id="browse-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h2 class="section-title" id="browse-title" style="margin:0;">Discover</h2>
             <div class="browse-filters-wrap" style="display:flex; gap:12px; align-items:center;">
-              <select id="browse-genre" onchange="App.changeGenre(this.value)" class="ep-select">
-                <option value="">All Genres</option>
-              </select>
-              <select id="browse-sort" onchange="App.changeSort(this.value)" class="ep-select">
-                <option value="popular">Popular</option>
-                <option value="trending">Trending</option>
-                <option value="toprated">Top Rated</option>
-                <option value="newest">Newest</option>
-              </select>
+              <div class="custom-select" id="wrap-browse-genre" style="width:140px;">
+                <select id="browse-genre" onchange="App.changeGenre(this.value)">
+                  <option value="">All Genres</option>
+                </select>
+              </div>
+              <div class="custom-select" id="wrap-browse-sort" style="width:140px;">
+                <select id="browse-sort" onchange="App.changeSort(this.value)">
+                  <option value="popular">Popular</option>
+                  <option value="trending">Trending</option>
+                  <option value="toprated">Top Rated</option>
+                  <option value="newest">Newest</option>
+                </select>
+              </div>
             </div>
           </div>
           <div class="poster-grid" id="browse-grid"></div>

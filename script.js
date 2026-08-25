@@ -125,6 +125,102 @@ var Toast = {
 /* ================================================================
    03. UI NAVIGATION & INTERACTION
 ================================================================ */
+var CustomSelect = {
+  init: function() {
+    var x, i, j, l, ll, selElmnt, a, b, c;
+    x = document.getElementsByClassName("custom-select");
+    l = x.length;
+    for (i = 0; i < l; i++) {
+      selElmnt = x[i].getElementsByTagName("select")[0];
+      if(!selElmnt) continue;
+      ll = selElmnt.length;
+      
+      var oldA = x[i].querySelector('.select-selected');
+      if(oldA) oldA.remove();
+      var oldB = x[i].querySelector('.select-items');
+      if(oldB) oldB.remove();
+
+      a = document.createElement("DIV");
+      a.setAttribute("class", "select-selected");
+      var activeOpt = selElmnt.options[selElmnt.selectedIndex];
+      a.innerHTML = activeOpt ? activeOpt.innerHTML : "";
+      x[i].appendChild(a);
+      
+      b = document.createElement("DIV");
+      b.setAttribute("class", "select-items select-hide");
+      for (j = 0; j < ll; j++) {
+        c = document.createElement("DIV");
+        c.innerHTML = selElmnt.options[j].innerHTML;
+        c.setAttribute("data-value", selElmnt.options[j].value);
+        if (j === selElmnt.selectedIndex) {
+          c.setAttribute("class", "same-as-selected");
+        }
+        c.addEventListener("click", function(e) {
+            var y, i, k, s, h, sl, yl;
+            s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+            sl = s.length;
+            h = this.parentNode.previousSibling;
+            for (i = 0; i < sl; i++) {
+              if (s.options[i].innerHTML == this.innerHTML) {
+                s.selectedIndex = i;
+                h.innerHTML = this.innerHTML;
+                y = this.parentNode.getElementsByClassName("same-as-selected");
+                yl = y.length;
+                for (k = 0; k < yl; k++) {
+                  y[k].removeAttribute("class");
+                }
+                this.setAttribute("class", "same-as-selected");
+                break;
+              }
+            }
+            h.click();
+            s.dispatchEvent(new Event('change'));
+        });
+        b.appendChild(c);
+      }
+      x[i].appendChild(b);
+      a.addEventListener("click", function(e) {
+          e.stopPropagation();
+          CustomSelect.closeAll(this);
+          this.nextSibling.classList.toggle("select-hide");
+          this.classList.toggle("select-arrow-active");
+      });
+    }
+    document.addEventListener("click", CustomSelect.closeAll);
+  },
+  closeAll: function(elmnt) {
+    var x, y, i, xl, yl, arrNo = [];
+    x = document.getElementsByClassName("select-items");
+    y = document.getElementsByClassName("select-selected");
+    xl = x.length;
+    yl = y.length;
+    for (i = 0; i < yl; i++) {
+      if (elmnt == y[i]) { arrNo.push(i) } else { y[i].classList.remove("select-arrow-active"); }
+    }
+    for (i = 0; i < xl; i++) {
+      if (arrNo.indexOf(i) === -1) { x[i].classList.add("select-hide"); }
+    }
+  },
+  update: function(id, val) {
+    var sel = document.getElementById(id);
+    if(!sel) return;
+    sel.value = val;
+    var wrapper = sel.parentNode;
+    var selectedDiv = wrapper.querySelector('.select-selected');
+    var itemsDiv = wrapper.querySelector('.select-items');
+    if(!selectedDiv || !itemsDiv) return;
+    var activeOpt = sel.options[sel.selectedIndex];
+    if(activeOpt) selectedDiv.innerHTML = activeOpt.innerHTML;
+    var options = itemsDiv.getElementsByTagName('DIV');
+    for(var i=0; i<options.length; i++){
+      if(options[i].getAttribute('data-value') === String(val)) {
+        options[i].setAttribute('class', 'same-as-selected');
+      } else {
+        options[i].removeAttribute('class');
+      }
+    }
+  }
+};
 var Sidebar = {
   collapsed:false,
   toggle: function(e){
@@ -167,11 +263,11 @@ var App = {
   setBrowseHeader: function(title, showSort) {
     document.getElementById('browse-title').innerText = title;
     document.getElementById('browse-header').style.display = 'flex';
-    document.getElementById('browse-sort').style.display = showSort ? 'block' : 'none';
-    document.getElementById('browse-genre').style.display = showSort ? 'block' : 'none';
+    document.getElementById('wrap-browse-sort').style.display = showSort ? 'block' : 'none';
+    document.getElementById('wrap-browse-genre').style.display = showSort ? 'block' : 'none';
     if(showSort) {
-      document.getElementById('browse-genre').value = State.genreId || '';
-      document.getElementById('browse-sort').value = State.browseMode;
+      CustomSelect.update('browse-genre', State.genreId || '');
+      CustomSelect.update('browse-sort', State.browseMode);
     }
   },
   changeSort: function(val) {
@@ -909,6 +1005,8 @@ document.addEventListener('DOMContentLoaded', function(){
       genreSelect.appendChild(opt);
     });
   }
+
+  CustomSelect.init();
 
   Prog.start();
   Promise.all([
