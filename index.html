@@ -387,6 +387,12 @@
           
           <!-- Responsive Video Player -->
           <div class="player-wrap">
+            <div id="unlock-overlay" class="unlock-overlay" style="display:none;">
+              <i class="fas fa-lock" style="font-size:40px; color:var(--cv-purple); margin-bottom:15px;"></i>
+              <h2 style="margin:0 0 10px; font-size:22px; font-weight:800;">Video Locked</h2>
+              <p style="margin:0 0 20px; font-size:14px; color:var(--text-3); text-align:center; max-width:300px;">Unlock this video for 24 hours by completing a quick, free ad supported by Linkvertise.</p>
+              <button id="unlock-btn" class="unlock-btn" onclick="Player.unlock()"><i class="fas fa-key"></i> Unlock Player (Free)</button>
+            </div>
             <iframe allow="encrypted-media; picture-in-picture" allowfullscreen id="main-player" scrolling="no"></iframe>
           </div>
           
