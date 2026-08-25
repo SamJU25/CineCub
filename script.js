@@ -56,41 +56,7 @@ var State = { activePage:'page-home', browseType:'movie', browseMode:'trending',
 /* ================================================================
    AD-PASS MONETIZATION SYSTEM
 ================================================================ */
-var AdPass = {
-  // Replace this with your actual Linkvertise URL later!
-  // For the demo, it just redirects back immediately to unlock it.
-  linkUrl: "?unlocked=true", 
-  
-  init: function() {
-    var urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('unlocked') === 'true') {
-      localStorage.setItem('ad_pass_expiry', Date.now() + (24 * 60 * 60 * 1000));
-      // Remove query param without reloading page
-      window.history.replaceState({}, document.title, window.location.pathname);
-      Toast.show('24-Hour Ad-Free Pass Unlocked!', 'success');
-    }
-  },
-  
-  hasPass: function() {
-    var expiry = localStorage.getItem('ad_pass_expiry');
-    if (!expiry) return false;
-    return parseInt(expiry) > Date.now();
-  },
-  
-  prompt: function() {
-    document.getElementById('adpass-modal-overlay').classList.add('open');
-    if (typeof UIHelper !== 'undefined') UIHelper.lockScroll();
-  },
-  
-  closeModal: function() {
-    document.getElementById('adpass-modal-overlay').classList.remove('open');
-    if (typeof UIHelper !== 'undefined') UIHelper.unlockScroll();
-  },
 
-  proceed: function() {
-    window.location.href = this.linkUrl;
-  }
-};
 var Utils = {
   year: function(d){ return d ? d.split('-')[0] : 'N/A'; },
   runtime: function(m){ if(!m) return 'N/A'; var h=Math.floor(m/60), mins=m%60; return h ? h+'h '+(mins?mins+'m':'') : mins+'m'; },
@@ -618,11 +584,6 @@ var Player = {
     }, 1000);
   },
   loadVideo: function(){
-    if (!AdPass.hasPass()) {
-      AdPass.prompt();
-      return;
-    }
-
     var iframe = document.getElementById('main-player');
     var overlay = document.getElementById('unlock-overlay');
     
@@ -819,7 +780,6 @@ var Library = (function(){
 document.addEventListener('DOMContentLoaded', function(){
   Prog.init();
   Library.init();
-  AdPass.init();
   initDragScroll();
 
   /* Render Category Chips */

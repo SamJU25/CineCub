@@ -396,10 +396,7 @@
             <iframe allow="encrypted-media; picture-in-picture" allowfullscreen id="main-player" scrolling="no"></iframe>
           </div>
           
-          <div style="margin-top: 15px; font-size: 13px; color: var(--text-3); text-align: center; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-            <i class="fas fa-shield-alt" style="color: var(--cv-purple-light); margin-right: 5px;"></i>
-            <strong>Note:</strong> We do not control the ads or redirects inside the video player. For the best experience, we highly recommend using an adblocker like <strong>uBlock Origin</strong> or the <strong>Brave</strong> browser.
-          </div>
+
         </div>
 
         <!-- Cast Pane -->
@@ -428,36 +425,7 @@
     </div>
   </div>
 
-  <!-- ============================================================ 
-       AD PASS MODAL OVERLAY
-  ============================================================ -->
-  <div class="legal-modal-overlay" id="adpass-modal-overlay" onclick="AdPass.closeModal()">
-    <div class="legal-modal" onclick="event.stopPropagation()" style="text-align: center; padding-bottom: 30px;">
-      <button class="legal-close" onclick="AdPass.closeModal()" type="button"><i class="fas fa-times"></i></button>
-      
-      <div style="font-size: 48px; color: var(--cv-gold); margin-top: 10px; margin-bottom: 15px;">
-        <i class="fas fa-ticket-alt"></i>
-      </div>
-      
-      <div class="legal-title" style="margin-bottom: 15px; font-size: 24px;">Unlock 24-Hour Pass</div>
-      
-      <div class="legal-body" style="margin-bottom: 30px; color: var(--text-2); line-height: 1.6; font-size: 15px;">
-        To support StreamHeavens and watch this video, please unlock a 24-Hour Pass.<br><br>
-        <strong style="color: white;">View one quick ad to get unlimited, ad-free watching for the entire day!</strong><br><br>
-        <span style="font-size: 12px; color: var(--cv-red); background: rgba(230,57,70,0.1); padding: 6px 10px; border-radius: 6px; display: inline-block;">
-          <i class="fas fa-exclamation-triangle"></i> <strong>Adblock Users:</strong> You must temporarily pause your adblocker on the next page to unlock your pass.
-        </span>
-      </div>
-      
-      <button onclick="AdPass.proceed()" style="background: var(--cv-purple); color: white; border: none; padding: 14px 28px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; max-width: 260px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(181, 95, 230, 0.4); transition: transform 0.2s ease;">
-        <i class="fas fa-unlock"></i> Unlock Now
-      </button>
-      
-      <div style="font-size: 13px; color: var(--text-4); cursor: pointer; padding: 10px;" onclick="AdPass.closeModal()">
-        No thanks, cancel
-      </div>
-    </div>
-  </div>
+
 
   <!-- JAVASCRIPT -->
   <script src="script.js"></script>
