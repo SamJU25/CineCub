@@ -26,7 +26,7 @@ const CFG = {
   IMG500:  'https://image.tmdb.org/t/p/w500',
   ORIG:    'https://image.tmdb.org/t/p/original',
   AD_ENABLED: true,
-  AD_DIRECT_LINK: 'YOUR_ADSTERRA_DIRECT_LINK_HERE',
+  AD_DIRECT_LINK: 'https://www.profitableratecpmnetwork.com/a055j899dt?key=a642d21e4f5ecae51cad8066fa6d7b27',
   AD_COOLDOWN_HOURS: 24,
   SERVERS: [
     { name: 'VidLink', icon: 'fa-play-circle',
