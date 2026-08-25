@@ -44,6 +44,9 @@ const CFG = {
     { name: 'SERVER 5 (CINESRC)', icon: 'fa-star',
       movie: function(id, time){ return 'https://cinesrc.st/embed/movie/'+id+'?color=%23b55fe6&autoplay=false' + (time ? '&t=' + time : ''); },
       tv:    function(id,s,e, time){ return 'https://cinesrc.st/embed/tv/'+id+'?s='+s+'&e='+e+'&color=%23b55fe6&autoplay=false' + (time ? '&t=' + time : ''); } },
+    { name: 'SERVER 6 (VIDCORE)', icon: 'fa-server',
+      movie: function(id){ return 'https://vidcore.org/embed/movie/'+id; },
+      tv:    function(id,s,e){ return 'https://vidcore.org/embed/series/'+id+'/'+s+'/'+e; } },
   ],
   SPOTLIGHT_INTERVAL: 6000,
   GENRES: [
