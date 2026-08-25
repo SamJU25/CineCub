@@ -197,14 +197,14 @@ var App = {
 
 /* AdSystem Module */
 var AdSystem = {
-  isUnlocked: function(id){
-    var unlockTime = localStorage.getItem('ad_unlocked_'+id);
+  isUnlocked: function(){
+    var unlockTime = localStorage.getItem('ad_unlocked_global');
     if(!unlockTime) return false;
     var hoursPassed = (Date.now() - parseInt(unlockTime)) / (1000 * 60 * 60);
     return hoursPassed < CFG.AD_COOLDOWN_HOURS;
   },
-  unlock: function(id){
-    localStorage.setItem('ad_unlocked_'+id, Date.now().toString());
+  unlock: function(){
+    localStorage.setItem('ad_unlocked_global', Date.now().toString());
   }
 };
 
@@ -578,7 +578,7 @@ var Player = {
       
       if(countdown <= 0) {
         clearInterval(interval);
-        AdSystem.unlock(State.activeId);
+        AdSystem.unlock();
         Player.loadVideo();
       }
     }, 1000);
@@ -588,7 +588,7 @@ var Player = {
     var overlay = document.getElementById('unlock-overlay');
     
     // Check Ad System Lock
-    if(CFG.AD_ENABLED && !AdSystem.isUnlocked(State.activeId)) {
+    if(CFG.AD_ENABLED && !AdSystem.isUnlocked()) {
       iframe.style.display = 'none';
       overlay.style.display = 'flex';
       
