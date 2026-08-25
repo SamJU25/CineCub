@@ -677,7 +677,7 @@ iframe {border:none}
 
 @media (max-width: 768px) {
   #back-to-top { bottom: calc(var(--bottom-bar-h) + 20px); right: 20px; width: 44px; height: 44px; font-size: 16px; }
-  .player-wrap { min-height: unset !important; aspect-ratio: 16 / 9; }
+  .player-wrap { min-height: 320px !important; aspect-ratio: 16 / 9; }
 }
 
 /* ================================================================
