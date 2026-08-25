@@ -375,6 +375,7 @@
           <div class="fv-tab hidden" id="fv-tab-trailer" onclick="FVTabs.showTab('trailer', this)">Trailer</div>
           <div class="fv-tab" onclick="FVTabs.showTab('watch', this)">Watch</div>
           <div class="fv-tab" onclick="FVTabs.showTab('cast', this)">Cast</div>
+          <div class="fv-tab" onclick="FVTabs.showTab('similar', this)">Similar</div>
         </div>
         
         <!-- Overview Pane -->
@@ -398,6 +399,7 @@
             <select class="ep-select" id="ep-season"></select>
             <select class="ep-select" id="ep-episode"></select>
             <button class="ep-btn-play" onclick="Player.loadVideo()">Play</button>
+            <button class="ep-btn-next hidden" id="ep-btn-next" onclick="Player.nextEpisode()">Next Ep <i class="fas fa-forward"></i></button>
           </div>
           
           <!-- Responsive Video Player -->
@@ -426,6 +428,11 @@
           <div class="player-wrap">
             <iframe id="trailer-player" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen scrolling="no"></iframe>
           </div>
+        </div>
+
+        <!-- Similar Pane -->
+        <div class="fv-tab-pane" id="tab-similar">
+          <div class="fv-similar-grid" id="fv-similar"></div>
         </div>
       </div>
     </div>

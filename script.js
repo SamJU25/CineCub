@@ -87,7 +87,7 @@ var API = {
   popular:  function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/popular',{page:page||1})); },
   upcoming: function(page){ return API.fetch(API.url('/movie/upcoming',{page:page||1})); },
   search:   function(q){ return API.fetch(API.url('/search/multi',{query:q,page:1,include_adult:false})); },
-  detail:   function(id,type){ return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos'})); },
+  detail:   function(id,type){ return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos,similar'})); },
   discover: function(type,params){ return API.fetch(API.url('/discover/'+(type||'movie'),params)); }
 };
 
@@ -492,6 +492,13 @@ var Modal = {
       var cast = ((data.credits&&data.credits.cast)||[]).slice(0,10);
       document.getElementById('fv-cast').innerHTML = cast.map(c => '<div class="cast-card"><img class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'"/><div style="font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+Utils.escape(c.name)+'</div></div>').join('');
       
+      var similar = ((data.similar&&data.similar.results)||[]).filter(x => x.poster_path).slice(0,12);
+      if(similar.length) {
+        document.getElementById('fv-similar').innerHTML = similar.map(item => '<div class="movie-card" onclick="Modal.openFull('+item.id+',\''+type+'\')"><div class="mc-poster"><img src="'+CFG.IMG342+item.poster_path+'" loading="lazy" alt="'+Utils.escape(item.title||item.name)+'"><div class="mc-rating"><i class="fas fa-star"></i> '+(item.vote_average?item.vote_average.toFixed(1):'N/A')+'</div><div class="mc-play"><i class="fas fa-play"></i></div></div><div class="mc-info"><div class="mc-title">'+Utils.escape(item.title||item.name)+'</div><div class="mc-meta">'+Utils.year(item.release_date||item.first_air_date)+' &middot; '+type.toUpperCase()+'</div></div></div>').join('');
+      } else {
+        document.getElementById('fv-similar').innerHTML = '<div style="color:var(--text-3); font-size:14px; text-align:center; padding: 20px; width:100%; grid-column:1/-1;">No similar titles found.</div>';
+      }
+      
       var epRow = document.getElementById('ep-row');
       if(type==='tv'){
         epRow.className = 'ep-row';
@@ -504,8 +511,10 @@ var Modal = {
           if(hist.season) document.getElementById('ep-season').value = hist.season;
           if(hist.episode) document.getElementById('ep-episode').value = hist.episode;
         }
+        document.getElementById('ep-btn-next').classList.remove('hidden');
       } else { 
         epRow.className = 'ep-row hidden';
+        document.getElementById('ep-btn-next').classList.add('hidden');
       }
 
       document.getElementById('server-tabs').innerHTML = CFG.SERVERS.map((s,i) => '<div class="server-tab '+(i===0?'active':'')+'" onclick="Player.switchServer('+i+', this)"><i class="fas '+s.icon+'"></i> '+s.name+'</div>').join('');
@@ -582,6 +591,26 @@ var Player = {
         Player.loadVideo();
       }
     }, 1000);
+  },
+  nextEpisode: function(){
+    if(State.activeType !== 'tv') return;
+    var sSelect = document.getElementById('ep-season');
+    var eSelect = document.getElementById('ep-episode');
+    var s = Number(sSelect.value || 1);
+    var e = Number(eSelect.value || 1);
+    
+    if(e >= 24) {
+      // Jump to next season
+      sSelect.value = s + 1;
+      eSelect.value = 1;
+    } else {
+      eSelect.value = e + 1;
+    }
+    
+    // Check if new season exists in options
+    if(!sSelect.value) sSelect.value = s; 
+    
+    this.loadVideo();
   },
   loadVideo: function(){
     var iframe = document.getElementById('main-player');
