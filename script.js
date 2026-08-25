@@ -512,9 +512,11 @@ var Modal = {
           if(hist.episode) document.getElementById('ep-episode').value = hist.episode;
         }
         document.getElementById('ep-btn-next').classList.remove('hidden');
+        document.getElementById('ep-btn-prev').classList.remove('hidden');
       } else { 
         epRow.className = 'ep-row hidden';
         document.getElementById('ep-btn-next').classList.add('hidden');
+        document.getElementById('ep-btn-prev').classList.add('hidden');
       }
 
       document.getElementById('server-tabs').innerHTML = CFG.SERVERS.map((s,i) => '<div class="server-tab '+(i===0?'active':'')+'" onclick="Player.switchServer('+i+', this)"><i class="fas '+s.icon+'"></i> '+s.name+'</div>').join('');
@@ -605,6 +607,28 @@ var Player = {
       eSelect.value = 1;
     } else {
       eSelect.value = e + 1;
+    }
+    
+    // Check if new season exists in options
+    if(!sSelect.value) sSelect.value = s; 
+    
+    this.loadVideo();
+  },
+  prevEpisode: function(){
+    if(State.activeType !== 'tv') return;
+    var sSelect = document.getElementById('ep-season');
+    var eSelect = document.getElementById('ep-episode');
+    var s = Number(sSelect.value || 1);
+    var e = Number(eSelect.value || 1);
+    
+    if(e <= 1) {
+      if(s > 1) {
+        // Jump to previous season, last episode
+        sSelect.value = s - 1;
+        eSelect.value = 24; // Standard fallback for max episodes
+      }
+    } else {
+      eSelect.value = e - 1;
     }
     
     // Check if new season exists in options

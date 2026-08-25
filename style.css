@@ -375,11 +375,11 @@ iframe {border:none}
 
 .ep-row {display:flex;gap:10px;margin-bottom:16px;width:100%;align-items:center}
 .ep-row.hidden {display:none !important}
-.ep-select {flex:1;background:var(--cv-dark-4);color:#ffffff;border:1px solid var(--b-2);padding:11px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239d4edd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 14px center;background-size:14px}
+.ep-select {flex:0 0 auto;width:140px;background:var(--cv-dark-4);color:#ffffff;border:1px solid var(--b-2);padding:11px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239d4edd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 14px center;background-size:14px}
 .ep-btn-play {padding:11px 24px;background:var(--grad-primary);border-radius:var(--r-pill);color:white;font-weight:800;font-size:13px;cursor:pointer;border:none;}
-.ep-btn-next {padding:11px 24px;background:rgba(255,255,255,0.1);border-radius:var(--r-pill);color:white;font-weight:800;font-size:13px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);transition:background 0.2s;}
-.ep-btn-next:hover {background:rgba(255,255,255,0.2);}
-.ep-btn-next.hidden {display:none !important;}
+.ep-btn-next, .ep-btn-prev {padding:11px 24px;background:rgba(255,255,255,0.1);border-radius:var(--r-pill);color:white;font-weight:800;font-size:13px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);transition:background 0.2s;}
+.ep-btn-next:hover, .ep-btn-prev:hover {background:rgba(255,255,255,0.2);}
+.ep-btn-next.hidden, .ep-btn-prev.hidden {display:none !important;}
 
 .fv-similar-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:16px;}
 @media (max-width:480px){ .fv-similar-grid {grid-template-columns:repeat(3,1fr);gap:10px;} }
