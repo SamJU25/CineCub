@@ -331,12 +331,6 @@ function initDragScroll(){
     el.addEventListener('click', function(e){
       if(isDragging) { e.preventDefault(); e.stopPropagation(); }
     }, true);
-    el.addEventListener('wheel', function(e){
-      if (e.deltaY !== 0) {
-        e.preventDefault();
-        el.scrollLeft += e.deltaY;
-      }
-    });
   });
 }
 
