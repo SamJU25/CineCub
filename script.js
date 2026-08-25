@@ -38,9 +38,9 @@ const CFG = {
     { name: 'SERVER 3 (HIGH QUALITY)', icon: 'fa-film',
       movie: function(id){ return 'https://autoembed.co/movie/tmdb/'+id; },
       tv:    function(id,s,e){ return 'https://autoembed.co/tv/tmdb/'+id+'-'+s+'-'+e; } },
-    { name: 'SERVER 4 (SUPEREMBED VIP)', icon: 'fa-bolt',
-      movie: function(id){ return 'https://multiembed.mov/directstream.php?video_id='+id+'&tmdb=1'; },
-      tv:    function(id,s,e){ return 'https://multiembed.mov/directstream.php?video_id='+id+'&tmdb=1&s='+s+'&e='+e; } },
+    { name: 'SERVER 4 (SUPEREMBED)', icon: 'fa-bolt',
+      movie: function(id){ return 'https://multiembed.mov/?video_id='+id+'&tmdb=1'; },
+      tv:    function(id,s,e){ return 'https://multiembed.mov/?video_id='+id+'&tmdb=1&s='+s+'&e='+e; } },
   ],
   SPOTLIGHT_INTERVAL: 6000,
   GENRES: [
