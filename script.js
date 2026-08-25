@@ -168,7 +168,9 @@ var App = {
     document.getElementById('browse-title').innerText = title;
     document.getElementById('browse-header').style.display = 'flex';
     document.getElementById('browse-sort').style.display = showSort ? 'flex' : 'none';
+    document.getElementById('browse-genre').style.display = showSort ? 'block' : 'none';
     if(showSort) {
+      document.getElementById('browse-genre').value = State.genreId || '';
       document.querySelectorAll('#browse-sort .sort-pill').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-sort') === State.browseMode);
       });
@@ -179,6 +181,11 @@ var App = {
     document.querySelectorAll('#browse-sort .sort-pill').forEach(btn => {
       btn.classList.toggle('active', btn.getAttribute('data-sort') === val);
     });
+    Browse.load();
+  },
+  changeGenre: function(val) {
+    State.genreId = val ? parseInt(val) : null;
+    State.browsePage = 1;
     Browse.load();
   },
   browseMovies: function(){ State.browseCategory='movie'; State.browseType='movie'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-movies','Movies'); this.setBrowseHeader('Movies', true); Browse.load(); },
@@ -422,14 +429,26 @@ var Browse = {
     if(!append) { State.browsePage = 1; Prog.start(); Render.skeletons('browse-grid', 18); }
     var p;
     if(State.browseCategory === 'anime') {
-        if(State.browseMode === 'popular' || State.browseMode === 'trending') p = API.discover('tv', {page:State.browsePage, with_genres:16, with_original_language:'ja', sort_by:'popularity.desc'});
-        else if(State.browseMode === 'toprated') p = API.discover('tv', {page:State.browsePage, with_genres:16, with_original_language:'ja', sort_by:'vote_average.desc', 'vote_count.gte':200});
-        else if(State.browseMode === 'newest') p = API.discover('tv', {page:State.browsePage, with_genres:16, with_original_language:'ja', sort_by:'first_air_date.desc'});
+        var genreParam = State.genreId ? '16,'+State.genreId : 16;
+        if(State.browseMode === 'popular' || State.browseMode === 'trending') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'popularity.desc'});
+        else if(State.browseMode === 'toprated') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'vote_average.desc', 'vote_count.gte':200});
+        else if(State.browseMode === 'newest') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'first_air_date.desc'});
     } else if(State.browseCategory === 'movie' || State.browseCategory === 'tv') {
-        if(State.browseMode === 'popular') p = API.popular(State.browseType, State.browsePage);
-        else if(State.browseMode === 'trending') p = API.trending(State.browseType, State.browsePage);
-        else if(State.browseMode === 'toprated') p = API.topRated(State.browseType, State.browsePage);
-        else if(State.browseMode === 'newest') p = API.discover(State.browseType, {page:State.browsePage, sort_by: (State.browseType==='movie'?'primary_release_date.desc':'first_air_date.desc')});
+        var sortParam = 'popularity.desc';
+        if(State.browseMode === 'trending') sortParam = 'popularity.desc';
+        else if(State.browseMode === 'toprated') sortParam = 'vote_average.desc';
+        else if(State.browseMode === 'newest') sortParam = State.browseType==='movie' ? 'primary_release_date.desc' : 'first_air_date.desc';
+        
+        if(State.genreId) {
+            var params = {page:State.browsePage, sort_by:sortParam, with_genres:State.genreId};
+            if(State.browseMode === 'toprated') params['vote_count.gte'] = 200;
+            p = API.discover(State.browseType, params);
+        } else {
+            if(State.browseMode === 'popular') p = API.popular(State.browseType, State.browsePage);
+            else if(State.browseMode === 'trending') p = API.trending(State.browseType, State.browsePage);
+            else if(State.browseMode === 'toprated') p = API.topRated(State.browseType, State.browsePage);
+            else if(State.browseMode === 'newest') p = API.discover(State.browseType, {page:State.browsePage, sort_by: sortParam});
+        }
     } else {
         // Fallback for global buttons (Trending, Top Rated, Upcoming)
         if(State.browseMode==='trending') p = API.trending(State.browseType, State.browsePage);
@@ -884,6 +903,17 @@ document.addEventListener('DOMContentLoaded', function(){
     return '<div class="genre-chip" onclick="Browse.byGenre('+g.id+', \''+g.name+'\')">'+g.name+'</div>'; 
   }).join('');
   document.getElementById('genre-chips').innerHTML = chipsHtml;
+
+  /* Populate Genre Select */
+  var genreSelect = document.getElementById('browse-genre');
+  if(genreSelect) {
+    CFG.GENRES.forEach(function(g){
+      var opt = document.createElement('option');
+      opt.value = g.id;
+      opt.textContent = g.name;
+      genreSelect.appendChild(opt);
+    });
+  }
 
   Prog.start();
   Promise.all([
