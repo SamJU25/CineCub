@@ -310,9 +310,10 @@ function initDragScroll(){
     if (el.dataset.dragInit === 'true') return; 
     el.dataset.dragInit = 'true';
     
-    var isDown = false, startX, scrollLeft;
+    var isDown = false, startX, scrollLeft, isDragging = false;
     el.addEventListener('mousedown', function(e){
       isDown = true;
+      isDragging = false;
       el.classList.add('dragging');
       startX = e.pageX - el.offsetLeft;
       scrollLeft = el.scrollLeft;
@@ -324,8 +325,12 @@ function initDragScroll(){
       e.preventDefault();
       var x = e.pageX - el.offsetLeft;
       var walk = (x - startX) * 2;
+      if (Math.abs(walk) > 5) isDragging = true;
       el.scrollLeft = scrollLeft - walk;
     });
+    el.addEventListener('click', function(e){
+      if(isDragging) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
   });
 }
 

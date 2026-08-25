@@ -370,7 +370,7 @@
           <button class="btn-fv-icon" id="fv-wl-btn" onclick="Watchlist.toggleCurrent(event)" title="Add to watchlist"><i class="fas fa-heart"></i></button>
           <button class="btn-fv-icon" id="fv-share-btn" onclick="App.shareCurrent()" title="Share Link"><i class="fas fa-share-alt"></i></button>
         </div>
-        <div class="fv-tabs">
+        <div class="fv-tabs cv-hscroll">
           <div class="fv-tab active" onclick="FVTabs.showTab('overview', this)">Overview</div>
           <div class="fv-tab hidden" id="fv-tab-trailer" onclick="FVTabs.showTab('trailer', this)">Trailer</div>
           <div class="fv-tab" onclick="FVTabs.showTab('watch', this)">Watch</div>
@@ -422,7 +422,7 @@
         </div>
 
         <!-- Cast Pane -->
-        <div class="fv-tab-pane" id="tab-cast"><div class="fv-cast-scroll" id="fv-cast"></div></div>
+        <div class="fv-tab-pane" id="tab-cast"><div class="fv-cast-scroll cv-hscroll" id="fv-cast"></div></div>
 
         <!-- Trailer Pane -->
         <div class="fv-tab-pane" id="tab-trailer">
