@@ -30,8 +30,8 @@ const CFG = {
 
   SERVERS: [
     { name: 'SERVER 1 (AD-FREE)', icon: 'fa-play-circle',
-      movie: function(id, time){ return 'https://vidlink.pro/movie/'+id+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff&autoplay=false' + (time ? '&startAt=' + time : ''); },
-      tv:    function(id,s,e, time){ return 'https://vidlink.pro/tv/'+id+'/'+s+'/'+e+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff&autoplay=false' + (time ? '&startAt=' + time : ''); } },
+      movie: function(id, time){ return 'https://api.codespecters.com/embed/movie/'+id+'?apikey=nx_b42e6da82808c992ddde1a0069925811' + (time ? '&progress=' + time : ''); },
+      tv:    function(id,s,e, time){ return 'https://api.codespecters.com/embed/tv/'+id+'/'+s+'/'+e+'?apikey=nx_b42e6da82808c992ddde1a0069925811' + (time ? '&progress=' + time : ''); } },
     { name: 'SERVER 2 (LIGHT ADS)', icon: 'fa-server',
       movie: function(id){ return 'https://vidsrc.me/embed/movie?tmdb='+id; },
       tv:    function(id,s,e){ return 'https://vidsrc.me/embed/tv?tmdb='+id+'&season='+s+'&episode='+e; } },
