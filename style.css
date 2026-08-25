@@ -75,7 +75,7 @@ iframe {border:none}
 .cv-sidebar.collapsed {width:var(--sidebar-w-col)}
 .sidebar-logo {display:flex;align-items:center;gap:12px;padding:18px 20px 16px;border-bottom:1px solid var(--b-1);cursor:pointer;position:relative;min-height:70px}
 .sidebar-logo-icon {flex-shrink:0;width:38px;height:38px;border-radius:var(--r-md);background:var(--grad-primary);display:flex;align-items:center;justify-content:center;color:white;font-size:16px;box-shadow:var(--cv-purple-glow)}
-.sidebar-logo-text {flex:1;font-size:18px;font-weight:900;letter-spacing:-0.5px;background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;transition:opacity var(--t-fast);white-space:nowrap}
+.sidebar-logo-text {margin:0;flex:1;font-size:18px;font-weight:900;letter-spacing:-0.5px;background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;transition:opacity var(--t-fast);white-space:nowrap}
 .cv-sidebar.collapsed .sidebar-logo-text {opacity:0;pointer-events:none}
 .sidebar-toggle {position:absolute;right:-13px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--cv-dark-4);border:2px solid var(--b-3);display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:10px;cursor:pointer;z-index:4001;transition:var(--t-fast)}
 .sidebar-toggle:hover {color:white;background:var(--cv-purple);border-color:var(--cv-purple);box-shadow:var(--cv-purple-glow)}
