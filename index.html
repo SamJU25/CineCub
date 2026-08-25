@@ -262,6 +262,17 @@
     <div class="cv-page" id="page-browse">
       <div class="page-inner">
         <div class="cv-container">
+          <div class="browse-header" id="browse-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 class="section-title" id="browse-title" style="margin:0;">Discover</h2>
+            <div class="browse-filters">
+              <select id="browse-sort" onchange="App.changeSort(this.value)" class="ep-select" style="width:160px;">
+                <option value="popular">Popular</option>
+                <option value="trending">Trending</option>
+                <option value="toprated">Top Rated</option>
+                <option value="newest">Newest</option>
+              </select>
+            </div>
+          </div>
           <div class="poster-grid" id="browse-grid"></div>
           <div id="infinite-scroll-trigger" style="height:20px;margin-top:20px;"></div>
         </div>
