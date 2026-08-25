@@ -26,7 +26,7 @@ const CFG = {
   IMG500:  'https://image.tmdb.org/t/p/w500',
   ORIG:    'https://image.tmdb.org/t/p/original',
   LINKVERTISE_ENABLED: true,
-  LINKVERTISE_ID: 'SampadCK',
+  LINKVERTISE_ID: '6155956',
   SERVERS: [
     { name: 'VidLink', icon: 'fa-play-circle',
       movie: function(id){ return 'https://vidlink.pro/movie/'+id+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff'; },
