@@ -38,9 +38,9 @@ const CFG = {
     { name: 'SERVER 3 (HIGH QUALITY)', icon: 'fa-film',
       movie: function(id){ return 'https://autoembed.co/movie/tmdb/'+id; },
       tv:    function(id,s,e){ return 'https://autoembed.co/tv/tmdb/'+id+'-'+s+'-'+e; } },
-    { name: 'SERVER 4 (NEXSTREAM)', icon: 'fa-rocket',
-      movie: function(id, time){ return 'https://api.codespecters.com/embed/movie/'+id+'?apikey=nx_b42e6da82808c992ddde1a0069925811' + (time ? '&progress=' + time : ''); },
-      tv:    function(id,s,e, time){ return 'https://api.codespecters.com/embed/tv/'+id+'/'+s+'/'+e+'?apikey=nx_b42e6da82808c992ddde1a0069925811' + (time ? '&progress=' + time : ''); } },
+    { name: 'SERVER 4 (SUPEREMBED VIP)', icon: 'fa-bolt',
+      movie: function(id){ return 'https://multiembed.mov/directstream.php?video_id='+id+'&tmdb=1'; },
+      tv:    function(id,s,e){ return 'https://multiembed.mov/directstream.php?video_id='+id+'&tmdb=1&s='+s+'&e='+e; } },
   ],
   SPOTLIGHT_INTERVAL: 6000,
   GENRES: [
