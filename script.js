@@ -494,7 +494,7 @@ var Modal = {
       
       var similar = ((data.similar&&data.similar.results)||[]).filter(x => x.poster_path).slice(0,12);
       if(similar.length) {
-        document.getElementById('fv-similar').innerHTML = similar.map(item => '<div class="movie-card" onclick="Modal.openFull('+item.id+',\''+type+'\')"><div class="mc-poster"><img src="'+CFG.IMG342+item.poster_path+'" loading="lazy" alt="'+Utils.escape(item.title||item.name)+'"><div class="mc-rating"><i class="fas fa-star"></i> '+(item.vote_average?item.vote_average.toFixed(1):'N/A')+'</div><div class="mc-play"><i class="fas fa-play"></i></div></div><div class="mc-info"><div class="mc-title">'+Utils.escape(item.title||item.name)+'</div><div class="mc-meta">'+Utils.year(item.release_date||item.first_air_date)+' &middot; '+type.toUpperCase()+'</div></div></div>').join('');
+        document.getElementById('fv-similar').innerHTML = similar.map(item => Render.posterCard(item, item.media_type || type)).join('');
       } else {
         document.getElementById('fv-similar').innerHTML = '<div style="color:var(--text-3); font-size:14px; text-align:center; padding: 20px; width:100%; grid-column:1/-1;">No similar titles found.</div>';
       }
