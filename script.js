@@ -167,11 +167,18 @@ var App = {
   setBrowseHeader: function(title, showSort) {
     document.getElementById('browse-title').innerText = title;
     document.getElementById('browse-header').style.display = 'flex';
-    document.getElementById('browse-sort').style.display = showSort ? 'block' : 'none';
-    if(showSort) document.getElementById('browse-sort').value = State.browseMode;
+    document.getElementById('browse-sort').style.display = showSort ? 'flex' : 'none';
+    if(showSort) {
+      document.querySelectorAll('#browse-sort .sort-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-sort') === State.browseMode);
+      });
+    }
   },
   changeSort: function(val) {
     State.browseMode = val;
+    document.querySelectorAll('#browse-sort .sort-pill').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-sort') === val);
+    });
     Browse.load();
   },
   browseMovies: function(){ State.browseCategory='movie'; State.browseType='movie'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-movies','Movies'); this.setBrowseHeader('Movies', true); Browse.load(); },
