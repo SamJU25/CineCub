@@ -610,15 +610,25 @@ var Modal = {
   overlayClick: function(e){ if(e.target === document.getElementById('modal-overlay')) this.closeAll(); },
   closeAll: function(skipHistory){
     document.getElementById('modal-overlay').classList.remove('open');
+    
     var tp = document.getElementById('trailer-player');
-    if (tp) tp.src = '';
+    if (tp) {
+      tp.src = 'about:blank';
+      var cloneTp = tp.cloneNode(true);
+      cloneTp.removeAttribute('src');
+      tp.parentNode.replaceChild(cloneTp, tp);
+    }
+    
     UIHelper.unlockScroll();
     document.title = "StreamHeaven \u2014 Watch Movies & TV Series";
     
     var iframe = document.getElementById('main-player');
     if (iframe) {
-      iframe.src = '';
-      iframe.classList.remove('loaded');
+      iframe.src = 'about:blank';
+      var cloneMain = iframe.cloneNode(true);
+      cloneMain.removeAttribute('src');
+      cloneMain.classList.remove('loaded');
+      iframe.parentNode.replaceChild(cloneMain, iframe);
     }
     
     if (!skipHistory && window.location.hash === '#media') {
