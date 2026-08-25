@@ -384,7 +384,7 @@ iframe {border:none}
 .select-selected:after {content:"\f107"; font-family:"Font Awesome 5 Free"; font-weight:900; color:var(--cv-purple); font-size:14px;}
 .select-selected.select-arrow-active {border-color:var(--cv-purple); box-shadow:0 0 0 2px rgba(181,95,230,0.2);}
 .select-selected.select-arrow-active:after {content:"\f106";}
-.select-items {position:absolute; background-color:var(--cv-dark-4); border:1px solid var(--cv-purple-dim); box-shadow:0 8px 24px rgba(0,0,0,0.5); top:100%; left:0; right:0; z-index:99; border-radius:12px; margin-top:6px; max-height:280px; overflow-y:auto; overscroll-behavior:contain;}
+.select-items {position:absolute; background-color:var(--cv-dark-4); border:1px solid var(--cv-purple-dim); box-shadow:0 8px 24px rgba(0,0,0,0.5); top:100%; left:0; right:0; z-index:6000; border-radius:12px; margin-top:6px; max-height:280px; overflow-y:auto; overscroll-behavior:contain;}
 .select-items::-webkit-scrollbar {width:6px;}
 .select-items::-webkit-scrollbar-thumb {background:var(--cv-dark-5); border-radius:var(--r-pill);}
 .select-items div {color:var(--text-2); padding:10px 16px; cursor:pointer; user-select:none; transition:var(--t-fast);}
