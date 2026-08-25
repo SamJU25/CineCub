@@ -364,6 +364,7 @@ iframe {border:none}
 .fv-tab.active {color:var(--cv-purple-light);border-bottom-color:var(--cv-purple-light)}
 .fv-tab-pane {display:none}
 .fv-tab-pane.active {display:block}
+#tab-watch {padding: 0 50px;}
 .fv-overview-grid {display:grid;grid-template-columns:2fr 1fr;gap:28px}
 .fv-desc {font-size:14px;color:var(--text-2);line-height:1.8}
 .fv-info-item {display:flex;gap:12px;margin-bottom:8px}
@@ -519,6 +520,7 @@ iframe {border:none}
   .fv-actions-row {padding-left:0}
   .fv-hero-poster {display:none}
   .fv-title {font-size:24px}
+  #tab-watch {padding:0}
   .fv-overview-grid {grid-template-columns:1fr;gap:20px}
   .player-wrap {min-height:220px;border-radius:var(--r-md)}
   
