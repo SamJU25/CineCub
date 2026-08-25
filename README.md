@@ -1,4 +1,4 @@
-# StreamHeavens
+# StreamHeaven
 
 A premium, serverless movie and TV streaming application built with Vanilla JS, HTML, and CSS.
 
@@ -14,5 +14,5 @@ A premium, serverless movie and TV streaming application built with Vanilla JS, 
 2. Ensure your Linkvertise ID is set in `script.js`.
 3. Deploy to Cloudflare Pages using `wrangler`:
    ```bash
-   npx wrangler pages deploy . --project-name streamheavens
+   npx wrangler pages deploy . --project-name StreamHeaven
    ```
