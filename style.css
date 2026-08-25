@@ -679,7 +679,7 @@ body::-webkit-scrollbar-thumb:hover { background: var(--cv-purple); }
 button, a, .poster-card, .compact-card { touch-action: manipulation; }
 @media (max-width: 768px) {
   button:active, a:active, .poster-card:active, .compact-card:active, .nav-btn:active, .mbb-btn:active { transform: scale(0.96); opacity: 0.8; }
-  .player-wrap { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; }
+  
   .player-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
   .mobile-bottom-bar { padding-bottom: env(safe-area-inset-bottom); }
 }
