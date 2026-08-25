@@ -27,6 +27,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
 
+
+
   <!-- PWA / ADD TO HOME SCREEN WITH EMBEDDED PURPLE CLOUD ICON -->
   <meta content="yes" name="apple-mobile-web-app-capable">
   <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style">
@@ -147,11 +149,13 @@
       <!-- HERO SPOTLIGHT -->
       <section class="spotlight-section" id="spotlight-section">
         <div class="spotlight-track" id="spotlight-track"></div>
-        <div class="spotlight-thumbstrip" id="spotlight-thumbstrip"></div>
-        <div class="spotlight-controls">
-          <button class="spotlight-arrow" onclick="Spotlight.prev()"><i class="fas fa-chevron-left"></i></button>
-          <div class="spotlight-dots" id="spotlight-dots"></div>
-          <button class="spotlight-arrow" onclick="Spotlight.next()"><i class="fas fa-chevron-right"></i></button>
+        <div class="spotlight-right-col">
+          <div class="spotlight-thumbstrip" id="spotlight-thumbstrip"></div>
+          <div class="spotlight-controls">
+            <button class="spotlight-arrow" onclick="Spotlight.prev()"><i class="fas fa-chevron-left"></i></button>
+            <div class="spotlight-dots" id="spotlight-dots"></div>
+            <button class="spotlight-arrow" onclick="Spotlight.next()"><i class="fas fa-chevron-right"></i></button>
+          </div>
         </div>
         <div class="spotlight-progress"><div class="spotlight-progress-bar" id="spotlight-progress-bar"></div></div>
       </section>
@@ -396,11 +400,13 @@
           
           <!-- Season/Episode Selector -->
           <div class="ep-row hidden" id="ep-row">
-            <select class="ep-select" id="ep-season" onchange="Player.updateEpisodes()"></select>
-            <select class="ep-select" id="ep-episode"></select>
-            <button class="ep-btn-prev hidden" id="ep-btn-prev" onclick="Player.prevEpisode()"><i class="fas fa-backward"></i> Prev Ep</button>
-            <button class="ep-btn-play" onclick="Player.loadVideo()">Play</button>
-            <button class="ep-btn-next hidden" id="ep-btn-next" onclick="Player.nextEpisode()">Next Ep <i class="fas fa-forward"></i></button>
+            <select class="ep-select" id="ep-season" onchange="Player.updateEpisodes(); Player.loadVideo()"></select>
+            <select class="ep-select" id="ep-episode" onchange="Player.loadVideo()"></select>
+            <div class="ep-controls">
+              <button class="ep-btn-prev hidden" id="ep-btn-prev" onclick="Player.prevEpisode()"><i class="fas fa-backward"></i> Prev Ep</button>
+              <button class="ep-btn-play" id="ep-btn-play" onclick="Player.loadVideo()">Play</button>
+              <button class="ep-btn-next hidden" id="ep-btn-next" onclick="Player.nextEpisode()">Next Ep <i class="fas fa-forward"></i></button>
+            </div>
           </div>
           
           <!-- Responsive Video Player -->
@@ -411,11 +417,11 @@
               <p id="unlock-sub" style="margin:0 0 15px; font-size:13px; color:var(--text-3); text-align:center; max-width:350px; line-height:1.4;">Support this free site by clicking Watch below. An ad will open in a new tab—after that, come back to this page and your video will start in 5 seconds.</p>
               <button id="unlock-btn" class="unlock-btn" onclick="Player.unlock()"><i class="fas fa-play"></i> Watch Now</button>
             </div>
-            <iframe allow="encrypted-media; picture-in-picture" allowfullscreen id="main-player" scrolling="no"></iframe>
+            <iframe allow="encrypted-media; picture-in-picture; clipboard-write" allowfullscreen id="main-player" scrolling="no"></iframe>
           </div>
           <div style="margin-top: 15px; font-size: 13px; color: var(--text-3); text-align: center; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
             <i class="fas fa-info-circle" style="color: var(--cv-purple-light); margin-right: 5px;"></i>
-            <strong>Note:</strong> Ads playing inside the video player are from third-party servers and are not controlled by us.
+            <strong>Note:</strong> Ads playing inside the video player are from third-party servers and are not controlled by us. If an ad redirects you to another page, simply close that tab and return here!
           </div>
           
 
@@ -427,7 +433,7 @@
         <!-- Trailer Pane -->
         <div class="fv-tab-pane" id="tab-trailer">
           <div class="player-wrap">
-            <iframe id="trailer-player" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen scrolling="no"></iframe>
+            <iframe id="trailer-player" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write" allowfullscreen scrolling="no"></iframe>
           </div>
         </div>
 

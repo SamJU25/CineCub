@@ -29,17 +29,20 @@ const CFG = {
   ORIG:    'https://image.tmdb.org/t/p/original',
   AD_ENABLED: true,
   AD_DIRECT_LINK: 'https://www.profitableratecpmnetwork.com/a055j899dt?key=a642d21e4f5ecae51cad8066fa6d7b27',
-  AD_COOLDOWN_HOURS: 24,
+  AD_COOLDOWN_HOURS: 12,
   SERVERS: [
-    { name: 'VidLink', icon: 'fa-play-circle',
-      movie: function(id){ return 'https://vidlink.pro/movie/'+id+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff'; },
-      tv:    function(id,s,e){ return 'https://vidlink.pro/tv/'+id+'/'+s+'/'+e+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff'; } },
-    { name: 'VidSrc', icon: 'fa-server',
+    { name: 'SERVER 1 (AD-FREE)', icon: 'fa-play-circle',
+      movie: function(id, time){ return 'https://vidlink.pro/movie/'+id+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff&autoplay=false' + (time ? '&startAt=' + time : ''); },
+      tv:    function(id,s,e, time){ return 'https://vidlink.pro/tv/'+id+'/'+s+'/'+e+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff&autoplay=false' + (time ? '&startAt=' + time : ''); } },
+    { name: 'SERVER 2 (LIGHT ADS)', icon: 'fa-server',
       movie: function(id){ return 'https://vidsrc.me/embed/movie?tmdb='+id; },
       tv:    function(id,s,e){ return 'https://vidsrc.me/embed/tv?tmdb='+id+'&season='+s+'&episode='+e; } },
-    { name: 'AutoEmbed', icon: 'fa-film',
+    { name: 'SERVER 3 (HIGH QUALITY)', icon: 'fa-film',
       movie: function(id){ return 'https://autoembed.co/movie/tmdb/'+id; },
       tv:    function(id,s,e){ return 'https://autoembed.co/tv/tmdb/'+id+'-'+s+'-'+e; } },
+    { name: 'SERVER 4 (QUICK START)', icon: 'fa-rocket',
+      movie: function(id){ return 'https://vidsrc.cc/v2/embed/movie/'+id; },
+      tv:    function(id,s,e){ return 'https://vidsrc.cc/v2/embed/tv/'+id+'/'+s+'/'+e; } },
   ],
   SPOTLIGHT_INTERVAL: 6000,
   GENRES: [
@@ -706,12 +709,32 @@ var Player = {
     iframe.style.display = 'block';
     overlay.style.display = 'none';
 
-    var s=CFG.SERVERS[State.activeServer], url, season=null, episode=null;
+    var s=CFG.SERVERS[State.activeServer], url, season=null, episode=null, savedTime=0;
+    
+    try {
+      var vlData = JSON.parse(localStorage.getItem('vidLinkProgress') || '{}');
+      var itemData = vlData[State.activeId];
+      if (itemData) {
+        if (State.activeType === 'tv' && itemData.show_progress) {
+          season=Number(document.getElementById('ep-season').value||1);
+          episode=Number(document.getElementById('ep-episode').value||1);
+          var epKey = 's' + season + 'e' + episode;
+          if (itemData.show_progress[epKey] && itemData.show_progress[epKey].progress) {
+            savedTime = itemData.show_progress[epKey].progress.watched;
+          }
+        } else if (State.activeType === 'movie' && itemData.progress) {
+          savedTime = itemData.progress.watched;
+        }
+      }
+    } catch(e) {}
+
     if(State.activeType==='tv'){
       season=Number(document.getElementById('ep-season').value||1);
       episode=Number(document.getElementById('ep-episode').value||1);
-      url=s.tv(State.activeId,season,episode);
-    }else{ url=s.movie(State.activeId); }
+      url=s.tv(State.activeId,season,episode, savedTime ? Math.floor(savedTime) : 0);
+    }else{ 
+      url=s.movie(State.activeId, savedTime ? Math.floor(savedTime) : 0); 
+    }
     
     iframe.classList.remove('loaded');
     iframe.onload = function() { 
@@ -793,10 +816,10 @@ var History = {
 ================================================================ */
 var Legal = {
   content: {
-    dmca: { title: 'DMCA Copyright Policy', html: '<p>StreamHeaven respects the intellectual property rights of others and expects its users to do the same. In accordance with the Digital Millennium Copyright Act (DMCA), we will respond expeditiously to claims of copyright infringement committed using our service.</p><h3>Reporting Copyright Infringement</h3><p>StreamHeaven does not host any media files on its servers. All contents are provided by non-affiliated third parties. If you believe that your copyrighted work is accessible on StreamHeaven without authorization, please submit a DMCA notice including:</p><p>&bull; Identification of the copyrighted work claimed to have been infringed.<br>&bull; The exact URL or location on our site where the material is located.<br>&bull; Your contact information (Name, Email, Phone Number).<br>&bull; A statement of good faith belief that the disputed use is not authorized by the copyright owner.</p><p>Contact our DMCA agent at: <strong>StreamHeaven.support@gmail.com</strong></p>' },
+    dmca: { title: 'DMCA Copyright Policy', html: '<p>StreamHeaven respects the intellectual property rights of others and expects its users to do the same. In accordance with the Digital Millennium Copyright Act (DMCA), we will respond expeditiously to claims of copyright infringement committed using our service.</p><h3>Reporting Copyright Infringement</h3><p>StreamHeaven does not host any media files on its servers. All contents are provided by non-affiliated third parties. If you believe that your copyrighted work is accessible on StreamHeaven without authorization, please submit a DMCA notice including:</p><p>&bull; Identification of the copyrighted work claimed to have been infringed.<br>&bull; The exact URL or location on our site where the material is located.<br>&bull; Your contact information (Name, Email, Phone Number).<br>&bull; A statement of good faith belief that the disputed use is not authorized by the copyright owner.</p><p>Contact our DMCA agent at: <strong>streamheaven.support@gmail.com</strong></p>' },
     privacy: { title: 'Privacy Policy', html: '<p>Your privacy is important to StreamHeaven. This Privacy Policy explains how we collect, use, and safeguard your information when you visit our website or application.</p><h3>1. Information We Store</h3><p>We use your browser\'s local storage (`localStorage`) solely to save your local user session, customized watchlist, and watch history so you can pick up right where you left off. We do not sell or share any of this personal preference data with third parties.</p><h3>2. Third-Party Services</h3><p>We utilize the TMDB API for movie and TV show metadata and imagery. Third-party video embedding providers may use cookies or standard web trackers to deliver media streams.</p>' },
     terms: { title: 'Terms of Service', html: '<p>Welcome to StreamHeaven. By accessing or using our website and application, you agree to be bound by these Terms of Service.</p><h3>1. Acceptance of Terms</h3><p>You must be at least 13 years of age to use this platform. By using StreamHeaven, you warrant that you meet this age requirement.</p><h3>2. Third-Party Content Disclaimer</h3><p>StreamHeaven does not host, upload, or stream any video files on its servers. All videos and media content are hosted by external third-party services. We assume no responsibility or liability for the content hosted on third-party servers.</p>' },
-    contact: { title: 'Contact Us', html: '<p>Have questions, feedback, or partnership inquiries? We would love to hear from you!</p><h3>Get in Touch</h3><p>You can reach our support team directly via email:<br><br><strong style="font-size:16px; color:var(--cv-purple-light);"><i class="fas fa-envelope"></i> StreamHeaven.support@gmail.com</strong></p><p>We typically respond to inquiries within 24 to 48 hours.</p>' }
+    contact: { title: 'Contact Us', html: '<p>Have questions, feedback, or partnership inquiries? We would love to hear from you!</p><h3>Get in Touch</h3><p>You can reach our support team directly via email:<br><br><strong style="font-size:16px; color:var(--cv-purple-light);"><i class="fas fa-envelope"></i> streamheaven.support@gmail.com</strong></p><p>We typically respond to inquiries within 24 to 48 hours.</p>' }
   },
   open: function(type) {
     var data = this.content[type];
@@ -996,4 +1019,19 @@ document.addEventListener('DOMContentLoaded', function(){
       Modal.closeAll(true);
     }
   });
+});
+
+window.addEventListener('message', (event) => {
+  if (event.origin !== 'https://vidlink.pro') return;
+
+  if (event.data?.type === 'MEDIA_DATA') {
+    const mediaData = event.data.data;
+    localStorage.setItem('vidLinkProgress', JSON.stringify(mediaData));
+  }
+
+  if (event.data?.type === 'PLAYER_EVENT') {
+    const { event: eventType, currentTime, duration } = event.data.data;
+    // Handle the event
+    console.log(`Player ${eventType} at ${currentTime}s of ${duration}s`);
+  }
 });
