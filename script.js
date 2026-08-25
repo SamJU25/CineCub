@@ -644,13 +644,8 @@ var Player = {
     var iframe = document.getElementById('main-player');
     iframe.style.display = 'block';
     
-    // Dynamic Sandbox: Remove sandbox for Server 1 to prevent iOS storage issues, 
-    // but force strict sandbox on backup servers to block their spammy popups.
-    if(State.activeServer === 0) {
-      iframe.removeAttribute('sandbox');
-    } else {
-      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
-    }
+    // Removed sandbox completely because most providers actively detect and block it
+    iframe.removeAttribute('sandbox');
 
     var s=CFG.SERVERS[State.activeServer], url, season=null, episode=null, savedTime=0;
     
