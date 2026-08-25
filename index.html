@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-  <meta content="#000000" name="theme-color">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https://image.tmdb.org; frame-src 'self' https://vidlink.pro https://vidsrc.me https://autoembed.co; connect-src 'self' https://api.themoviedb.org;">
+  <meta content="#0a0a0f" name="theme-color">
+  <link rel="manifest" href="/manifest.json">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https://image.tmdb.org; frame-src *; connect-src 'self' https://api.themoviedb.org;">
   <title>StreamHeavens &#8212; Watch Movies &amp; TV Series</title>
   
   <!-- FONTS & ICONS -->
@@ -73,13 +74,7 @@
       </div>
     </nav>
     <div class="sidebar-footer">
-      <div class="sidebar-user guest" id="sidebar-user" onclick="Auth.toggleProfile(event)">
-        <div class="sidebar-avatar" id="sidebar-avatar">G</div>
-        <div class="sidebar-user-info">
-          <div class="sidebar-user-name" id="sidebar-user-name">Guest Mode</div>
-          <div class="sidebar-user-sub" id="sidebar-user-sub">Sign in / Sign up</div>
-        </div>
-      </div>
+
     </div>
   </aside>
 
@@ -113,10 +108,21 @@
       </div>
 
       <div class="header-actions">
-        <button class="header-action-btn" onclick="App.showWatchlist()" title="Watchlist"><i class="fas fa-heart"></i></button>
-        <button class="profile-trigger logged-out" id="profile-trigger" onclick="Auth.toggleProfile(event)" title="Account">G</button>
+        <a href="https://buymeacoffee.com/yourname" target="_blank" class="header-action-btn" title="Support Us: Buy me a Coffee" style="color: var(--cv-gold); text-decoration: none; display: flex; align-items: center; justify-content: center;"><i class="fas fa-mug-hot"></i></a>
+        <button class="header-action-btn" onclick="Library.toggleProfile(event)" title="My Library"><i class="fas fa-bookmark"></i></button>
       </div>
     </header>
+
+    <!-- Library Dropdown (Replaces Profile) -->
+    <div class="profile-popup" id="profile-popup">
+      <div class="profile-popup-head">
+        <div style="font-weight:700; font-size: 15px;"><i class="fas fa-bookmark" style="margin-right: 8px; color: var(--cv-purple);"></i> My Library</div>
+      </div>
+      <div class="profile-popup-body">
+          <button type="button" class="profile-popup-btn" onclick="event.preventDefault(); event.stopPropagation(); App.showWatchlist(); Library.closeProfile();"><i class="fas fa-heart"></i><span>My Watchlist</span></button>
+          <button type="button" class="profile-popup-btn" onclick="event.preventDefault(); event.stopPropagation(); App.showHistory(); Library.closeProfile();"><i class="fas fa-history"></i><span>Watch History</span></button>
+      </div>
+    </div>
 
     <!-- ============================================================ 
          HOME PAGE
@@ -235,6 +241,7 @@
       <div class="page-inner">
         <div class="cv-container">
           <div class="poster-grid" id="browse-grid"></div>
+          <div id="infinite-scroll-trigger" style="height:20px;margin-top:20px;"></div>
         </div>
       </div>
     </div>
@@ -312,141 +319,6 @@
 
   </div> <!-- /cv-main -->
 
-  <!-- ============================================================
-       PROFILE MENU
-  ============================================================ -->
-  <div class="profile-popup" id="profile-popup" onclick="event.stopPropagation()">
-    <div class="profile-popup-head">
-      <div class="profile-popup-avatar" id="profile-popup-avatar">G</div>
-      <div style="min-width:0; flex:1;">
-        <div class="profile-popup-title" id="profile-popup-title">Guest Mode</div>
-        <div class="profile-popup-email" id="profile-popup-email">You are not signed in</div>
-        <div class="profile-active-badge" id="profile-active-badge" style="display:none;"><span class="profile-active-dot"></span>Active Session</div>
-      </div>
-    </div>
-    <div class="profile-popup-body" id="profile-popup-body">
-      <div class="profile-guest-text">Sign in to sync your watchlist, history, and account session on this browser.</div>
-      <div class="profile-popup-actions">
-        <button class="profile-auth-btn primary" onclick="event.preventDefault(); event.stopPropagation(); Auth.open('login')" type="button"><i class="fas fa-right-to-bracket"></i> Login</button>
-        <button class="profile-auth-btn secondary" onclick="event.preventDefault(); event.stopPropagation(); Auth.open('signup')" type="button"><i class="fas fa-user-plus"></i> Sign Up</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================================
-       AUTHENTICATION MODAL
-  ============================================================ -->
-  <div class="auth-overlay" id="auth-overlay" onclick="Auth.overlayClick(event)">
-    <div class="auth-modal" onclick="event.stopPropagation()">
-      <div class="auth-top">
-        <div class="auth-brand">
-          <div class="auth-brand-icon"><i class="fas fa-cloud"></i></div>
-          <div class="auth-brand-name">StreamHeavens</div>
-        </div>
-        <button class="auth-close" onclick="event.preventDefault(); Auth.close()" type="button"><i class="fas fa-times"></i></button>
-      </div>
-
-      <div class="auth-content">
-        <div class="auth-message" id="auth-message"></div>
-
-        <!-- LOGIN -->
-        <div class="auth-step active" id="auth-login-step">
-          <div class="auth-eyebrow">Welcome back</div>
-          <div class="auth-title">Sign in</div>
-          <div class="auth-subtitle">Use your username or registered email address with your password.</div>
-          <form class="auth-form" onsubmit="Auth.login(event)">
-            <div class="auth-field">
-              <label for="login-identity">Username or email</label>
-              <input autocomplete="username" class="auth-input" id="login-identity" placeholder="Enter username or email" required>
-              <i class="fas fa-user input-icon"></i>
-            </div>
-            <div class="auth-field">
-              <label for="login-password">Password</label>
-              <input autocomplete="current-password" class="auth-input" id="login-password" placeholder="Enter password" required type="password">
-              <button class="auth-password-toggle" onclick="Auth.togglePassword('login-password',this)" type="button"><i class="fas fa-eye"></i></button>
-            </div>
-            <div class="auth-forgot-row"><span class="auth-link" onclick="Auth.open('forgot')">Forgot password?</span></div>
-            <button class="auth-submit" id="login-submit" type="submit"><i class="fas fa-right-to-bracket"></i> Login</button>
-          </form>
-          <div class="auth-switch-row">Don't have an account? <span class="auth-link" onclick="Auth.open('signup')">Sign Up</span></div>
-        </div>
-
-        <!-- SIGN UP -->
-        <div class="auth-step" id="auth-signup-step">
-          <div class="auth-eyebrow">Create account</div>
-          <div class="auth-title">Join StreamHeavens</div>
-          <div class="auth-subtitle">Create a local account for this browser. Your username and email must be unique.</div>
-          <form class="auth-form" onsubmit="Auth.signup(event)">
-            <div class="auth-field">
-              <label for="signup-username">Username</label>
-              <input autocomplete="username" class="auth-input" id="signup-username" maxlength="24" minlength="3" placeholder="Choose a username" required>
-              <i class="fas fa-at input-icon"></i>
-            </div>
-            <div class="auth-field">
-              <label for="signup-email">Email address</label>
-              <input autocomplete="email" class="auth-input" id="signup-email" maxlength="120" placeholder="you@example.com" required type="email">
-              <i class="fas fa-envelope input-icon"></i>
-            </div>
-            <div class="auth-field">
-              <label for="signup-password">Password</label>
-              <input autocomplete="new-password" class="auth-input" id="signup-password" maxlength="128" minlength="4" placeholder="At least 4 characters" required type="password">
-              <button class="auth-password-toggle" onclick="Auth.togglePassword('signup-password',this)" type="button"><i class="fas fa-eye"></i></button>
-            </div>
-            <div class="auth-field">
-              <label for="signup-confirm">Confirm password</label>
-              <input autocomplete="new-password" class="auth-input" id="signup-confirm" maxlength="128" minlength="4" placeholder="Re-enter your password" required type="password">
-              <button class="auth-password-toggle" onclick="Auth.togglePassword('signup-confirm',this)" type="button"><i class="fas fa-eye"></i></button>
-            </div>
-            <button class="auth-submit" id="signup-submit" type="submit"><i class="fas fa-user-plus"></i> Create Account</button>
-          </form>
-          <div class="auth-switch-row">Already have an account? <span class="auth-link" onclick="Auth.open('login')">Login</span></div>
-        </div>
-
-        <!-- FORGOT / RESTORE -->
-        <div class="auth-step" id="auth-forgot-step">
-          <div class="auth-eyebrow">Account recovery</div>
-          <div class="auth-title" id="forgot-title">Reset password</div>
-          <div class="auth-subtitle" id="forgot-subtitle">Enter the username and registered email address for the same account. Both values must match before a new password can be saved.</div>
-
-          <div class="auth-step active" id="forgot-verify">
-            <div class="auth-note"><i class="fas fa-shield-halved"></i> Browser-only demo authentication: account records are stored in this browser. Use server-side auth for production.</div>
-            <form class="auth-form" onsubmit="Auth.verifyRecovery(event)">
-              <div class="auth-field">
-                <label for="forgot-username">Username</label>
-                <input autocomplete="username" class="auth-input" id="forgot-username" placeholder="Enter your username" required>
-                <i class="fas fa-user input-icon"></i>
-              </div>
-              <div class="auth-field">
-                <label for="forgot-email">Registered email</label>
-                <input autocomplete="email" class="auth-input" id="forgot-email" placeholder="Enter your registered email" required type="email">
-                <i class="fas fa-envelope input-icon"></i>
-              </div>
-              <button class="auth-submit" type="submit"><i class="fas fa-check"></i> Verify Account</button>
-            </form>
-            <div class="auth-switch-row">Remembered your password? <span class="auth-link" onclick="Auth.open('login')">Back to Login</span></div>
-          </div>
-
-          <div class="auth-step" id="forgot-reset">
-            <div class="auth-note"><i class="fas fa-circle-check"></i> Username and email matched. Choose a new password.</div>
-            <form class="auth-form" onsubmit="Auth.resetPassword(event)">
-              <div class="auth-field">
-                <label for="reset-password">New password</label>
-                <input autocomplete="new-password" class="auth-input" id="reset-password" maxlength="128" minlength="4" placeholder="At least 4 characters" required type="password">
-                <button class="auth-password-toggle" onclick="Auth.togglePassword('reset-password',this)" type="button"><i class="fas fa-eye"></i></button>
-              </div>
-              <div class="auth-field">
-                <label for="reset-confirm">Confirm new password</label>
-                <input autocomplete="new-password" class="auth-input" id="reset-confirm" maxlength="128" minlength="4" placeholder="Re-enter your new password" required type="password">
-                <button class="auth-password-toggle" onclick="Auth.togglePassword('reset-confirm',this)" type="button"><i class="fas fa-eye"></i></button>
-              </div>
-              <button class="auth-submit" type="submit"><i class="fas fa-key"></i> Save New Password</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- MOBILE BOTTOM BAR -->
   <nav class="mobile-bottom-bar">
     <button class="mbb-btn active" id="mbb-home" onclick="App.goHome(); MobNav.set(this)"><i class="fas fa-home"></i><span>Home</span></button>
@@ -485,6 +357,7 @@
         </div>
         <div class="fv-tabs">
           <div class="fv-tab active" onclick="FVTabs.showTab('overview', this)">Overview</div>
+          <div class="fv-tab hidden" id="fv-tab-trailer" onclick="FVTabs.showTab('trailer', this)">Trailer</div>
           <div class="fv-tab" onclick="FVTabs.showTab('watch', this)">Watch</div>
           <div class="fv-tab" onclick="FVTabs.showTab('cast', this)">Cast</div>
         </div>
@@ -516,10 +389,22 @@
           <div class="player-wrap">
             <iframe allow="encrypted-media; picture-in-picture" allowfullscreen id="main-player" scrolling="no"></iframe>
           </div>
+          
+          <div style="margin-top: 15px; font-size: 13px; color: var(--text-3); text-align: center; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <i class="fas fa-shield-alt" style="color: var(--cv-purple-light); margin-right: 5px;"></i>
+            <strong>Note:</strong> We do not control the ads or redirects inside the video player. For the best experience, we highly recommend using an adblocker like <strong>uBlock Origin</strong> or the <strong>Brave</strong> browser.
+          </div>
         </div>
 
         <!-- Cast Pane -->
         <div class="fv-tab-pane" id="tab-cast"><div class="fv-cast-scroll" id="fv-cast"></div></div>
+
+        <!-- Trailer Pane -->
+        <div class="fv-tab-pane" id="tab-trailer">
+          <div class="player-wrap">
+            <iframe id="trailer-player" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen scrolling="no"></iframe>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -537,7 +422,56 @@
     </div>
   </div>
 
+  <!-- ============================================================ 
+       AD PASS MODAL OVERLAY
+  ============================================================ -->
+  <div class="legal-modal-overlay" id="adpass-modal-overlay" onclick="AdPass.closeModal()">
+    <div class="legal-modal" onclick="event.stopPropagation()" style="text-align: center; padding-bottom: 30px;">
+      <button class="legal-close" onclick="AdPass.closeModal()" type="button"><i class="fas fa-times"></i></button>
+      
+      <div style="font-size: 48px; color: var(--cv-gold); margin-top: 10px; margin-bottom: 15px;">
+        <i class="fas fa-ticket-alt"></i>
+      </div>
+      
+      <div class="legal-title" style="margin-bottom: 15px; font-size: 24px;">Unlock 24-Hour Pass</div>
+      
+      <div class="legal-body" style="margin-bottom: 30px; color: var(--text-2); line-height: 1.6; font-size: 15px;">
+        To support StreamHeavens and watch this video, please unlock a 24-Hour Pass.<br><br>
+        <strong style="color: white;">View one quick ad to get unlimited, ad-free watching for the entire day!</strong><br><br>
+        <span style="font-size: 12px; color: var(--cv-red); background: rgba(230,57,70,0.1); padding: 6px 10px; border-radius: 6px; display: inline-block;">
+          <i class="fas fa-exclamation-triangle"></i> <strong>Adblock Users:</strong> You must temporarily pause your adblocker on the next page to unlock your pass.
+        </span>
+      </div>
+      
+      <button onclick="AdPass.proceed()" style="background: var(--cv-purple); color: white; border: none; padding: 14px 28px; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; max-width: 260px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(181, 95, 230, 0.4); transition: transform 0.2s ease;">
+        <i class="fas fa-unlock"></i> Unlock Now
+      </button>
+      
+      <div style="font-size: 13px; color: var(--text-4); cursor: pointer; padding: 10px;" onclick="AdPass.closeModal()">
+        No thanks, cancel
+      </div>
+    </div>
+  </div>
+
   <!-- JAVASCRIPT -->
   <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+          console.log('ServiceWorker registration successful');
+        }, function(err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
+  <!-- BACK TO TOP BUTTON -->
+  <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Go to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <input type="file" id="import-file" style="display:none" accept=".json" onchange="Library.importData(event)">
+
 </body>
 </html>

@@ -16,6 +16,15 @@
 export async function onRequest(context) {
   const { request, env, params } = context;
 
+  // 1. Check Cloudflare Cache first to prevent API spam
+  const cache = caches.default;
+  // We only cache GET requests (which all of these are)
+  const cacheKey = new Request(request.url, request);
+  const cachedResponse = await cache.match(cacheKey);
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+
   // Reconstruct the TMDB path from the catch-all route segments
   const tmdbPath = '/' + (params.path || []).join('/');
 
@@ -48,7 +57,7 @@ export async function onRequest(context) {
     const data = await tmdbResponse.text();
 
     // Return the response with CORS and security headers
-    return new Response(data, {
+    const finalResponse = new Response(data, {
       status: tmdbResponse.status,
       headers: {
         'Content-Type': 'application/json',
@@ -57,6 +66,13 @@ export async function onRequest(context) {
         'X-Content-Type-Options': 'nosniff',
       }
     });
+
+    // 2. Save the successful response to Cloudflare Cache
+    if (tmdbResponse.ok) {
+      context.waitUntil(cache.put(cacheKey, finalResponse.clone()));
+    }
+
+    return finalResponse;
   } catch (err) {
     return new Response(JSON.stringify({ error: 'Proxy request failed' }), {
       status: 502,

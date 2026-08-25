@@ -27,14 +27,14 @@ const CFG = {
   ORIG:    'https://image.tmdb.org/t/p/original',
   SERVERS: [
     { name: 'VidLink', icon: 'fa-play-circle',
-      movie: function(id){ return 'https://vidlink.pro/movie/'+id; },
-      tv:    function(id,s,e){ return 'https://vidlink.pro/tv/'+id+'/'+s+'/'+e; } },
+      movie: function(id){ return 'https://vidlink.pro/movie/'+id+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff'; },
+      tv:    function(id,s,e){ return 'https://vidlink.pro/tv/'+id+'/'+s+'/'+e+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff'; } },
     { name: 'VidSrc', icon: 'fa-server',
       movie: function(id){ return 'https://vidsrc.me/embed/movie?tmdb='+id; },
       tv:    function(id,s,e){ return 'https://vidsrc.me/embed/tv?tmdb='+id+'&season='+s+'&episode='+e; } },
     { name: 'AutoEmbed', icon: 'fa-film',
       movie: function(id){ return 'https://autoembed.co/movie/tmdb/'+id; },
-      tv:    function(id,s,e){ return 'https://autoembed.co/tv/tmdb/'+id+'-'+s+'-'+e; } }
+      tv:    function(id,s,e){ return 'https://autoembed.co/tv/tmdb/'+id+'-'+s+'-'+e; } },
   ],
   SPOTLIGHT_INTERVAL: 6000,
   GENRES: [
@@ -48,8 +48,46 @@ const CFG = {
 /* ================================================================
    02. STATE & UTILS
 ================================================================ */
-var State = { activePage:'page-home', browseType:'movie', browseMode:'trending', genreId:null, activeId:null, activeType:'movie', activeData:null, activeServer:0, watchlist:[], history:[] };
+var State = { activePage:'page-home', browseType:'movie', browseMode:'trending', browsePage:1, isFetching:false, genreId:null, activeId:null, activeType:'movie', activeData:null, activeServer:0, watchlist:[], history:[] };
 
+/* ================================================================
+   AD-PASS MONETIZATION SYSTEM
+================================================================ */
+var AdPass = {
+  // Replace this with your actual Linkvertise URL later!
+  // For the demo, it just redirects back immediately to unlock it.
+  linkUrl: "?unlocked=true", 
+  
+  init: function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('unlocked') === 'true') {
+      localStorage.setItem('ad_pass_expiry', Date.now() + (24 * 60 * 60 * 1000));
+      // Remove query param without reloading page
+      window.history.replaceState({}, document.title, window.location.pathname);
+      Toast.show('24-Hour Ad-Free Pass Unlocked!', 'success');
+    }
+  },
+  
+  hasPass: function() {
+    var expiry = localStorage.getItem('ad_pass_expiry');
+    if (!expiry) return false;
+    return parseInt(expiry) > Date.now();
+  },
+  
+  prompt: function() {
+    document.getElementById('adpass-modal-overlay').classList.add('open');
+    if (typeof UIHelper !== 'undefined') UIHelper.lockScroll();
+  },
+  
+  closeModal: function() {
+    document.getElementById('adpass-modal-overlay').classList.remove('open');
+    if (typeof UIHelper !== 'undefined') UIHelper.unlockScroll();
+  },
+
+  proceed: function() {
+    window.location.href = this.linkUrl;
+  }
+};
 var Utils = {
   year: function(d){ return d ? d.split('-')[0] : 'N/A'; },
   runtime: function(m){ if(!m) return 'N/A'; var h=Math.floor(m/60), mins=m%60; return h ? h+'h '+(mins?mins+'m':'') : mins+'m'; },
@@ -75,12 +113,12 @@ var API = {
       return null;
     }
   },
-  trending: function(type){ return API.fetch(API.url('/trending/'+(type||'all')+'/week',{page:1})); },
-  topRated: function(type){ return API.fetch(API.url('/'+(type||'movie')+'/top_rated',{page:1})); },
-  popular:  function(type){ return API.fetch(API.url('/'+(type||'movie')+'/popular',{page:1})); },
-  upcoming: function(){ return API.fetch(API.url('/movie/upcoming',{page:1})); },
+  trending: function(type, page){ return API.fetch(API.url('/trending/'+(type||'all')+'/week',{page:page||1})); },
+  topRated: function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/top_rated',{page:page||1})); },
+  popular:  function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/popular',{page:page||1})); },
+  upcoming: function(page){ return API.fetch(API.url('/movie/upcoming',{page:page||1})); },
   search:   function(q){ return API.fetch(API.url('/search/multi',{query:q,page:1,include_adult:false})); },
-  detail:   function(id,type){ return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits'})); },
+  detail:   function(id,type){ return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos'})); },
   discover: function(type,params){ return API.fetch(API.url('/discover/'+(type||'movie'),params)); }
 };
 
@@ -147,18 +185,28 @@ var App = {
     document.getElementById('breadcrumb-current').textContent = title;
   },
   goHome: function(){ this.showPage('page-home'); this.setNav('nav-home','Discover'); },
-  browseMovies: function(){ State.browseType='movie'; State.browseMode='popular'; this.showPage('page-browse'); this.setNav('nav-movies','Movies'); Browse.load(); },
-  browseTVShows: function(){ State.browseType='tv'; State.browseMode='popular'; this.showPage('page-browse'); this.setNav('nav-tv','TV Shows'); Browse.load(); },
-  browseTrending: function(){ State.browseType='all'; State.browseMode='trending'; this.showPage('page-browse'); this.setNav('nav-trending','Trending'); Browse.load(); },
-  browseTopRated: function(){ State.browseType='movie'; State.browseMode='toprated'; this.showPage('page-browse'); this.setNav('nav-toprated','Top Rated'); Browse.load(); },
-  browseUpcoming: function(){ State.browseType='movie'; State.browseMode='upcoming'; this.showPage('page-browse'); this.setNav('nav-upcoming','Upcoming'); Browse.load(); },
+  browseMovies: function(){ State.browseType='movie'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-movies','Movies'); Browse.load(); },
+  browseTVShows: function(){ State.browseType='tv'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-tv','TV Shows'); Browse.load(); },
+  browseTrending: function(){ State.browseType='all'; State.browseMode='trending'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-trending','Trending'); Browse.load(); },
+  browseTopRated: function(){ State.browseType='movie'; State.browseMode='toprated'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-toprated','Top Rated'); Browse.load(); },
+  browseUpcoming: function(){ State.browseType='movie'; State.browseMode='upcoming'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-upcoming','Upcoming'); Browse.load(); },
   showWatchlist: function(){
-    if(!Auth.isLoggedIn()){ Toast.show('Please sign in to view your Watchlist.','error'); Auth.open('login'); return; }
-    this.showPage('page-watchlist'); this.setNav('nav-watchlist','Watchlist'); Watchlist.render();
+    Prog.start();
+    document.getElementById('search-input').value='';
+    document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active'));
+    this.showPage('page-watchlist');
+    Watchlist.render();
+    document.title = "Watchlist \u2014 StreamHeavens";
+    Prog.done();
   },
   showHistory: function(){
-    if(!Auth.isLoggedIn()){ Toast.show('Please sign in to view your Watch History.','error'); Auth.open('login'); return; }
-    this.showPage('page-history'); this.setNav('nav-history','History'); History.render();
+    Prog.start();
+    document.getElementById('search-input').value='';
+    document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active'));
+    this.showPage('page-history');
+    History.render();
+    document.title = "Watch History \u2014 StreamHeavens";
+    Prog.done();
   },
   shareCurrent: function(){
     var d=State.activeData; if(!d) return;
@@ -204,7 +252,7 @@ var Search = {
   closeDropdown: function(){ document.getElementById('search-dropdown').classList.remove('open'); },
   focusMobile: function(){
     window.scrollTo({top:0,behavior:'smooth'});
-    document.getElementById('search-input').focus();
+    setTimeout(function() { document.getElementById('search-input').focus(); }, 300);
   }
 };
 
@@ -364,46 +412,58 @@ var Render = {
 };
 
 var Browse = {
-  load: function(){
-    Prog.start(); Render.skeletons('browse-grid', 18);
+  load: function(append){
+    if(State.isFetching) return;
+    State.isFetching = true;
+    if(!append) { State.browsePage = 1; Prog.start(); Render.skeletons('browse-grid', 18); }
     var p;
-    if(State.browseMode==='trending') p = API.trending(State.browseType);
-    else if(State.browseMode==='toprated') p = API.topRated(State.browseType==='all'?'movie':State.browseType);
-    else if(State.browseMode==='upcoming') p = API.upcoming();
-    else p = API.popular(State.browseType==='all'?'movie':State.browseType);
+    if(State.browseMode==='trending') p = API.trending(State.browseType, State.browsePage);
+    else if(State.browseMode==='toprated') p = API.topRated(State.browseType==='all'?'movie':State.browseType, State.browsePage);
+    else if(State.browseMode==='upcoming') p = API.upcoming(State.browsePage);
+    else p = API.popular(State.browseType==='all'?'movie':State.browseType, State.browsePage);
 
     p.then(function(data){
+      State.isFetching = false;
       if(data && data.results){
         var items=data.results.filter(function(x){return x.poster_path;});
-        document.getElementById('browse-grid').innerHTML=items.map(function(x){return Render.posterCard(x, State.browseType==='all'?null:State.browseType);}).join('')||'<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No titles found.</div>';
-      }else{
+        var html = items.map(function(x){return Render.posterCard(x, State.browseType==='all'?null:State.browseType);}).join('');
+        if(!html && !append) html = '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No titles found.</div>';
+        if(append) document.getElementById('browse-grid').insertAdjacentHTML('beforeend', html);
+        else document.getElementById('browse-grid').innerHTML = html;
+      }else if(!append){
         document.getElementById('browse-grid').innerHTML='<div style="padding:40px;text-align:center;color:var(--cv-red);grid-column:1/-1;">Unable to load titles right now. Please try again.</div>';
       }
-      Prog.done(); initDragScroll();
+      if(!append) { Prog.done(); initDragScroll(); }
     }).catch(function(){
-      document.getElementById('browse-grid').innerHTML='<div style="padding:40px;text-align:center;color:var(--cv-red);grid-column:1/-1;">Unable to load titles right now. Please try again.</div>';
-      Prog.done();
+      State.isFetching = false;
+      if(!append) { document.getElementById('browse-grid').innerHTML='<div style="padding:40px;text-align:center;color:var(--cv-red);grid-column:1/-1;">Unable to load titles right now. Please try again.</div>'; Prog.done(); }
     });
   },
-  byGenre: function(genreId, name){
+  byGenre: function(genreId, name, append){
+    if(State.isFetching) return;
+    State.isFetching = true;
     State.browseType = 'movie';
-    App.showPage('page-browse');
-    App.setNav('nav-movies', name);
-    Prog.start(); Render.skeletons('browse-grid', 18);
+    State.browseMode = 'genre';
+    State.genreId = genreId;
+    if(!append) { State.browsePage = 1; App.showPage('page-browse'); App.setNav('nav-movies', name); Prog.start(); Render.skeletons('browse-grid', 18); }
     
-    var params = {with_genres: genreId, page:1};
+    var params = {with_genres: genreId, page: State.browsePage};
     
     API.discover(State.browseType, params).then(function(data){
+      State.isFetching = false;
       if(data && data.results){
         var items=data.results.filter(function(x){return x.poster_path;});
-        document.getElementById('browse-grid').innerHTML=items.map(function(x){return Render.posterCard(x,State.browseType);}).join('')||'<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No titles found.</div>';
-      }else{
+        var html = items.map(function(x){return Render.posterCard(x,State.browseType);}).join('');
+        if(!html && !append) html = '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No titles found.</div>';
+        if(append) document.getElementById('browse-grid').insertAdjacentHTML('beforeend', html);
+        else document.getElementById('browse-grid').innerHTML = html;
+      }else if(!append){
         document.getElementById('browse-grid').innerHTML='<div style="padding:40px;text-align:center;color:var(--cv-red);grid-column:1/-1;">Unable to load this genre right now.</div>';
       }
-      Prog.done(); initDragScroll();
+      if(!append) { Prog.done(); initDragScroll(); }
     }).catch(function(){
-      document.getElementById('browse-grid').innerHTML='<div style="padding:40px;text-align:center;color:var(--cv-red);grid-column:1/-1;">Unable to load this genre right now.</div>';
-      Prog.done();
+      State.isFetching = false;
+      if(!append) { document.getElementById('browse-grid').innerHTML='<div style="padding:40px;text-align:center;color:var(--cv-red);grid-column:1/-1;">Unable to load this genre right now.</div>'; Prog.done(); }
     });
   }
 };
@@ -416,7 +476,10 @@ var Modal = {
   overlayClick: function(e){ if(e.target === document.getElementById('modal-overlay')) this.closeAll(); },
   closeAll: function(){
     document.getElementById('modal-overlay').classList.remove('open');
+    var tp = document.getElementById('trailer-player');
+    if (tp) tp.src = '';
     UIHelper.unlockScroll();
+    document.title = "StreamHeavens \u2014 Watch Movies & TV Series";
     
     var iframe = document.getElementById('main-player');
     if (iframe) {
@@ -437,6 +500,7 @@ var Modal = {
       document.getElementById('fv-backdrop').src = CFG.ORIG+(data.backdrop_path||data.poster_path);
       document.getElementById('fv-poster').src = CFG.IMG342+data.poster_path;
       document.getElementById('fv-title').textContent = data.title||data.name;
+      document.title = "Watching " + (data.title||data.name) + " \u2014 StreamHeavens";
       document.getElementById('fv-year').textContent = Utils.year(data.release_date||data.first_air_date);
       document.getElementById('fv-rating').textContent = data.vote_average ? data.vote_average.toFixed(1) : 'N/A';
       document.getElementById('fv-desc').textContent = data.overview;
@@ -452,12 +516,30 @@ var Modal = {
         var seasonsCount = data.number_of_seasons || 1;
         document.getElementById('ep-season').innerHTML = Array.from({length: seasonsCount}, (_,i) => '<option value="'+(i+1)+'">Season '+(i+1)+'</option>').join('');
         document.getElementById('ep-episode').innerHTML = Array.from({length: 24}, (_,i) => '<option value="'+(i+1)+'">Episode '+(i+1)+'</option>').join('');
+        
+        var hist = State.history.find(function(h){return h.id===id && h.type==='tv';});
+        if(hist){
+          if(hist.season) document.getElementById('ep-season').value = hist.season;
+          if(hist.episode) document.getElementById('ep-episode').value = hist.episode;
+        }
       } else { 
         epRow.className = 'ep-row hidden';
       }
 
       document.getElementById('server-tabs').innerHTML = CFG.SERVERS.map((s,i) => '<div class="server-tab '+(i===0?'active':'')+'" onclick="Player.switchServer('+i+', this)"><i class="fas '+s.icon+'"></i> '+s.name+'</div>').join('');
       State.activeServer = 0;
+
+      var trailerTab = document.getElementById('fv-tab-trailer');
+      State.activeTrailer = null;
+      if (data.videos && data.videos.results) {
+        var trailer = data.videos.results.find(function(v){return v.site==='YouTube' && v.type==='Trailer';});
+        if (!trailer) trailer = data.videos.results.find(function(v){return v.site==='YouTube';});
+        if (trailer) State.activeTrailer = trailer.key;
+      }
+      if (trailerTab) {
+        if (State.activeTrailer) trailerTab.classList.remove('hidden');
+        else trailerTab.classList.add('hidden');
+      }
 
       var fvWl = document.getElementById('fv-wl-btn');
       var fvIcon = fvWl ? fvWl.querySelector('i') : null;
@@ -488,7 +570,11 @@ var Player = {
     this.loadVideo();
   },
   loadVideo: function(){
-    if(!Auth.isLoggedIn()){ Toast.show('Please sign in to watch and save your history.','error'); Auth.open('login'); return; }
+    if (!AdPass.hasPass()) {
+      AdPass.prompt();
+      return;
+    }
+
     var s=CFG.SERVERS[State.activeServer], url, season=null, episode=null;
     if(State.activeType==='tv'){
       season=Number(document.getElementById('ep-season').value||1);
@@ -514,25 +600,31 @@ var FVTabs = {
     if(el) el.classList.add('active'); 
     else document.querySelector('.fv-tab[onclick*="\''+t+'\'"]').classList.add('active');
     document.getElementById('tab-'+t).classList.add('active');
+    
     if(t==='watch') Player.loadVideo();
+    
+    if(t==='trailer' && State.activeTrailer) {
+       document.getElementById('trailer-player').src = 'https://www.youtube.com/embed/' + State.activeTrailer + '?autoplay=1';
+    } else {
+       var tp = document.getElementById('trailer-player');
+       if(tp) tp.src = '';
+    }
   }
 };
 
 var Watchlist = {
   toggleCurrent: function(e){
-    if(e){e.preventDefault();e.stopPropagation();}
-    if(!Auth.isLoggedIn()){Toast.show('Watchlist is available only when signed in.','error');Auth.open('login');return;}
-    var d=State.activeData;if(!d)return;
+    if(e) e.stopPropagation();
+    var d=State.activeData;if(!State.activeId||!d)return;
     this.toggleById(e,State.activeId,State.activeType,d.title||d.name,d.poster_path,d.vote_average,d.release_date||d.first_air_date);
   },
   toggleById: function(e,id,type,title,poster,vote,date){
-    if(e){e.preventDefault();e.stopPropagation();}
-    if(!Auth.isLoggedIn()){Toast.show('Watchlist is available only when signed in.','error');Auth.open('login');return false;}
+    if(e) e.stopPropagation();
     var idx=State.watchlist.findIndex(function(x){return x.id===id;});
     var added=false;
     if(idx===-1){State.watchlist.unshift({id:id,type:type,title:title,poster_path:poster,vote_average:vote,release_date:date});added=true;Toast.show('Added to watchlist','success');}
     else{State.watchlist.splice(idx,1);Toast.show('Removed from watchlist','info');}
-    Auth.saveUserData();
+    Library.saveUserData();
     document.querySelectorAll('.wl-btn-'+id).forEach(function(btn){
       var icon=btn.querySelector('i');
       btn.classList.toggle('in-list',added);
@@ -554,16 +646,15 @@ var Watchlist = {
 
 var History = {
   add: function(id,type,title,poster,season,episode){
-    if(!Auth.isLoggedIn())return;
     var s=season||null,e=episode||null;
     var idx=State.history.findIndex(function(x){return x.id===id&&x.season===s&&x.episode===e;});
     if(idx>-1)State.history.splice(idx,1);
     State.history.unshift({id:id,type:type,title:title,poster_path:poster,season:s,episode:e,watchedAt:new Date().toISOString()});
     if(State.history.length>50)State.history.pop();
-    Auth.saveUserData();
+    Library.saveUserData();
   },
   render: function(){var el=document.getElementById('history-grid');if(!el)return;el.innerHTML=State.history.map(function(x){return Render.posterCard(x,x.type);}).join('')||'<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">Your watch history is empty.</div>';},
-  clearAll: function(){if(!Auth.isLoggedIn()){Toast.show('Please sign in to manage Watch History.','error');Auth.open('login');return;}if(!State.history.length){Toast.show('Watch history is already empty.','info');return;}State.history=[];Auth.saveUserData();this.render();Toast.show('History cleared successfully.','success');}
+  clearAll: function(){if(!State.history.length){Toast.show('Watch history is already empty.','info');return;}State.history=[];Library.saveUserData();this.render();Toast.show('History cleared successfully.','success');}
 };
 
 
@@ -583,7 +674,7 @@ var Legal = {
     
     if(typeof Sidebar !== 'undefined' && Sidebar.close) Sidebar.close();
     if(typeof Modal !== 'undefined' && Modal.closeAll) Modal.closeAll();
-    if(typeof Auth !== 'undefined' && Auth.closeProfile) Auth.closeProfile();
+    if(typeof Auth !== 'undefined' && Library.closeProfile) Library.closeProfile();
 
     document.getElementById('legal-modal-title').textContent = data.title;
     document.getElementById('legal-modal-body').innerHTML = data.html;
@@ -602,163 +693,26 @@ var Legal = {
 
 
 /* ================================================================
-   09. AUTHENTICATION / PROFILE
-   Browser-only account system
+   09. LIBRARY / PROFILE
 ================================================================ */
-var Auth = (function(){
-  var USERS_KEY = 'sh_users_v1';
-  var SESSION_KEY = 'sh_session_v1';
-  var WATCH_KEY = 'sh_watchlist_v1';
-  var HISTORY_KEY = 'sh_history_v1';
-  var recoveryUserId = null;
+var Library = (function(){
+  var WATCH_KEY = 'sh_watchlist', HISTORY_KEY = 'sh_history';
 
-  function safeParse(key, fallback){
-    try {
-      var raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
-    } catch(e) {
-      console.error('Storage error:', e);
-      return fallback;
-    }
+  function loadUserData(){
+    try{State.watchlist=JSON.parse(localStorage.getItem(WATCH_KEY)||'[]');State.history=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');}
+    catch(e){State.watchlist=[];State.history=[];}
   }
 
-  function getUsers(){
-    var users = safeParse(USERS_KEY, []);
-    return Array.isArray(users) ? users : [];
-  }
-
-  function saveUsers(users){
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  }
-
-  function getSession(){
-    var session = safeParse(SESSION_KEY, null);
-    return session && session.id && session.username ? session : null;
-  }
-  function userKey(base,user){ return base+'_'+String((user&&user.id)||'guest').replace(/[^a-zA-Z0-9_-]/g,'_'); }
-  function loadUserData(user){
-    if(!user){State.watchlist=[];State.history=[];return;}
-    var wl=safeParse(userKey(WATCH_KEY,user),[]);var hi=safeParse(userKey(HISTORY_KEY,user),[]);
-    State.watchlist=Array.isArray(wl)?wl:[];State.history=Array.isArray(hi)?hi:[];
-  }
   function saveUserData(){
-    var user=getSession();if(!user)return;
-    try{localStorage.setItem(userKey(WATCH_KEY,user),JSON.stringify(State.watchlist));localStorage.setItem(userKey(HISTORY_KEY,user),JSON.stringify(State.history));}
-    catch(e){console.error('Unable to save user media data:',e);}
-  }
-
-
-  function normalizeUsername(v){
-    return (v || '').trim().toLowerCase();
-  }
-
-  function normalizeEmail(v){
-    return (v || '').trim().toLowerCase();
-  }
-
-  function initials(name){
-    var n = (name || 'G').trim();
-    if(!n) return 'G';
-    var parts = n.split(/\s+/);
-    return (parts.length > 1 ? parts[0].charAt(0)+parts[parts.length-1].charAt(0) : parts[0].substring(0,2)).toUpperCase();
-  }
-
-  function validPassword(password){ return password && password.length >= 4; }
-
-  function setMessage(text, type){
-    var el=document.getElementById('auth-message');if(!el)return;
-    el.className='auth-message show '+(type||'error');el.textContent='';
-    var icon=document.createElement('i');icon.className='fas '+(type==='success'?'fa-circle-check':'fa-circle-exclamation');el.appendChild(icon);
-    el.appendChild(document.createTextNode(' '+String(text==null?'':text)));
-  }
-
-  function clearMessage(){
-    var el = document.getElementById('auth-message');
-    if(el){ el.className='auth-message'; el.textContent=''; }
-  }
-
-  async function hashPassword(password, saltBase64){
-    if(!window.crypto || !window.crypto.subtle) throw new Error('Secure password hashing is not supported by this browser.');
-    var salt = saltBase64 ? Uint8Array.from(atob(saltBase64), function(c){return c.charCodeAt(0);}) : crypto.getRandomValues(new Uint8Array(16));
-    var key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), {name:'PBKDF2'}, false, ['deriveBits']);
-    var bits = await crypto.subtle.deriveBits({name:'PBKDF2', salt:salt, iterations:120000, hash:'SHA-256'}, key, 256);
-    var bytes = new Uint8Array(bits);
-    var hash = btoa(String.fromCharCode.apply(null, Array.from(bytes)));
-    return {
-      hash: hash,
-      salt: saltBase64 || btoa(String.fromCharCode.apply(null, Array.from(salt)))
-    };
-  }
-
-  async function verifyPassword(password, user){
-    var result = await hashPassword(password, user.salt);
-    return result.hash === user.passwordHash;
-  }
-
-  function open(mode){
-    var overlay = document.getElementById('auth-overlay');
-    var popup = document.getElementById('profile-popup');
-    if(!overlay) return;
-
-    if(popup) popup.classList.remove('open');
-    clearMessage();
-
-    document.querySelectorAll('#auth-overlay .auth-step').forEach(function(x){ x.classList.remove('active'); });
-
-    var step = document.getElementById('auth-'+mode+'-step');
-    if(!step) step = document.getElementById('auth-login-step');
-    if(step) step.classList.add('active');
-
-    if(mode==='forgot'){
-      var verify = document.getElementById('forgot-verify');
-      var reset = document.getElementById('forgot-reset');
-      if(verify) verify.classList.add('active');
-      if(reset) reset.classList.remove('active');
-      recoveryUserId = null;
-    }
-
-    if (!overlay.classList.contains('open')) {
-      requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-          UIHelper.lockScroll();
-          overlay.classList.add('open');
-        });
-      });
-    }
-
-    setTimeout(function(){
-      var first = step && step.querySelector('input');
-      if(first) first.focus();
-    }, 120);
-  }
-
-  function close(){
-    var overlay = document.getElementById('auth-overlay');
-    if(overlay) overlay.classList.remove('open');
-    UIHelper.unlockScroll();
-    recoveryUserId = null;
-    clearMessage();
-  }
-
-  function overlayClick(e){
-    if(e.target === document.getElementById('auth-overlay')) close();
+    try{localStorage.setItem(WATCH_KEY,JSON.stringify(State.watchlist));localStorage.setItem(HISTORY_KEY,JSON.stringify(State.history));}
+    catch(e){console.error('Unable to save guest media data:',e);}
   }
 
   function toggleProfile(e){
-    if(e){ e.preventDefault(); e.stopPropagation(); }
-
-    var overlay = document.getElementById('auth-overlay');
+    if(e && e.preventDefault) e.preventDefault();
+    if(e && e.stopPropagation) e.stopPropagation();
     var popup = document.getElementById('profile-popup');
     if(!popup) return;
-
-    if(overlay && overlay.classList.contains('open')){
-      close();
-      requestAnimationFrame(function(){
-        popup.classList.add('open');
-      });
-      return;
-    }
-
     var willOpen = !popup.classList.contains('open');
     closeProfile();
     if(willOpen) popup.classList.add('open');
@@ -769,245 +723,22 @@ var Auth = (function(){
     if(popup) popup.classList.remove('open');
   }
 
-  function togglePassword(id, btn){
-    var input = document.getElementById(id);
-    if(!input) return;
-    var showing = input.type === 'text';
-    input.type = showing ? 'password' : 'text';
-    if(btn) btn.innerHTML = '<i class="fas '+(showing?'fa-eye':'fa-eye-slash')+'"></i>';
-  }
-
-  function updateUI(){
-    var user = getSession();
-    var trigger = document.getElementById('profile-trigger');
-    var side = document.getElementById('sidebar-user');
-    var sideAvatar = document.getElementById('sidebar-avatar');
-    var sideName = document.getElementById('sidebar-user-name');
-    var sideSub = document.getElementById('sidebar-user-sub');
-    var popAvatar = document.getElementById('profile-popup-avatar');
-    var popTitle = document.getElementById('profile-popup-title');
-    var popEmail = document.getElementById('profile-popup-email');
-    var activeBadge = document.getElementById('profile-active-badge');
-    var popBody = document.getElementById('profile-popup-body');
-
-    if(user){
-      var init = initials(user.username);
-      if(trigger){ trigger.textContent = init; trigger.classList.remove('logged-out'); trigger.title = user.username; }
-      if(side){ side.classList.remove('guest'); }
-      if(sideAvatar) sideAvatar.textContent = init;
-      if(sideName) sideName.textContent = user.username;
-      if(sideSub) sideSub.textContent = 'Active Session';
-      if(popAvatar) popAvatar.textContent = init;
-      if(popTitle) popTitle.textContent = user.username;
-      if(popEmail) popEmail.textContent = user.email;
-      if(activeBadge) activeBadge.style.display = 'inline-flex';
-      if(popBody) popBody.innerHTML =
-        '<button type="button" class="profile-popup-btn" onclick="event.preventDefault(); event.stopPropagation(); App.showWatchlist(); Auth.closeProfile();"><i class="fas fa-heart"></i><span>My Watchlist</span></button>'+
-        '<button type="button" class="profile-popup-btn" onclick="event.preventDefault(); event.stopPropagation(); App.showHistory(); Auth.closeProfile();"><i class="fas fa-history"></i><span>Watch History</span></button>'+
-        '<button type="button" class="profile-popup-btn" onclick="event.preventDefault(); event.stopPropagation(); Auth.open(\'forgot\')"><i class="fas fa-key"></i><span>Reset Password</span></button>'+
-        '<button type="button" class="profile-popup-btn danger" onclick="event.preventDefault(); event.stopPropagation(); Auth.logout();"><i class="fas fa-right-from-bracket"></i><span>Logout</span></button>';
-    } else {
-      if(trigger){ trigger.textContent='G'; trigger.classList.add('logged-out'); trigger.title='Login / Sign Up'; }
-      if(side){ side.classList.add('guest'); }
-      if(sideAvatar) sideAvatar.textContent='G';
-      if(sideName) sideName.textContent='Guest Mode';
-      if(sideSub) sideSub.textContent='Sign in / Sign up';
-      if(popAvatar) popAvatar.textContent='G';
-      if(popTitle) popTitle.textContent='Guest Mode';
-      if(popEmail) popEmail.textContent='You are not signed in';
-      if(activeBadge) activeBadge.style.display='none';
-      if(popBody) popBody.innerHTML =
-        '<div class="profile-guest-text">Sign in to manage your account and keep your session on this browser.</div>'+
-        '<div class="profile-popup-actions">'+
-          '<button type="button" class="profile-auth-btn primary" onclick="event.preventDefault(); event.stopPropagation(); Auth.open(\'login\')"><i class="fas fa-right-to-bracket"></i> Login</button>'+
-          '<button type="button" class="profile-auth-btn secondary" onclick="event.preventDefault(); event.stopPropagation(); Auth.open(\'signup\')"><i class="fas fa-user-plus"></i> Sign Up</button>'+
-        '</div>';
-    }
-  }
-
-  async function signup(e){
-    e.preventDefault();
-    clearMessage();
-    var btn = document.getElementById('signup-submit');
-    var username = document.getElementById('signup-username').value.trim();
-    var email = normalizeEmail(document.getElementById('signup-email').value);
-    var password = document.getElementById('signup-password').value;
-    var confirm = document.getElementById('signup-confirm').value;
-
-    if(!/^[A-Za-z0-9_.-]{3,24}$/.test(username)){
-      setMessage('Username must be 3\u201324 characters and may contain letters, numbers, dots, underscores, or hyphens.','error'); return;
-    }
-    if(!validPassword(password)){ setMessage('Password must be at least 4 characters long.','error'); return; }
-    if(password !== confirm){ setMessage('Passwords do not match.','error'); return; }
-
-    var users = getUsers();
-    var uname = normalizeUsername(username);
-    if(users.some(function(u){return normalizeUsername(u.username)===uname;})){
-      setMessage('That username is already registered. Please choose another one.','error'); return;
-    }
-    if(users.some(function(u){return normalizeEmail(u.email)===email;})){
-      setMessage('That email address is already registered. Please use another email or reset the existing password.','error'); return;
-    }
-
-    try{
-      if(btn) btn.disabled=true;
-      var hp = await hashPassword(password);
-      var user = {
-        id:'u_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,9),
-        username:username,
-        email:email,
-        passwordHash:hp.hash,
-        salt:hp.salt,
-        createdAt:new Date().toISOString()
-      };
-      users.push(user);
-      saveUsers(users);
-      localStorage.setItem(SESSION_KEY, JSON.stringify({id:user.id,username:user.username,email:user.email}));
-      loadUserData(user);
-      updateUI();
-      setMessage('Account created successfully. You are now logged in.','success');
-      Toast.show('Account created successfully');
-      setTimeout(function(){ close(); }, 700);
-    }catch(err){
-      console.error(err);
-      setMessage(err.message || 'Account creation failed. Please try again.','error');
-    }finally{
-      if(btn) btn.disabled=false;
-    }
-  }
-
-  async function login(e){
-    e.preventDefault();
-    clearMessage();
-    var btn = document.getElementById('login-submit');
-    var identity = document.getElementById('login-identity').value.trim();
-    var password = document.getElementById('login-password').value;
-    var normalized = identity.toLowerCase();
-    var users = getUsers();
-    var user = users.find(function(u){
-      return normalizeUsername(u.username)===normalized || normalizeEmail(u.email)===normalized;
-    });
-
-    if(!user){
-      setMessage('Login failed. No account matches that username or email.','error'); return;
-    }
-
-    try{
-      if(btn) btn.disabled=true;
-      var ok = await verifyPassword(password,user);
-      if(!ok){
-        setMessage('Login failed. The password is incorrect.','error'); return;
-      }
-      localStorage.setItem(SESSION_KEY, JSON.stringify({id:user.id,username:user.username,email:user.email}));
-      loadUserData(user);
-      updateUI();
-      setMessage('Login successful. Welcome back, '+user.username+'!','success');
-      Toast.show('Login successful');
-      setTimeout(function(){ close(); }, 700);
-    }catch(err){
-      console.error(err);
-      setMessage('Unable to verify the password. Please try again.','error');
-    }finally{
-      if(btn) btn.disabled=false;
-    }
-  }
-
-  function verifyRecovery(e){
-    e.preventDefault();
-    clearMessage();
-    var username = normalizeUsername(document.getElementById('forgot-username').value);
-    var email = normalizeEmail(document.getElementById('forgot-email').value);
-    var users = getUsers();
-    var user = users.find(function(u){
-      return normalizeUsername(u.username)===username && normalizeEmail(u.email)===email;
-    });
-
-    if(!user){
-      setMessage('Recovery failed. The username and registered email address do not match.','error');
-      Toast.show('Account details did not match');
-      return;
-    }
-
-    recoveryUserId = user.id;
-    document.getElementById('forgot-verify').classList.remove('active');
-    document.getElementById('forgot-reset').classList.add('active');
-    document.getElementById('forgot-title').textContent = 'Create a new password';
-    document.getElementById('forgot-subtitle').textContent = 'Account verified. Enter and confirm your new password.';
-    setMessage('Account verified successfully. You may now reset the password.','success');
-    setTimeout(function(){
-      var input = document.getElementById('reset-password');
-      if(input) input.focus();
-    }, 100);
-  }
-
-  async function resetPassword(e){
-    e.preventDefault();
-    clearMessage();
-    var p1 = document.getElementById('reset-password').value;
-    var p2 = document.getElementById('reset-confirm').value;
-    
-    if(!validPassword(p1)){ setMessage('New password must be at least 4 characters long.','error'); return; }
-    if(p1 !== p2){ setMessage('New passwords do not match.','error'); return; }
-    if(!recoveryUserId){ setMessage('Your recovery session expired. Please verify the account again.','error'); return; }
-
-    try{
-      var users = getUsers();
-      var idx = users.findIndex(function(u){return u.id===recoveryUserId;});
-      if(idx===-1){ setMessage('The account could not be found. Please try again.','error'); return; }
-      var hp = await hashPassword(p1);
-      users[idx].passwordHash = hp.hash;
-      users[idx].salt = hp.salt;
-      users[idx].updatedAt = new Date().toISOString();
-      saveUsers(users);
-      localStorage.setItem(SESSION_KEY, JSON.stringify({id:users[idx].id,username:users[idx].username,email:users[idx].email}));
-      updateUI();
-      setMessage('Password reset successfully. You are now logged in.','success');
-      Toast.show('Password reset successful');
-      setTimeout(function(){ close(); }, 800);
-    }catch(err){
-      console.error(err);
-      setMessage('Password reset failed. Please try again.','error');
-    }
-  }
-
-  function logout(){
-    try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
-    recoveryUserId = null; State.watchlist=[]; State.history=[];
-    updateUI(); closeProfile();
-    if(State.activePage==='page-watchlist'||State.activePage==='page-history') App.goHome();
-    Toast.show('You have been logged out','success');
-  }
-
   function init(){
-    loadUserData(getSession());
-    updateUI();
+    loadUserData();
     document.addEventListener('keydown', function(e){
-      if(e.key==='Escape'){
-        closeProfile();
-        var overlay=document.getElementById('auth-overlay');
-        if(overlay && overlay.classList.contains('open')) close();
-      }
+      if(e.key==='Escape') closeProfile();
     });
     document.addEventListener('click', function(e){
       var popup = document.getElementById('profile-popup');
-      var trigger = document.getElementById('profile-trigger');
-      var sidebarUser = document.getElementById('sidebar-user');
-      var overlay = document.getElementById('auth-overlay');
       if(!popup) return;
-      if(overlay && overlay.classList.contains('open')) return;
       if(popup.contains(e.target)) return;
-      if(trigger && trigger.contains(e.target)) return;
-      if(sidebarUser && sidebarUser.contains(e.target)) return;
+      if(e.target.closest('.nav-btn')) return;
       popup.classList.remove('open');
     });
   }
 
   return {
-    init:init, open:open, close:close, overlayClick:overlayClick,
-    toggleProfile:toggleProfile, closeProfile:closeProfile,
-    togglePassword:togglePassword, signup:signup, login:login,
-    verifyRecovery:verifyRecovery, resetPassword:resetPassword, logout:logout,
-    isLoggedIn:function(){return !!getSession();}, saveUserData:saveUserData
+    init:init, toggleProfile:toggleProfile, closeProfile:closeProfile, saveUserData:saveUserData
   };
 })();
 
@@ -1017,7 +748,8 @@ var Auth = (function(){
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function(){
   Prog.init();
-  Auth.init();
+  Library.init();
+  AdPass.init();
   initDragScroll();
 
   /* Render Category Chips */
@@ -1085,4 +817,37 @@ document.addEventListener('DOMContentLoaded', function(){
     window.history.replaceState({},document.title,window.location.pathname);
     Modal.openFull(shareId,shareType);
   }
+
+  // Infinite Scroll Observer
+  var sentinel = document.getElementById('infinite-scroll-trigger');
+  if(sentinel && window.IntersectionObserver) {
+    var observer = new IntersectionObserver(function(entries){
+      if(entries[0].isIntersecting && State.activePage === 'page-browse' && !State.isFetching) {
+        State.browsePage++;
+        if(State.browseMode === 'genre') Browse.byGenre(State.genreId, document.getElementById('header-page-title').textContent, true);
+        else Browse.load(true);
+      }
+    }, {rootMargin: '200px'});
+    observer.observe(sentinel);
+  }
+
+  // Back to Top Button Logic
+  window.addEventListener('scroll', function() {
+    var btn = document.getElementById('back-to-top');
+    if (btn) {
+      if (window.scrollY > 800) btn.classList.add('visible');
+      else btn.classList.remove('visible');
+    }
+  });
+
+  // Global Keyboard Shortcuts
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (document.getElementById('modal-overlay').classList.contains('open')) {
+        Modal.closeAll();
+      } else if (document.getElementById('profile-popup') && document.getElementById('profile-popup').classList.contains('open')) {
+        Library.closeProfile();
+      }
+    }
+  });
 });
