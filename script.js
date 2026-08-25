@@ -95,6 +95,7 @@ var API = {
   topRated: function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/top_rated',{page:page||1})); },
   popular:  function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/popular',{page:page||1})); },
   upcoming: function(page){ return API.fetch(API.url('/movie/upcoming',{page:page||1})); },
+  anime:    function(page){ return API.fetch(API.url('/discover/tv',{page:page||1, with_genres:16, with_original_language:'ja'})); },
   search:   function(q){ return API.fetch(API.url('/search/multi',{query:q,page:1,include_adult:false})); },
   detail:   function(id,type){ return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos,similar'})); },
   discover: function(type,params){ return API.fetch(API.url('/discover/'+(type||'movie'),params)); }
@@ -165,6 +166,7 @@ var App = {
   goHome: function(){ this.showPage('page-home'); this.setNav('nav-home','Discover'); },
   browseMovies: function(){ State.browseType='movie'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-movies','Movies'); Browse.load(); },
   browseTVShows: function(){ State.browseType='tv'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-tv','TV Shows'); Browse.load(); },
+  browseAnime: function(){ State.browseType='tv'; State.browseMode='anime'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-anime','Anime'); Browse.load(); },
   browseTrending: function(){ State.browseType='all'; State.browseMode='trending'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-trending','Trending'); Browse.load(); },
   browseTopRated: function(){ State.browseType='movie'; State.browseMode='toprated'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-toprated','Top Rated'); Browse.load(); },
   browseUpcoming: function(){ State.browseType='movie'; State.browseMode='upcoming'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-upcoming','Upcoming'); Browse.load(); },
@@ -405,6 +407,7 @@ var Browse = {
     if(State.browseMode==='trending') p = API.trending(State.browseType, State.browsePage);
     else if(State.browseMode==='toprated') p = API.topRated(State.browseType==='all'?'movie':State.browseType, State.browsePage);
     else if(State.browseMode==='upcoming') p = API.upcoming(State.browsePage);
+    else if(State.browseMode==='anime') p = API.anime(State.browsePage);
     else p = API.popular(State.browseType==='all'?'movie':State.browseType, State.browsePage);
 
     p.then(function(data){
