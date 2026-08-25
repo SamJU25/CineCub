@@ -879,7 +879,7 @@ var Player = {
     }; 
     iframe.src = url;
     
-    if(State.activeData) History.add(State.activeId,State.activeType,State.activeData.title||State.activeData.name,State.activeData.poster_path,season,episode);
+    if(State.activeData) History.add(State.activeId,State.activeType,State.activeData.title||State.activeData.name,State.activeData.poster_path,season,episode,State.activeData.vote_average,State.activeData.release_date||State.activeData.first_air_date);
   }
 };
 
@@ -935,12 +935,12 @@ var Watchlist = {
 };
 
 var History = {
-  add: function(id,type,title,poster,season,episode){
+  add: function(id,type,title,poster,season,episode,vote,date){
     var s = (season !== undefined && season !== null) ? season : null;
     var e = (episode !== undefined && episode !== null) ? episode : null;
     var idx=State.history.findIndex(function(x){return x.id===id&&x.season===s&&x.episode===e;});
     if(idx>-1)State.history.splice(idx,1);
-    State.history.unshift({id:id,type:type,title:title,poster_path:poster,season:s,episode:e,watchedAt:new Date().toISOString()});
+    State.history.unshift({id:id,type:type,title:title,poster_path:poster,season:s,episode:e,vote_average:vote,release_date:date,watchedAt:new Date().toISOString()});
     if(State.history.length>50)State.history.pop();
     Library.saveUserData();
   },
