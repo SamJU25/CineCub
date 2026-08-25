@@ -81,15 +81,20 @@ var API = {
     var qs = query.toString();
     return CFG.BASE + endpoint + (qs ? '?' + qs : '');
   },
+  cache: new Map(),
   fetch: async function(url){
-    try {
-      var r = await fetch(url, {credentials:'omit'});
+    if (this.cache.has(url)) return await this.cache.get(url);
+    var promise = fetch(url, {credentials:'omit'}).then(r => {
       if(!r.ok) throw new Error('HTTP '+r.status);
-      return await r.json();
-    } catch(err) {
+      return r.json();
+    }).catch(err => {
       console.error('TMDB request failed:', err);
+      this.cache.delete(url);
       return null;
-    }
+    });
+    if (this.cache.size > 150) this.cache.delete(this.cache.keys().next().value);
+    this.cache.set(url, promise);
+    return await promise;
   },
   trending: function(type, page){ return API.fetch(API.url('/trending/'+(type||'all')+'/week',{page:page||1})); },
   topRated: function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/top_rated',{page:page||1})); },
@@ -673,24 +678,25 @@ var Modal = {
       var epRow = document.getElementById('ep-row');
       if(type==='tv'){
         epRow.className = 'ep-row';
-        var validSeasons = (data.seasons || []).filter(function(s) { return s.season_number > 0; });
+        var validSeasons = (data.seasons || []).filter(function(s) { return s.season_number >= 0; });
         if (validSeasons.length === 0) {
           var maxS = data.number_of_seasons || 1;
           validSeasons = Array.from({length: maxS}, function(_,i) { return {season_number: i+1, episode_count: 24}; });
         }
         
         document.getElementById('ep-season').innerHTML = validSeasons.map(function(s) {
-           return '<option value="'+s.season_number+'">Season '+s.season_number+'</option>';
+           var label = s.season_number === 0 ? 'Specials' : 'Season ' + s.season_number;
+           return '<option value="'+s.season_number+'">'+label+'</option>';
         }).join('');
         
         var hist = State.history.find(function(h){return h.id===id && h.type==='tv';});
-        if(hist && hist.season) {
+        if(hist && hist.season !== null && hist.season !== undefined) {
           document.getElementById('ep-season').value = hist.season;
         }
         
         Player.updateEpisodes();
         
-        if(hist && hist.episode) {
+        if(hist && hist.episode !== null && hist.episode !== undefined) {
           var maxEp = document.getElementById('ep-episode').options.length;
           document.getElementById('ep-episode').value = Math.min(hist.episode, maxEp);
         }
@@ -903,7 +909,8 @@ var Watchlist = {
 
 var History = {
   add: function(id,type,title,poster,season,episode){
-    var s=season||null,e=episode||null;
+    var s = (season !== undefined && season !== null) ? season : null;
+    var e = (episode !== undefined && episode !== null) ? episode : null;
     var idx=State.history.findIndex(function(x){return x.id===id&&x.season===s&&x.episode===e;});
     if(idx>-1)State.history.splice(idx,1);
     State.history.unshift({id:id,type:type,title:title,poster_path:poster,season:s,episode:e,watchedAt:new Date().toISOString()});
