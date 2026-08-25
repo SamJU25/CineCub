@@ -25,6 +25,8 @@ const CFG = {
   IMG342:  'https://image.tmdb.org/t/p/w342',
   IMG500:  'https://image.tmdb.org/t/p/w500',
   ORIG:    'https://image.tmdb.org/t/p/original',
+  LINKVERTISE_ENABLED: true,
+  LINKVERTISE_ID: 'SampadCK',
   SERVERS: [
     { name: 'VidLink', icon: 'fa-play-circle',
       movie: function(id){ return 'https://vidlink.pro/movie/'+id+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff'; },
@@ -223,6 +225,30 @@ var App = {
     if(navigator.share){navigator.share({title:title,text:'Watch '+title+' on StreamHeavens',url:shareUrl}).catch(function(err){if(err&&err.name!=='AbortError')fallback();});}
     else if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(shareUrl).then(function(){Toast.show('Link copied to clipboard.','success');}).catch(fallback);}
     else fallback();
+  }
+};
+
+/* Linkvertise Module */
+var Linkvertise = {
+  checkUrl: function(){
+    var params = new URLSearchParams(window.location.search);
+    var unlockId = params.get('lv_unlock');
+    if(unlockId){
+      localStorage.setItem('lv_unlocked_'+unlockId, 'true');
+      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0a0f;color:#fff;font-family:sans-serif;flex-direction:column;text-align:center;padding:20px;">'
+        + '<i class="fas fa-unlock" style="font-size:48px;color:var(--cv-purple);margin-bottom:20px;"></i>'
+        + '<h1 style="margin:0 0 10px;font-size:24px;">Video Unlocked! 🍿</h1>'
+        + '<p style="margin:0;color:var(--text-3);">You can close this tab and return to your movie.</p></div>';
+      throw new Error("Unlock complete. Halting normal execution.");
+    }
+  },
+  generateUrl: function(id){
+    var dest = window.location.protocol + "//" + window.location.host + "/?lv_unlock=" + id;
+    var b64 = btoa(dest);
+    return 'https://link-to.net/' + CFG.LINKVERTISE_ID + '/' + Math.floor(Math.random()*1000000) + '/dynamic?r=' + b64;
+  },
+  isUnlocked: function(id){
+    return localStorage.getItem('lv_unlocked_'+id) === 'true';
   }
 };
 
@@ -569,11 +595,38 @@ var Player = {
     if(el) el.classList.add('active');
     this.loadVideo();
   },
+  unlock: function(){
+    if(!State.activeId) return;
+    var url = Linkvertise.generateUrl(State.activeId);
+    window.open(url, '_blank');
+    
+    // Start listening for the unlock from the other tab
+    var checkInterval = setInterval(function(){
+      if(Linkvertise.isUnlocked(State.activeId)){
+        clearInterval(checkInterval);
+        Player.loadVideo();
+      }
+    }, 1000);
+  },
   loadVideo: function(){
     if (!AdPass.hasPass()) {
       AdPass.prompt();
       return;
     }
+
+    var iframe = document.getElementById('main-player');
+    var overlay = document.getElementById('unlock-overlay');
+    
+    // Check Linkvertise Lock
+    if(CFG.LINKVERTISE_ENABLED && !Linkvertise.isUnlocked(State.activeId)) {
+      iframe.style.display = 'none';
+      overlay.style.display = 'flex';
+      return;
+    }
+    
+    // If unlocked, proceed
+    iframe.style.display = 'block';
+    overlay.style.display = 'none';
 
     var s=CFG.SERVERS[State.activeServer], url, season=null, episode=null;
     if(State.activeType==='tv'){
@@ -582,7 +635,6 @@ var Player = {
       url=s.tv(State.activeId,season,episode);
     }else{ url=s.movie(State.activeId); }
     
-    var iframe = document.getElementById('main-player');
     iframe.classList.remove('loaded');
     iframe.onload = function() { 
       iframe.classList.add('loaded'); 
@@ -747,6 +799,7 @@ var Library = (function(){
    10. INITIALIZATION
 ================================================================ */
 document.addEventListener('DOMContentLoaded', function(){
+  try { Linkvertise.checkUrl(); } catch(e) { return; }
   Prog.init();
   Library.init();
   AdPass.init();
