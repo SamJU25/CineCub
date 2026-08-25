@@ -41,8 +41,8 @@ const CFG = {
       movie: function(id){ return 'https://autoembed.co/movie/tmdb/'+id; },
       tv:    function(id,s,e){ return 'https://autoembed.co/tv/tmdb/'+id+'-'+s+'-'+e; } },
     { name: 'SERVER 4 (QUICK START)', icon: 'fa-rocket',
-      movie: function(id){ return 'https://vidsrc.cc/v2/embed/movie/'+id; },
-      tv:    function(id,s,e){ return 'https://vidsrc.cc/v2/embed/tv/'+id+'/'+s+'/'+e; } },
+      movie: function(id){ return 'https://multiembed.mov/directstream.php?video_id='+id+'&tmdb=1'; },
+      tv:    function(id,s,e){ return 'https://multiembed.mov/directstream.php?video_id='+id+'&tmdb=1&s='+s+'&e='+e; } },
   ],
   SPOTLIGHT_INTERVAL: 6000,
   GENRES: [
