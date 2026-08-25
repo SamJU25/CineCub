@@ -27,9 +27,7 @@ const CFG = {
   IMG342:  'https://image.tmdb.org/t/p/w342',
   IMG500:  'https://image.tmdb.org/t/p/w500',
   ORIG:    'https://image.tmdb.org/t/p/original',
-  AD_ENABLED: true,
-  AD_DIRECT_LINK: 'https://www.profitableratecpmnetwork.com/a055j899dt?key=a642d21e4f5ecae51cad8066fa6d7b27',
-  AD_COOLDOWN_HOURS: 12,
+
   SERVERS: [
     { name: 'SERVER 1 (AD-FREE)', icon: 'fa-play-circle',
       movie: function(id, time){ return 'https://vidlink.pro/movie/'+id+'?primaryColor=b55fe6&secondaryColor=1f1b24&iconColor=ffffff&autoplay=false' + (time ? '&startAt=' + time : ''); },
@@ -200,18 +198,7 @@ var App = {
   }
 };
 
-/* AdSystem Module */
-var AdSystem = {
-  isUnlocked: function(){
-    var unlockTime = localStorage.getItem('ad_unlocked_global');
-    if(!unlockTime) return false;
-    var hoursPassed = (Date.now() - parseInt(unlockTime)) / (1000 * 60 * 60);
-    return hoursPassed < CFG.AD_COOLDOWN_HOURS;
-  },
-  unlock: function(){
-    localStorage.setItem('ad_unlocked_global', Date.now().toString());
-  }
-};
+
 
 /* Search Module */
 var Search = {
@@ -593,38 +580,6 @@ var Player = {
     if(el) el.classList.add('active');
     this.loadVideo();
   },
-  unlock: function(){
-    if(!State.activeId) return;
-    
-    // Open the Adsterra Direct Link in a new tab
-    if(CFG.AD_ENABLED && CFG.AD_DIRECT_LINK) {
-      window.open(CFG.AD_DIRECT_LINK, '_blank');
-    }
-    
-    // Disable the button to prevent spam clicking
-    var btn = document.getElementById('unlock-btn');
-    if(btn) btn.style.display = 'none';
-    
-    var countdown = 5;
-    var overlayText = document.getElementById('unlock-text');
-    var overlaySub = document.getElementById('unlock-sub');
-    
-    if(overlayText) overlayText.innerHTML = 'Ad playing in background... <span id="ad-timer">5</span>';
-    if(overlaySub) overlaySub.innerHTML = 'Please wait. Video will automatically start shortly.';
-    
-    var timerSpan = document.getElementById('ad-timer');
-    
-    var interval = setInterval(function(){
-      countdown--;
-      if(timerSpan) timerSpan.innerText = countdown;
-      
-      if(countdown <= 0) {
-        clearInterval(interval);
-        AdSystem.unlock();
-        Player.loadVideo();
-      }
-    }, 1000);
-  },
   updateEpisodes: function() {
     if (State.activeType !== 'tv' || !State.activeData || !State.activeData.seasons) return;
     var sSelect = document.getElementById('ep-season');
@@ -687,27 +642,7 @@ var Player = {
   },
   loadVideo: function(){
     var iframe = document.getElementById('main-player');
-    var overlay = document.getElementById('unlock-overlay');
-    
-    // Check Ad System Lock
-    if(CFG.AD_ENABLED && !AdSystem.isUnlocked()) {
-      iframe.style.display = 'none';
-      overlay.style.display = 'flex';
-      
-      // Reset overlay UI in case they come back to it
-      var btn = document.getElementById('unlock-btn');
-      var overlayText = document.getElementById('unlock-text');
-      var overlaySub = document.getElementById('unlock-sub');
-      
-      if(btn) btn.style.display = 'inline-block';
-      if(overlayText) overlayText.innerHTML = 'Video Locked';
-      if(overlaySub) overlaySub.innerHTML = 'Support this free site by clicking Watch below. An ad will open in a new tab, and your video will start in 5 seconds.';
-      return;
-    }
-    
-    // If unlocked, proceed
     iframe.style.display = 'block';
-    overlay.style.display = 'none';
 
     var s=CFG.SERVERS[State.activeServer], url, season=null, episode=null, savedTime=0;
     
