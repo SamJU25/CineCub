@@ -389,6 +389,7 @@ iframe {border:none}
   .ep-select {width:100%;}
   .ep-controls {grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .ep-btn-next, .ep-btn-prev {width:100%; padding:11px 10px; font-size:12px; text-align:center;}
+  .server-tabs {grid-template-columns: 1fr;}
 }
 
 .fv-similar-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:16px;}
