@@ -9,10 +9,12 @@ var UIHelper = {
     var scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.paddingRight = scrollBarWidth + 'px';
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
   },
   unlockScroll: function() {
     document.body.style.paddingRight = '';
     document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
   }
 };
 
@@ -977,6 +979,16 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     }
   });
+
+  // Prevent Background Scroll when hovering outside modal box
+  var overlay = document.getElementById('modal-overlay');
+  if (overlay) {
+    function preventScroll(e) {
+      if (e.target === overlay) e.preventDefault();
+    }
+    overlay.addEventListener('wheel', preventScroll, {passive: false});
+    overlay.addEventListener('touchmove', preventScroll, {passive: false});
+  }
 
   // Mobile Back Button Support
   window.addEventListener('hashchange', function() {
