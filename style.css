@@ -52,7 +52,7 @@ a {text-decoration:none;color:inherit}
 ul {list-style:none}
 button,input,select {font-family:inherit;outline:none;border:none}
 button {cursor:pointer}
-img {display:block;max-width:100%}
+img {display:block;max-width:100%;-webkit-user-drag:none;user-drag:none}
 iframe {border:none}
 
 ::-webkit-scrollbar {width:6px;height:6px}
