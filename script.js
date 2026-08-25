@@ -505,7 +505,7 @@ var Render = {
     var genre = Utils.genreNames(item.genre_ids);
     var genreHtml = genre !== 'General' ? '<span class="pc-genre">'+Utils.escape(genre.split(',')[0])+'</span>' : '';
     var isNew = item.release_date && (new Date(item.release_date) > new Date(Date.now()-60*24*60*60*1000));
-    var badge = isNew ? '<span class="pc-badge pc-badge-new">NEW</span>' : '<span class="pc-badge pc-badge-quality">'+(mType==='tv'?'SERIES':'HD')+'</span>';
+    var badge = isNew ? '<span class="pc-badge pc-badge-new">NEW</span>' : (mType==='tv' ? '<span class="pc-badge pc-badge-quality">SERIES</span>' : '');
     var inWl = State.watchlist.some(function(w){return w.id===item.id;});
     var wlClass = inWl?'in-list':''; var wlIcon=inWl?'fa-check':'fa-heart';
     return '<div class="poster-card" onclick="Modal.openFull('+item.id+', '+Utils.jsAttr(mType)+')">'
