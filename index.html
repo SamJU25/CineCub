@@ -70,7 +70,7 @@
         <span class="nav-item-icon"><i class="fas fa-film"></i></span><span class="nav-item-text">Movies</span>
       </div>
       <div class="nav-item" id="nav-tv" onclick="App.browseTVShows()">
-        <span class="nav-item-icon"><i class="fas fa-tv"></i></span><span class="nav-item-text">Series</span>
+        <span class="nav-item-icon"><i class="fas fa-tv"></i></span><span class="nav-item-text">TV Series</span>
       </div>
       <div class="nav-item" id="nav-anime" onclick="App.browseAnime()">
         <span class="nav-item-icon"><i class="fas fa-dragon"></i></span><span class="nav-item-text">Anime</span>
@@ -182,7 +182,7 @@
           </div>
           <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-tv"></i></div>
-            <div><div class="stat-value" id="stat-shows">230K+</div><div class="stat-label">Series</div></div>
+            <div><div class="stat-value" id="stat-shows">230K+</div><div class="stat-label">TV Series</div></div>
           </div>
           <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-globe"></i></div>
@@ -203,7 +203,7 @@
             </div>
             <div class="by-genre-toggle">
               <div class="bgt-btn active" onclick="HomeGenre.setType('movie', this)">MOVIES</div>
-              <div class="bgt-btn" onclick="HomeGenre.setType('tv', this)">SERIES</div>
+              <div class="bgt-btn" onclick="HomeGenre.setType('tv', this)">TV SERIES</div>
               <div class="bgt-btn" onclick="HomeGenre.setType('anime', this)">ANIME</div>
             </div>
           </div>
@@ -251,7 +251,7 @@
           <div class="section-header">
             <div class="section-title-group">
               <div class="section-icon" style="background:var(--cv-purple-dim); color:var(--cv-purple-light);"><i class="fas fa-tv"></i></div>
-              <div><div class="section-title">Popular Series</div><div class="section-subtitle">Binge-worthy series</div></div>
+              <div><div class="section-title">Popular TV Series</div><div class="section-subtitle">Binge-worthy TV series</div></div>
             </div>
             <div class="section-view-all" onclick="App.browseTVShows()">View All <i class="fas fa-arrow-right"></i></div>
           </div>
@@ -392,7 +392,7 @@
   <nav class="mobile-bottom-bar">
     <button class="mbb-btn active" id="mbb-home" onclick="App.goHome(); MobNav.set(this)"><i class="fas fa-home"></i><span>Home</span></button>
     <button class="mbb-btn" id="mbb-movies" onclick="App.browseMovies(); MobNav.set(this)"><i class="fas fa-film"></i><span>Movies</span></button>
-    <button class="mbb-btn" id="mbb-tv" onclick="App.browseTVShows(); MobNav.set(this)"><i class="fas fa-tv"></i><span>Series</span></button>
+    <button class="mbb-btn" id="mbb-tv" onclick="App.browseTVShows(); MobNav.set(this)"><i class="fas fa-tv"></i><span>TV Series</span></button>
     <button class="mbb-btn" id="mbb-anime" onclick="App.browseAnime(); MobNav.set(this)"><i class="fas fa-dragon"></i><span>Anime</span></button>
     <button class="mbb-btn" id="mbb-watchlist" onclick="App.showWatchlist(); MobNav.set(this)"><i class="fas fa-heart"></i><span>Watchlist</span></button>
   </nav>
