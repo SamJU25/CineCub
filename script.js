@@ -659,6 +659,9 @@ var Modal = {
       tp.parentNode.replaceChild(cloneTp, tp);
     }
     
+    var toast = document.getElementById('up-next-toast');
+    if (toast) toast.classList.add('hidden');
+    
     UIHelper.unlockScroll();
     document.title = "StreamHeaven \u2014 Watch Movies & TV Series";
     
@@ -866,9 +869,13 @@ var Player = {
           var epKey = 's' + season + 'e' + episode;
           if (itemData.show_progress[epKey] && itemData.show_progress[epKey].progress) {
             savedTime = itemData.show_progress[epKey].progress.watched;
+            var dur = itemData.show_progress[epKey].progress.duration;
+            if (dur > 0 && savedTime > dur - 60) savedTime = 0;
           }
         } else if (State.activeType === 'movie' && itemData.progress) {
           savedTime = itemData.progress.watched;
+          var dur = itemData.progress.duration;
+          if (dur > 0 && savedTime > dur - 60) savedTime = 0;
         }
       }
     } catch(e) {}
@@ -1276,8 +1283,12 @@ window.addEventListener('message', (event) => {
           document.getElementById('up-next-time').innerText = Math.floor(timeLeft);
         }
         if (Math.floor(timeLeft) === 0) {
-           Player.nextEpisode();
-           if(toast) toast.classList.add('hidden');
+           if (!State.isAutoplaying) {
+             State.isAutoplaying = true;
+             Player.nextEpisode();
+             if(toast) toast.classList.add('hidden');
+             setTimeout(() => { State.isAutoplaying = false; }, 5000);
+           }
         }
       } else {
         if(toast) toast.classList.add('hidden');
