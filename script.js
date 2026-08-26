@@ -1053,7 +1053,13 @@ var Modal = {
         if(epNavAdFree) epNavAdFree.style.display = 'none';
       }
 
-      document.getElementById('server-tabs').innerHTML = CFG.SERVERS.map((s,i) => '<div class="server-tab '+(i===0?'active':'')+'" onclick="Player.switchServer('+i+', this)"><i class="fas '+s.icon+'"></i> '+s.name+'</div>').join('');
+      var serverHtml = '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
+      serverHtml += '<select id="regular-server-select" onchange="Player.switchServer(this.value)">';
+      serverHtml += CFG.SERVERS.map((s,i) => '<option value="'+i+'">' + s.name + '</option>').join('');
+      serverHtml += '</select></div></div></div>';
+      var sTabs = document.getElementById('server-tabs');
+      sTabs.className = '';
+      sTabs.innerHTML = serverHtml;
       State.activeServer = 0;
 
       var trailerTab = document.getElementById('fv-tab-trailer');
@@ -1090,10 +1096,8 @@ var Modal = {
 };
 
 var Player = {
-  switchServer: function(idx, el){
+  switchServer: function(idx){
     State.activeServer = idx;
-    document.querySelectorAll('.server-tab').forEach(t => t.classList.remove('active'));
-    if(el) el.classList.add('active');
     this.loadVideo();
   },
   updateEpisodes: function() {
