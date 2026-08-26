@@ -1,0 +1,12 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "TMDB_API_KEY",
+      "description": "The Movie Database (TMDB) v3 API key. Already present in the committed .dev.vars file; used by the Pages Function at functions/api/tmdb/[[path]].js to proxy TMDB requests. Obtain from https://www.themoviedb.org/settings/api.",
+      "requiredAtBoot": false
+    }
+  ]
+}
