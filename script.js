@@ -442,7 +442,13 @@ var HomeGenre = {
       params.with_genres = this.genreId !== 'all' ? this.genreId + ',16' : 16;
     }
 
-    API.discover(fetchType, params).then(data => {
+    var p1 = API.discover(fetchType, Object.assign({}, params, {page: 1}));
+    var p2 = API.discover(fetchType, Object.assign({}, params, {page: 2}));
+
+    Promise.all([p1, p2]).then(res => {
+      var data = res[0];
+      if (res[1] && res[1].results) data.results = data.results.concat(res[1].results);
+      
       if(!data || !data.results || !data.results.length) {
         container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%">No titles found.</div>';
         return;
@@ -1193,12 +1199,15 @@ document.addEventListener('DOMContentLoaded', function(){
 
   Prog.start();
   Promise.all([
-    API.trending('all'),
-    API.topRated('movie'),
-    API.popular('tv'),
-    API.upcoming()
+    API.trending('all', 1), API.trending('all', 2),
+    API.topRated('movie', 1),
+    API.popular('tv', 1), API.popular('tv', 2),
+    API.upcoming(1), API.upcoming(2)
   ]).then(function(res){
-    var tr=res[0], rtd=res[1], tv=res[2], up=res[3];
+    var tr=res[0]; if(res[1] && res[1].results) tr.results = tr.results.concat(res[1].results);
+    var rtd=res[2];
+    var tv=res[3]; if(res[4] && res[4].results) tv.results = tv.results.concat(res[4].results);
+    var up=res[5]; if(res[6] && res[6].results) up.results = up.results.concat(res[6].results);
     
     /* 1. Hero Spotlight */
     if(tr && tr.results){
@@ -1216,7 +1225,7 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('trending-scroll').innerHTML = tickerHtml + tickerHtml;
 
       /* 3. Trending Now Row */
-      document.getElementById('row-trending').innerHTML = tr.results.slice(0,15).map(x => Render.posterCard(x)).join('');
+      document.getElementById('row-trending').innerHTML = tr.results.slice(0,35).map(x => Render.posterCard(x)).join('');
 
       /* 4. Top 10 Today List */
       document.getElementById('list-top10').innerHTML = tr.results.slice(0,10).map((x,i) => Render.compactCard(x, i+1)).join('');
@@ -1229,12 +1238,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
     /* 6. TV Series */
     if(tv && tv.results){
-      document.getElementById('row-tvshows').innerHTML = tv.results.slice(0,15).map(x => Render.posterCard(x,'tv')).join('');
+      document.getElementById('row-tvshows').innerHTML = tv.results.slice(0,35).map(x => Render.posterCard(x,'tv')).join('');
     }
 
     /* 7. New Releases */
     if(up && up.results){
-      document.getElementById('row-newreleases').innerHTML = up.results.slice(0,15).map(x => Render.posterCard(x,'movie')).join('');
+      document.getElementById('row-newreleases').innerHTML = up.results.slice(0,35).map(x => Render.posterCard(x,'movie')).join('');
     }
 
     Prog.done();
