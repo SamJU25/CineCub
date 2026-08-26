@@ -961,6 +961,17 @@ var Modal = {
       iframe.parentNode.replaceChild(cloneMain, iframe);
     }
     
+    var adFreeVideo = document.getElementById('native-player-adfree');
+    if (adFreeVideo) {
+      adFreeVideo.pause();
+      adFreeVideo.removeAttribute('src');
+      adFreeVideo.load();
+    }
+    if (typeof AdFreePlayer !== 'undefined' && AdFreePlayer.hls) {
+      AdFreePlayer.hls.destroy();
+      AdFreePlayer.hls = null;
+    }
+    
     if (!skipHistory && window.location.hash === '#media') {
       window.history.back();
     }
