@@ -359,14 +359,20 @@ var Search = {
   },
   doSearch: function(q){
     API.search(q).then(data => {
-      var r = ((data && data.results) || []).filter(x => x.poster_path && x.media_type!=='person').slice(0,6);
+      var r = ((data && data.results) || []).filter(x => x.poster_path && x.media_type!=='person').slice(0,12);
       if(!r.length){ document.getElementById('srd-results').innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);">No results found.</div>'; return; }
-      document.getElementById('srd-results').innerHTML = r.map(item => {
+      var html = r.map(item => {
         var t = item.media_type||'movie';
         return '<div class="srd-item" onclick="Modal.openFull('+item.id+',\''+t+'\')">'
           + '<img class="srd-poster" src="'+CFG.IMG185+item.poster_path+'" loading="lazy" decoding="async" alt="'+Utils.escape(item.title||item.name)+'"/>'
           + '<div class="srd-info"><div class="srd-title">'+Utils.escape(item.title||item.name)+'</div><div class="srd-meta">'+Utils.year(item.release_date||item.first_air_date)+' &middot; '+t.toUpperCase()+'</div></div></div>';
       }).join('');
+      
+      if (data && data.total_results > r.length) {
+          html += '<div class="srd-item" style="justify-content:center;color:var(--cv-purple);font-weight:bold;text-align:center;padding:15px;" onclick="Search.executeFullSearch(\''+Utils.escape(q.replace(/'/g, "\\'"))+'\', false)">See all results for "'+Utils.escape(q)+'" <i class="fas fa-arrow-right" style="margin-left:8px;"></i></div>';
+      }
+      
+      document.getElementById('srd-results').innerHTML = html;
     });
   },
   closeDropdown: function(){ document.getElementById('search-dropdown').classList.remove('open'); },
