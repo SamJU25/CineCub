@@ -66,9 +66,6 @@
       <div class="nav-item active" id="nav-home" onclick="App.goHome()">
         <span class="nav-item-icon"><i class="fas fa-home"></i></span><span class="nav-item-text">Home</span>
       </div>
-      <div class="nav-item" id="nav-search-tab" onclick="App.showSearchPage()">
-        <span class="nav-item-icon"><i class="fas fa-search"></i></span><span class="nav-item-text">Search</span>
-      </div>
       <div class="nav-item" id="nav-movies" onclick="App.browseMovies()">
         <span class="nav-item-icon"><i class="fas fa-film"></i></span><span class="nav-item-text">Movies</span>
       </div>
@@ -317,12 +314,8 @@
     <!-- SEARCH PAGE -->
     <div class="cv-page" id="page-search">
       <div class="cv-container" style="padding-top:20px;">
-        <div class="browse-header" id="search-header" style="margin-bottom:20px; display:flex; flex-direction:column; align-items:flex-start;">
-          <h2 class="browse-title" id="search-title" style="margin-bottom:20px;">Search</h2>
-          <div style="position:relative; width:100%; max-width:600px; margin-bottom:20px;">
-            <i class="fas fa-search" style="position:absolute; left:20px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.5); font-size:18px;"></i>
-            <input type="text" id="page-search-input" placeholder="Search for movies, series, anime..." style="width:100%; padding:15px 20px 15px 50px; border-radius:30px; border:none; background:rgba(255,255,255,0.05); color:#fff; font-size:16px; outline:none; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-          </div>
+        <div class="browse-header" id="search-header" style="margin-bottom:20px; display:flex;">
+          <h2 class="browse-title" id="search-title">Search Results</h2>
         </div>
         <div class="poster-grid" id="search-full-grid"></div>
         <div class="loading-spinner hidden" id="search-spinner">
