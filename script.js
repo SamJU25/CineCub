@@ -373,7 +373,10 @@ var Search = {
   executeFullSearch: function(q, isAppend) {
     if(!q || !q.trim()) return;
     this.closeDropdown();
-    App.showPage('page-search');
+    if (!isAppend) {
+      App.showPage('page-search');
+      App.setNav('nav-search-tab', 'Search');
+    }
     var titleEl = document.getElementById('search-title');
     if(titleEl) titleEl.innerText = 'Search Results for "'+q+'"';
     var spinner = document.getElementById('search-spinner');
