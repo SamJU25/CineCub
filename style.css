@@ -823,3 +823,8 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   .compact-card:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
 }
 
+/* Hide native video buffering spinner */
+#native-player-adfree::-webkit-media-controls-overlay-enclosure,
+#native-player-adfree::-webkit-media-controls-loading-panel {
+  display: none !important;
+}
