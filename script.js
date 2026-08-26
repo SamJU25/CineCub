@@ -401,7 +401,7 @@ var Search = {
 
 var HomeGenre = {
   type: 'movie',
-  genreId: 28,
+  genreId: 'all',
   init: function() {
     this.renderBtns();
     this.load();
@@ -419,7 +419,8 @@ var HomeGenre = {
     this.load();
   },
   renderBtns: function() {
-    var html = CFG.GENRES.map(g => {
+    var html = '<div class="genre-sq-btn ' + (this.genreId === 'all' ? 'active' : '') + '" onclick="HomeGenre.setGenre(\'all\', this)">ALL</div>';
+    html += CFG.GENRES.map(g => {
       var act = g.id === this.genreId ? 'active' : '';
       return '<div class="genre-sq-btn '+act+'" onclick="HomeGenre.setGenre('+g.id+', this)">'+g.name+'</div>';
     }).join('');
@@ -430,11 +431,15 @@ var HomeGenre = {
     container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%">Loading...</div>';
     
     var fetchType = this.type === 'anime' ? 'tv' : this.type;
-    var params = {with_genres: this.genreId, page:1, sort_by:'popularity.desc'};
+    var params = {page:1, sort_by:'popularity.desc'};
+    
+    if (this.genreId !== 'all') {
+      params.with_genres = this.genreId;
+    }
     
     if (this.type === 'anime') {
       params.with_original_language = 'ja';
-      params.with_genres = this.genreId + ',16'; // 16 is Animation
+      params.with_genres = this.genreId !== 'all' ? this.genreId + ',16' : 16;
     }
 
     API.discover(fetchType, params).then(data => {
@@ -442,7 +447,12 @@ var HomeGenre = {
         container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%">No titles found.</div>';
         return;
       }
-      container.innerHTML = data.results.map(item => Render.posterCard(item, fetchType)).join('');
+      // To give a more "random" feel across all genres, we can shuffle the results if 'all' is selected
+      var results = data.results;
+      if (this.genreId === 'all') {
+        results = results.sort(() => Math.random() - 0.5);
+      }
+      container.innerHTML = results.map(item => Render.posterCard(item, fetchType)).join('');
     });
   }
 };
