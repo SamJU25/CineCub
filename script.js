@@ -859,8 +859,9 @@ var Player = {
     var iframe = document.getElementById('main-player');
     iframe.style.display = 'block';
     
-    // Removed sandbox completely because most providers actively detect and block it
-    iframe.removeAttribute('sandbox');
+    // Applying strict sandbox to block popups and top-level redirects.
+    // If a specific server breaks, we can add 'allow-popups' back to it.
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
 
     var s=CFG.SERVERS[State.activeServer], url, season=null, episode=null, savedTime=0;
     
@@ -1248,6 +1249,15 @@ document.addEventListener('DOMContentLoaded', function(){
   window.addEventListener('hashchange', function() {
     if (window.location.hash !== '#media' && document.getElementById('modal-overlay').classList.contains('open')) {
       Modal.closeAll(true);
+    }
+  });
+
+  // Anti-Redirect / Ad-Blocker Fallback
+  window.addEventListener('beforeunload', function (e) {
+    if (document.getElementById('modal-overlay').classList.contains('open')) {
+      e.preventDefault();
+      e.returnValue = 'Are you sure you want to leave the stream?';
+      return e.returnValue;
     }
   });
 });
