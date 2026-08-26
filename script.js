@@ -257,10 +257,6 @@ var App = {
     document.querySelectorAll('.cv-page').forEach(function(p){ p.classList.remove('active'); });
     var page=document.getElementById(id); if(page) page.classList.add('active');
     window.scrollTo({top:0}); Sidebar.close();
-    
-    if (id === 'page-home' && typeof History !== 'undefined' && History.renderContinueWatching) {
-      History.renderContinueWatching();
-    }
   },
   setNav: function(id, title){
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -965,60 +961,7 @@ var History = {
     Library.saveUserData();
   },
   render: function(){var el=document.getElementById('history-grid');if(!el)return;el.innerHTML=State.history.map(function(x){return Render.posterCard(x,x.type);}).join('')||'<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">Your watch history is empty.</div>';},
-  clearAll: function(){if(!State.history.length){Toast.show('Watch history is already empty.','info');return;}State.history=[];Library.saveUserData();this.render();Toast.show('History cleared successfully.','success');},
-  renderContinueWatching: function(){
-    var cwSection = document.getElementById('cw-section');
-    var cwGrid = document.getElementById('cw-grid');
-    if (!cwSection || !cwGrid) return;
-    
-    var vlData = {};
-    try { vlData = JSON.parse(localStorage.getItem('vidLinkProgress') || '{}'); } catch(e){}
-    
-    var cwItems = [];
-    for(var i=0; i<State.history.length; i++) {
-      var h = State.history[i];
-      var p = vlData[h.id];
-      if (!p) continue;
-      
-      var progObj = null;
-      if (h.type === 'tv' && p.show_progress) {
-        var s = (h.season !== undefined && h.season !== null) ? h.season : 1;
-        var e = (h.episode !== undefined && h.episode !== null) ? h.episode : 1;
-        var epKey = 's' + s + 'e' + e;
-        if (p.show_progress[epKey] && p.show_progress[epKey].progress) {
-          progObj = p.show_progress[epKey].progress;
-        }
-      } else if (h.type === 'movie' && p.progress) {
-        progObj = p.progress;
-      }
-      
-      if (progObj && progObj.watched > 0) {
-        var pct = 10;
-        if (progObj.duration > 0) {
-           pct = (progObj.watched / progObj.duration) * 100;
-           if (pct > 95) continue;
-        }
-        var itemCopy = Object.assign({}, h);
-        itemCopy.progressPercent = pct;
-        cwItems.push(itemCopy);
-      }
-      if (cwItems.length >= 6) break;
-    }
-    
-    if (cwItems.length > 0) {
-      cwSection.classList.remove('hidden');
-      cwGrid.innerHTML = cwItems.map(function(item){ 
-        var card = Render.posterCard(item, item.type);
-        if (item.progressPercent) {
-           var progHtml = '<div class="cw-progress"><div class="cw-progress-bar" style="width:'+item.progressPercent+'%"></div></div>';
-           card = card.replace('<div class="poster-card-grad"></div>', '<div class="poster-card-grad"></div>' + progHtml);
-        }
-        return card;
-      }).join('');
-    } else {
-      cwSection.classList.add('hidden');
-    }
-  }
+  clearAll: function(){if(!State.history.length){Toast.show('Watch history is already empty.','info');return;}State.history=[];Library.saveUserData();this.render();Toast.show('History cleared successfully.','success');}
 };
 
 
@@ -1187,7 +1130,6 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     Prog.done();
-    History.renderContinueWatching();
   }).catch(err => {
     console.error('Initialization error:', err);
     Prog.done();
