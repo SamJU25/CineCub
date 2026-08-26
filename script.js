@@ -1308,29 +1308,34 @@ var AdFreePlayer = {
           return;
         }
         
-        var html = '';
+        var html = '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
+        html += '<select id="adfree-server-select" onchange="AdFreePlayer.onServerSelect(this.value)">';
+        AdFreePlayer.streams = streams;
         streams.forEach((s, idx) => {
-           var streamType = 'm3u8';
-           if (s.title && s.title.toLowerCase().indexOf('mp4') !== -1) streamType = 'mp4';
-           if (s.url && s.url.toLowerCase().indexOf('.mp4') !== -1) streamType = 'mp4';
-           var escapedUrl = encodeURIComponent(s.url);
-           html += '<button class="server-tab" onclick="AdFreePlayer.playStream(decodeURIComponent(\'' + escapedUrl + '\'), \'' + streamType + '\', this)">' + (s.name || s.provider) + ' (' + (s.quality || '?') + ')</button>';
+           html += '<option value="'+idx+'">' + (s.name || s.provider) + ' (' + (s.quality || '?') + ')</option>';
         });
-        sTabs.innerHTML = html;
+        html += '</select></div></div></div>';
         
-        var firstBtn = sTabs.querySelector('.server-tab');
-        if (firstBtn) firstBtn.click();
+        sTabs.className = ''; // Remove flex layout from container
+        sTabs.innerHTML = html;
+        CustomSelect.init();
+        
+        AdFreePlayer.onServerSelect(0);
       })
       .catch(e => {
         console.error('AdFree Fetch Error:', e);
         sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">Ad-Free streams are unavailable right now. Try the regular Watch tab instead.</div>';
       });
   },
-  playStream: function(url, type, btnEl) {
-    var sTabs = document.getElementById('server-tabs-adfree');
-    sTabs.querySelectorAll('.server-tab').forEach(b => b.classList.remove('active'));
-    if (btnEl) btnEl.classList.add('active');
-    
+  onServerSelect: function(idx) {
+    var s = AdFreePlayer.streams[idx];
+    if(!s) return;
+    var streamType = 'm3u8';
+    if (s.title && s.title.toLowerCase().indexOf('mp4') !== -1) streamType = 'mp4';
+    if (s.url && s.url.toLowerCase().indexOf('.mp4') !== -1) streamType = 'mp4';
+    AdFreePlayer.playStream(s.url, streamType);
+  },
+  playStream: function(url, type) {
     var video = document.getElementById('native-player-adfree');
     var wrap = document.getElementById('player-wrap-adfree');
     video.style.display = 'block';
