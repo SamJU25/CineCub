@@ -389,6 +389,45 @@ var Search = {
   }
 };
 
+var HomeGenre = {
+  type: 'movie',
+  genreId: 28,
+  init: function() {
+    this.renderBtns();
+    this.load();
+  },
+  setType: function(type, el) {
+    this.type = type;
+    document.querySelectorAll('.bgt-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    this.load();
+  },
+  setGenre: function(id, el) {
+    this.genreId = id;
+    document.querySelectorAll('.genre-sq-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    this.load();
+  },
+  renderBtns: function() {
+    var html = CFG.GENRES.map(g => {
+      var act = g.id === this.genreId ? 'active' : '';
+      return '<div class="genre-sq-btn '+act+'" onclick="HomeGenre.setGenre('+g.id+', this)">'+g.name+'</div>';
+    }).join('');
+    document.getElementById('home-genre-btns').innerHTML = html;
+  },
+  load: function() {
+    var container = document.getElementById('row-home-genre');
+    container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%">Loading...</div>';
+    API.discover(this.type, {with_genres: this.genreId, page:1, sort_by:'popularity.desc'}).then(data => {
+      if(!data || !data.results || !data.results.length) {
+        container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%">No titles found.</div>';
+        return;
+      }
+      container.innerHTML = data.results.map(item => Render.posterCard(item, this.type)).join('');
+    });
+  }
+};
+
 /* ================================================================
    04. HERO SPOTLIGHT SLIDER
 ================================================================ */
@@ -1058,11 +1097,8 @@ document.addEventListener('DOMContentLoaded', function(){
   Library.init();
   initDragScroll();
 
-  /* Render Category Chips */
-  var chipsHtml = CFG.GENRES.map(function(g){ 
-    return '<div class="genre-chip" onclick="Browse.byGenre('+g.id+', \''+g.name+'\')">'+g.name+'</div>'; 
-  }).join('');
-  document.getElementById('genre-chips').innerHTML = chipsHtml;
+  /* Init By Genre Section */
+  HomeGenre.init();
 
   /* Populate Genre Select */
   var genreSelect = document.getElementById('browse-genre');

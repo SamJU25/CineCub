@@ -194,8 +194,22 @@
           </div>
         </div>
 
-        <!-- CATEGORY CHIP STRIP -->
-        <div class="genre-chips-wrap" id="genre-chips"></div>
+        <!-- BY GENRE SECTION -->
+        <section class="section-wrapper by-genre-section">
+          <div class="section-header" style="margin-bottom:0;">
+            <div class="section-title-group">
+              <div class="section-title" style="font-style:italic; font-family:serif; font-weight:600; font-size:28px;">
+                <span style="font-size:14px; opacity:0.5; margin-right:8px; font-family:sans-serif; font-style:normal;">08</span> By Genre
+              </div>
+            </div>
+            <div class="by-genre-toggle">
+              <div class="bgt-btn active" onclick="HomeGenre.setType('movie', this)">MOVIES</div>
+              <div class="bgt-btn" onclick="HomeGenre.setType('tv', this)">SERIES</div>
+            </div>
+          </div>
+          <div class="genre-btn-scroll cv-hscroll" id="home-genre-btns"></div>
+          <div class="cv-hscroll" id="row-home-genre" style="min-height:280px; margin-bottom:10px;"></div>
+        </section>
 
         <!-- TRENDING NOW ROW -->
         <section class="section-wrapper">
