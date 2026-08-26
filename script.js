@@ -106,8 +106,11 @@ var API = {
   discover: function(type,params){ 
     if(type === 'tv' && params && params.with_genres) {
       var genreMap = {28:10759, 12:10759, 878:10765, 14:10765, 27:9648, 10749:18, 53:9648};
-      var gid = parseInt(params.with_genres);
-      if(genreMap[gid]) params.with_genres = genreMap[gid];
+      var gids = String(params.with_genres).split(',');
+      params.with_genres = gids.map(function(id) {
+        var gid = parseInt(id);
+        return genreMap[gid] ? genreMap[gid] : gid;
+      }).join(',');
     }
     return API.fetch(API.url('/discover/'+(type||'movie'),params)); 
   }
@@ -425,12 +428,21 @@ var HomeGenre = {
   load: function() {
     var container = document.getElementById('row-home-genre');
     container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%">Loading...</div>';
-    API.discover(this.type, {with_genres: this.genreId, page:1, sort_by:'popularity.desc'}).then(data => {
+    
+    var fetchType = this.type === 'anime' ? 'tv' : this.type;
+    var params = {with_genres: this.genreId, page:1, sort_by:'popularity.desc'};
+    
+    if (this.type === 'anime') {
+      params.with_original_language = 'ja';
+      params.with_genres = this.genreId + ',16'; // 16 is Animation
+    }
+
+    API.discover(fetchType, params).then(data => {
       if(!data || !data.results || !data.results.length) {
         container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%">No titles found.</div>';
         return;
       }
-      container.innerHTML = data.results.map(item => Render.posterCard(item, this.type)).join('');
+      container.innerHTML = data.results.map(item => Render.posterCard(item, fetchType)).join('');
     });
   }
 };
