@@ -847,33 +847,3 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 #native-player-adfree::-webkit-media-controls-loading-panel {
   display: none !important;
 }
-p { bottom: 90px; right: 20px; width: 44px; height: 44px; font-size: 16px; }
-  .player-wrap { min-height: 320px !important; aspect-ratio: 16 / 9; }
-}
-
-/* ================================================================
-   12. MOBILE & PC POLISH (PWA, Touch, Hover)
-================================================================ */
-html { scroll-behavior: smooth; }
-body::-webkit-scrollbar { width: 8px; }
-body::-webkit-scrollbar-track { background: var(--cv-bg); }
-body::-webkit-scrollbar-thumb { background: var(--cv-dark-5); border-radius: var(--r-pill); transition: background var(--t-fast); }
-body::-webkit-scrollbar-thumb:hover { background: var(--cv-purple); }
-
-button, a, .poster-card, .compact-card { touch-action: manipulation; }
-@media (max-width: 768px) {
-  button:active, a:active, .poster-card:active, .compact-card:active, .nav-btn:active, .mbb-btn:active { transform: scale(0.96); opacity: 0.8; }
-  
-  .player-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-  .mobile-bottom-bar { padding-bottom: env(safe-area-inset-bottom); }
-}
-@media (hover: hover) {
-  .poster-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 15px rgba(139, 92, 246, 0.2); }
-  .compact-card:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
-}
-
-/* Hide native video buffering spinner */
-#native-player-adfree::-webkit-media-controls-overlay-enclosure,
-#native-player-adfree::-webkit-media-controls-loading-panel {
-  display: none !important;
-}
