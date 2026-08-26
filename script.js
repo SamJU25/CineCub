@@ -1029,10 +1029,14 @@ var Modal = {
         document.getElementById('ep-season').innerHTML = seasonHtml;
         if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').innerHTML = seasonHtml;
         
+        var hasSeason1 = validSeasons.some(function(s) { return s.season_number === 1; });
         var hist = State.history.find(function(h){return h.id===id && h.type==='tv';});
         if(hist && hist.season !== null && hist.season !== undefined) {
           document.getElementById('ep-season').value = hist.season;
           if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').value = hist.season;
+        } else if (hasSeason1) {
+          document.getElementById('ep-season').value = "1";
+          if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').value = "1";
         }
         
         Player.updateEpisodes();
@@ -1104,7 +1108,8 @@ var Player = {
     
     var currentEp = Number(eSelect.value || 1);
     eSelect.innerHTML = Array.from({length: count}, function(_,i) { 
-      return '<option value="'+(i+1)+'">Episode '+(i+1)+'</option>'; 
+      var label = sNumber === 0 ? 'Special ' + (i+1) : 'Episode ' + (i+1);
+      return '<option value="'+(i+1)+'">'+label+'</option>'; 
     }).join('');
     
     if (currentEp <= count) eSelect.value = currentEp;
@@ -1220,7 +1225,8 @@ var AdFreePlayer = {
     
     var currentEp = Number(eSelect.value || 1);
     eSelect.innerHTML = Array.from({length: count}, function(_,i) { 
-      return '<option value="'+(i+1)+'">Episode '+(i+1)+'</option>'; 
+      var label = sNumber === 0 ? 'Special ' + (i+1) : 'Episode ' + (i+1);
+      return '<option value="'+(i+1)+'">'+label+'</option>'; 
     }).join('');
     
     if (currentEp <= count) eSelect.value = currentEp;
