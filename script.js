@@ -1291,7 +1291,8 @@ var AdFreePlayer = {
         if (firstBtn) firstBtn.click();
       })
       .catch(e => {
-        sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">Error fetching streams. Ensure API is running.</div>';
+        console.error('AdFree Fetch Error:', e);
+        sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">Error fetching streams: ' + e.message + '</div>';
       });
   },
   playStream: function(url, type, btnEl) {
