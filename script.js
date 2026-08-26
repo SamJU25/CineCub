@@ -859,9 +859,8 @@ var Player = {
     var iframe = document.getElementById('main-player');
     iframe.style.display = 'block';
     
-    // Applying strict sandbox to block popups and top-level redirects.
-    // If a specific server breaks, we can add 'allow-popups' back to it.
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
+    // Removed sandbox completely because most providers actively detect and block it
+    iframe.removeAttribute('sandbox');
 
     var s=CFG.SERVERS[State.activeServer], url, season=null, episode=null, savedTime=0;
     
