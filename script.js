@@ -418,7 +418,11 @@ var Search = {
       }
     }).catch(err => {
       State.isFetching = false;
-      if(isAppend) State.browsePage--;
+      if (spinner) spinner.classList.add('hidden');
+      if (isAppend) State.browsePage--;
+      else if (grid) {
+        grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--cv-red);grid-column:1/-1;"><i class="fas fa-wifi" style="margin-bottom:10px;font-size:24px;display:block;"></i> Network error. Please check your connection.</div>';
+      }
     });
   },
   focusMobile: function(){
