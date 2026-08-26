@@ -392,7 +392,7 @@ iframe {border:none}
 .ep-select:hover {background:var(--cv-dark-5);color:var(--text-1);border-color:var(--cv-purple-light);}
 
 /* Season / Episode selector row — Watch & Ad-Free Watch tabs */
-.ep-nav {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;width:100%}
+.ep-nav {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;margin-top:16px;width:100%}
 .ep-selects {display:flex;flex-wrap:wrap;gap:10px;flex:0 0 auto}
 .ep-nav select {min-width:150px;background:var(--cv-dark-4);color:var(--text-1);border:1px solid var(--b-2);height:44px;padding:0 40px 0 16px;border-radius:var(--r-pill);font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 16px center;background-size:14px;transition:var(--t-fast);outline:none}
 .ep-nav select:hover {background-color:var(--cv-dark-5);border-color:var(--cv-purple-light)}
@@ -809,6 +809,7 @@ iframe {border:none}
   backdrop-filter: blur(4px);
 }
 #back-to-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+body:has(.modal-overlay.open) #back-to-top { display: none !important; }
 #back-to-top:hover {
   background: var(--cv-purple);
   color: #fff;
