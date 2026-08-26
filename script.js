@@ -1282,17 +1282,7 @@ var AdFreePlayer = {
            var streamType = 'm3u8';
            if (s.title && s.title.toLowerCase().indexOf('mp4') !== -1) streamType = 'mp4';
            if (s.url && s.url.toLowerCase().indexOf('.mp4') !== -1) streamType = 'mp4';
-           
-           var finalUrl = s.url;
-           if (finalUrl && finalUrl.indexOf('/m3u8-proxy?url=') !== -1) {
-             try {
-               var urlObj = new URL(finalUrl);
-               var directUrl = urlObj.searchParams.get('url');
-               if (directUrl) finalUrl = directUrl;
-             } catch(e) {}
-           }
-           
-           var escapedUrl = encodeURIComponent(finalUrl);
+           var escapedUrl = encodeURIComponent(s.url);
            html += '<button class="server-tab" onclick="AdFreePlayer.playStream(decodeURIComponent(\'' + escapedUrl + '\'), \'' + streamType + '\', this)">' + (s.name || s.provider) + ' (' + (s.quality || '?') + ')</button>';
         });
         sTabs.innerHTML = html;
@@ -1319,11 +1309,25 @@ var AdFreePlayer = {
     }
     
     if (type === 'm3u8' && typeof Hls !== 'undefined' && Hls.isSupported()) {
-      this.hls = new Hls();
+      this.hls = new Hls({ xhrSetup: function(xhr) { xhr.timeout = 15000; } });
       this.hls.loadSource(url);
       this.hls.attachMedia(video);
       this.hls.on(Hls.Events.MANIFEST_PARSED, function() {
         video.play().catch(e => console.log('Autoplay prevented', e));
+      });
+      this.hls.on(Hls.Events.ERROR, function(event, data) {
+        if (data.fatal) {
+          console.error('HLS Fatal Error:', data.type, data.details);
+          var sTabs = document.getElementById('server-tabs-adfree');
+          var errDiv = document.getElementById('adfree-error');
+          if (!errDiv) {
+            errDiv = document.createElement('div');
+            errDiv.id = 'adfree-error';
+            errDiv.style.cssText = 'padding:10px;color:#ff6b6b;text-align:center;font-size:13px;';
+            sTabs.parentNode.insertBefore(errDiv, sTabs.nextSibling);
+          }
+          errDiv.textContent = 'This server failed to load. Try clicking another server button above.';
+        }
       });
     } else {
       video.src = url;
