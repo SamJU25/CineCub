@@ -456,7 +456,7 @@
           <div class="ep-nav" id="ep-nav-controls" style="display:none;">
             <div class="ep-selects">
               <div class="custom-select" style="min-width: 150px;">
-                <select id="ep-season" onchange="Player.loadVideo()"></select>
+                <select id="ep-season" onchange="Player.updateEpisodes(); Player.loadVideo()"></select>
               </div>
               <div class="custom-select" style="min-width: 150px;">
                 <select id="ep-episode" onchange="Player.loadVideo()"></select>
@@ -507,7 +507,7 @@
           <div class="ep-nav" id="ep-nav-controls-adfree" style="display:none;">
             <div class="ep-selects">
               <div class="custom-select" style="min-width: 150px;">
-                <select id="ep-season-adfree" onchange="AdFreePlayer.loadVideo()"></select>
+                <select id="ep-season-adfree" onchange="AdFreePlayer.updateEpisodes(); AdFreePlayer.loadVideo()"></select>
               </div>
               <div class="custom-select" style="min-width: 150px;">
                 <select id="ep-episode-adfree" onchange="AdFreePlayer.loadVideo()"></select>
