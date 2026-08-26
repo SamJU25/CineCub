@@ -1282,7 +1282,17 @@ var AdFreePlayer = {
            var streamType = 'm3u8';
            if (s.title && s.title.toLowerCase().indexOf('mp4') !== -1) streamType = 'mp4';
            if (s.url && s.url.toLowerCase().indexOf('.mp4') !== -1) streamType = 'mp4';
-           var escapedUrl = encodeURIComponent(s.url);
+           
+           var finalUrl = s.url;
+           if (finalUrl && finalUrl.indexOf('/m3u8-proxy?url=') !== -1) {
+             try {
+               var urlObj = new URL(finalUrl);
+               var directUrl = urlObj.searchParams.get('url');
+               if (directUrl) finalUrl = directUrl;
+             } catch(e) {}
+           }
+           
+           var escapedUrl = encodeURIComponent(finalUrl);
            html += '<button class="server-tab" onclick="AdFreePlayer.playStream(decodeURIComponent(\'' + escapedUrl + '\'), \'' + streamType + '\', this)">' + (s.name || s.provider) + ' (' + (s.quality || '?') + ')</button>';
         });
         sTabs.innerHTML = html;
