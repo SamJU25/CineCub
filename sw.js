@@ -1,9 +1,10 @@
-const CACHE_NAME = 'streamheaven-cache-v3';
+const CACHE_NAME = 'streamheaven-cache-v4';
 const urlsToCache = [
   '/',
   '/index.html',
   '/style.css',
-  '/script.js'
+  '/script.js',
+  '/manifest.json'
 ];
 
 self.addEventListener('install', event => {

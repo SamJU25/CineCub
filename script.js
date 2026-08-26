@@ -508,12 +508,19 @@ var HScrollLoad = {
     ['row-home-genre', 'row-trending', 'row-tvshows', 'row-newreleases'].forEach(function(id) {
       var container = document.getElementById(id);
       if(!container) return;
+      var isScrolling = false;
       container.addEventListener('scroll', function() {
-        var maxScroll = container.scrollWidth - container.clientWidth;
-        if (maxScroll > 0 && container.scrollLeft > maxScroll - 800) {
-          HScrollLoad.trigger(id);
+        if (!isScrolling) {
+          window.requestAnimationFrame(function() {
+            var maxScroll = container.scrollWidth - container.clientWidth;
+            if (maxScroll > 0 && container.scrollLeft > maxScroll - 800) {
+              HScrollLoad.trigger(id);
+            }
+            isScrolling = false;
+          });
+          isScrolling = true;
         }
-      });
+      }, {passive: true});
     });
   },
   trigger: function(id) {
@@ -742,11 +749,26 @@ function initScrollButtons(){
       if(el.scrollLeft < maxScroll - 20 && maxScroll > 0) btnRight.classList.add('visible'); else btnRight.classList.remove('visible');
     };
 
-    el.addEventListener('scroll', updateBtns);
+    var updateBtnsRaf = false;
+    el.addEventListener('scroll', function() {
+      if (!updateBtnsRaf) {
+        window.requestAnimationFrame(function() {
+          updateBtns();
+          updateBtnsRaf = false;
+        });
+        updateBtnsRaf = true;
+      }
+    }, {passive: true});
+    
     // Initial update delayed to allow content rendering
     setTimeout(updateBtns, 500);
-    // Observe content changes (e.g. dynamically loaded posters)
-    var observer = new MutationObserver(updateBtns);
+    
+    // Observe content changes (e.g. dynamically loaded posters), debounced
+    var observerTimeout = null;
+    var observer = new MutationObserver(function() {
+      clearTimeout(observerTimeout);
+      observerTimeout = setTimeout(updateBtns, 100);
+    });
     observer.observe(el, { childList: true, subtree: true });
     window.addEventListener('resize', updateBtns);
   });
@@ -1435,13 +1457,20 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   // Back to Top Button Logic
+  var bttIsScrolling = false;
   window.addEventListener('scroll', function() {
-    var btn = document.getElementById('back-to-top');
-    if (btn) {
-      if (window.scrollY > 800) btn.classList.add('visible');
-      else btn.classList.remove('visible');
+    if (!bttIsScrolling) {
+      window.requestAnimationFrame(function() {
+        var btn = document.getElementById('back-to-top');
+        if (btn) {
+          if (window.scrollY > 800) btn.classList.add('visible');
+          else btn.classList.remove('visible');
+        }
+        bttIsScrolling = false;
+      });
+      bttIsScrolling = true;
     }
-  });
+  }, {passive: true});
 
   // Global Keyboard Shortcuts
   document.addEventListener('keydown', function(e) {
