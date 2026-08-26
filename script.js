@@ -556,6 +556,48 @@ function initDragScroll(){
   });
 }
 
+function initScrollButtons(){
+  document.querySelectorAll('.cv-hscroll').forEach(function(el){
+    if (el.dataset.btnInit === 'true') return;
+    el.dataset.btnInit = 'true';
+
+    var wrapper = document.createElement('div');
+    wrapper.className = 'hscroll-wrapper';
+    wrapper.style.position = 'relative';
+    el.parentNode.insertBefore(wrapper, el);
+    wrapper.appendChild(el);
+
+    var btnLeft = document.createElement('div');
+    btnLeft.className = 'hscroll-btn left';
+    btnLeft.innerHTML = '<i class="fas fa-chevron-left"></i>';
+    wrapper.appendChild(btnLeft);
+
+    var btnRight = document.createElement('div');
+    btnRight.className = 'hscroll-btn right';
+    btnRight.innerHTML = '<i class="fas fa-chevron-right"></i>';
+    wrapper.appendChild(btnRight);
+
+    var scrollAmount = window.innerWidth > 768 ? 600 : 300;
+    
+    btnLeft.addEventListener('click', function(){ el.scrollBy({ left: -scrollAmount, behavior: 'smooth' }); });
+    btnRight.addEventListener('click', function(){ el.scrollBy({ left: scrollAmount, behavior: 'smooth' }); });
+
+    var updateBtns = function() {
+      if(el.scrollLeft > 20) btnLeft.classList.add('visible'); else btnLeft.classList.remove('visible');
+      var maxScroll = el.scrollWidth - el.clientWidth;
+      if(el.scrollLeft < maxScroll - 20 && maxScroll > 0) btnRight.classList.add('visible'); else btnRight.classList.remove('visible');
+    };
+
+    el.addEventListener('scroll', updateBtns);
+    // Initial update delayed to allow content rendering
+    setTimeout(updateBtns, 500);
+    // Observe content changes (e.g. dynamically loaded posters)
+    var observer = new MutationObserver(updateBtns);
+    observer.observe(el, { childList: true, subtree: true });
+    window.addEventListener('resize', updateBtns);
+  });
+}
+
 /* ================================================================
    06. RENDERING & DATA ENGINE
 ================================================================ */
@@ -1125,6 +1167,7 @@ document.addEventListener('DOMContentLoaded', function(){
   Prog.init();
   Library.init();
   initDragScroll();
+  initScrollButtons();
 
   /* Init By Genre Section */
   HomeGenre.init();
