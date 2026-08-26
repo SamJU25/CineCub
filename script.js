@@ -705,7 +705,7 @@ var Modal = {
       document.getElementById('fv-runtime').textContent = type==='movie'?Utils.runtime(data.runtime):((data.number_of_seasons||1)+' Season(s)');
       
       var cast = ((data.credits&&data.credits.cast)||[]).slice(0,10);
-      document.getElementById('fv-cast').innerHTML = cast.map(c => '<div class="cast-card"><img class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'"/><div style="font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+Utils.escape(c.name)+'</div></div>').join('');
+      document.getElementById('fv-cast').innerHTML = cast.map(c => '<div class="cast-card"><img class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>').join('');
       
       var similar = ((data.similar&&data.similar.results)||[]).filter(x => x.poster_path);
       if(similar.length) {

@@ -413,7 +413,6 @@
           <div class="fv-tab active" onclick="FVTabs.showTab('overview', this)">Overview</div>
           <div class="fv-tab hidden" id="fv-tab-trailer" onclick="FVTabs.showTab('trailer', this)">Trailer</div>
           <div class="fv-tab" onclick="FVTabs.showTab('watch', this)">Watch</div>
-          <div class="fv-tab" onclick="FVTabs.showTab('cast', this)">Cast</div>
           <div class="fv-tab" onclick="FVTabs.showTab('similar', this)">Similar</div>
         </div>
         
@@ -425,6 +424,10 @@
               <div class="fv-info-item"><span class="fv-info-key">Genre</span><span class="fv-info-val" id="fv-genre"></span></div>
               <div class="fv-info-item"><span class="fv-info-key">Runtime</span><span class="fv-info-val" id="fv-runtime"></span></div>
             </div>
+          </div>
+          <div class="fv-cast-section">
+            <div class="fv-cast-header">CAST</div>
+            <div class="fv-cast-scroll cv-hscroll" id="fv-cast"></div>
           </div>
         </div>
 
@@ -461,9 +464,6 @@
           
 
         </div>
-
-        <!-- Cast Pane -->
-        <div class="fv-tab-pane" id="tab-cast"><div class="fv-cast-scroll cv-hscroll" id="fv-cast"></div></div>
 
         <!-- Trailer Pane -->
         <div class="fv-tab-pane" id="tab-trailer">
