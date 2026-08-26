@@ -101,7 +101,7 @@ var API = {
   popular:  function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/popular',{page:page||1})); },
   upcoming: function(page){ return API.fetch(API.url('/movie/upcoming',{page:page||1})); },
   anime:    function(page){ return API.fetch(API.url('/discover/tv',{page:page||1, with_genres:16, with_original_language:'ja'})); },
-  search:   function(q){ return API.fetch(API.url('/search/multi',{query:q,page:1,include_adult:false})); },
+  search:   function(q, page){ return API.fetch(API.url('/search/multi',{query:q,page:page||1,include_adult:false})); },
   detail:   function(id,type){ return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos,similar'})); },
   discover: function(type,params){ 
     if(type === 'tv' && params && params.with_genres) {
@@ -370,7 +370,7 @@ var Search = {
     });
   },
   closeDropdown: function(){ document.getElementById('search-dropdown').classList.remove('open'); },
-  executeFullSearch: function(q) {
+  executeFullSearch: function(q, isAppend) {
     if(!q || !q.trim()) return;
     this.closeDropdown();
     App.showPage('page-search');
@@ -379,18 +379,35 @@ var Search = {
     var spinner = document.getElementById('search-spinner');
     if(spinner) spinner.classList.remove('hidden');
     var grid = document.getElementById('search-full-grid');
-    if(grid) grid.innerHTML = '';
     
-    API.search(q).then(data => {
+    if(!isAppend) {
+      if(grid) grid.innerHTML = '';
+      State.browsePage = 1;
+      State.hasMore = true;
+    }
+    
+    State.isFetching = true;
+    
+    API.search(q, State.browsePage).then(data => {
+      State.isFetching = false;
       if(spinner) spinner.classList.add('hidden');
       var r = ((data && data.results) || []).filter(x => x.poster_path && x.media_type!=='person');
       if(grid) {
-        if(!r.length) { 
+        if(!isAppend && !r.length) { 
           grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No results found.</div>';
-        } else {
-          grid.innerHTML = r.map(item => Render.posterCard(item, item.media_type||'movie')).join('');
+          State.hasMore = false;
+        } else if (r.length) {
+          var html = r.map(item => Render.posterCard(item, item.media_type||'movie')).join('');
+          if(isAppend) grid.insertAdjacentHTML('beforeend', html);
+          else grid.innerHTML = html;
+        }
+        if (data && data.page >= data.total_pages) {
+          State.hasMore = false;
         }
       }
+    }).catch(err => {
+      State.isFetching = false;
+      if(isAppend) State.browsePage--;
     });
   },
   focusMobile: function(){
@@ -471,6 +488,7 @@ var HScrollLoad = {
       cfg.fetching = false;
     }).catch(function(err){
       cfg.fetching = false;
+      cfg.page--;
     });
   }
 };
@@ -1349,6 +1367,18 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     }, {rootMargin: '200px'});
     observer.observe(sentinel);
+  }
+
+  // Infinite Scroll Observer for Search
+  var sentinelSearch = document.getElementById('search-infinite-scroll-trigger');
+  if(sentinelSearch && window.IntersectionObserver) {
+    var observerSearch = new IntersectionObserver(function(entries){
+      if(entries[0].isIntersecting && State.activePage === 'page-search' && !State.isFetching && State.hasMore !== false) {
+        State.browsePage++;
+        Search.executeFullSearch(document.getElementById('search-input').value, true);
+      }
+    }, {rootMargin: '200px'});
+    observerSearch.observe(sentinelSearch);
   }
 
   // Back to Top Button Logic
