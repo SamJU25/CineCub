@@ -946,7 +946,7 @@ var History = {
   add: function(id,type,title,poster,season,episode,vote,date){
     var s = (season !== undefined && season !== null) ? season : null;
     var e = (episode !== undefined && episode !== null) ? episode : null;
-    var idx=State.history.findIndex(function(x){return x.id===id&&x.season===s&&x.episode===e;});
+    var idx=State.history.findIndex(function(x){return x.id===id;});
     if(idx>-1)State.history.splice(idx,1);
     State.history.unshift({id:id,type:type,title:title,poster_path:poster,season:s,episode:e,vote_average:vote,release_date:date,watchedAt:new Date().toISOString()});
     while(State.history.length>50)State.history.pop();
