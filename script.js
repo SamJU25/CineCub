@@ -399,6 +399,82 @@ var Search = {
   }
 };
 
+var HScrollLoad = {
+  config: {
+    'row-home-genre': {
+      page: 2, fetching: false, hasMore: true,
+      fetch: function(page) {
+        var fetchType = HomeGenre.type === 'anime' ? 'tv' : HomeGenre.type;
+        var params = {page: page, sort_by:'popularity.desc'};
+        if (HomeGenre.genreId !== 'all') params.with_genres = HomeGenre.genreId;
+        if (HomeGenre.type === 'anime') {
+          params.with_original_language = 'ja';
+          params.with_genres = HomeGenre.genreId !== 'all' ? HomeGenre.genreId + ',16' : 16;
+        }
+        return API.discover(fetchType, params);
+      }
+    },
+    'row-trending': {
+      page: 2, fetching: false, hasMore: true,
+      fetch: function(page) { return API.trending('all', page); }
+    },
+    'row-tvshows': {
+      page: 2, fetching: false, hasMore: true,
+      fetch: function(page) { return API.popular('tv', page); }
+    },
+    'row-newreleases': {
+      page: 2, fetching: false, hasMore: true,
+      fetch: function(page) { return API.upcoming(page); }
+    }
+  },
+  reset: function(id) {
+    if(this.config[id]) {
+      this.config[id].page = 2;
+      this.config[id].fetching = false;
+      this.config[id].hasMore = true;
+    }
+  },
+  init: function() {
+    ['row-home-genre', 'row-trending', 'row-tvshows', 'row-newreleases'].forEach(function(id) {
+      var container = document.getElementById(id);
+      if(!container) return;
+      container.addEventListener('scroll', function() {
+        var maxScroll = container.scrollWidth - container.clientWidth;
+        if (maxScroll > 0 && container.scrollLeft > maxScroll - 800) {
+          HScrollLoad.trigger(id);
+        }
+      });
+    });
+  },
+  trigger: function(id) {
+    var cfg = this.config[id];
+    if (!cfg || cfg.fetching || !cfg.hasMore) return;
+    cfg.fetching = true;
+    cfg.page++;
+    
+    var container = document.getElementById(id);
+    cfg.fetch(cfg.page).then(function(data) {
+      if (!data || !data.results || data.results.length === 0) {
+        cfg.hasMore = false;
+      } else {
+        var type = 'movie'; 
+        if (id === 'row-tvshows') type = 'tv';
+        else if (id === 'row-home-genre') type = HomeGenre.type === 'anime' ? 'tv' : HomeGenre.type;
+        
+        var html = data.results.map(function(x) {
+          return Render.posterCard(x, id === 'row-trending' ? null : type);
+        }).join('');
+        container.insertAdjacentHTML('beforeend', html);
+        
+        if (data.page >= data.total_pages) cfg.hasMore = false;
+      }
+      cfg.fetching = false;
+    }).catch(function(err){
+      cfg.fetching = false;
+    });
+  }
+};
+
 var HomeGenre = {
   type: 'movie',
   genreId: 'all',
@@ -427,6 +503,7 @@ var HomeGenre = {
     document.getElementById('home-genre-btns').innerHTML = html;
   },
   load: function() {
+    HScrollLoad.reset('row-home-genre');
     var container = document.getElementById('row-home-genre');
     container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%">Loading...</div>';
     
@@ -1174,6 +1251,7 @@ document.addEventListener('DOMContentLoaded', function(){
   Library.init();
   initDragScroll();
   initScrollButtons();
+  HScrollLoad.init();
 
   /* Init By Genre Section */
   HomeGenre.init();
