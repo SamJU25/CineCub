@@ -1097,6 +1097,7 @@ var Player = {
     }).join('');
     
     if (currentEp <= count) eSelect.value = currentEp;
+    CustomSelect.init();
   },
   nextEpisode: function(){
     if(State.activeType !== 'tv') return;
@@ -1212,6 +1213,7 @@ var AdFreePlayer = {
     }).join('');
     
     if (currentEp <= count) eSelect.value = currentEp;
+    CustomSelect.init();
   },
   nextEpisode: function(){
     if(State.activeType !== 'tv') return;

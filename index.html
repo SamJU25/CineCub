@@ -455,8 +455,12 @@
           <!-- Controls for TV (Next/Prev) -->
           <div class="ep-nav" id="ep-nav-controls" style="display:none;">
             <div class="ep-selects">
-              <select id="ep-season" onchange="Player.loadVideo()"></select>
-              <select id="ep-episode" onchange="Player.loadVideo()"></select>
+              <div class="custom-select" style="min-width: 150px;">
+                <select id="ep-season" onchange="Player.loadVideo()"></select>
+              </div>
+              <div class="custom-select" style="min-width: 150px;">
+                <select id="ep-episode" onchange="Player.loadVideo()"></select>
+              </div>
             </div>
             <div class="ep-btns">
               <button class="btn-primary" id="ep-btn-prev" onclick="Player.prevEpisode()"><i class="fas fa-angle-double-left"></i> Prev Ep</button>
@@ -502,8 +506,12 @@
           <!-- Controls for TV (Next/Prev) -->
           <div class="ep-nav" id="ep-nav-controls-adfree" style="display:none;">
             <div class="ep-selects">
-              <select id="ep-season-adfree" onchange="AdFreePlayer.loadVideo()"></select>
-              <select id="ep-episode-adfree" onchange="AdFreePlayer.loadVideo()"></select>
+              <div class="custom-select" style="min-width: 150px;">
+                <select id="ep-season-adfree" onchange="AdFreePlayer.loadVideo()"></select>
+              </div>
+              <div class="custom-select" style="min-width: 150px;">
+                <select id="ep-episode-adfree" onchange="AdFreePlayer.loadVideo()"></select>
+              </div>
             </div>
             <div class="ep-btns">
               <button class="btn-primary" id="ep-btn-prev-adfree" onclick="AdFreePlayer.prevEpisode()"><i class="fas fa-angle-double-left"></i> Prev Ep</button>

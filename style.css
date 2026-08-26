@@ -408,6 +408,7 @@ iframe {border:none}
 .select-selected {background:var(--cv-dark-4); color:var(--text-2); border:1px solid var(--b-2); padding:8px 14px; border-radius:var(--r-pill); cursor:pointer; transition:var(--t-fast); display:flex; justify-content:space-between; align-items:center; user-select:none;}
 .select-selected:hover {background:var(--cv-dark-5); color:var(--text-1); border-color:var(--cv-purple-light);}
 .select-selected:after {content:"\f107"; font-family:"Font Awesome 5 Free"; font-weight:900; color:var(--cv-purple); font-size:14px;}
+.ep-selects .select-selected { height: 44px; padding: 0 16px; font-size: 13px; }
 .select-selected.select-arrow-active {border-color:var(--cv-purple); box-shadow:0 0 0 2px rgba(181,95,230,0.2);}
 .select-selected.select-arrow-active:after {content:"\f106";}
 .select-items {position:absolute; background-color:var(--cv-dark-4); border:1px solid var(--cv-purple-dim); box-shadow:0 8px 24px rgba(0,0,0,0.5); top:100%; left:0; right:0; z-index:6000; border-radius:12px; margin-top:6px; max-height:280px; overflow-y:auto; overscroll-behavior:contain;}
