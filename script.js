@@ -103,7 +103,14 @@ var API = {
   anime:    function(page){ return API.fetch(API.url('/discover/tv',{page:page||1, with_genres:16, with_original_language:'ja'})); },
   search:   function(q){ return API.fetch(API.url('/search/multi',{query:q,page:1,include_adult:false})); },
   detail:   function(id,type){ return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos,similar'})); },
-  discover: function(type,params){ return API.fetch(API.url('/discover/'+(type||'movie'),params)); }
+  discover: function(type,params){ 
+    if(type === 'tv' && params && params.with_genres) {
+      var genreMap = {28:10759, 12:10759, 878:10765, 14:10765, 27:9648, 10749:18, 53:9648};
+      var gid = parseInt(params.with_genres);
+      if(genreMap[gid]) params.with_genres = genreMap[gid];
+    }
+    return API.fetch(API.url('/discover/'+(type||'movie'),params)); 
+  }
 };
 
 var Prog = {
