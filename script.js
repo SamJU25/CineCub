@@ -445,7 +445,10 @@ var Spotlight = {
     document.querySelectorAll('.spotlight-dot').forEach((d,i) => d.classList.toggle('active', i===idx));
     this.resetProgress();
   },
-  next: function(){ this.goTo((this.current+1) % this.items.length); },
+  next: function(){ 
+    if(State.activePage !== 'page-home') return;
+    this.goTo((this.current+1) % this.items.length); 
+  },
   prev: function(){ this.goTo((this.current-1+this.items.length) % this.items.length); },
   startAuto: function(){ clearInterval(this.timer); this.timer = setInterval(()=>this.next(), CFG.SPOTLIGHT_INTERVAL); this.resetProgress(); },
   resetProgress: function(){
@@ -600,6 +603,7 @@ var Browse = {
       State.isFetching = false;
       if(data && data.results){
         var items=data.results.filter(function(x){return x.poster_path;});
+        if (items.length === 0) State.hasMore = false;
         var html = items.map(function(x){return Render.posterCard(x, State.browseType==='all'?null:State.browseType);}).join('');
         if(!html && !append) html = '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No titles found.</div>';
         if(append) document.getElementById('browse-grid').insertAdjacentHTML('beforeend', html);
@@ -627,6 +631,7 @@ var Browse = {
       State.isFetching = false;
       if(data && data.results){
         var items=data.results.filter(function(x){return x.poster_path;});
+        if (items.length === 0) State.hasMore = false;
         var html = items.map(function(x){return Render.posterCard(x,State.browseType);}).join('');
         if(!html && !append) html = '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No titles found.</div>';
         if(append) document.getElementById('browse-grid').insertAdjacentHTML('beforeend', html);
@@ -1200,7 +1205,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var sentinel = document.getElementById('infinite-scroll-trigger');
   if(sentinel && window.IntersectionObserver) {
     var observer = new IntersectionObserver(function(entries){
-      if(entries[0].isIntersecting && State.activePage === 'page-browse' && !State.isFetching) {
+      if(entries[0].isIntersecting && State.activePage === 'page-browse' && !State.isFetching && State.hasMore !== false) {
         State.browsePage++;
         if(State.browseMode === 'genre') Browse.byGenre(State.genreId, document.getElementById('header-page-title').textContent, true);
         else Browse.load(true);
