@@ -390,6 +390,19 @@ iframe {border:none}
 .ep-row.hidden {display:none !important}
 .ep-select {flex:0 0 auto;width:140px;background:var(--cv-dark-4);color:var(--text-2);border:1px solid var(--b-2);padding:9px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239d4edd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 14px center;background-size:14px;transition:var(--t-fast);outline:none;}
 .ep-select:hover {background:var(--cv-dark-5);color:var(--text-1);border-color:var(--cv-purple-light);}
+
+/* Season / Episode selector row — Watch & Ad-Free Watch tabs */
+.ep-nav {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;width:100%}
+.ep-selects {display:flex;flex-wrap:wrap;gap:10px;flex:0 0 auto}
+.ep-nav select {min-width:150px;background:var(--cv-dark-4);color:var(--text-1);border:1px solid var(--b-2);height:44px;padding:0 40px 0 16px;border-radius:var(--r-pill);font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 16px center;background-size:14px;transition:var(--t-fast);outline:none}
+.ep-nav select:hover {background-color:var(--cv-dark-5);border-color:var(--cv-purple-light)}
+.ep-nav select:focus {border-color:var(--cv-purple);box-shadow:0 0 0 2px rgba(157,78,221,0.25)}
+.ep-nav select option {background:var(--cv-dark-4);color:var(--text-1)}
+.ep-btns {display:flex;gap:10px;flex:0 0 auto}
+.btn-primary {display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--cv-dark-4);border:1px solid var(--b-2);color:#fff;height:44px;padding:0 20px;border-radius:var(--r-pill);font-size:13px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;transition:var(--t-fast)}
+.btn-primary i {color:var(--cv-purple-light)}
+.btn-primary:hover {background:var(--cv-purple-dim);border-color:var(--cv-purple)}
+.btn-primary:active {transform:scale(0.97)}
 .custom-select {position:relative; font-size:12px; font-weight:700;}
 .custom-select select {display:none;}
 .select-selected {background:var(--cv-dark-4); color:var(--text-2); border:1px solid var(--b-2); padding:8px 14px; border-radius:var(--r-pill); cursor:pointer; transition:var(--t-fast); display:flex; justify-content:space-between; align-items:center; user-select:none;}
@@ -417,12 +430,17 @@ iframe {border:none}
   .ep-controls {grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .ep-btn-next, .ep-btn-prev {width:100%; padding:11px 10px; font-size:12px; text-align:center;}
   .server-tabs {grid-template-columns: 1fr;}
+  .ep-nav {justify-content:flex-start}
+  .ep-nav select {flex:1 1 45%;min-width:0}
+  .ep-btns {flex:1 1 100%;justify-content:space-between}
+  .btn-primary {flex:1 1 0;justify-content:center;padding:10px 10px}
 }
 
 .fv-similar-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:16px;}
 @media (max-width:480px){ .fv-similar-grid {grid-template-columns:repeat(3,1fr);gap:10px;} }
 .player-wrap {width:100%;aspect-ratio:16/9;min-height:240px;background:#000000;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--b-2);box-shadow:var(--sh-xl);position:relative}
-.player-wrap::before {content:"";position:absolute;top:50%;left:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--cv-purple);border-radius:50%;animation:spin 1s linear infinite;z-index:0;}
+.player-wrap::before {content:"";position:absolute;top:50%;left:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--cv-purple);border-radius:50%;animation:spin 1s linear infinite;z-index:2;opacity:0;pointer-events:none;transition:opacity 0.3s ease;}
+.player-wrap.is-loading::before {opacity:1;}
 .player-wrap iframe#main-player {width:100%;height:100%;position:absolute;top:0;left:0;border:none;z-index:1;opacity:0;transition:opacity 0.4s ease;}
 .player-wrap iframe#main-player.loaded {opacity:1;}
 @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -799,6 +817,36 @@ iframe {border:none}
 
 @media (max-width: 768px) {
   #back-to-top { bottom: 90px; right: 20px; width: 44px; height: 44px; font-size: 16px; }
+  .player-wrap { min-height: 320px !important; aspect-ratio: 16 / 9; }
+}
+
+/* ================================================================
+   12. MOBILE & PC POLISH (PWA, Touch, Hover)
+================================================================ */
+html { scroll-behavior: smooth; }
+body::-webkit-scrollbar { width: 8px; }
+body::-webkit-scrollbar-track { background: var(--cv-bg); }
+body::-webkit-scrollbar-thumb { background: var(--cv-dark-5); border-radius: var(--r-pill); transition: background var(--t-fast); }
+body::-webkit-scrollbar-thumb:hover { background: var(--cv-purple); }
+
+button, a, .poster-card, .compact-card { touch-action: manipulation; }
+@media (max-width: 768px) {
+  button:active, a:active, .poster-card:active, .compact-card:active, .nav-btn:active, .mbb-btn:active { transform: scale(0.96); opacity: 0.8; }
+  
+  .player-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  .mobile-bottom-bar { padding-bottom: env(safe-area-inset-bottom); }
+}
+@media (hover: hover) {
+  .poster-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 15px rgba(139, 92, 246, 0.2); }
+  .compact-card:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(0,0,0,0.6); }
+}
+
+/* Hide native video buffering spinner */
+#native-player-adfree::-webkit-media-controls-overlay-enclosure,
+#native-player-adfree::-webkit-media-controls-loading-panel {
+  display: none !important;
+}
+p { bottom: 90px; right: 20px; width: 44px; height: 44px; font-size: 16px; }
   .player-wrap { min-height: 320px !important; aspect-ratio: 16 / 9; }
 }
 
