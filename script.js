@@ -1274,7 +1274,12 @@ var AdFreePlayer = {
     sTabs.innerHTML = '<div style="padding:10px; color:var(--text-3);">Searching for streams...</div>';
     
     fetch(apiUrl)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error('Stream service unavailable');
+        var ct = r.headers.get('content-type') || '';
+        if (ct.indexOf('application/json') === -1) throw new Error('Stream service unavailable');
+        return r.json();
+      })
       .then(resp => {
         var streams = resp.streams || resp;
         if (!streams || !streams.length || streams.length === 0) {
@@ -1297,7 +1302,7 @@ var AdFreePlayer = {
       })
       .catch(e => {
         console.error('AdFree Fetch Error:', e);
-        sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">Error fetching streams: ' + e.message + '</div>';
+        sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">Ad-Free streams are unavailable right now. Try the regular Watch tab instead.</div>';
       });
   },
   playStream: function(url, type, btnEl) {
