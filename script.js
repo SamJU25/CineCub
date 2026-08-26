@@ -1264,13 +1264,15 @@ var AdFreePlayer = {
     video.style.display = 'none';
     if(this.hls) { this.hls.destroy(); this.hls = null; }
     
-    var season=null, episode=null;
-    var apiUrl = 'https://streamheaven-api.onrender.com/api/streams/' + State.activeType + '/' + State.activeId;
+    var season = null, episode = null;
+    var apiUrl = '';
     
-    if(State.activeType === 'tv'){
+    if (State.activeType === 'tv') {
       season = Number(document.getElementById('ep-season-adfree').value || 1);
       episode = Number(document.getElementById('ep-episode-adfree').value || 1);
-      apiUrl += '/' + season + '/' + episode;
+      apiUrl = 'https://streamheaven-api.onrender.com/api/streams/series/' + State.activeId + '?season=' + season + '&episode=' + episode;
+    } else {
+      apiUrl = 'https://streamheaven-api.onrender.com/api/streams/' + State.activeType + '/' + State.activeId;
     }
     
     sTabs.innerHTML = '<div style="padding:10px; color:var(--text-3);">Searching for streams...</div>';
