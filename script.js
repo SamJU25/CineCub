@@ -1000,38 +1000,42 @@ var Modal = {
         document.getElementById('fv-similar').innerHTML = '<div style="color:var(--text-3); font-size:14px; text-align:center; padding: 20px; width:100%; grid-column:1/-1;">No similar titles found.</div>';
       }
       
-      var epRow = document.getElementById('ep-row');
+      var epNav = document.getElementById('ep-nav-controls');
+      var epNavAdFree = document.getElementById('ep-nav-controls-adfree');
       if(type==='tv'){
-        epRow.className = 'ep-row';
+        if(epNav) epNav.style.display = 'flex';
+        if(epNavAdFree) epNavAdFree.style.display = 'flex';
         var validSeasons = (data.seasons || []).filter(function(s) { return s.season_number >= 0; });
         if (validSeasons.length === 0) {
           var maxS = data.number_of_seasons || 1;
           validSeasons = Array.from({length: maxS}, function(_,i) { return {season_number: i+1, episode_count: 24}; });
         }
         
-        document.getElementById('ep-season').innerHTML = validSeasons.map(function(s) {
+        var seasonHtml = validSeasons.map(function(s) {
            var label = s.season_number === 0 ? 'Specials' : 'Season ' + s.season_number;
            return '<option value="'+s.season_number+'">'+label+'</option>';
         }).join('');
+        document.getElementById('ep-season').innerHTML = seasonHtml;
+        if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').innerHTML = seasonHtml;
         
         var hist = State.history.find(function(h){return h.id===id && h.type==='tv';});
         if(hist && hist.season !== null && hist.season !== undefined) {
           document.getElementById('ep-season').value = hist.season;
+          if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').value = hist.season;
         }
         
         Player.updateEpisodes();
+        if(typeof AdFreePlayer !== 'undefined') AdFreePlayer.updateEpisodes();
         
         if(hist && hist.episode !== null && hist.episode !== undefined) {
           var maxEp = document.getElementById('ep-episode').options.length;
           document.getElementById('ep-episode').value = Math.min(hist.episode, maxEp);
+          if(document.getElementById('ep-episode-adfree')) document.getElementById('ep-episode-adfree').value = Math.min(hist.episode, maxEp);
         }
         
-        document.getElementById('ep-btn-next').classList.remove('hidden');
-        document.getElementById('ep-btn-prev').classList.remove('hidden');
       } else { 
-        epRow.className = 'ep-row hidden';
-        document.getElementById('ep-btn-next').classList.add('hidden');
-        document.getElementById('ep-btn-prev').classList.add('hidden');
+        if(epNav) epNav.style.display = 'none';
+        if(epNavAdFree) epNavAdFree.style.display = 'none';
       }
 
       document.getElementById('server-tabs').innerHTML = CFG.SERVERS.map((s,i) => '<div class="server-tab '+(i===0?'active':'')+'" onclick="Player.switchServer('+i+', this)"><i class="fas '+s.icon+'"></i> '+s.name+'</div>').join('');
@@ -1185,6 +1189,138 @@ var Player = {
   }
 };
 
+var AdFreePlayer = {
+  hls: null,
+  updateEpisodes: function() {
+    if (State.activeType !== 'tv' || !State.activeData || !State.activeData.seasons) return;
+    var sSelect = document.getElementById('ep-season-adfree');
+    var eSelect = document.getElementById('ep-episode-adfree');
+    var sNumber = Number(sSelect.value || 1);
+    
+    var season = State.activeData.seasons.find(function(s) { return s.season_number === sNumber; });
+    var count = season ? season.episode_count : 24; 
+    if (count === 0) count = 1;
+    
+    var currentEp = Number(eSelect.value || 1);
+    eSelect.innerHTML = Array.from({length: count}, function(_,i) { 
+      return '<option value="'+(i+1)+'">Episode '+(i+1)+'</option>'; 
+    }).join('');
+    
+    if (currentEp <= count) eSelect.value = currentEp;
+  },
+  nextEpisode: function(){
+    if(State.activeType !== 'tv') return;
+    var sSelect = document.getElementById('ep-season-adfree');
+    var eSelect = document.getElementById('ep-episode-adfree');
+    var s = Number(sSelect.value || 1);
+    var e = Number(eSelect.value || 1);
+    var maxEpisodes = eSelect.options.length;
+    
+    if(e >= maxEpisodes) {
+      if (sSelect.options.selectedIndex < sSelect.options.length - 1) {
+         sSelect.selectedIndex += 1;
+         this.updateEpisodes();
+         eSelect.value = 1;
+      } else {
+         Toast.show('You have reached the final episode!', 'info');
+         return;
+      }
+    } else {
+      eSelect.value = e + 1;
+    }
+    this.loadVideo();
+  },
+  prevEpisode: function(){
+    if(State.activeType !== 'tv') return;
+    var sSelect = document.getElementById('ep-season-adfree');
+    var eSelect = document.getElementById('ep-episode-adfree');
+    var s = Number(sSelect.value || 1);
+    var e = Number(eSelect.value || 1);
+    
+    if(e <= 1) {
+      if (sSelect.options.selectedIndex > 0) {
+        sSelect.selectedIndex -= 1;
+        this.updateEpisodes();
+        eSelect.value = eSelect.options.length;
+      } else {
+        Toast.show('You are at the very first episode!', 'info');
+        return;
+      }
+    } else {
+      eSelect.value = e - 1;
+    }
+    this.loadVideo();
+  },
+  loadVideo: function(){
+    var video = document.getElementById('native-player-adfree');
+    var sTabs = document.getElementById('server-tabs-adfree');
+    video.style.display = 'none';
+    if(this.hls) { this.hls.destroy(); this.hls = null; }
+    
+    var season=null, episode=null;
+    var apiUrl = 'https://streamheaven-api.onrender.com/api/streams/' + State.activeType + '/' + State.activeId;
+    
+    if(State.activeType === 'tv'){
+      season = Number(document.getElementById('ep-season-adfree').value || 1);
+      episode = Number(document.getElementById('ep-episode-adfree').value || 1);
+      apiUrl += '/' + season + '/' + episode;
+    }
+    
+    sTabs.innerHTML = '<div style="padding:10px; color:var(--text-3);">Searching for streams...</div>';
+    
+    fetch(apiUrl)
+      .then(r => r.json())
+      .then(resp => {
+        var streams = resp.streams || resp;
+        if (!streams || !streams.length || streams.length === 0) {
+          sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">No streams found. Try the regular Watch tab.</div>';
+          return;
+        }
+        
+        var html = '';
+        streams.forEach((s, idx) => {
+           var streamType = 'm3u8';
+           if (s.title && s.title.toLowerCase().indexOf('mp4') !== -1) streamType = 'mp4';
+           if (s.url && s.url.toLowerCase().indexOf('.mp4') !== -1) streamType = 'mp4';
+           var escapedUrl = encodeURIComponent(s.url);
+           html += '<button class="server-tab" onclick="AdFreePlayer.playStream(decodeURIComponent(\'' + escapedUrl + '\'), \'' + streamType + '\', this)">' + (s.name || s.provider) + ' (' + (s.quality || '?') + ')</button>';
+        });
+        sTabs.innerHTML = html;
+        
+        var firstBtn = sTabs.querySelector('.server-tab');
+        if (firstBtn) firstBtn.click();
+      })
+      .catch(e => {
+        sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">Error fetching streams. Ensure API is running.</div>';
+      });
+  },
+  playStream: function(url, type, btnEl) {
+    var sTabs = document.getElementById('server-tabs-adfree');
+    sTabs.querySelectorAll('.server-tab').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    
+    var video = document.getElementById('native-player-adfree');
+    video.style.display = 'block';
+    
+    if (this.hls) {
+      this.hls.destroy();
+      this.hls = null;
+    }
+    
+    if (type === 'm3u8' && typeof Hls !== 'undefined' && Hls.isSupported()) {
+      this.hls = new Hls();
+      this.hls.loadSource(url);
+      this.hls.attachMedia(video);
+      this.hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        video.play().catch(e => console.log('Autoplay prevented', e));
+      });
+    } else {
+      video.src = url;
+      video.play().catch(e => console.log('Autoplay prevented', e));
+    }
+  }
+};
+
 var FVTabs = {
   showTab: function(t, el){
     document.querySelectorAll('.fv-tab').forEach(x => x.classList.remove('active'));
@@ -1194,6 +1330,7 @@ var FVTabs = {
     document.getElementById('tab-'+t).classList.add('active');
     
     if(t==='watch') Player.loadVideo();
+    if(t==='watch_adfree') AdFreePlayer.loadVideo();
     
     if(t==='trailer' && State.activeTrailer) {
        document.getElementById('trailer-player').src = 'https://www.youtube.com/embed/' + State.activeTrailer + '?autoplay=1';
