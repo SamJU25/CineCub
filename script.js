@@ -1179,11 +1179,16 @@ var Player = {
       url=s.movie(State.activeId, savedTime ? Math.floor(savedTime) : 0); 
     }
     
+    var wrap = iframe.parentNode;
+    wrap.classList.add('is-loading');
     iframe.classList.remove('loaded');
     iframe.onload = function() { 
       iframe.classList.add('loaded'); 
+      wrap.classList.remove('is-loading');
     }; 
     iframe.src = url;
+    // Safety net: hide the spinner if the embed never fires its load event
+    setTimeout(function(){ wrap.classList.remove('is-loading'); }, 12000);
     
     if(State.activeData) History.add(State.activeId,State.activeType,State.activeData.title||State.activeData.name,State.activeData.poster_path,season,episode,State.activeData.vote_average,State.activeData.release_date||State.activeData.first_air_date);
   }
@@ -1269,7 +1274,12 @@ var AdFreePlayer = {
     sTabs.innerHTML = '<div style="padding:10px; color:var(--text-3);">Searching for streams...</div>';
     
     fetch(apiUrl)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error('Stream service unavailable');
+        var ct = r.headers.get('content-type') || '';
+        if (ct.indexOf('application/json') === -1) throw new Error('Stream service unavailable');
+        return r.json();
+      })
       .then(resp => {
         var streams = resp.streams || resp;
         if (!streams || !streams.length || streams.length === 0) {
@@ -1292,7 +1302,7 @@ var AdFreePlayer = {
       })
       .catch(e => {
         console.error('AdFree Fetch Error:', e);
-        sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">Error fetching streams: ' + e.message + '</div>';
+        sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">Ad-Free streams are unavailable right now. Try the regular Watch tab instead.</div>';
       });
   },
   playStream: function(url, type, btnEl) {
@@ -1301,7 +1311,15 @@ var AdFreePlayer = {
     if (btnEl) btnEl.classList.add('active');
     
     var video = document.getElementById('native-player-adfree');
+    var wrap = document.getElementById('player-wrap-adfree');
     video.style.display = 'block';
+    wrap.classList.add('is-loading');
+    var stopLoading = function(){ wrap.classList.remove('is-loading'); };
+    // Hide the spinner the moment playback actually begins (not while merely buffering)
+    video.addEventListener('playing', stopLoading, { once: true });
+    video.addEventListener('canplay', stopLoading, { once: true });
+    video.addEventListener('error', stopLoading, { once: true });
+    setTimeout(stopLoading, 15000);
     
     if (this.hls) {
       this.hls.destroy();
@@ -1317,6 +1335,7 @@ var AdFreePlayer = {
       });
       this.hls.on(Hls.Events.ERROR, function(event, data) {
         if (data.fatal) {
+          stopLoading();
           console.error('HLS Fatal Error:', data.type, data.details);
           var sTabs = document.getElementById('server-tabs-adfree');
           var errDiv = document.getElementById('adfree-error');
