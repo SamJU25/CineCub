@@ -349,18 +349,35 @@ var App = {
 /* Search Module */
 var Search = {
   timer: null,
+  dropdownQuery: '',
+  dropdownPage: 1,
+  dropdownHasMore: false,
+  isDropdownFetching: false,
+  dropdownObserver: null,
   onInput: function(q){
     clearTimeout(this.timer);
     var d = document.getElementById('search-dropdown');
     if(!q || !q.trim()){ d.classList.remove('open'); return; }
     d.classList.add('open');
+    this.dropdownQuery = q;
+    this.dropdownPage = 1;
+    this.dropdownHasMore = true;
     document.getElementById('srd-results').innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);">Searching TMDB...</div>';
-    this.timer = setTimeout(()=>{ this.doSearch(q); }, 400);
+    this.timer = setTimeout(()=>{ this.doSearch(q, false); }, 400);
   },
-  doSearch: function(q){
-    API.search(q).then(data => {
-      var r = ((data && data.results) || []).filter(x => x.poster_path && x.media_type!=='person').slice(0,12);
-      if(!r.length){ document.getElementById('srd-results').innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);">No results found.</div>'; return; }
+  doSearch: function(q, isAppend){
+    if(this.isDropdownFetching) return;
+    this.isDropdownFetching = true;
+    API.search(q, this.dropdownPage).then(data => {
+      this.isDropdownFetching = false;
+      var r = ((data && data.results) || []).filter(x => x.poster_path && x.media_type!=='person');
+      
+      if(!isAppend && !r.length){ 
+        document.getElementById('srd-results').innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);">No results found.</div>'; 
+        this.dropdownHasMore = false;
+        return; 
+      }
+      
       var html = r.map(item => {
         var t = item.media_type||'movie';
         return '<div class="srd-item" onclick="Modal.openFull('+item.id+',\''+t+'\')">'
@@ -368,12 +385,36 @@ var Search = {
           + '<div class="srd-info"><div class="srd-title">'+Utils.escape(item.title||item.name)+'</div><div class="srd-meta">'+Utils.year(item.release_date||item.first_air_date)+' &middot; '+t.toUpperCase()+'</div></div></div>';
       }).join('');
       
-      if (data && data.total_results > r.length) {
-          html += '<div class="srd-item" style="justify-content:center;color:var(--cv-purple);font-weight:bold;text-align:center;padding:15px;" onclick="Search.executeFullSearch(\''+Utils.escape(q.replace(/'/g, "\\'"))+'\', false)">See all results for "'+Utils.escape(q)+'" <i class="fas fa-arrow-right" style="margin-left:8px;"></i></div>';
-      }
+      this.dropdownHasMore = data && data.page < data.total_pages;
       
-      document.getElementById('srd-results').innerHTML = html;
+      var container = document.getElementById('srd-results');
+      var oldSentinel = document.getElementById('srd-infinite-scroll-trigger');
+      if (oldSentinel) oldSentinel.remove();
+      
+      if(isAppend) container.insertAdjacentHTML('beforeend', html);
+      else container.innerHTML = html;
+      
+      if(this.dropdownHasMore) {
+        container.insertAdjacentHTML('beforeend', '<div id="srd-infinite-scroll-trigger" style="height:10px; opacity:0;"></div>');
+        this.initDropdownObserver();
+      }
+    }).catch(err => {
+      this.isDropdownFetching = false;
+      if(isAppend) this.dropdownPage--;
     });
+  },
+  initDropdownObserver: function() {
+    var sentinel = document.getElementById('srd-infinite-scroll-trigger');
+    if(!sentinel || !window.IntersectionObserver) return;
+    if(this.dropdownObserver) this.dropdownObserver.disconnect();
+    
+    this.dropdownObserver = new IntersectionObserver((entries) => {
+      if(entries[0].isIntersecting && !this.isDropdownFetching && this.dropdownHasMore) {
+        this.dropdownPage++;
+        this.doSearch(this.dropdownQuery, true);
+      }
+    }, {root: document.getElementById('srd-results'), rootMargin: '100px'});
+    this.dropdownObserver.observe(sentinel);
   },
   closeDropdown: function(){ document.getElementById('search-dropdown').classList.remove('open'); },
   executeFullSearch: function(q, isAppend) {
