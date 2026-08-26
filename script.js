@@ -283,6 +283,12 @@ var App = {
     document.getElementById('breadcrumb-current').textContent = title;
   },
   goHome: function(){ this.showPage('page-home'); this.setNav('nav-home','Discover'); },
+  showSearchPage: function() {
+    this.showPage('page-search');
+    this.setNav('nav-search-tab', 'Search');
+    var input = document.getElementById('page-search-input');
+    if(input) input.focus();
+  },
   setBrowseHeader: function(title, showSort) {
     document.getElementById('browse-title').innerText = title;
     document.getElementById('browse-header').style.display = 'flex';
@@ -379,6 +385,8 @@ var Search = {
     }
     var titleEl = document.getElementById('search-title');
     if(titleEl) titleEl.innerText = 'Search Results for "'+q+'"';
+    var pageInput = document.getElementById('page-search-input');
+    if (pageInput && pageInput.value !== q) pageInput.value = q;
     var spinner = document.getElementById('search-spinner');
     if(spinner) spinner.classList.remove('hidden');
     var grid = document.getElementById('search-full-grid');
@@ -1403,6 +1411,16 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     }
   });
+
+  // Page Search Input
+  var pageSearchInput = document.getElementById('page-search-input');
+  if (pageSearchInput) {
+    pageSearchInput.addEventListener('keyup', function(e) {
+      if(e.key === 'Enter') {
+        Search.executeFullSearch(this.value, false);
+      }
+    });
+  }
 
   // Prevent Background Scroll when hovering outside modal box
   var overlay = document.getElementById('modal-overlay');
