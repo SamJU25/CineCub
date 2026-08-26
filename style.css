@@ -240,7 +240,8 @@ iframe {border:none}
   gap:16px;
   overflow-x:auto;
   overflow-y:hidden;
-  padding-bottom:12px;
+  padding-bottom:24px;
+  padding-top:12px;
   scrollbar-width:none;
   -webkit-overflow-scrolling:touch;
   touch-action:pan-x pan-y;

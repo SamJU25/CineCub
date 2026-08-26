@@ -949,7 +949,7 @@ var History = {
     var idx=State.history.findIndex(function(x){return x.id===id&&x.season===s&&x.episode===e;});
     if(idx>-1)State.history.splice(idx,1);
     State.history.unshift({id:id,type:type,title:title,poster_path:poster,season:s,episode:e,vote_average:vote,release_date:date,watchedAt:new Date().toISOString()});
-    if(State.history.length>50)State.history.pop();
+    while(State.history.length>50)State.history.pop();
     Library.saveUserData();
   },
   render: function(){var el=document.getElementById('history-grid');if(!el)return;el.innerHTML=State.history.map(function(x){return Render.posterCard(x,x.type);}).join('')||'<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">Your watch history is empty.</div>';},
@@ -981,7 +981,7 @@ var History = {
       }
       
       if (progObj && progObj.watched > 0) {
-        var pct = 50;
+        var pct = 10;
         if (progObj.duration > 0) {
            pct = (progObj.watched / progObj.duration) * 100;
            if (pct > 95) continue;
@@ -1245,7 +1245,12 @@ window.addEventListener('message', (event) => {
 
   if (event.data?.type === 'MEDIA_DATA') {
     const mediaData = event.data.data;
-    localStorage.setItem('vidLinkProgress', JSON.stringify(mediaData));
+    if (State.activeId) {
+      let vlData = {};
+      try { vlData = JSON.parse(localStorage.getItem('vidLinkProgress') || '{}'); } catch(e){}
+      vlData[State.activeId] = mediaData;
+      localStorage.setItem('vidLinkProgress', JSON.stringify(vlData));
+    }
   }
 
   if (event.data?.type === 'PLAYER_EVENT') {
