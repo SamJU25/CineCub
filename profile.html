@@ -385,20 +385,6 @@
       document.getElementById('stat-wl').textContent = '0';
     }
 
-    // Override handleLogout to redirect after sign-out
-    window.addEventListener('DOMContentLoaded', function() {
-      const _orig = window.handleLogout;
-      window.handleLogout = function() {
-        if (confirm("Are you sure you want to log out?")) {
-          if (typeof auth !== 'undefined' && auth) {
-            auth.signOut().then(() => { window.location.href = 'index.html'; });
-          } else {
-            window.location.href = 'index.html';
-          }
-        }
-      };
-    });
-
     // Auth state
     document.addEventListener('DOMContentLoaded', function() {
       function initProfile() {

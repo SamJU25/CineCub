@@ -285,11 +285,57 @@ async function handleGoogleLogin() {
 }
 
 window.handleLogout = function() {
-  if (confirm("Are you sure you want to log out?")) {
-    if(auth) auth.signOut().then(() => {
-      if(typeof App !== 'undefined') App.showToast("Logged out successfully");
-    });
-  }
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s ease;';
+  
+  const modal = document.createElement('div');
+  modal.className = 'auth-modal';
+  modal.style.cssText = 'max-width:400px;text-align:center;padding:30px;transform:scale(0.9);transition:transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);';
+  
+  modal.innerHTML = `
+    <div style="font-size: 48px; color: var(--cv-red); margin-bottom: 20px;">
+      <i class="fas fa-sign-out-alt"></i>
+    </div>
+    <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 10px; color: #fff;">Confirm Logout</h3>
+    <p style="color: var(--text-3); font-size: 15px; margin-bottom: 30px;">Are you sure you want to log out of StreamHeaven?</p>
+    <div style="display: flex; gap: 15px; justify-content: center;">
+      <button id="btn-cancel-logout" style="background: var(--cv-dark-2); color: #fff; border: 1px solid var(--b-2); padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; flex: 1;">Cancel</button>
+      <button id="btn-confirm-logout" style="background: var(--cv-red); color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; flex: 1;">Logout</button>
+    </div>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  // Trigger reflow
+  void overlay.offsetWidth;
+  overlay.style.opacity = '1';
+  modal.style.transform = 'scale(1)';
+
+  const close = () => {
+    overlay.style.opacity = '0';
+    modal.style.transform = 'scale(0.9)';
+    setTimeout(() => overlay.remove(), 300);
+  };
+
+  document.getElementById('btn-cancel-logout').addEventListener('click', close);
+  document.getElementById('btn-cancel-logout').addEventListener('mouseover', function() { this.style.background = 'var(--b-1)'; });
+  document.getElementById('btn-cancel-logout').addEventListener('mouseout', function() { this.style.background = 'var(--cv-dark-2)'; });
+  
+  document.getElementById('btn-confirm-logout').addEventListener('click', () => {
+    close();
+    if(auth) {
+      auth.signOut().then(() => {
+        if (window.location.pathname.includes('profile.html')) {
+          window.location.href = 'index.html';
+        } else if(typeof App !== 'undefined') {
+          App.showToast("Logged out successfully");
+        }
+      });
+    }
+  });
+  document.getElementById('btn-confirm-logout').addEventListener('mouseover', function() { this.style.background = '#ff4d5a'; });
+  document.getElementById('btn-confirm-logout').addEventListener('mouseout', function() { this.style.background = 'var(--cv-red)'; });
 }
 
 // Global Auth State Observer
