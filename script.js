@@ -1497,7 +1497,7 @@ var History = {
       out='<div class="sf-grid" style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));">';
       State.history.forEach(function(i){
         let type=i.type==='movie'?'Movie':'TV Show';
-        out+='<div class="cv-card" onclick="Modal.openItem('+i.id+',\''+i.type+'\')">'+
+        out+='<div class="cv-card" onclick="Modal.openFull('+i.id+',\''+i.type+'\')">'+
              '<img class="cv-card-img" src="'+i.poster+'" alt="'+i.title+'" loading="lazy" onerror="this.src=Utils.placeholder()">'+
              '<div class="cv-card-info">'+
              '<div class="cv-card-title">'+i.title+'</div>'+
