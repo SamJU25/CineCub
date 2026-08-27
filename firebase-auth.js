@@ -5,10 +5,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const cachedName = localStorage.getItem('cachedName');
     if (cachedAvatar) {
         const topProfileBtn = document.getElementById('header-profile-btn');
+        const topProfileName = document.getElementById('header-profile-name');
+        
+        if (topProfileName && cachedName) {
+            topProfileName.textContent = cachedName;
+            topProfileName.style.display = 'block';
+        }
+        
         if (topProfileBtn) {
-            topProfileBtn.className = 'header-profile-wrap';
-            let nameHtml = cachedName ? `<div class="header-profile-name">${cachedName}</div>` : '';
-            topProfileBtn.innerHTML = `${nameHtml}<div class="header-profile-avatar"><img src="${cachedAvatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="Profile"></div>`;
+            topProfileBtn.innerHTML = `<img src="${cachedAvatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Profile">`;
             topProfileBtn.onclick = (e) => {
                 e.preventDefault();
                 window.location.href = 'profile.html';
