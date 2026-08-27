@@ -349,7 +349,14 @@ if (auth) {
       // Logged In State
       const displayName = user.displayName || user.email.split('@')[0];
       const initial = displayName.charAt(0).toUpperCase();
-      const photoURL = user.photoURL;
+      let photoURL = user.photoURL;
+      if (photoURL && photoURL.includes('assets/avatars/av_')) {
+          photoURL = photoURL.replace('.jpg', '.png');
+          const match = photoURL.match(/av_(\d+)\.png/);
+          if (match && parseInt(match[1]) > 21) {
+              photoURL = 'assets/avatars/av_1.png';
+          }
+      }
       
       const topProfileBtn = document.getElementById('header-profile-btn');
       if (topProfileBtn) {
