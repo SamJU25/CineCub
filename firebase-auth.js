@@ -289,8 +289,7 @@ window.handleLogout = function() {
   overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s ease;';
   
   const modal = document.createElement('div');
-  modal.className = 'auth-modal';
-  modal.style.cssText = 'max-width:400px;text-align:center;padding:30px;transform:scale(0.9);transition:transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);';
+  modal.style.cssText = 'background:var(--cv-dark-1);border:1px solid var(--b-2);border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,0.5);width:90%;max-width:400px;text-align:center;padding:30px;transform:scale(0.9);opacity:0;transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);';
   
   modal.innerHTML = `
     <div style="font-size: 48px; color: var(--cv-red); margin-bottom: 20px;">
@@ -311,10 +310,12 @@ window.handleLogout = function() {
   void overlay.offsetWidth;
   overlay.style.opacity = '1';
   modal.style.transform = 'scale(1)';
+  modal.style.opacity = '1';
 
   const close = () => {
     overlay.style.opacity = '0';
     modal.style.transform = 'scale(0.9)';
+    modal.style.opacity = '0';
     setTimeout(() => overlay.remove(), 300);
   };
 
