@@ -472,8 +472,9 @@ if (auth) {
   } else {
     const topProfileBtn = document.getElementById('header-profile-btn');
     if (topProfileBtn) {
-      topProfileBtn.className = 'header-profile-wrap';
-      topProfileBtn.innerHTML = `<div class="header-profile-avatar" style="background: var(--cv-gray);"><i class="fas fa-user" style="font-size: 14px;"></i></div>`;
+      topProfileBtn.className = 'header-action-btn';
+      topProfileBtn.style.borderRadius = '50%';
+      topProfileBtn.innerHTML = `<i class="fas fa-user"></i>`;
       topProfileBtn.onclick = (e) => {
         e.preventDefault();
         if(typeof AuthUI !== 'undefined') AuthUI.openLogin();
