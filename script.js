@@ -251,8 +251,8 @@ var Sidebar = {
     document.getElementById('cv-main').classList[cls]('sidebar-collapsed');
     document.getElementById('cv-header').classList[cls]('sidebar-collapsed');
   },
-  open: function(){ document.getElementById('cv-sidebar').classList.add('mobile-open'); document.getElementById('sidebar-overlay').classList.add('open'); },
-  close: function(){ document.getElementById('cv-sidebar').classList.remove('mobile-open'); document.getElementById('sidebar-overlay').classList.remove('open'); }
+  open: function(){ document.body.classList.add('no-scroll'); document.getElementById('cv-sidebar').classList.add('mobile-open'); document.getElementById('sidebar-overlay').classList.add('open'); },
+  close: function(){ document.body.classList.remove('no-scroll'); document.getElementById('cv-sidebar').classList.remove('mobile-open'); document.getElementById('sidebar-overlay').classList.remove('open'); }
 };
 
 var MobNav = {
