@@ -127,12 +127,11 @@ iframe {border:none}
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(255, 59, 48, 0.1) !important;
-    border: 1px solid rgba(255, 59, 48, 0.2) !important;
+    background: #ef4444 !important;
+    border: none !important;
   }
   .cv-sidebar.collapsed .sf-logout-btn:hover {
-    background: rgba(255, 59, 48, 0.2) !important;
-    border-color: rgba(255, 59, 48, 0.4) !important;
+    background: #dc2626 !important;
   }
   .cv-sidebar.collapsed .sf-logout-icon {
     width: 20px;
@@ -1158,9 +1157,9 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   width: 100%;
   padding: 10px;
   margin-top: 8px;
-  background: rgba(255, 59, 48, 0.1) !important;
-  color: #ff3b30 !important;
-  border: 1px solid rgba(255, 59, 48, 0.2) !important;
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border: none !important;
   border-radius: 12px;
   font-size: 13px;
   font-weight: 600;
@@ -1174,9 +1173,8 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   outline: none;
 }
 .sf-logout-btn:hover {
-  background: rgba(255, 59, 48, 0.2) !important;
-  border-color: rgba(255, 59, 48, 0.4) !important;
-  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.15);
+  background: #dc2626 !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 .sf-logout-icon {
   width: 18px;
