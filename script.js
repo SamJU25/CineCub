@@ -1542,37 +1542,12 @@ var Library = (function(){
     catch(e){console.error('Unable to save guest media data:',e);}
   }
 
-  function toggleProfile(e){
-    if(e && e.preventDefault) e.preventDefault();
-    if(e && e.stopPropagation) e.stopPropagation();
-    var popup = document.getElementById('profile-popup');
-    if(!popup) return;
-    var willOpen = !popup.classList.contains('open');
-    closeProfile();
-    if(willOpen) popup.classList.add('open');
-  }
-
-  function closeProfile(){
-    var popup = document.getElementById('profile-popup');
-    if(popup) popup.classList.remove('open');
-  }
-
   function init(){
     loadUserData();
-    document.addEventListener('keydown', function(e){
-      if(e.key==='Escape') closeProfile();
-    });
-    document.addEventListener('click', function(e){
-      var popup = document.getElementById('profile-popup');
-      if(!popup) return;
-      if(popup.contains(e.target)) return;
-      if(e.target.closest('.nav-btn')) return;
-      popup.classList.remove('open');
-    });
   }
 
   return {
-    init:init, toggleProfile:toggleProfile, closeProfile:closeProfile, saveUserData:saveUserData
+    init:init, saveUserData:saveUserData
   };
 })();
 

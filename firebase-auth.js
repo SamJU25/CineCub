@@ -349,17 +349,15 @@ if (auth) {
       // Logged In State
     const displayName = user.displayName || user.email.split('@')[0];
     const initial = displayName.charAt(0).toUpperCase();
-        // Update the popup username
-      const popupUsername = document.getElementById('popup-username');
-      if(popupUsername) popupUsername.textContent = displayName;
       
-      // Update the popup buttons
-      const btnProfile = document.getElementById('popup-profile-btn');
-      const btnLogout = document.getElementById('popup-logout-btn');
-      const btnLogin = document.getElementById('popup-login-btn');
-      if(btnProfile) btnProfile.style.display = 'flex';
-      if(btnLogout) btnLogout.style.display = 'flex';
-      if(btnLogin) btnLogin.style.display = 'none';
+      const topProfileBtn = document.getElementById('header-profile-btn');
+      if (topProfileBtn) {
+        topProfileBtn.innerHTML = `<div style="width:36px;height:36px;border-radius:50%;background:var(--cv-purple);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:18px;">${initial}</div>`;
+        topProfileBtn.onclick = (e) => {
+          e.preventDefault();
+          window.location.href = 'profile.html';
+        };
+      }
 
       if(sidebarFooter) {
       sidebarFooter.innerHTML = `
@@ -376,17 +374,14 @@ if (auth) {
     // Attempt to load cloud wishlist
     syncWishlistFromCloud();
   } else {
-    // Update the popup username
-    const popupUsername = document.getElementById('popup-username');
-    if(popupUsername) popupUsername.textContent = 'Guest';
-
-    // Update the popup buttons
-    const btnProfile = document.getElementById('popup-profile-btn');
-    const btnLogout = document.getElementById('popup-logout-btn');
-    const btnLogin = document.getElementById('popup-login-btn');
-    if(btnProfile) btnProfile.style.display = 'none';
-    if(btnLogout) btnLogout.style.display = 'none';
-    if(btnLogin) btnLogin.style.display = 'flex';
+    const topProfileBtn = document.getElementById('header-profile-btn');
+    if (topProfileBtn) {
+      topProfileBtn.innerHTML = `<i class="fas fa-user"></i>`;
+      topProfileBtn.onclick = (e) => {
+        e.preventDefault();
+        AuthUI.openLogin();
+      };
+    }
 
     // Logged Out State
     if(sidebarFooter) {
