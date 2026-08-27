@@ -402,9 +402,10 @@ if (auth) {
         
         if (topProfileBtn) {
           topProfileBtn.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Profile">`;
-          topProfileBtn.onclick = (e) => { e.preventDefault(); };
-          const logoutBtn = document.getElementById('header-logout-btn');
-          if (logoutBtn) logoutBtn.style.display = 'flex';
+          topProfileBtn.onclick = (e) => { 
+            e.preventDefault(); 
+            window.location.href = 'profile.html';
+          };
         }
         localStorage.setItem('cachedAvatar', url);
         if (nameToShow) {
@@ -441,9 +442,10 @@ if (auth) {
           
           if (topProfileBtn) {
             topProfileBtn.innerHTML = `<div class="header-profile-avatar" style="background: var(--cv-gray); width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;">${initial}</div>`;
-            topProfileBtn.onclick = (e) => { e.preventDefault(); };
-            const logoutBtn = document.getElementById('header-logout-btn');
-            if (logoutBtn) logoutBtn.style.display = 'flex';
+            topProfileBtn.onclick = (e) => { 
+              e.preventDefault(); 
+              window.location.href = 'profile.html';
+            };
             localStorage.setItem('cachedName', displayName);
           }
       }
@@ -501,8 +503,6 @@ if (auth) {
         if(typeof AuthUI !== 'undefined') AuthUI.openLogin();
       };
     }
-    const logoutBtn = document.getElementById('header-logout-btn');
-    if (logoutBtn) logoutBtn.style.display = 'none';
 
     // Logged Out State
     if(sidebarFooter) {
