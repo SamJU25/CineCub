@@ -486,7 +486,7 @@ if (auth) {
     if(sidebarFooter) {
       sidebarFooter.innerHTML = `
         <div class="sf-profile guest" onclick="AuthUI.openLogin()">
-          <div class="sf-avatar">G</div>
+          <div class="sf-avatar"><i class="fas fa-user"></i></div>
           <div class="sf-info">
             <div class="sf-name">Guest Mode</div>
             <div class="sf-status">Sign in / Sign up</div>
