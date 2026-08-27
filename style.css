@@ -40,7 +40,7 @@
   --t-norm: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --t-spring: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --sidebar-w: 240px;
-  --sidebar-w-col: 74px;
+  --sidebar-w-col: 80px;
   --header-h: 70px;
   --bottom-bar-h: 62px;
 }
@@ -123,7 +123,6 @@ iframe {border:none}
     height: 40px;
     padding: 0;
     margin: 8px auto 0;
-    border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -131,8 +130,8 @@ iframe {border:none}
     border: none !important;
   }
   .cv-sidebar.collapsed .sf-logout-img {
-    width: 32px;
-    height: 32px;
+    width: 100%;
+    height: auto;
     margin: 0 !important;
     border-radius: 8px;
   }
@@ -1152,33 +1151,26 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 .sf-profile.guest .sf-status {
   color: var(--text-4);
 }
-
 .sf-logout-btn {
   width: 100%;
-  padding: 10px;
-  margin-top: 8px;
-  background: rgba(255, 59, 48, 0.1) !important;
-  color: #ff3b30 !important;
-  border: 1px solid rgba(255, 59, 48, 0.2) !important;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: inherit;
+  padding: 0;
+  margin-top: 12px;
+  background: transparent !important;
+  border: none !important;
   cursor: pointer;
   transition: var(--t-fast);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   outline: none;
 }
 .sf-logout-btn:hover {
-  background: rgba(255, 59, 48, 0.2) !important;
+  opacity: 0.8;
 }
 .sf-logout-img {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
   object-fit: contain;
 }
 

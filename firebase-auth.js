@@ -439,7 +439,7 @@ if (auth) {
             </div>
           </div>
           <button class="sf-logout-btn" onclick="handleLogout()">
-            <img src="assets/images/logout.png" class="sf-logout-img" alt="Logout"> <span class="sf-logout-text">Logout</span>
+            <img src="assets/images/logout.png" class="sf-logout-img" alt="Logout">
           </button>
         `;
       }
