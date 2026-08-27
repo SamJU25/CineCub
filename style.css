@@ -130,10 +130,7 @@ iframe {border:none}
     border: none !important;
   }
   .cv-sidebar.collapsed .sf-logout-img {
-    width: 100%;
-    height: auto;
     margin: 0 !important;
-    border-radius: 8px;
   }
   .cv-sidebar.collapsed .sf-logout-text {
   display: none;
@@ -1168,8 +1165,8 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   opacity: 0.8;
 }
 .sf-logout-img {
-  width: 100%;
-  height: auto;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   object-fit: contain;
 }
