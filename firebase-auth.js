@@ -352,7 +352,8 @@ if (auth) {
       
       const topProfileBtn = document.getElementById('header-profile-btn');
       if (topProfileBtn) {
-        topProfileBtn.innerHTML = `<div style="width:36px;height:36px;border-radius:50%;background:var(--cv-purple);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:18px;">${initial}</div>`;
+        topProfileBtn.className = 'header-profile-avatar';
+        topProfileBtn.innerHTML = initial;
         topProfileBtn.onclick = (e) => {
           e.preventDefault();
           window.location.href = 'profile.html';
@@ -376,6 +377,7 @@ if (auth) {
   } else {
     const topProfileBtn = document.getElementById('header-profile-btn');
     if (topProfileBtn) {
+      topProfileBtn.className = 'header-action-btn';
       topProfileBtn.innerHTML = `<i class="fas fa-user"></i>`;
       topProfileBtn.onclick = (e) => {
         e.preventDefault();
