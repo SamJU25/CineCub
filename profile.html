@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
-  <link href="style.css" rel="stylesheet">
+  <link href="style.css?v=13" rel="stylesheet">
   <style>
     :root { --profile-gutter: 28px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -253,6 +253,14 @@
     <div class="pf-panel" id="panel-settings">
       <div class="pf-settings-card">
         <div class="pf-settings-title">Account</div>
+        <div class="pf-settings-row" onclick="openAvatarModal()">
+          <div class="pf-settings-row-icon purple"><i class="fas fa-image"></i></div>
+          <div>
+            <div class="pf-settings-row-label">Profile Picture</div>
+            <div class="pf-settings-row-sub">Choose a custom avatar</div>
+          </div>
+          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+        </div>
         <div class="pf-settings-row">
           <div class="pf-settings-row-icon purple"><i class="fas fa-user-edit"></i></div>
           <div>
@@ -261,11 +269,19 @@
           </div>
           <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
         </div>
-        <div class="pf-settings-row">
+        <div class="pf-settings-row" onclick="openEmailModal()">
           <div class="pf-settings-row-icon purple"><i class="fas fa-envelope"></i></div>
           <div>
             <div class="pf-settings-row-label">Email Address</div>
             <div class="pf-settings-row-sub" id="settings-email-sub">—</div>
+          </div>
+          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="pf-settings-row" onclick="openPasswordModal()">
+          <div class="pf-settings-row-icon purple"><i class="fas fa-lock"></i></div>
+          <div>
+            <div class="pf-settings-row-label">Password</div>
+            <div class="pf-settings-row-sub">Update your account password</div>
           </div>
           <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
         </div>
@@ -313,6 +329,67 @@
         <button class="pf-btn-login" onclick="window.location.href='index.html'">
           <i class="fas fa-sign-in-alt" style="margin-right:8px"></i>Go to StreamHeaven
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Avatar Modal -->
+  <div class="pf-modal-overlay" id="modal-avatar" onclick="closeModals(event)">
+    <div class="pf-modal" onclick="event.stopPropagation()">
+      <div class="pf-modal-title">Select Avatar</div>
+      <div class="pf-avatar-grid">
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/avatar1.jpg', this)"><img src="assets/avatars/avatar1.jpg" alt="Avatar 1"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/avatar2.jpg', this)"><img src="assets/avatars/avatar2.jpg" alt="Avatar 2"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/avatar3.jpg', this)"><img src="assets/avatars/avatar3.jpg" alt="Avatar 3"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/avatar4.jpg', this)"><img src="assets/avatars/avatar4.jpg" alt="Avatar 4"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/avatar5.jpg', this)"><img src="assets/avatars/avatar5.jpg" alt="Avatar 5"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/avatar6.jpg', this)"><img src="assets/avatars/avatar6.jpg" alt="Avatar 6"></div>
+      </div>
+      <div class="pf-modal-actions">
+        <button class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
+        <button class="pf-btn-login" onclick="saveAvatar()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Modal -->
+  <div class="pf-modal-overlay" id="modal-email" onclick="closeModals(event)">
+    <div class="pf-modal" onclick="event.stopPropagation()">
+      <div class="pf-modal-title">Update Email</div>
+      <div class="pf-modal-form">
+        <div class="auth-input-group">
+          <label>New Email</label>
+          <input type="email" id="pf-new-email" class="auth-input" placeholder="Enter new email" />
+        </div>
+        <div class="auth-input-group">
+          <label>Current Password (required)</label>
+          <input type="password" id="pf-email-pass" class="auth-input" placeholder="Current password" />
+        </div>
+      </div>
+      <div class="pf-modal-actions">
+        <button class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
+        <button class="pf-btn-login" onclick="saveEmail()">Update</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Password Modal -->
+  <div class="pf-modal-overlay" id="modal-password" onclick="closeModals(event)">
+    <div class="pf-modal" onclick="event.stopPropagation()">
+      <div class="pf-modal-title">Change Password</div>
+      <div class="pf-modal-form">
+        <div class="auth-input-group">
+          <label>Current Password</label>
+          <input type="password" id="pf-curr-pass" class="auth-input" placeholder="Current password" />
+        </div>
+        <div class="auth-input-group">
+          <label>New Password</label>
+          <input type="password" id="pf-new-pass" class="auth-input" placeholder="New password" />
+        </div>
+      </div>
+      <div class="pf-modal-actions">
+        <button class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
+        <button class="pf-btn-login" onclick="savePassword()">Update</button>
       </div>
     </div>
   </div>
@@ -385,6 +462,81 @@
       document.getElementById('stat-wl').textContent = '0';
     }
 
+    function openAvatarModal() { document.getElementById('modal-avatar').classList.add('open'); }
+    function openEmailModal() { document.getElementById('modal-email').classList.add('open'); }
+    function openPasswordModal() { document.getElementById('modal-password').classList.add('open'); }
+    function closeModals(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.querySelectorAll('.pf-modal-overlay').forEach(m => m.classList.remove('open'));
+    }
+    
+    let selectedAvatarUrl = '';
+    function selectAvatar(url, el) {
+      selectedAvatarUrl = url;
+      document.querySelectorAll('.pf-avatar-option').forEach(opt => opt.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    async function saveAvatar() {
+      if (!selectedAvatarUrl || !auth.currentUser) return;
+      try {
+        await auth.currentUser.updateProfile({ photoURL: selectedAvatarUrl });
+        window.location.reload();
+      } catch (e) {
+        alert("Error saving avatar: " + e.message);
+      }
+    }
+
+    async function reauthenticate(password) {
+      const user = auth.currentUser;
+      const cred = firebase.auth.EmailAuthProvider.credential(user.email, password);
+      return user.reauthenticateWithCredential(cred);
+    }
+
+    async function saveEmail() {
+      const user = auth.currentUser;
+      if (!user) return;
+      const newEmail = document.getElementById('pf-new-email').value;
+      const pass = document.getElementById('pf-email-pass').value;
+      if (!newEmail || !pass) return alert("Please fill all fields");
+      try {
+        const btn = document.querySelector('#modal-email .pf-btn-login');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        await reauthenticate(pass);
+        await user.updateEmail(newEmail);
+        if (typeof db !== 'undefined') {
+          db.collection("users").doc(user.uid).update({ email: newEmail });
+        }
+        alert("Email updated successfully!");
+        closeModals();
+        window.location.reload();
+      } catch (e) {
+        alert("Error: " + e.message);
+      } finally {
+        document.querySelector('#modal-email .pf-btn-login').innerHTML = 'Update';
+      }
+    }
+
+    async function savePassword() {
+      const user = auth.currentUser;
+      if (!user) return;
+      const currPass = document.getElementById('pf-curr-pass').value;
+      const newPass = document.getElementById('pf-new-pass').value;
+      if (!currPass || !newPass) return alert("Please fill all fields");
+      try {
+        const btn = document.querySelector('#modal-password .pf-btn-login');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        await reauthenticate(currPass);
+        await user.updatePassword(newPass);
+        alert("Password updated successfully!");
+        closeModals();
+      } catch (e) {
+        alert("Error: " + e.message);
+      } finally {
+        document.querySelector('#modal-password .pf-btn-login').innerHTML = 'Update';
+      }
+    }
+
     // Auth state
     document.addEventListener('DOMContentLoaded', function() {
       function initProfile() {
@@ -401,8 +553,15 @@
 
             var displayName = user.displayName || user.email.split('@')[0];
             var initial = displayName.charAt(0).toUpperCase();
+            var photoURL = user.photoURL;
 
-            document.getElementById('pf-avatar').innerHTML = initial + '<div class="pf-avatar-badge"></div>';
+            if (photoURL) {
+              document.getElementById('pf-avatar').innerHTML = '<img src="' + photoURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt=""><div class="pf-avatar-badge"></div>';
+              document.getElementById('pf-avatar').style.border = 'none';
+            } else {
+              document.getElementById('pf-avatar').innerHTML = initial + '<div class="pf-avatar-badge"></div>';
+            }
+            
             document.getElementById('pf-name').textContent  = displayName;
             document.getElementById('pf-email').textContent = user.email;
 

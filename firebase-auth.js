@@ -347,13 +347,18 @@ if (auth) {
     
     if(user) {
       // Logged In State
-    const displayName = user.displayName || user.email.split('@')[0];
-    const initial = displayName.charAt(0).toUpperCase();
+      const displayName = user.displayName || user.email.split('@')[0];
+      const initial = displayName.charAt(0).toUpperCase();
+      const photoURL = user.photoURL;
       
       const topProfileBtn = document.getElementById('header-profile-btn');
       if (topProfileBtn) {
         topProfileBtn.className = 'header-profile-avatar';
-        topProfileBtn.innerHTML = initial;
+        if (photoURL) {
+          topProfileBtn.innerHTML = `<img src="${photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Profile">`;
+        } else {
+          topProfileBtn.innerHTML = initial;
+        }
         topProfileBtn.onclick = (e) => {
           e.preventDefault();
           window.location.href = 'profile.html';
@@ -361,16 +366,20 @@ if (auth) {
       }
 
       if(sidebarFooter) {
-      sidebarFooter.innerHTML = `
-        <div class="sf-profile" onclick="handleLogout()" title="Click to logout">
-          <div class="sf-avatar active">${initial}</div>
-          <div class="sf-info">
-            <div class="sf-name">${displayName}</div>
-            <div class="sf-status">Active Session (Logout)</div>
+        let avatarHtml = `<div class="sf-avatar active">${initial}</div>`;
+        if (photoURL) {
+          avatarHtml = `<div class="sf-avatar active" style="padding:0;overflow:hidden;"><img src="${photoURL}" style="width:100%;height:100%;object-fit:cover;"></div>`;
+        }
+        sidebarFooter.innerHTML = `
+          <div class="sf-profile" onclick="handleLogout()" title="Click to logout">
+            ${avatarHtml}
+            <div class="sf-info">
+              <div class="sf-name">${displayName}</div>
+              <div class="sf-status">Active Session (Logout)</div>
+            </div>
           </div>
-        </div>
-      `;
-    }
+        `;
+      }
     
     // Attempt to load cloud wishlist
     syncWishlistFromCloud();
