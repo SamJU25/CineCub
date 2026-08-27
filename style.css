@@ -866,6 +866,10 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
   border: 1px solid var(--b-2);
 }
+.modal-overlay.open .auth-modal {
+  opacity: 1;
+  transform: scale(1);
+}
 .auth-close {
   position: absolute;
   top: 20px;
