@@ -1,4 +1,4 @@
-const CACHE_NAME = 'streamheaven-cache-v56';
+const CACHE_NAME = 'streamheaven-cache-v57';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -7,6 +7,8 @@ const urlsToCache = [
   '/script.js',
   '/firebase-auth.js',
   '/manifest.json',
+  '/assets/images/logo.png',
+  '/assets/images/logo-icon.png',
   '/assets/avatars/av_1.png'
 ];
 

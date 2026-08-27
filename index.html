@@ -25,10 +25,15 @@
   
   <!-- OPEN GRAPH / SOCIAL -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://streamheaven.online/">
-  <meta property="og:title" content="StreamHeaven - Watch Free Movies & TV Shows Online">
-  <meta property="og:description" content="Enjoy high-quality, free movie and TV show streaming with no sign up required.">
-  <meta property="og:image" content="https://streamheaven.online/assets/preview.png">
+  <meta property="og:url" content="https://streamheaven.online">
+  <meta property="og:title" content="StreamHeaven">
+  <meta property="og:description" content="Watch high-definition movies and TV series online for free with no buffering.">
+  <meta property="og:image" content="https://streamheaven.online/assets/images/logo.png">
+
+  <!-- FAVICONS -->
+  <link rel="icon" type="image/png" href="/assets/images/logo-icon.png">
+  <link rel="apple-touch-icon" href="/assets/images/logo-icon.png">
+  
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="StreamHeaven - Watch Free Movies & TV Shows Online">
   <meta name="twitter:description" content="Enjoy high-quality, free movie and TV show streaming with no sign up required.">
@@ -47,8 +52,6 @@
   <meta content="StreamHeaven" name="apple-mobile-web-app-title">
   <meta content="yes" name="mobile-web-app-capable">
   <meta content="StreamHeaven" name="application-name">
-  <link href="/favicon.svg" rel="apple-touch-icon">
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
   <!-- SEO SCHEMA -->
   <script type="application/ld+json">
@@ -70,7 +73,7 @@
     "@type": "Organization",
     "name": "StreamHeaven",
     "url": "https://streamheaven.online/",
-    "logo": "https://streamheaven.online/favicon.svg"
+    "logo": "https://streamheaven.online/assets/images/logo.png"
   }
   </script>
 
@@ -93,8 +96,8 @@
   ============================================================ -->
   <aside class="cv-sidebar" id="cv-sidebar">
     <div class="sidebar-logo" onclick="App.goHome()">
-      <div class="sidebar-logo-icon"><i class="fas fa-cloud"></i></div>
-      <h1 class="sidebar-logo-text">StreamHeaven</h1>
+      <img src="/assets/images/logo-icon.png" alt="StreamHeaven Icon" class="sidebar-logo-icon-img">
+      <img src="/assets/images/logo.png" alt="StreamHeaven Logo" class="sidebar-logo-full-img">
       <button class="sidebar-toggle" onclick="Sidebar.toggle(event)"><i class="fas fa-chevron-left"></i></button>
     </div>
     <nav class="sidebar-nav" id="sidebar-nav">
@@ -400,8 +403,7 @@
         <div class="footer-grid">
           <div class="footer-brand">
             <div class="footer-logo">
-              <div class="sidebar-logo-icon"><i class="fas fa-cloud"></i></div>
-              <span class="sidebar-logo-text">StreamHeaven</span>
+              <img src="/assets/images/logo.png" alt="StreamHeaven Logo" class="footer-logo-img">
             </div>
             <p class="footer-desc">Your ultimate high-definition destination for movies, TV series, anime, and classics. Discover trending cinema anytime, anywhere.</p>
           </div>
