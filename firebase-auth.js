@@ -25,6 +25,25 @@ try {
 // Global Auth State
 let currentUser = null;
 
+// Handle Redirect Result for Google Login
+if (auth) {
+  auth.getRedirectResult().then(async (result) => {
+    if (result.credential && result.user) {
+      // Save a small user doc in Firestore just in case this is a new user
+      await db.collection("users").doc(result.user.uid).set({
+        username: result.user.displayName || result.user.email.split('@')[0],
+        email: result.user.email,
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      
+      if(typeof App !== 'undefined') App.showToast("Successfully logged in with Google!");
+    }
+  }).catch((error) => {
+    console.error("Redirect auth error:", error);
+    AuthUI.showError(error.message);
+  });
+}
+
 // The Auth UI Controller
 window.AuthUI = {
   openLogin: function() {
@@ -191,17 +210,7 @@ async function handleGoogleLogin() {
   AuthUI.clearErrors();
   const provider = new firebase.auth.GoogleAuthProvider();
   try {
-    const result = await auth.signInWithPopup(provider);
-    
-    // Save a small user doc in Firestore just in case this is a new user
-    await db.collection("users").doc(result.user.uid).set({
-      username: result.user.displayName || result.user.email.split('@')[0],
-      email: result.user.email,
-      lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-    
-    AuthUI.close();
-    if(typeof App !== 'undefined') App.showToast("Successfully logged in with Google!");
+    await auth.signInWithRedirect(provider);
   } catch(error) {
     AuthUI.showError(error.message);
   }
