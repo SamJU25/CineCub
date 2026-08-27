@@ -21,18 +21,18 @@ let currentUser = null;
 // The Auth UI Controller
 const AuthUI = {
   openLogin: function() {
-    document.getElementById('auth-modal-overlay').classList.add('active');
+    document.getElementById('auth-modal-overlay').classList.add('open');
     document.getElementById('auth-login-view').style.display = 'block';
     document.getElementById('auth-signup-view').style.display = 'none';
     if(typeof Sidebar !== 'undefined') Sidebar.close(); // Close sidebar if on mobile
   },
   openSignup: function() {
-    document.getElementById('auth-modal-overlay').classList.add('active');
+    document.getElementById('auth-modal-overlay').classList.add('open');
     document.getElementById('auth-login-view').style.display = 'none';
     document.getElementById('auth-signup-view').style.display = 'block';
   },
   close: function() {
-    document.getElementById('auth-modal-overlay').classList.remove('active');
+    document.getElementById('auth-modal-overlay').classList.remove('open');
   },
   overlayClick: function(e) {
     if(e.target.id === 'auth-modal-overlay') {
