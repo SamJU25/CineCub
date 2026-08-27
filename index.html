@@ -550,7 +550,106 @@
 
 
 
+  <!-- ============================================================ 
+       AUTH MODAL OVERLAY
+  ============================================================ -->
+  <div class="modal-overlay" id="auth-modal-overlay" onclick="AuthUI.overlayClick(event)">
+    <div class="auth-modal" id="auth-modal">
+      <button class="auth-close" onclick="AuthUI.close()"><i class="fas fa-times"></i></button>
+      
+      <!-- LOGIN VIEW -->
+      <div id="auth-login-view">
+        <div class="auth-header">
+          <div class="auth-logo"><i class="fas fa-cloud"></i></div>
+          <div class="auth-title">StreamHeavens</div>
+        </div>
+        <div class="auth-subtitle">WELCOME BACK</div>
+        <h2 class="auth-heading">Sign in</h2>
+        <p class="auth-desc">Use your username or registered email address with your password.</p>
+        
+        <form onsubmit="handleLogin(event)" class="auth-form">
+          <div class="auth-error" id="auth-login-error" style="display:none;"></div>
+          <div class="auth-field">
+            <label>Username or email</label>
+            <div class="auth-input-wrap">
+              <input type="email" id="login-email" required placeholder="Enter username or email">
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+          <div class="auth-field">
+            <label>Password</label>
+            <div class="auth-input-wrap">
+              <input type="password" id="login-pass" required placeholder="Enter password">
+              <i class="fas fa-eye"></i>
+            </div>
+          </div>
+          <div style="text-align: right; margin-bottom: 20px;">
+            <a href="#" class="auth-forgot" onclick="event.preventDefault(); handleForgotPassword();">Forgot password?</a>
+          </div>
+          <button type="submit" class="auth-btn-primary" id="btn-login"><i class="fas fa-sign-in-alt"></i> Login</button>
+          
+          <div class="auth-divider"><span>OR</span></div>
+          <button type="button" class="auth-btn-google" onclick="handleGoogleLogin()"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="G"> Continue with Google</button>
+        </form>
+        <div class="auth-switch">Don't have an account? <span onclick="AuthUI.openSignup()">Sign Up</span></div>
+      </div>
+
+      <!-- SIGNUP VIEW -->
+      <div id="auth-signup-view" style="display:none;">
+        <div class="auth-header">
+          <div class="auth-logo"><i class="fas fa-cloud"></i></div>
+          <div class="auth-title">StreamHeavens</div>
+        </div>
+        <div class="auth-subtitle">CREATE ACCOUNT</div>
+        <h2 class="auth-heading">Join StreamHeavens</h2>
+        <p class="auth-desc">Create a local account for this browser. Your username and email must be unique.</p>
+        
+        <form onsubmit="handleSignup(event)" class="auth-form">
+          <div class="auth-error" id="auth-signup-error" style="display:none;"></div>
+          <div class="auth-field">
+            <label>Username</label>
+            <div class="auth-input-wrap">
+              <input type="text" id="signup-user" required placeholder="Choose a username">
+              <i class="fas fa-at"></i>
+            </div>
+          </div>
+          <div class="auth-field">
+            <label>Email address</label>
+            <div class="auth-input-wrap">
+              <input type="email" id="signup-email" required placeholder="you@example.com">
+              <i class="fas fa-envelope"></i>
+            </div>
+          </div>
+          <div class="auth-field">
+            <label>Password</label>
+            <div class="auth-input-wrap">
+              <input type="password" id="signup-pass" required placeholder="At least 6 characters">
+              <i class="fas fa-eye"></i>
+            </div>
+          </div>
+          <div class="auth-field">
+            <label>Confirm password</label>
+            <div class="auth-input-wrap">
+              <input type="password" id="signup-confirm" required placeholder="Re-enter your password">
+              <i class="fas fa-eye"></i>
+            </div>
+          </div>
+          <button type="submit" class="auth-btn-primary" id="btn-signup" style="margin-top:20px;"><i class="fas fa-user-plus"></i> Create Account</button>
+          
+          <div class="auth-divider"><span>OR</span></div>
+          <button type="button" class="auth-btn-google" onclick="handleGoogleLogin()"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="G"> Continue with Google</button>
+        </form>
+        <div class="auth-switch">Already have an account? <span onclick="AuthUI.openLogin()">Login</span></div>
+      </div>
+    </div>
+  </div>
+
   <!-- JAVASCRIPT -->
+  <!-- Firebase Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  <script src="firebase-auth.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script src="script.js"></script>
   <script>
