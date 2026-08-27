@@ -41,6 +41,30 @@
   <link href="/favicon.svg" rel="apple-touch-icon">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
+  <!-- SEO SCHEMA -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "StreamHeaven",
+    "url": "https://streamheaven.online/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://streamheaven.online/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "StreamHeaven",
+    "url": "https://streamheaven.online/",
+    "logo": "https://streamheaven.online/favicon.svg"
+  }
+  </script>
+
   <!-- STYLESHEET -->
   <link href="style.css?v=18" rel="stylesheet">
 </head>
@@ -200,7 +224,7 @@
           <div class="section-header">
             <div class="section-title-group">
               <div class="section-icon" style="background:var(--cv-purple-dim); color:var(--cv-purple-light);"><i class="fas fa-layer-group"></i></div>
-              <div><div class="section-title">Explore by Genre</div><div class="section-subtitle">Find movies and shows by category</div></div>
+              <div><h2 class="section-title">Explore by Genre</h2><div class="section-subtitle">Find movies and shows by category</div></div>
             </div>
             <div class="by-genre-toggle">
               <div class="bgt-btn active" onclick="HomeGenre.setType('movie', this)">MOVIES</div>
@@ -217,7 +241,7 @@
           <div class="section-header">
             <div class="section-title-group">
               <div class="section-icon"><i class="fas fa-fire-alt"></i></div>
-              <div><div class="section-title">Trending Now</div><div class="section-subtitle">What everyone is watching</div></div>
+              <div><h2 class="section-title">Trending Now</h2><div class="section-subtitle">What everyone is watching</div></div>
             </div>
             <div class="section-view-all" onclick="App.browseTrending()">View All <i class="fas fa-arrow-right"></i></div>
           </div>
@@ -229,7 +253,7 @@
           <div class="section-header">
             <div class="section-title-group">
               <div class="section-icon" style="background:var(--cv-gold-dim); color:var(--cv-gold);"><i class="fas fa-crown"></i></div>
-              <div><div class="section-title">Top 10 Today</div><div class="section-subtitle">Most viewed in the last 24 hours</div></div>
+              <div><h2 class="section-title">Top 10 Today</h2><div class="section-subtitle">Most viewed in the last 24 hours</div></div>
             </div>
           </div>
           <div class="compact-list" id="list-top10"></div>
@@ -240,7 +264,7 @@
           <div class="section-header">
             <div class="section-title-group">
               <div class="section-icon" style="background:var(--cv-purple-dim); color:var(--cv-purple-light);"><i class="fas fa-trophy"></i></div>
-              <div><div class="section-title">Top Rated Films</div><div class="section-subtitle">Critically acclaimed masterpieces</div></div>
+              <div><h2 class="section-title">Top Rated Films</h2><div class="section-subtitle">Critically acclaimed masterpieces</div></div>
             </div>
             <div class="section-view-all" onclick="App.browseTopRated()">View All <i class="fas fa-arrow-right"></i></div>
           </div>
@@ -252,7 +276,7 @@
           <div class="section-header">
             <div class="section-title-group">
               <div class="section-icon" style="background:var(--cv-purple-dim); color:var(--cv-purple-light);"><i class="fas fa-tv"></i></div>
-              <div><div class="section-title">Popular TV Series</div><div class="section-subtitle">Binge-worthy TV series</div></div>
+              <div><h2 class="section-title">Popular TV Series</h2><div class="section-subtitle">Binge-worthy TV series</div></div>
             </div>
             <div class="section-view-all" onclick="App.browseTVShows()">View All <i class="fas fa-arrow-right"></i></div>
           </div>
@@ -264,7 +288,7 @@
           <div class="section-header">
             <div class="section-title-group">
               <div class="section-icon"><i class="fas fa-star"></i></div>
-              <div><div class="section-title">New Releases</div><div class="section-subtitle">Just added to StreamHeaven</div></div>
+              <div><h2 class="section-title">New Releases</h2><div class="section-subtitle">Just added to StreamHeaven</div></div>
             </div>
             <div class="section-view-all" onclick="App.browseMovies()">View All <i class="fas fa-arrow-right"></i></div>
           </div>
@@ -306,7 +330,7 @@
     <div class="cv-page" id="page-watchlist">
       <div class="page-inner">
         <div class="cv-container">
-          <div class="section-title" style="margin-bottom:20px;">My Watchlist</div>
+          <h2 class="section-title" style="margin-bottom:20px;">My Watchlist</h2>
           <div class="poster-grid" id="wl-grid"></div>
         </div>
       </div>
@@ -331,10 +355,30 @@
       <div class="page-inner">
         <div class="cv-container">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <div class="section-title">Watch History</div>
+            <h2 class="section-title">Watch History</h2>
             <button onclick="History.clearAll()" style="background:transparent; color:var(--cv-red); border:1px solid rgba(230,57,70,0.2); padding:6px 16px; border-radius:var(--r-pill); font-size:12px;"><i class="fas fa-trash"></i> Clear All</button>
           </div>
           <div class="poster-grid" id="history-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEO FAQ SECTION -->
+    <div class="cv-container" style="margin-top: 40px; margin-bottom: 40px;">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="section-subtitle">Learn more about watching movies and TV series online</div>
+      <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 16px;">
+        <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-1); margin-bottom: 8px;">Is StreamHeaven completely free?</h3>
+          <p style="font-size: 14px; color: var(--text-2); line-height: 1.5;">Yes, you can watch free movies and TV shows online on StreamHeaven without any registration or hidden fees. We provide high-quality HD streaming at no cost.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-1); margin-bottom: 8px;">Do I need an account to watch movies online?</h3>
+          <p style="font-size: 14px; color: var(--text-2); line-height: 1.5;">No sign up is required! You can dive straight into your favorite drama, action, horror, sci-fi, and crime series immediately without creating an account.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+          <h3 style="font-size: 16px; font-weight: 700; color: var(--text-1); margin-bottom: 8px;">Is the streaming quality good?</h3>
+          <p style="font-size: 14px; color: var(--text-2); line-height: 1.5;">Absolutely. StreamHeaven offers high definition (HD) streaming for new releases, popular TV series, and classic animation, ensuring a great viewing experience with zero buffering.</p>
         </div>
       </div>
     </div>

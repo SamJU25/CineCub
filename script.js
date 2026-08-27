@@ -631,7 +631,7 @@ var Spotlight = {
         + '<div class="spotlight-bg" style="background-image:url('+CFG.ORIG+x.backdrop_path+')"></div>'
         + '<div class="spotlight-content">'
         + '<div class="spotlight-category"><span class="spotlight-category-dot"></span>'+(type==='tv'?'TV Series':'Feature Film')+' &middot; '+year+'</div>'
-        + '<h1 class="spotlight-title">'+Utils.escape(title)+'</h1>'
+        + '<h2 class="spotlight-title">'+Utils.escape(title)+'</h2>'
         + '<div class="spotlight-meta">'
         + '<span><i class="fas fa-star"></i> '+rating+'</span>'
         + '<span>&bull;</span><span><i class="fas fa-clock"></i> ~2h</span>'
