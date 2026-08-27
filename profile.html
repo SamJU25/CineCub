@@ -321,7 +321,7 @@
   <script src="lib/firebase-app-compat.js"></script>
   <script src="lib/firebase-auth-compat.js"></script>
   <script src="lib/firebase-firestore-compat.js"></script>
-  <script src="firebase-auth.js"></script>
+  <script src="firebase-auth.js?v=3"></script>
 
   <script>
     const WATCH_KEY   = 'sh_watchlist';
@@ -389,10 +389,12 @@
     window.addEventListener('DOMContentLoaded', function() {
       const _orig = window.handleLogout;
       window.handleLogout = function() {
-        if (typeof auth !== 'undefined' && auth) {
-          auth.signOut().then(() => { window.location.href = 'index.html'; });
-        } else {
-          window.location.href = 'index.html';
+        if (confirm("Are you sure you want to log out?")) {
+          if (typeof auth !== 'undefined' && auth) {
+            auth.signOut().then(() => { window.location.href = 'index.html'; });
+          } else {
+            window.location.href = 'index.html';
+          }
         }
       };
     });

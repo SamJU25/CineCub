@@ -29,12 +29,31 @@ let currentUser = null;
 if (auth) {
   auth.getRedirectResult().then(async (result) => {
     if (result.credential && result.user) {
+      let username = result.user.displayName || result.user.email.split('@')[0];
+      let lowerUsername = username.toLowerCase();
+      
+      try {
+        const userDoc = await db.collection("usernames").doc(lowerUsername).get();
+        if (userDoc.exists && userDoc.data().uid !== result.user.uid) {
+           // Username taken by someone else, append random numbers
+           const randomNum = Math.floor(Math.random() * 10000);
+           username = `${username}${randomNum}`;
+           lowerUsername = username.toLowerCase();
+        }
+        db.collection("usernames").doc(lowerUsername).set({
+          uid: result.user.uid,
+          email: result.user.email
+        }, { merge: true }).catch(e => console.warn("Username reserve failed:", e));
+      } catch (err) {
+        console.warn("Error handling Google username:", err);
+      }
+      
       // Save a small user doc in Firestore just in case this is a new user
-      await db.collection("users").doc(result.user.uid).set({
-        username: result.user.displayName || result.user.email.split('@')[0],
+      db.collection("users").doc(result.user.uid).set({
+        username: username,
         email: result.user.email,
         lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
+      }, { merge: true }).catch(err => console.warn("Firestore write failed:", err));
       
       if(typeof App !== 'undefined') App.showToast("Successfully logged in with Google!");
     }
@@ -95,22 +114,36 @@ window.AuthUI = {
 async function handleLogin(e) {
   e.preventDefault();
   AuthUI.clearErrors();
-  const email = document.getElementById('login-email').value;
+  const inputStr = document.getElementById('login-email').value.trim();
   const pass = document.getElementById('login-pass').value;
   const btn = document.getElementById('btn-login');
   
-  if(!email || !pass) return AuthUI.showError("Please fill in all fields.");
+  if(!inputStr || !pass) return AuthUI.showError("Please fill in all fields.");
   
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
   
   try {
     if(!auth) {
-    document.getElementById('auth-login-error').textContent = "Firebase is blocked. Please disable your adblocker.";
-    document.getElementById('auth-login-error').style.display = 'block';
-    return;
-  }
-  await auth.signInWithEmailAndPassword(email, pass);
+      document.getElementById('auth-login-error').textContent = "Firebase is blocked. Please disable your adblocker.";
+      document.getElementById('auth-login-error').style.display = 'block';
+      return;
+    }
+    
+    let loginEmail = inputStr;
+    // If input does not contain '@', assume it's a username
+    if (!inputStr.includes('@')) {
+      const userDoc = await db.collection("usernames").doc(inputStr.toLowerCase()).get();
+      if (!userDoc.exists) {
+        AuthUI.showError("Username not found.");
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+        return;
+      }
+      loginEmail = userDoc.data().email;
+    }
+    
+    await auth.signInWithEmailAndPassword(loginEmail, pass);
     AuthUI.close();
     if(typeof App !== 'undefined') App.showToast("Successfully logged in!");
   } catch(error) {
@@ -135,35 +168,70 @@ async function handleSignup(e) {
   if(pass !== confirm) return AuthUI.showError("Passwords do not match.", true);
   if(pass.length < 6) return AuthUI.showError("Password must be at least 6 characters.", true);
   
+  if(!auth) {
+    return AuthUI.showError("Firebase is blocked. Please disable your adblocker and try again.", true);
+  }
+
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+
+  const lowerUsername = username.toLowerCase();
   
   try {
-    if(!auth) {
-    document.getElementById('auth-login-error').textContent = "Firebase is blocked. Please disable your adblocker.";
-    document.getElementById('auth-login-error').style.display = 'block';
-    return;
+    const userDoc = await db.collection("usernames").doc(lowerUsername).get();
+    if (userDoc.exists) {
+      AuthUI.showError("Username is already taken.", true);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+      return;
+    }
+  } catch(err) {
+    console.warn("Could not check username:", err);
   }
-  const cred = await auth.createUserWithEmailAndPassword(email, pass);
-    // Save the username to the Firebase profile
-    await cred.user.updateProfile({ displayName: username });
-    
-    // Also save a small user doc in Firestore just in case
-    await db.collection("users").doc(cred.user.uid).set({
+
+  // 10-second timeout to prevent infinite hang
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Request timed out. Please check your connection and try again.")), 10000)
+  );
+
+  try {
+    const cred = await Promise.race([
+      auth.createUserWithEmailAndPassword(email, pass),
+      timeoutPromise
+    ]);
+    // Save display name (non-blocking)
+    cred.user.updateProfile({ displayName: username }).catch(err => console.warn("Profile update failed:", err));
+    // Save user doc in Firestore (non-blocking)
+    db.collection("users").doc(cred.user.uid).set({
       username: username,
       email: email,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(fsErr => {
+      console.warn("Firestore write failed (non-critical):", fsErr);
     });
+    // Save username mapping (non-blocking)
+    db.collection("usernames").doc(lowerUsername).set({
+      uid: cred.user.uid,
+      email: email
+    }).catch(err => console.warn("Failed to save username mapping:", err));
     
     AuthUI.close();
-    if(typeof App !== 'undefined') App.showToast("Account created successfully!");
+    if(typeof App !== 'undefined') App.showToast("Account created successfully! Welcome, " + username + "!");
   } catch(error) {
-    AuthUI.showError(error.message, true);
+    let msg = error.message || "Something went wrong. Please try again.";
+    // Make Firebase error messages friendlier
+    if(msg.includes('email-already-in-use')) msg = "This email is already registered. Try logging in instead.";
+    else if(msg.includes('invalid-email')) msg = "Please enter a valid email address.";
+    else if(msg.includes('weak-password')) msg = "Password is too weak. Use at least 6 characters.";
+    else if(msg.includes('operation-not-allowed')) msg = "Email sign-up is currently disabled. Please use Google sign-in.";
+    else if(msg.includes('network-request-failed') || msg.includes('timed out')) msg = "Network error. Please check your connection and disable any adblockers.";
+    AuthUI.showError(msg, true);
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
   }
 }
+
 
   async function handleForgotPassword(e) {
     if(e) e.preventDefault();
@@ -217,9 +285,11 @@ async function handleGoogleLogin() {
 }
 
 window.handleLogout = function() {
-  if(auth) auth.signOut().then(() => {
-    if(typeof App !== 'undefined') App.showToast("Logged out successfully");
-  });
+  if (confirm("Are you sure you want to log out?")) {
+    if(auth) auth.signOut().then(() => {
+      if(typeof App !== 'undefined') App.showToast("Logged out successfully");
+    });
+  }
 }
 
 // Global Auth State Observer
@@ -236,6 +306,14 @@ if (auth) {
       const popupUsername = document.getElementById('popup-username');
       if(popupUsername) popupUsername.textContent = displayName;
       
+      // Update the popup buttons
+      const btnProfile = document.getElementById('popup-profile-btn');
+      const btnLogout = document.getElementById('popup-logout-btn');
+      const btnLogin = document.getElementById('popup-login-btn');
+      if(btnProfile) btnProfile.style.display = 'flex';
+      if(btnLogout) btnLogout.style.display = 'flex';
+      if(btnLogin) btnLogin.style.display = 'none';
+
       if(sidebarFooter) {
       sidebarFooter.innerHTML = `
         <div class="sf-profile" onclick="handleLogout()" title="Click to logout">
@@ -254,6 +332,14 @@ if (auth) {
     // Update the popup username
     const popupUsername = document.getElementById('popup-username');
     if(popupUsername) popupUsername.textContent = 'Guest';
+
+    // Update the popup buttons
+    const btnProfile = document.getElementById('popup-profile-btn');
+    const btnLogout = document.getElementById('popup-logout-btn');
+    const btnLogin = document.getElementById('popup-login-btn');
+    if(btnProfile) btnProfile.style.display = 'none';
+    if(btnLogout) btnLogout.style.display = 'none';
+    if(btnLogin) btnLogin.style.display = 'flex';
 
     // Logged Out State
     if(sidebarFooter) {
@@ -304,7 +390,7 @@ window.AuthUI = AuthUI;
 window.handleLogin = handleLogin;
 window.handleSignup = handleSignup;
 window.handleForgotPassword = handleForgotPassword;
-window.handleLogout = handleLogout;
+// window.handleLogout already attached
 window.handleGoogleLogin = handleGoogleLogin;
 
 window.togglePassword = function(inputId) {
