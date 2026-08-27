@@ -749,7 +749,8 @@ iframe {border:none}
 .auth-input:focus {border-color:var(--cv-purple);box-shadow:0 0 0 3px rgba(157,78,221,.16);background:var(--cv-dark-3)}
 
 /* FIX: Anchored standard icons to the bottom so they perfectly align with the 50px input field */
-.auth-field .input-icon {position:absolute;right:16px;bottom:0;height:50px;display:flex;align-items:center;justify-content:center;color:var(--text-4);font-size:13px;pointer-events:none}
+.auth-field .input-icon {position:absolute;left:16px;bottom:0;height:50px;display:flex;align-items:center;justify-content:center;color:var(--text-4);font-size:16px;pointer-events:none;transition: color 0.3s;}
+.auth-input-wrap input:focus + .input-icon {color: var(--cv-purple-light);}
 
 /* FIX: Anchored the toggle button 10px from the bottom so it vertically centers in the 50px input */
 .auth-password-toggle {position:absolute;right:10px;bottom:10px;width:30px;height:30px;border-radius:8px;background:transparent;color:var(--text-3);display:flex;align-items:center;justify-content:center;}
@@ -963,18 +964,6 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   outline: none;
   border-color: var(--cv-purple);
   box-shadow: 0 0 0 4px var(--cv-purple-dim);
-}
-.auth-input-wrap i {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-4);
-  font-size: 16px;
-  transition: color 0.3s;
-}
-.auth-input-wrap input:focus + i {
-  color: var(--cv-purple-light);
 }
 .auth-forgot {
   font-size: 13px;

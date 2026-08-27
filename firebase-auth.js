@@ -31,21 +31,23 @@ window.AuthUI = {
     document.getElementById('auth-modal-overlay').classList.add('open');
     document.getElementById('auth-login-view').style.display = 'block';
     document.getElementById('auth-signup-view').style.display = 'none';
+    const forgotView = document.getElementById('auth-forgot-view');
+    if(forgotView) forgotView.style.display = 'none';
     if(typeof Sidebar !== 'undefined') Sidebar.close(); // Close sidebar if on mobile
   },
-    openSignup: function() {
-      document.getElementById('auth-modal-overlay').classList.add('open');
-      document.getElementById('auth-login-view').style.display = 'none';
-      document.getElementById('auth-signup-view').style.display = 'block';
-      const forgotView = document.getElementById('auth-forgot-view');
-      if(forgotView) forgotView.style.display = 'none';
-    },
-    openForgot: function() {
-      document.getElementById('auth-modal-overlay').classList.add('open');
-      document.getElementById('auth-login-view').style.display = 'none';
-      document.getElementById('auth-signup-view').style.display = 'none';
-      document.getElementById('auth-forgot-view').style.display = 'block';
-    },
+  openSignup: function() {
+    document.getElementById('auth-modal-overlay').classList.add('open');
+    document.getElementById('auth-login-view').style.display = 'none';
+    document.getElementById('auth-signup-view').style.display = 'block';
+    const forgotView = document.getElementById('auth-forgot-view');
+    if(forgotView) forgotView.style.display = 'none';
+  },
+  openForgot: function() {
+    document.getElementById('auth-modal-overlay').classList.add('open');
+    document.getElementById('auth-login-view').style.display = 'none';
+    document.getElementById('auth-signup-view').style.display = 'none';
+    document.getElementById('auth-forgot-view').style.display = 'block';
+  },
     close: function() {
     document.getElementById('auth-modal-overlay').classList.remove('open');
   },
