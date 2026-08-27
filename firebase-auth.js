@@ -11,15 +11,22 @@ const firebaseConfig = {
   measurementId: "G-BHBJSJW06B"
 };
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+let auth = null;
+let db = null;
+
+try {
+  firebase.initializeApp(firebaseConfig);
+  auth = firebase.auth();
+  db = firebase.firestore();
+} catch (e) {
+  console.error("Firebase failed to load. Please disable your adblocker if you want to log in.", e);
+}
 
 // Global Auth State
 let currentUser = null;
 
 // The Auth UI Controller
-const AuthUI = {
+window.AuthUI = {
   openLogin: function() {
     document.getElementById('auth-modal-overlay').classList.add('open');
     document.getElementById('auth-login-view').style.display = 'block';
@@ -69,7 +76,12 @@ async function handleLogin(e) {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
   
   try {
-    await auth.signInWithEmailAndPassword(email, pass);
+    if(!auth) {
+    document.getElementById('auth-login-error').textContent = "Firebase is blocked. Please disable your adblocker.";
+    document.getElementById('auth-login-error').style.display = 'block';
+    return;
+  }
+  await auth.signInWithEmailAndPassword(email, pass);
     AuthUI.close();
     if(typeof App !== 'undefined') App.showToast("Successfully logged in!");
   } catch(error) {
@@ -98,7 +110,12 @@ async function handleSignup(e) {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
   
   try {
-    const cred = await auth.createUserWithEmailAndPassword(email, pass);
+    if(!auth) {
+    document.getElementById('auth-login-error').textContent = "Firebase is blocked. Please disable your adblocker.";
+    document.getElementById('auth-login-error').style.display = 'block';
+    return;
+  }
+  const cred = await auth.createUserWithEmailAndPassword(email, pass);
     // Save the username to the Firebase profile
     await cred.user.updateProfile({ displayName: username });
     
@@ -135,6 +152,10 @@ async function handleForgotPassword() {
 }
 
 async function handleGoogleLogin() {
+  if(!auth) {
+    alert("Firebase is blocked. Please disable your adblocker.");
+    return;
+  }
   AuthUI.clearErrors();
   const provider = new firebase.auth.GoogleAuthProvider();
   try {
@@ -154,19 +175,20 @@ async function handleGoogleLogin() {
   }
 }
 
-function handleLogout() {
-  auth.signOut().then(() => {
+window.handleLogout = function() {
+  if(auth) auth.signOut().then(() => {
     if(typeof App !== 'undefined') App.showToast("Logged out successfully");
   });
 }
 
 // Global Auth State Observer
-auth.onAuthStateChanged(user => {
-  currentUser = user;
-  const sidebarFooter = document.querySelector('.cv-sidebar-bottom');
-  
-  if(user) {
-    // Logged In State
+if (auth) {
+  auth.onAuthStateChanged(user => {
+    currentUser = user;
+    const sidebarFooter = document.querySelector('.cv-sidebar-bottom');
+    
+    if(user) {
+      // Logged In State
     const displayName = user.displayName || user.email.split('@')[0];
     const initial = displayName.charAt(0).toUpperCase();
     
