@@ -1158,9 +1158,12 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 .pf-modal-overlay.open .pf-modal { opacity: 1; transform: scale(1); }
 .pf-modal-title { font-size: 22px; font-weight: 900; margin-bottom: 24px; color: var(--text-1); text-align: center; }
 
-.pf-avatar-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;
-}
+  .pf-avatar-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; max-height: 300px; overflow-y: auto; padding-right: 8px;
+  }
+  .pf-avatar-grid::-webkit-scrollbar { width: 6px; }
+  .pf-avatar-grid::-webkit-scrollbar-track { background: var(--cv-dark-2); border-radius: 10px; }
+  .pf-avatar-grid::-webkit-scrollbar-thumb { background: var(--cv-purple); border-radius: 10px; }
 .pf-avatar-option {
   position: relative; width: 100%; aspect-ratio: 1/1; border-radius: 50%;
   cursor: pointer; overflow: hidden; border: 2px solid transparent; transition: all 0.2s ease;
