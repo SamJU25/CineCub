@@ -1323,16 +1323,43 @@ var AdFreePlayer = {
       apiUrl = 'https://streamheaven-api.onrender.com/api/streams/' + State.activeType + '/' + State.activeId;
     }
     
-    sTabs.innerHTML = '<div style="padding:10px; color:var(--text-3);">Searching for streams...</div>';
+    var startTime = Date.now();
+    sTabs.innerHTML = '<div style="padding:10px; color:var(--text-3);" id="adfree-status"><i class="fas fa-circle-notch fa-spin" style="margin-right:8px;"></i> Searching for streams...</div>';
     
-    fetch(apiUrl)
-      .then(r => {
-        if (!r.ok) throw new Error('Stream service unavailable');
-        var ct = r.headers.get('content-type') || '';
-        if (ct.indexOf('application/json') === -1) throw new Error('Stream service unavailable');
-        return r.json();
-      })
+    // If it takes more than 4 seconds, Render is likely waking up from sleep
+    var checkWakeup = setInterval(function() {
+      var statusEl = document.getElementById('adfree-status');
+      if (statusEl && (Date.now() - startTime) > 4000) {
+        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px; color:var(--cv-purple);"></i> Waking up ad-free servers... (this can take ~30s)';
+        statusEl.style.color = 'var(--text-1)';
+      }
+    }, 1000);
+
+    // Smart fetch with auto-retry
+    var fetchStreams = function(retries) {
+      return fetch(apiUrl)
+        .then(r => {
+          // Render might return 502/503 while spinning up container
+          if (!r.ok && retries > 0) throw new Error('Retry');
+          if (!r.ok) throw new Error('Stream service unavailable');
+          
+          var ct = r.headers.get('content-type') || '';
+          if (ct.indexOf('application/json') === -1 && retries > 0) throw new Error('Retry');
+          if (ct.indexOf('application/json') === -1) throw new Error('Stream service unavailable');
+          
+          return r.json();
+        })
+        .catch(e => {
+          if (e.message === 'Retry' && retries > 0) {
+            return new Promise(resolve => setTimeout(resolve, 4000)).then(() => fetchStreams(retries - 1));
+          }
+          throw e;
+        });
+    };
+    
+    fetchStreams(3)
       .then(resp => {
+        clearInterval(checkWakeup);
         var streams = resp.streams || resp;
         if (!streams || !streams.length || streams.length === 0) {
           sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">No streams found. Try the regular Watch tab.</div>';
@@ -1355,6 +1382,7 @@ var AdFreePlayer = {
         AdFreePlayer.onServerSelect(0);
       })
       .catch(e => {
+        clearInterval(checkWakeup);
         console.error('AdFree Fetch Error:', e);
         sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">Ad-Free streams are unavailable right now. Try the regular Watch tab instead.</div>';
       });
