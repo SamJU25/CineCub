@@ -123,21 +123,24 @@ iframe {border:none}
     height: 40px;
     padding: 0;
     margin: 8px auto 0;
+    border-radius: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: transparent !important;
-    border: none !important;
+    background: rgba(255, 59, 48, 0.1) !important;
+    border: 1px solid rgba(255, 59, 48, 0.2) !important;
   }
-  .cv-sidebar.collapsed .sf-logout-img {
-    width: 36px;
-    height: 36px;
-    margin: 0 !important;
-    border-radius: 8px;
+  .cv-sidebar.collapsed .sf-logout-btn:hover {
+    background: rgba(255, 59, 48, 0.2) !important;
+    border-color: rgba(255, 59, 48, 0.4) !important;
+  }
+  .cv-sidebar.collapsed .sf-logout-icon {
+    width: 20px;
+    height: 20px;
   }
   .cv-sidebar.collapsed .sf-logout-text {
-  display: none;
-}
+    display: none;
+  }
 
 /* ================================================================ 
    03. TOP HEADER
@@ -1172,11 +1175,13 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 }
 .sf-logout-btn:hover {
   background: rgba(255, 59, 48, 0.2) !important;
+  border-color: rgba(255, 59, 48, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.15);
 }
-.sf-logout-img {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
+.sf-logout-icon {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
 }
 
 .auth-divider {
