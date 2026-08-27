@@ -204,6 +204,7 @@
       <div class="pf-avatar" id="pf-avatar">?<div class="pf-avatar-badge"></div></div>
       <div class="pf-hero-info">
         <div class="pf-hero-name" id="pf-name">Loading…</div>
+        <div class="pf-hero-username" id="pf-username"></div>
         <div class="pf-hero-email" id="pf-email"></div>
         <div class="pf-hero-badge"><span class="pf-hero-badge-dot"></span>Active Session</div>
       </div>
@@ -399,15 +400,17 @@
     <!-- Name Modal -->
     <div class="pf-modal-overlay" id="modal-name" onclick="closeModals(event)">
       <div class="pf-modal" onclick="event.stopPropagation()">
-        <div class="pf-modal-close" onclick="closeModal('modal-name')"><i class="fas fa-times"></i></div>
         <div class="pf-modal-title">Change Display Name</div>
-        <form class="pf-modal-form" onsubmit="updateDisplayName(event)">
+        <div class="pf-modal-form">
           <div class="auth-input-group">
             <label>New Display Name</label>
-            <input type="text" id="new-display-name" required placeholder="Enter new display name">
+            <input type="text" id="new-display-name" class="auth-input" placeholder="Enter new display name">
           </div>
-          <button type="submit" class="auth-btn-primary" id="btn-update-name" style="margin-top:20px;">Save Changes</button>
-        </form>
+        </div>
+        <div class="pf-modal-actions">
+          <button class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
+          <button class="pf-btn-login" id="btn-update-name" onclick="updateDisplayName(event)">Save Changes</button>
+        </div>
       </div>
     </div>
 
