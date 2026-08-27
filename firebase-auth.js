@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cachedAvatar) {
         const topProfileBtn = document.getElementById('header-profile-btn');
         if (topProfileBtn) {
-            topProfileBtn.innerHTML = `<img src="${cachedAvatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Profile">`;
+            topProfileBtn.innerHTML = `<img src="${cachedAvatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="Profile">`;
         }
     }
 });
@@ -305,7 +305,7 @@ window.handleLogout = function() {
           photoURL = photoURL.replace('.jpg', '.png');
           const match = photoURL.match(/av_(\d+)\.png/);
           if (match && parseInt(match[1]) > 21) {
-              photoURL = 'assets/avatars/av_1.png?v=2';
+              photoURL = 'assets/avatars/av_1.png?v=3';
           }
       }
       const displayName = user.displayName || user.email.split('@')[0];
@@ -388,7 +388,7 @@ if (auth) {
         const topProfileBtn = document.getElementById('header-profile-btn');
         if (topProfileBtn) {
           topProfileBtn.className = 'header-profile-avatar';
-          topProfileBtn.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Profile">`;
+          topProfileBtn.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="Profile">`;
           topProfileBtn.onclick = (e) => {
             e.preventDefault();
             window.location.href = 'profile.html';
@@ -401,7 +401,7 @@ if (auth) {
           photoURL = photoURL.replace('.jpg', '.png');
           const match = photoURL.match(/av_(\d+)\.png/);
           if (match && parseInt(match[1]) > 21) {
-              photoURL = 'assets/avatars/av_1.png?v=2';
+              photoURL = 'assets/avatars/av_1.png?v=3';
           }
       }
       
