@@ -224,7 +224,8 @@ if (auth) {
     const wlGrid = document.getElementById('wl-grid');
     if(wlGrid) wlGrid.innerHTML = '';
   }
-});
+  });
+}
 
 // Wishlist Cloud Sync
 async function syncWishlistFromCloud() {
