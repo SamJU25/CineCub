@@ -285,6 +285,30 @@ async function handleGoogleLogin() {
 }
 
 window.handleLogout = function() {
+  const user = auth.currentUser;
+  let userImageHtml = `<div style="font-size: 48px; color: var(--cv-red); margin-bottom: 20px;"><i class="fas fa-sign-out-alt"></i></div>`;
+  let userNameHtml = '';
+
+  if (user) {
+      let photoURL = user.photoURL;
+      if (photoURL && photoURL.includes('assets/avatars/av_')) {
+          photoURL = photoURL.replace('.jpg', '.png');
+          const match = photoURL.match(/av_(\d+)\.png/);
+          if (match && parseInt(match[1]) > 21) {
+              photoURL = 'assets/avatars/av_1.png';
+          }
+      }
+      const displayName = user.displayName || user.email.split('@')[0];
+      
+      if (photoURL) {
+          userImageHtml = `<img src="${photoURL}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; margin: 0 auto 10px auto; display: block; border: 3px solid var(--cv-dark-2);">`;
+      } else {
+          const initial = displayName.charAt(0).toUpperCase();
+          userImageHtml = `<div style="width: 80px; height: 80px; border-radius: 50%; background: var(--cv-dark-2); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 0 auto 10px auto; border: 3px solid var(--cv-dark-2);">${initial}</div>`;
+      }
+      userNameHtml = `<div style="color: var(--text-2); font-size: 16px; font-weight: 600; margin-bottom: 20px;">@${displayName}</div>`;
+  }
+
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s ease;';
   
@@ -292,9 +316,8 @@ window.handleLogout = function() {
   modal.style.cssText = 'background:var(--cv-dark-1);border:1px solid var(--b-2);border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,0.5);width:90%;max-width:400px;text-align:center;padding:30px;transform:scale(0.9);opacity:0;transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);';
   
   modal.innerHTML = `
-    <div style="font-size: 48px; color: var(--cv-red); margin-bottom: 20px;">
-      <i class="fas fa-sign-out-alt"></i>
-    </div>
+    ${userImageHtml}
+    ${userNameHtml}
     <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 10px; color: #fff;">Confirm Logout</h3>
     <p style="color: var(--text-3); font-size: 15px; margin-bottom: 30px;">Are you sure you want to log out of StreamHeaven?</p>
     <div style="display: flex; gap: 15px; justify-content: center;">
