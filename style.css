@@ -110,6 +110,28 @@ iframe {border:none}
 .sidebar-user-name {font-size:13px;font-weight:700;white-space:nowrap}
 .sidebar-user-sub {font-size:11px;color:var(--cv-purple-light);font-weight:600}
 
+/* Sidebar Bottom Collapsed */
+.cv-sidebar.collapsed .sf-profile {
+  padding: 12px 0;
+  justify-content: center;
+}
+.cv-sidebar.collapsed .sf-info {
+  display: none;
+}
+.cv-sidebar.collapsed .sf-logout-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  margin: 8px auto 0;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cv-sidebar.collapsed .sf-logout-text {
+  display: none;
+}
+
 /* ================================================================ 
    03. TOP HEADER
 ================================================================ */
