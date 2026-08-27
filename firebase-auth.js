@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
             topProfileBtn.className = 'header-profile-wrap';
             let nameHtml = cachedName ? `<div class="header-profile-name">${cachedName}</div>` : '';
             topProfileBtn.innerHTML = `${nameHtml}<div class="header-profile-avatar"><img src="${cachedAvatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="Profile"></div>`;
+            topProfileBtn.onclick = (e) => {
+                e.preventDefault();
+                window.location.href = 'profile.html';
+            };
         }
     }
 });
