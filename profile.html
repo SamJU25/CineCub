@@ -442,6 +442,21 @@
     </div>
   </div>
 
+  <!-- Confirm Modal -->
+  <div class="pf-modal-overlay" id="modal-confirm" onclick="closeModals(event)">
+    <div class="pf-modal" onclick="event.stopPropagation()">
+      <div class="pf-modal-title" id="confirm-modal-title" style="color: #ff4b4b;">Confirm Action</div>
+      <div class="pf-modal-form">
+        <p id="confirm-modal-text" style="color: var(--text-2); font-size: 14px; margin-bottom: 0;">Are you sure?</p>
+      </div>
+      <div class="pf-modal-actions">
+        <button class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
+        <button class="pf-btn-danger" id="confirm-modal-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- Firebase -->
   <script src="lib/firebase-app-compat.js"></script>
   <script src="lib/firebase-auth-compat.js"></script>
@@ -496,18 +511,36 @@
       return { watchlist, history };
     }
 
+    let pendingConfirmAction = null;
+    function openConfirmModal(title, text, actionFn) {
+      document.getElementById('confirm-modal-title').textContent = title;
+      document.getElementById('confirm-modal-text').textContent = text;
+      pendingConfirmAction = actionFn;
+      document.getElementById('modal-confirm').classList.add('open');
+    }
+
+    document.getElementById('confirm-modal-btn').addEventListener('click', function() {
+      if (pendingConfirmAction) {
+        pendingConfirmAction();
+        pendingConfirmAction = null;
+      }
+      closeModals();
+    });
+
     function clearHistory() {
-      if (!confirm('Clear your entire watch history? This cannot be undone.')) return;
-      localStorage.removeItem(HISTORY_KEY);
-      renderGrid([], 'pf-hist-grid', 'pf-hist-empty');
-      document.getElementById('stat-hist').textContent = '0';
+      openConfirmModal('Clear Watch History', 'Permanently remove all watched titles? This cannot be undone.', function() {
+        localStorage.removeItem(HISTORY_KEY);
+        renderGrid([], 'pf-hist-grid', 'pf-hist-empty');
+        document.getElementById('stat-hist').textContent = '0';
+      });
     }
 
     function clearWatchlist() {
-      if (!confirm('Clear your entire watchlist? This cannot be undone.')) return;
-      localStorage.removeItem(WATCH_KEY);
-      renderGrid([], 'pf-wl-grid', 'pf-wl-empty');
-      document.getElementById('stat-wl').textContent = '0';
+      openConfirmModal('Clear Watchlist', 'Remove all saved titles from your watchlist? This cannot be undone.', function() {
+        localStorage.removeItem(WATCH_KEY);
+        renderGrid([], 'pf-wl-grid', 'pf-wl-empty');
+        document.getElementById('stat-wl').textContent = '0';
+      });
     }
 
     function openAvatarModal() { document.getElementById('modal-avatar').classList.add('open'); }

@@ -1219,6 +1219,8 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 .pf-modal-actions button { flex: 1 1 0; min-width: 0; white-space: nowrap; }
 .pf-modal-actions .pf-btn-secondary { background: var(--cv-dark-4); color: var(--text-1); border: 1px solid var(--b-2); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; }
 .pf-modal-actions .pf-btn-secondary:hover { background: var(--cv-dark-3); }
+.pf-modal-actions .pf-btn-danger { flex: 1 1 0; min-width: 0; white-space: nowrap; background: rgba(255, 75, 75, 0.1); color: #ff4b4b; border: 1px solid rgba(255, 75, 75, 0.2); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+.pf-modal-actions .pf-btn-danger:hover { background: rgba(255, 75, 75, 0.2); }
 
 
 button.header-profile-wrap {
