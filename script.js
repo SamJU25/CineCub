@@ -1053,7 +1053,8 @@ var Modal = {
         if(epNavAdFree) epNavAdFree.style.display = 'none';
       }
 
-      var serverHtml = '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
+      var serverHtml = '<div style="font-size:13px; color:var(--text-2); margin-bottom: 5px; font-weight: 500; margin-left: 2px;">Select server</div>';
+      serverHtml += '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
       serverHtml += '<select id="regular-server-select" onchange="Player.switchServer(this.value)">';
       serverHtml += CFG.SERVERS.map((s,i) => '<option value="'+i+'">' + s.name + '</option>').join('');
       serverHtml += '</select></div></div></div>';
@@ -1313,7 +1314,8 @@ var AdFreePlayer = {
           return;
         }
         
-        var html = '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
+        var html = '<div style="font-size:13px; color:var(--text-2); margin-bottom: 5px; font-weight: 500; margin-left: 2px;">Select server</div>';
+        html += '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
         html += '<select id="adfree-server-select" onchange="AdFreePlayer.onServerSelect(this.value)">';
         AdFreePlayer.streams = streams;
         streams.forEach((s, idx) => {
