@@ -140,14 +140,14 @@
       </div>
     </header>
 
-    <!-- Library Dropdown (Replaces Profile) -->
+    <!-- Profile Dropdown -->
     <div class="profile-popup" id="profile-popup">
         <div class="profile-popup-head">
           <div style="font-weight:700; font-size: 15px;"><i class="fas fa-user" style="margin-right: 8px; color: var(--cv-purple);"></i> <span id="popup-username">Guest</span></div>
         </div>
         <div class="profile-popup-body">
-          <button type="button" class="profile-popup-btn" onclick="event.preventDefault(); event.stopPropagation(); App.showWatchlist(); Library.closeProfile();"><i class="fas fa-heart"></i><span>My Watchlist</span></button>
-          <button type="button" class="profile-popup-btn" onclick="event.preventDefault(); event.stopPropagation(); App.showHistory(); Library.closeProfile();"><i class="fas fa-history"></i><span>Watch History</span></button>
+          <button type="button" class="profile-popup-btn" onclick="event.preventDefault(); event.stopPropagation(); Library.closeProfile(); window.location.href='profile.html';"><i class="fas fa-id-card"></i><span>My Profile</span></button>
+          <button type="button" class="profile-popup-btn danger" onclick="event.preventDefault(); event.stopPropagation(); Library.closeProfile(); handleLogout();"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
       </div>
     </div>
 

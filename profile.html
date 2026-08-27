@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>My Profile – StreamHeaven</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link href="style.css" rel="stylesheet">
+  <style>
+    :root { --profile-gutter: 28px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0a0a0f; color: #e8e8f0; min-height: 100vh; }
+
+    /* Top Nav */
+    .pf-nav {
+      position: sticky; top: 0; z-index: 900;
+      background: rgba(10,10,18,0.92);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      height: 64px; display: flex; align-items: center;
+      padding: 0 var(--profile-gutter); gap: 16px;
+    }
+    .pf-nav-back {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(157,78,221,0.12); border: 1px solid rgba(157,78,221,0.25);
+      color: #c77dff; font-size: 13px; font-weight: 700;
+      padding: 8px 16px; border-radius: 999px; cursor: pointer;
+      transition: all .18s ease; text-decoration: none;
+    }
+    .pf-nav-back:hover { background: rgba(157,78,221,0.22); border-color: #c77dff; transform: translateX(-2px); }
+    .pf-nav-title {
+      font-size: 16px; font-weight: 800;
+      background: linear-gradient(135deg, #c77dff, #9d4edd);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .pf-nav-spacer { flex: 1; }
+    .pf-nav-logout {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.25);
+      color: #e63946; font-size: 13px; font-weight: 700;
+      padding: 8px 16px; border-radius: 999px; cursor: pointer; transition: all .18s ease;
+      font-family: inherit;
+    }
+    .pf-nav-logout:hover { background: rgba(230,57,70,0.2); border-color: #e63946; }
+
+    /* Page */
+    .pf-page { max-width: 1100px; margin: 0 auto; padding: 40px var(--profile-gutter) 80px; }
+
+    /* Hero */
+    .pf-hero {
+      background: linear-gradient(135deg, rgba(157,78,221,0.12) 0%, rgba(10,10,18,0) 60%);
+      border: 1px solid rgba(157,78,221,0.18); border-radius: 24px;
+      padding: 36px 40px; display: flex; align-items: center; gap: 32px;
+      margin-bottom: 32px; position: relative; overflow: hidden;
+    }
+    .pf-hero::before {
+      content: ''; position: absolute; top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(157,78,221,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .pf-avatar {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: linear-gradient(135deg, #b55fe6, #6b1fad);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px; font-weight: 900; color: #fff;
+      border: 3px solid rgba(199,125,255,0.4);
+      box-shadow: 0 0 32px rgba(157,78,221,0.35); flex-shrink: 0; position: relative;
+    }
+    .pf-avatar-badge {
+      position: absolute; bottom: 4px; right: 4px;
+      width: 18px; height: 18px; background: #06d6a0;
+      border-radius: 50%; border: 2px solid #0a0a0f;
+    }
+    .pf-hero-info { flex: 1; }
+    .pf-hero-name { font-size: 26px; font-weight: 900; line-height: 1.2; margin-bottom: 4px; }
+    .pf-hero-email { font-size: 13px; color: rgba(232,232,240,0.5); margin-bottom: 12px; }
+    .pf-hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(6,214,160,0.12); color: #06d6a0;
+      border: 1px solid rgba(6,214,160,0.25);
+      font-size: 11px; font-weight: 800; padding: 4px 12px;
+      border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .pf-hero-badge-dot { width: 6px; height: 6px; background: #06d6a0; border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+    /* Stats */
+    .pf-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 32px; }
+    .pf-stat-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px; padding: 22px 24px; display: flex; align-items: center; gap: 16px;
+      transition: all .2s ease;
+    }
+    .pf-stat-card:hover { background: rgba(157,78,221,0.08); border-color: rgba(157,78,221,0.2); transform: translateY(-2px); }
+    .pf-stat-icon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .pf-stat-icon.purple { background: rgba(157,78,221,0.15); color: #c77dff; }
+    .pf-stat-icon.blue   { background: rgba(58,134,255,0.15);  color: #78b4ff; }
+    .pf-stat-icon.green  { background: rgba(6,214,160,0.15);   color: #06d6a0; }
+    .pf-stat-val { font-size: 26px; font-weight: 900; line-height: 1; }
+    .pf-stat-lbl { font-size: 12px; color: rgba(232,232,240,0.5); margin-top: 3px; font-weight: 600; }
+
+    /* Tabs */
+    .pf-tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .pf-tab {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 20px; font-size: 13px; font-weight: 700;
+      color: rgba(232,232,240,0.45); cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: all .18s ease; background: none;
+      border-left: none; border-right: none; border-top: none;
+      font-family: inherit;
+    }
+    .pf-tab:hover { color: #e8e8f0; }
+    .pf-tab.active { color: #c77dff; border-bottom-color: #c77dff; }
+
+    /* Panels */
+    .pf-panel { display: none; }
+    .pf-panel.active { display: block; }
+
+    /* Grid */
+    .pf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 16px; }
+    .pf-media-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px; overflow: hidden; cursor: pointer; transition: all .2s ease;
+    }
+    .pf-media-card:hover { transform: translateY(-4px); border-color: rgba(157,78,221,0.3); box-shadow: 0 12px 30px rgba(0,0,0,.5); }
+    .pf-media-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; background: rgba(255,255,255,0.05); }
+    .pf-media-poster-ph { width: 100%; aspect-ratio: 2/3; display: flex; align-items: center; justify-content: center; background: rgba(157,78,221,0.08); color: rgba(199,125,255,0.3); font-size: 32px; }
+    .pf-media-info { padding: 10px 12px; }
+    .pf-media-title { font-size: 12px; font-weight: 700; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pf-media-meta { font-size: 11px; color: rgba(232,232,240,0.45); margin-top: 3px; }
+    .pf-media-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 999px; margin-top: 5px; }
+    .pf-media-badge.movie { background: rgba(58,134,255,0.18); color: #78b4ff; }
+    .pf-media-badge.tv    { background: rgba(157,78,221,0.18); color: #c77dff; }
+
+    /* Empty */
+    .pf-empty { text-align: center; padding: 64px 24px; color: rgba(232,232,240,0.35); }
+    .pf-empty i { font-size: 52px; margin-bottom: 16px; display: block; }
+    .pf-empty p { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: rgba(232,232,240,0.55); }
+    .pf-empty span { font-size: 13px; }
+
+    /* Settings */
+    .pf-settings-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 18px; overflow: hidden; margin-bottom: 16px; }
+    .pf-settings-title { padding: 16px 22px; font-size: 12px; font-weight: 800; color: rgba(232,232,240,0.4); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .pf-settings-row { display: flex; align-items: center; gap: 14px; padding: 16px 22px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background .15s; cursor: pointer; }
+    .pf-settings-row:last-child { border-bottom: none; }
+    .pf-settings-row:hover { background: rgba(255,255,255,0.03); }
+    .pf-settings-row-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .pf-settings-row-icon.purple { background: rgba(157,78,221,0.12); color: #c77dff; }
+    .pf-settings-row-icon.red    { background: rgba(230,57,70,0.12);  color: #e63946; }
+    .pf-settings-row-label { flex: 1; font-size: 14px; font-weight: 600; }
+    .pf-settings-row-sub { font-size: 12px; color: rgba(232,232,240,0.4); margin-top: 2px; }
+    .pf-settings-row-arrow { color: rgba(232,232,240,0.25); font-size: 12px; }
+    .pf-settings-danger { color: #e63946; }
+
+    /* Guest Wall */
+    .pf-guest-wall { text-align: center; padding: 80px 24px; }
+    .pf-guest-icon { width: 90px; height: 90px; border-radius: 50%; background: rgba(157,78,221,0.12); display: flex; align-items: center; justify-content: center; font-size: 36px; color: #c77dff; margin: 0 auto 24px; border: 1px solid rgba(157,78,221,0.2); }
+    .pf-guest-wall h2 { font-size: 22px; font-weight: 900; margin-bottom: 10px; }
+    .pf-guest-wall p { font-size: 14px; color: rgba(232,232,240,0.5); margin-bottom: 28px; line-height: 1.6; }
+    .pf-auth-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .pf-btn-login {
+      background: linear-gradient(135deg, #b55fe6, #9d4edd); color: #fff; border: none;
+      padding: 13px 28px; border-radius: 999px; font-size: 14px; font-weight: 800;
+      cursor: pointer; transition: all .2s ease; font-family: inherit;
+    }
+    .pf-btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(157,78,221,0.4); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .pf-hero { flex-direction: column; text-align: center; padding: 28px 24px; }
+      .pf-stats { grid-template-columns: repeat(2,1fr); }
+      .pf-grid { grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); }
+      .pf-page { padding: 24px 16px 60px; }
+    }
+    @media (max-width: 480px) {
+      .pf-stats { grid-template-columns: 1fr 1fr; }
+      .pf-hero-name { font-size: 22px; }
+      :root { --profile-gutter: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Nav -->
+  <nav class="pf-nav">
+    <a class="pf-nav-back" href="index.html"><i class="fas fa-arrow-left"></i> Back</a>
+    <span class="pf-nav-title"><i class="fas fa-cloud" style="margin-right:6px;"></i>StreamHeaven</span>
+    <div class="pf-nav-spacer"></div>
+    <button class="pf-nav-logout" id="btn-nav-logout" onclick="handleLogout()" style="display:none">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </nav>
+
+  <!-- Logged-In View -->
+  <div class="pf-page" id="pf-logged-in" style="display:none">
+
+    <div class="pf-hero">
+      <div class="pf-avatar" id="pf-avatar">?<div class="pf-avatar-badge"></div></div>
+      <div class="pf-hero-info">
+        <div class="pf-hero-name" id="pf-name">Loading…</div>
+        <div class="pf-hero-email" id="pf-email"></div>
+        <div class="pf-hero-badge"><span class="pf-hero-badge-dot"></span>Active Session</div>
+      </div>
+    </div>
+
+    <div class="pf-stats">
+      <div class="pf-stat-card">
+        <div class="pf-stat-icon purple"><i class="fas fa-heart"></i></div>
+        <div><div class="pf-stat-val" id="stat-wl">0</div><div class="pf-stat-lbl">Watchlist</div></div>
+      </div>
+      <div class="pf-stat-card">
+        <div class="pf-stat-icon blue"><i class="fas fa-history"></i></div>
+        <div><div class="pf-stat-val" id="stat-hist">0</div><div class="pf-stat-lbl">Watched</div></div>
+      </div>
+      <div class="pf-stat-card">
+        <div class="pf-stat-icon green"><i class="fas fa-calendar-check"></i></div>
+        <div><div class="pf-stat-val" id="stat-days">—</div><div class="pf-stat-lbl">Member Since</div></div>
+      </div>
+    </div>
+
+    <div class="pf-tabs">
+      <button class="pf-tab active" id="tab-watchlist" onclick="switchTab('watchlist')"><i class="fas fa-heart"></i> Watchlist</button>
+      <button class="pf-tab" id="tab-history"   onclick="switchTab('history')"><i class="fas fa-history"></i> History</button>
+      <button class="pf-tab" id="tab-settings"  onclick="switchTab('settings')"><i class="fas fa-cog"></i> Settings</button>
+    </div>
+
+    <!-- Watchlist Panel -->
+    <div class="pf-panel active" id="panel-watchlist">
+      <div class="pf-grid" id="pf-wl-grid"></div>
+      <div class="pf-empty" id="pf-wl-empty" style="display:none">
+        <i class="fas fa-heart"></i>
+        <p>No titles in your Watchlist</p>
+        <span>Browse movies &amp; shows and hit the heart icon to save them here.</span>
+      </div>
+    </div>
+
+    <!-- History Panel -->
+    <div class="pf-panel" id="panel-history">
+      <div class="pf-grid" id="pf-hist-grid"></div>
+      <div class="pf-empty" id="pf-hist-empty" style="display:none">
+        <i class="fas fa-history"></i>
+        <p>No watch history yet</p>
+        <span>Movies and shows you watch will appear here.</span>
+      </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="pf-panel" id="panel-settings">
+      <div class="pf-settings-card">
+        <div class="pf-settings-title">Account</div>
+        <div class="pf-settings-row">
+          <div class="pf-settings-row-icon purple"><i class="fas fa-user-edit"></i></div>
+          <div>
+            <div class="pf-settings-row-label">Display Name</div>
+            <div class="pf-settings-row-sub" id="settings-name-sub">—</div>
+          </div>
+          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="pf-settings-row">
+          <div class="pf-settings-row-icon purple"><i class="fas fa-envelope"></i></div>
+          <div>
+            <div class="pf-settings-row-label">Email Address</div>
+            <div class="pf-settings-row-sub" id="settings-email-sub">—</div>
+          </div>
+          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+        </div>
+      </div>
+      <div class="pf-settings-card">
+        <div class="pf-settings-title">Data</div>
+        <div class="pf-settings-row" onclick="clearHistory()">
+          <div class="pf-settings-row-icon red"><i class="fas fa-trash-alt"></i></div>
+          <div>
+            <div class="pf-settings-row-label pf-settings-danger">Clear Watch History</div>
+            <div class="pf-settings-row-sub">Permanently remove all watched titles</div>
+          </div>
+          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="pf-settings-row" onclick="clearWatchlist()">
+          <div class="pf-settings-row-icon red"><i class="fas fa-heart-broken"></i></div>
+          <div>
+            <div class="pf-settings-row-label pf-settings-danger">Clear Watchlist</div>
+            <div class="pf-settings-row-sub">Remove all saved titles from your watchlist</div>
+          </div>
+          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+        </div>
+      </div>
+      <div class="pf-settings-card">
+        <div class="pf-settings-title">Session</div>
+        <div class="pf-settings-row" onclick="handleLogout()">
+          <div class="pf-settings-row-icon red"><i class="fas fa-sign-out-alt"></i></div>
+          <div>
+            <div class="pf-settings-row-label pf-settings-danger">Logout</div>
+            <div class="pf-settings-row-sub">Sign out of your StreamHeaven account</div>
+          </div>
+          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Guest Wall -->
+  <div class="pf-page" id="pf-guest" style="display:none">
+    <div class="pf-guest-wall">
+      <div class="pf-guest-icon"><i class="fas fa-user-lock"></i></div>
+      <h2>Sign in to view your Profile</h2>
+      <p>Create a free account to save your watchlist,<br>track your watch history, and more.</p>
+      <div class="pf-auth-btns">
+        <button class="pf-btn-login" onclick="window.location.href='index.html'">
+          <i class="fas fa-sign-in-alt" style="margin-right:8px"></i>Go to StreamHeaven
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="lib/firebase-app-compat.js"></script>
+  <script src="lib/firebase-auth-compat.js"></script>
+  <script src="lib/firebase-firestore-compat.js"></script>
+  <script src="firebase-auth.js"></script>
+
+  <script>
+    const WATCH_KEY   = 'sh_watchlist';
+    const HISTORY_KEY = 'sh_history';
+
+    function switchTab(tab) {
+      document.querySelectorAll('.pf-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.pf-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('panel-' + tab).classList.add('active');
+    }
+
+    function renderGrid(items, gridId, emptyId) {
+      const grid  = document.getElementById(gridId);
+      const empty = document.getElementById(emptyId);
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (!items || items.length === 0) {
+        if (empty) empty.style.display = 'block';
+        return;
+      }
+      if (empty) empty.style.display = 'none';
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'pf-media-card';
+        card.onclick = () => { window.location.href = 'index.html'; };
+        const type = item.media_type || item.type || 'movie';
+        const year = item.release_date || item.first_air_date || item.year || '';
+        const yearStr = year ? String(year).substring(0, 4) : '';
+        const label = type === 'tv' ? 'TV Show' : 'Movie';
+        const posterUrl = item.poster_path ? 'https://image.tmdb.org/t/p/w300' + item.poster_path : null;
+
+        if (posterUrl) {
+          card.innerHTML = '<img class="pf-media-poster" src="' + posterUrl + '" alt="" loading="lazy">';
+        } else {
+          card.innerHTML = '<div class="pf-media-poster-ph"><i class="fas fa-film"></i></div>';
+        }
+        card.innerHTML += '<div class="pf-media-info"><div class="pf-media-title">' + (item.title || item.name || 'Unknown') + '</div><div class="pf-media-meta">' + yearStr + '</div><span class="pf-media-badge ' + type + '">' + label + '</span></div>';
+        grid.appendChild(card);
+      });
+    }
+
+    function loadLocalData() {
+      let watchlist = [], history = [];
+      try { watchlist = JSON.parse(localStorage.getItem(WATCH_KEY) || '[]'); } catch(e){}
+      try { history   = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e){}
+      return { watchlist, history };
+    }
+
+    function clearHistory() {
+      if (!confirm('Clear your entire watch history? This cannot be undone.')) return;
+      localStorage.removeItem(HISTORY_KEY);
+      renderGrid([], 'pf-hist-grid', 'pf-hist-empty');
+      document.getElementById('stat-hist').textContent = '0';
+    }
+
+    function clearWatchlist() {
+      if (!confirm('Clear your entire watchlist? This cannot be undone.')) return;
+      localStorage.removeItem(WATCH_KEY);
+      renderGrid([], 'pf-wl-grid', 'pf-wl-empty');
+      document.getElementById('stat-wl').textContent = '0';
+    }
+
+    // Override handleLogout to redirect after sign-out
+    window.addEventListener('DOMContentLoaded', function() {
+      const _orig = window.handleLogout;
+      window.handleLogout = function() {
+        if (typeof auth !== 'undefined' && auth) {
+          auth.signOut().then(() => { window.location.href = 'index.html'; });
+        } else {
+          window.location.href = 'index.html';
+        }
+      };
+    });
+
+    // Auth state
+    document.addEventListener('DOMContentLoaded', function() {
+      function initProfile() {
+        if (typeof auth === 'undefined' || !auth) {
+          document.getElementById('pf-logged-in').style.display = 'none';
+          document.getElementById('pf-guest').style.display = 'block';
+          return;
+        }
+        auth.onAuthStateChanged(function(user) {
+          if (user) {
+            document.getElementById('pf-logged-in').style.display = 'block';
+            document.getElementById('pf-guest').style.display = 'none';
+            document.getElementById('btn-nav-logout').style.display = 'flex';
+
+            var displayName = user.displayName || user.email.split('@')[0];
+            var initial = displayName.charAt(0).toUpperCase();
+
+            document.getElementById('pf-avatar').innerHTML = initial + '<div class="pf-avatar-badge"></div>';
+            document.getElementById('pf-name').textContent  = displayName;
+            document.getElementById('pf-email').textContent = user.email;
+
+            var sn = document.getElementById('settings-name-sub');
+            var se = document.getElementById('settings-email-sub');
+            if (sn) sn.textContent = displayName;
+            if (se) se.textContent = user.email;
+
+            if (user.metadata && user.metadata.creationTime) {
+              var d = new Date(user.metadata.creationTime);
+              document.getElementById('stat-days').textContent = d.toLocaleDateString('en-US', { month:'short', year:'numeric' });
+            }
+
+            var data = loadLocalData();
+            document.getElementById('stat-wl').textContent   = data.watchlist.length;
+            document.getElementById('stat-hist').textContent = data.history.length;
+            renderGrid(data.watchlist, 'pf-wl-grid',  'pf-wl-empty');
+            renderGrid(data.history,   'pf-hist-grid', 'pf-hist-empty');
+
+          } else {
+            document.getElementById('pf-logged-in').style.display = 'none';
+            document.getElementById('pf-guest').style.display = 'block';
+            document.getElementById('btn-nav-logout').style.display = 'none';
+          }
+        });
+      }
+
+      // firebase-auth.js may init async; wait a tick
+      setTimeout(initProfile, 200);
+    });
+  </script>
+</body>
+</html>
