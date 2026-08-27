@@ -775,6 +775,7 @@ iframe {border:none}
 }
 .auth-input::placeholder {color:var(--text-4)}
 .auth-input:focus {border-color:var(--cv-purple);box-shadow:0 0 0 3px rgba(157,78,221,.16);background:var(--cv-dark-3)}
+input[type="password"]::-ms-reveal, input[type="password"]::-ms-clear { display: none; }
 
 /* FIX: Anchored standard icons to the bottom so they perfectly align with the 50px input field */
 .auth-field .input-icon {position:absolute;left:16px;bottom:0;height:50px;display:flex;align-items:center;justify-content:center;color:var(--text-4);font-size:16px;pointer-events:none;transition: color 0.3s;}
@@ -1217,7 +1218,7 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 .pf-avatar-option:hover { transform: scale(1.05); }
 .pf-avatar-option.selected { border-color: var(--cv-purple); box-shadow: 0 0 15px var(--cv-purple); transform: scale(1.05); }
 
-.pf-modal-form .auth-input-group { margin-bottom: 16px; }
+.pf-modal-form .auth-input-group { margin-bottom: 16px; position: relative; }
 .pf-modal-form label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-2); font-weight: 600; }
 .pf-modal-actions { display: flex; gap: 12px; margin-top: 24px; }
 .pf-modal-actions button { flex: 1 1 0; min-width: 0; white-space: nowrap; font-family: inherit; font-size: 14px; box-sizing: border-box; outline: none; }

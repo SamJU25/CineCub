@@ -396,6 +396,7 @@
         <div class="auth-input-group">
           <label>Current Password (required)</label>
           <input type="password" id="pf-email-pass" class="auth-input" placeholder="Current password" />
+          <button type="button" class="auth-password-toggle" onclick="togglePassword('pf-email-pass')"><i class="fas fa-eye"></i></button>
         </div>
       </div>
       <div class="pf-modal-actions">
@@ -430,10 +431,12 @@
         <div class="auth-input-group">
           <label>Current Password</label>
           <input type="password" id="pf-curr-pass" class="auth-input" placeholder="Current password" />
+          <button type="button" class="auth-password-toggle" onclick="togglePassword('pf-curr-pass')"><i class="fas fa-eye"></i></button>
         </div>
         <div class="auth-input-group">
           <label>New Password</label>
           <input type="password" id="pf-new-pass" class="auth-input" placeholder="New password" />
+          <button type="button" class="auth-password-toggle" onclick="togglePassword('pf-new-pass')"><i class="fas fa-eye"></i></button>
         </div>
       </div>
       <div class="pf-modal-actions">
