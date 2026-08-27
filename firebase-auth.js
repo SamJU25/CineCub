@@ -295,7 +295,9 @@ async function handleGoogleLogin() {
     }
   } catch(error) {
     console.error("Popup auth error:", error);
-    AuthUI.showError(error.message);
+    alert("Google Login Error: " + error.message);
+    AuthUI.showError(error.message, false);
+    AuthUI.showError(error.message, true);
   }
 }
 
