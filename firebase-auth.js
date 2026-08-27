@@ -399,7 +399,13 @@ if (auth) {
           };
         }
         localStorage.setItem('cachedAvatar', url);
-        if (nameToShow) localStorage.setItem('cachedName', nameToShow);
+        if (nameToShow) {
+            localStorage.setItem('cachedName', nameToShow);
+            const sfName = document.getElementById('sf-display-name');
+            if (sfName) {
+                sfName.innerText = nameToShow;
+            }
+        }
       };
 
       if (photoURL && photoURL.includes('assets/avatars/av_')) {
@@ -450,13 +456,16 @@ if (auth) {
           avatarHtml = `<div class="sf-avatar active" style="padding:0;overflow:hidden;"><img src="${photoURL}" style="width:100%;height:100%;object-fit:cover;"></div>`;
         }
         sidebarFooter.innerHTML = `
-          <div class="sf-profile" onclick="handleLogout()" title="Click to logout">
+          <div class="sf-profile">
             ${avatarHtml}
             <div class="sf-info">
-              <div class="sf-name">${displayName}</div>
-              <div class="sf-status">Active Session (Logout)</div>
+              <div class="sf-name" id="sf-display-name">${displayName}</div>
+              <div class="sf-status">Active Session</div>
             </div>
           </div>
+          <button class="sf-logout-btn" onclick="handleLogout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
         `;
       }
     

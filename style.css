@@ -590,7 +590,7 @@ iframe {border:none}
   .cv-sidebar .sidebar-logo-text, .cv-sidebar .nav-item-text, .cv-sidebar .nav-badge, .cv-sidebar .sidebar-user-info {opacity:1;pointer-events:all}
   .cv-sidebar .sidebar-nav {padding-bottom:22px}
   .cv-sidebar #nav-history {margin-bottom:12px}
-  .cv-sidebar .cv-sidebar-bottom {padding:14px 20px 16px}
+  .cv-sidebar .cv-sidebar-bottom {padding:14px 20px calc(16px + var(--bottom-bar-h) + env(safe-area-inset-bottom, 16px))}
   
   .cv-main.sidebar-collapsed {margin-left: 0 !important;}
   .cv-header.sidebar-collapsed {left: 0 !important;}
@@ -1055,10 +1055,12 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   gap: 12px;
   padding: 12px;
   border-radius: 16px;
+}
+.sf-profile.guest {
   cursor: pointer;
   transition: background 0.2s;
 }
-.sf-profile:hover {
+.sf-profile.guest:hover {
   background: var(--cv-dark-4);
 }
 .sf-avatar {
@@ -1070,13 +1072,25 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 16px;
+  position: relative;
 }
 .sf-avatar.active {
   background: var(--grad-primary);
   color: #fff;
   box-shadow: var(--cv-purple-glow);
+}
+.sf-avatar.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background: var(--cv-green);
+  border-radius: 50%;
+  border: 2px solid var(--cv-dark-3);
 }
 .sf-info {
   display: flex;
@@ -1089,11 +1103,33 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 }
 .sf-status {
   font-size: 11px;
+  font-weight: 600;
   color: var(--cv-purple-light);
   margin-top: 2px;
 }
 .sf-profile.guest .sf-status {
   color: var(--text-4);
+}
+
+.sf-logout-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  background: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--t-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.sf-logout-btn:hover {
+  background: rgba(255, 59, 48, 0.2);
 }
 
 .auth-divider {
