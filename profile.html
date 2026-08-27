@@ -394,10 +394,12 @@
           <label>New Email</label>
           <input type="email" id="pf-new-email" class="auth-input" placeholder="Enter new email" />
         </div>
-        <div class="auth-input-group" style="position: relative;">
+        <div class="auth-input-group">
           <label>Current Password (required)</label>
-          <input type="password" id="pf-email-pass" class="auth-input" placeholder="Current password" style="padding-right: 45px;" />
-          <button type="button" class="auth-password-toggle" onclick="togglePassword('pf-email-pass')"><i class="fas fa-eye"></i></button>
+          <div style="position: relative; width: 100%;">
+            <input type="password" id="pf-email-pass" class="auth-input" placeholder="Current password" style="padding-right: 45px;" />
+            <button type="button" class="auth-password-toggle" onclick="togglePassword('pf-email-pass')"><i class="fas fa-eye"></i></button>
+          </div>
         </div>
       <div class="pf-modal-actions">
         <button type="button" class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
@@ -429,15 +431,19 @@
     <div class="pf-modal" onclick="event.stopPropagation()">
       <div class="pf-modal-title">Change Password</div>
       <form class="pf-modal-form" onsubmit="event.preventDefault(); savePassword();">
-        <div class="auth-input-group" style="position: relative;">
+        <div class="auth-input-group">
           <label>Current Password</label>
-          <input type="password" id="pf-curr-pass" class="auth-input" placeholder="Current password" style="padding-right: 45px;" />
-          <button type="button" class="auth-password-toggle" onclick="togglePassword('pf-curr-pass')"><i class="fas fa-eye"></i></button>
+          <div style="position: relative; width: 100%;">
+            <input type="password" id="pf-curr-pass" class="auth-input" placeholder="Current password" style="padding-right: 45px;" />
+            <button type="button" class="auth-password-toggle" onclick="togglePassword('pf-curr-pass')"><i class="fas fa-eye"></i></button>
+          </div>
         </div>
-        <div class="auth-input-group" style="position: relative;">
+        <div class="auth-input-group">
           <label>New Password</label>
-          <input type="password" id="pf-new-pass" class="auth-input" placeholder="New password" style="padding-right: 45px;" />
-          <button type="button" class="auth-password-toggle" onclick="togglePassword('pf-new-pass')"><i class="fas fa-eye"></i></button>
+          <div style="position: relative; width: 100%;">
+            <input type="password" id="pf-new-pass" class="auth-input" placeholder="New password" style="padding-right: 45px;" />
+            <button type="button" class="auth-password-toggle" onclick="togglePassword('pf-new-pass')"><i class="fas fa-eye"></i></button>
+          </div>
         </div>
       <div class="pf-modal-actions">
         <button type="button" class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
@@ -517,6 +523,21 @@
     }
 
     let pendingConfirmAction = null;
+    
+    function togglePassword(inputId) {
+      const input = document.getElementById(inputId);
+      const icon = input.nextElementSibling.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
     function openConfirmModal(title, text, actionFn) {
       document.getElementById('confirm-modal-title').textContent = title;
       document.getElementById('confirm-modal-text').textContent = text;
@@ -759,7 +780,7 @@
             
             var displayName = user.displayName || user.email.split('@')[0];
             var username = localStorage.getItem('cachedUsername') || displayName;
-            var display = displayName;
+            var display = localStorage.getItem('cachedName') || displayName;
             
             document.getElementById('pf-username').textContent = '@' + username;
             var su = document.getElementById('settings-username-sub');
@@ -789,10 +810,12 @@
                   }
                   if (data.displayName) {
                       display = data.displayName;
+                      localStorage.setItem('cachedName', display);
                       document.getElementById('pf-name').textContent = display;
                       if (sn) sn.textContent = display;
                   } else if (data.username) {
                       display = data.username;
+                      localStorage.setItem('cachedName', display);
                       document.getElementById('pf-name').textContent = display;
                       if (sn) sn.textContent = display;
                   }

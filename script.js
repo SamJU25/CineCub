@@ -453,6 +453,12 @@ var Search = {
         }
         if (data && data.page >= data.total_pages) {
           State.hasMore = false;
+        } else if (State.hasMore && window.observerSearch) {
+          var sentinelSearch = document.getElementById('search-infinite-scroll-trigger');
+          if (sentinelSearch) {
+            window.observerSearch.unobserve(sentinelSearch);
+            window.observerSearch.observe(sentinelSearch);
+          }
         }
       }
     }).catch(err => {
@@ -891,6 +897,15 @@ var Browse = {
         if(!html && !append) html = '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No titles found.</div>';
         if(append) document.getElementById('browse-grid').insertAdjacentHTML('beforeend', html);
         else document.getElementById('browse-grid').innerHTML = html;
+        if (data && data.page >= data.total_pages) {
+          State.hasMore = false;
+        } else if (State.hasMore && window.observerBrowse) {
+          var sentinel = document.getElementById('infinite-scroll-trigger');
+          if (sentinel) {
+            window.observerBrowse.unobserve(sentinel);
+            window.observerBrowse.observe(sentinel);
+          }
+        }
       }else if(!append){
         document.getElementById('browse-grid').innerHTML='<div style="padding:40px;text-align:center;color:var(--cv-red);grid-column:1/-1;">Unable to load titles right now. Please try again.</div>';
       }
@@ -919,6 +934,15 @@ var Browse = {
         if(!html && !append) html = '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No titles found.</div>';
         if(append) document.getElementById('browse-grid').insertAdjacentHTML('beforeend', html);
         else document.getElementById('browse-grid').innerHTML = html;
+        if (data && data.page >= data.total_pages) {
+          State.hasMore = false;
+        } else if (State.hasMore && window.observerBrowse) {
+          var sentinel = document.getElementById('infinite-scroll-trigger');
+          if (sentinel) {
+            window.observerBrowse.unobserve(sentinel);
+            window.observerBrowse.observe(sentinel);
+          }
+        }
       }else if(!append){
         document.getElementById('browse-grid').innerHTML='<div style="padding:40px;text-align:center;color:var(--cv-red);grid-column:1/-1;">Unable to load this genre right now.</div>';
       }
@@ -1679,27 +1703,28 @@ document.addEventListener('DOMContentLoaded', function(){
   // Infinite Scroll Observer
   var sentinel = document.getElementById('infinite-scroll-trigger');
   if(sentinel && window.IntersectionObserver) {
-    var observer = new IntersectionObserver(function(entries){
+    window.observerBrowse = new IntersectionObserver(function(entries){
       if(entries[0].isIntersecting && State.activePage === 'page-browse' && !State.isFetching && State.hasMore !== false) {
         State.browsePage++;
         if(State.browseMode === 'genre') Browse.byGenre(State.genreId, document.getElementById('header-page-title').textContent, true);
         else Browse.load(true);
       }
     }, {rootMargin: '200px'});
-    observer.observe(sentinel);
+    window.observerBrowse.observe(sentinel);
   }
 
   // Infinite Scroll Observer for Search
   var sentinelSearch = document.getElementById('search-infinite-scroll-trigger');
   if(sentinelSearch && window.IntersectionObserver) {
-    var observerSearch = new IntersectionObserver(function(entries){
+    window.observerSearch = new IntersectionObserver(function(entries){
       if(entries[0].isIntersecting && State.activePage === 'page-search' && !State.isFetching && State.hasMore !== false) {
         State.browsePage++;
         Search.executeFullSearch(document.getElementById('search-input').value, true);
       }
     }, {rootMargin: '200px'});
-    observerSearch.observe(sentinelSearch);
+    window.observerSearch.observe(sentinelSearch);
   }
+
 
   // Back to Top Button Logic
   var bttIsScrolling = false;
