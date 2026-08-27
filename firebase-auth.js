@@ -47,6 +47,45 @@ try {
 // Global Auth State
 let currentUser = null;
 
+// Handle Redirect Result for Google Login Fallback
+if (auth) {
+  auth.getRedirectResult().then(async (result) => {
+    if (result.credential && result.user) {
+      let username = result.user.displayName || result.user.email.split('@')[0];
+      let lowerUsername = username.toLowerCase();
+      
+      try {
+        const userDoc = await db.collection("usernames").doc(lowerUsername).get();
+        if (userDoc.exists && userDoc.data().uid !== result.user.uid) {
+           const randomNum = Math.floor(Math.random() * 10000);
+           username = `${username}${randomNum}`;
+           lowerUsername = username.toLowerCase();
+        }
+        db.collection("usernames").doc(lowerUsername).set({
+          uid: result.user.uid,
+          email: result.user.email
+        }, { merge: true }).catch(e => console.warn("Username reserve failed:", e));
+      } catch (err) {
+        console.warn("Error handling Google username:", err);
+      }
+      
+      db.collection("users").doc(result.user.uid).set({
+        username: username,
+        email: result.user.email,
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).catch(err => console.warn("Firestore write failed:", err));
+      
+      if(typeof App !== 'undefined') App.showToast("Successfully logged in with Google!");
+    }
+  }).catch((error) => {
+    console.error("Redirect auth error:", error);
+    if(typeof AuthUI !== 'undefined') {
+        AuthUI.showError(error.message, false);
+        AuthUI.showError(error.message, true);
+    }
+  });
+}
+
 // Removed Redirect Result for Google Login - Now handled in signInWithPopup
 
 // The Auth UI Controller
@@ -295,9 +334,14 @@ async function handleGoogleLogin() {
     }
   } catch(error) {
     console.error("Popup auth error:", error);
-    alert("Google Login Error: " + error.message);
-    AuthUI.showError(error.message, false);
-    AuthUI.showError(error.message, true);
+    if (error.code === 'auth/internal-error' || error.code === 'auth/popup-blocked') {
+        alert("Popup blocked or internal error. Trying redirect...");
+        auth.signInWithRedirect(provider);
+    } else {
+        alert("Google Login Error: " + error.message);
+        AuthUI.showError(error.message, false);
+        AuthUI.showError(error.message, true);
+    }
   }
 }
 
