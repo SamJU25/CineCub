@@ -163,7 +163,7 @@ function handleLogout() {
 // Global Auth State Observer
 auth.onAuthStateChanged(user => {
   currentUser = user;
-  const sidebarFooter = document.querySelector('.sidebar-footer');
+  const sidebarFooter = document.querySelector('.cv-sidebar-bottom');
   
   if(user) {
     // Logged In State
