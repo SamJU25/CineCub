@@ -395,16 +395,6 @@ iframe {border:none}
 .ep-select {flex:0 0 auto;width:140px;background:var(--cv-dark-4);color:var(--text-2);border:1px solid var(--b-2);padding:9px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239d4edd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 14px center;background-size:14px;transition:var(--t-fast);outline:none;}
 .ep-select:hover {background:var(--cv-dark-5);color:var(--text-1);border-color:var(--cv-purple-light);}
 
-/* Desktop (PC) view: show username next to icon, hide profile popup */
-@media (min-width: 601px) {
-  .profile-popup {display:none !important;}
-  .header-username {display:inline;margin-left:8px;color:var(--text-2);font-weight:600;}
-}
-/* Mobile view: hide username span, keep popup */
-@media (max-width: 600px) {
-  .header-username {display:none;}
-}
-
 /* Season / Episode selector row — Watch & Ad-Free Watch tabs */
 .ep-nav {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;margin-top:16px;width:100%}
 .ep-selects {display:flex;flex-wrap:wrap;gap:10px;flex:0 0 auto}
