@@ -413,7 +413,7 @@
   <script src="lib/firebase-app-compat.js"></script>
   <script src="lib/firebase-auth-compat.js"></script>
   <script src="lib/firebase-firestore-compat.js"></script>
-  <script src="firebase-auth.js?v=8"></script>
+  <script src="firebase-auth.js?v=9"></script>
 
   <script>
     const WATCH_KEY   = 'sh_watchlist';
@@ -495,7 +495,11 @@
     async function saveAvatar() {
       if (!selectedAvatarUrl || !auth.currentUser) return;
       try {
-        await auth.currentUser.updateProfile({ photoURL: selectedAvatarUrl });
+        await auth.currentUser.updateProfile({ photoURL: selectedAvatarUrl }).catch(e=>console.warn(e));
+        if (typeof db !== 'undefined') {
+          await db.collection("users").doc(auth.currentUser.uid).set({ avatar: selectedAvatarUrl }, { merge: true });
+        }
+        localStorage.setItem('cachedAvatar', selectedAvatarUrl);
         window.location.reload();
       } catch (e) {
         alert("Error saving avatar: " + e.message);
@@ -570,12 +574,35 @@
             var initial = displayName.charAt(0).toUpperCase();
             var photoURL = user.photoURL;
 
-            if (photoURL) {
-              document.getElementById('pf-avatar').innerHTML = '<img src="' + photoURL + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt=""><div class="pf-avatar-badge"></div>';
+            if (photoURL && photoURL.includes('assets/avatars/av_')) {
+                photoURL = photoURL.replace('.jpg', '.png');
+                const match = photoURL.match(/av_(\d+)\.png/);
+                if (match && parseInt(match[1]) > 21) {
+                    photoURL = 'assets/avatars/av_1.png';
+                }
+            }
+
+            const updateProfileAvatar = (url) => {
+              document.getElementById('pf-avatar').innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt=""><div class="pf-avatar-badge"></div>';
               document.getElementById('pf-avatar').style.border = 'none';
+              localStorage.setItem('cachedAvatar', url);
+            };
+
+            if (photoURL) {
+              updateProfileAvatar(photoURL);
             } else {
               document.getElementById('pf-avatar').innerHTML = initial + '<div class="pf-avatar-badge"></div>';
             }
+
+            db.collection("users").doc(user.uid).get().then(doc => {
+              if (doc.exists && doc.data().avatar) {
+                  const fsAvatar = doc.data().avatar;
+                  if (fsAvatar !== photoURL) {
+                      user.updateProfile({ photoURL: fsAvatar }).catch(()=>{});
+                      updateProfileAvatar(fsAvatar);
+                  }
+              }
+            }).catch(e => console.warn("Avatar sync error:", e));
             
             document.getElementById('pf-name').textContent  = displayName;
             document.getElementById('pf-email').textContent = user.email;
