@@ -1226,25 +1226,10 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 .pf-modal-actions .pf-btn-login:hover { transform: translateY(0); box-shadow: 0 4px 15px rgba(157,78,221,0.25); }
 
 
-button.header-profile-wrap {
+.header-profile-wrap {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: var(--cv-dark-3) !important;
-  border: 1px solid var(--b-2) !important;
-  padding: 4px;
-  padding-left: 14px;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: var(--t-fast);
-  color: var(--text-2);
-  outline: none;
-  font-family: inherit;
-}
-button.header-profile-wrap:hover {
-  background: var(--cv-dark-4) !important;
-  border-color: var(--cv-purple) !important;
-  color: var(--text-1);
+  gap: 12px;
 }
 .header-profile-name {
   font-size: 13px;
@@ -1256,5 +1241,4 @@ button.header-profile-wrap:hover {
 }
 @media (max-width: 768px) {
   .header-profile-name { display: none !important; }
-  button.header-profile-wrap { gap: 0; padding: 3px; border-radius: 50%; width: 38px; height: 38px; }
 }

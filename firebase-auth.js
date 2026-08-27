@@ -389,10 +389,19 @@ if (auth) {
       
       const updateUIWithPhoto = (url, nameToShow = '') => {
         const topProfileBtn = document.getElementById('header-profile-btn');
+        const topProfileName = document.getElementById('header-profile-name');
+        
+        if (topProfileName) {
+          if (nameToShow) {
+            topProfileName.textContent = nameToShow;
+            topProfileName.style.display = 'block';
+          } else {
+            topProfileName.style.display = 'none';
+          }
+        }
+        
         if (topProfileBtn) {
-          topProfileBtn.className = 'header-profile-wrap';
-          let nameHtml = nameToShow ? `<div class="header-profile-name">${nameToShow}</div>` : '';
-          topProfileBtn.innerHTML = `${nameHtml}<div class="header-profile-avatar"><img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="Profile"></div>`;
+          topProfileBtn.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Profile">`;
           topProfileBtn.onclick = (e) => { e.preventDefault(); };
           const logoutBtn = document.getElementById('header-logout-btn');
           if (logoutBtn) logoutBtn.style.display = 'flex';
@@ -419,10 +428,19 @@ if (auth) {
         updateUIWithPhoto(photoURL, displayName);
       } else {
           const topProfileBtn = document.getElementById('header-profile-btn');
+          const topProfileName = document.getElementById('header-profile-name');
+          
+          if (topProfileName) {
+            if (displayName) {
+              topProfileName.textContent = displayName;
+              topProfileName.style.display = 'block';
+            } else {
+              topProfileName.style.display = 'none';
+            }
+          }
+          
           if (topProfileBtn) {
-            topProfileBtn.className = 'header-profile-wrap';
-            let nameHtml = displayName ? `<div class="header-profile-name">${displayName}</div>` : '';
-            topProfileBtn.innerHTML = `${nameHtml}<div class="header-profile-avatar">${initial}</div>`;
+            topProfileBtn.innerHTML = `<div class="header-profile-avatar" style="background: var(--cv-gray); width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;">${initial}</div>`;
             topProfileBtn.onclick = (e) => { e.preventDefault(); };
             const logoutBtn = document.getElementById('header-logout-btn');
             if (logoutBtn) logoutBtn.style.display = 'flex';
@@ -471,9 +489,12 @@ if (auth) {
     syncWishlistFromCloud();
   } else {
     const topProfileBtn = document.getElementById('header-profile-btn');
+    const topProfileName = document.getElementById('header-profile-name');
+    
+    if (topProfileName) {
+      topProfileName.style.display = 'none';
+    }
     if (topProfileBtn) {
-      topProfileBtn.className = 'header-action-btn';
-      topProfileBtn.style.borderRadius = '50%';
       topProfileBtn.innerHTML = `<i class="fas fa-user"></i>`;
       topProfileBtn.onclick = (e) => {
         e.preventDefault();
