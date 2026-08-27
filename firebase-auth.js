@@ -33,12 +33,20 @@ window.AuthUI = {
     document.getElementById('auth-signup-view').style.display = 'none';
     if(typeof Sidebar !== 'undefined') Sidebar.close(); // Close sidebar if on mobile
   },
-  openSignup: function() {
-    document.getElementById('auth-modal-overlay').classList.add('open');
-    document.getElementById('auth-login-view').style.display = 'none';
-    document.getElementById('auth-signup-view').style.display = 'block';
-  },
-  close: function() {
+    openSignup: function() {
+      document.getElementById('auth-modal-overlay').classList.add('open');
+      document.getElementById('auth-login-view').style.display = 'none';
+      document.getElementById('auth-signup-view').style.display = 'block';
+      const forgotView = document.getElementById('auth-forgot-view');
+      if(forgotView) forgotView.style.display = 'none';
+    },
+    openForgot: function() {
+      document.getElementById('auth-modal-overlay').classList.add('open');
+      document.getElementById('auth-login-view').style.display = 'none';
+      document.getElementById('auth-signup-view').style.display = 'none';
+      document.getElementById('auth-forgot-view').style.display = 'block';
+    },
+    close: function() {
     document.getElementById('auth-modal-overlay').classList.remove('open');
   },
   overlayClick: function(e) {
@@ -136,20 +144,42 @@ async function handleSignup(e) {
   }
 }
 
-async function handleForgotPassword() {
-  const email = document.getElementById('login-email').value.trim();
-  if(!email) {
-    AuthUI.showError("Please enter your email above first.");
-    return;
+  async function handleForgotPassword(e) {
+    if(e) e.preventDefault();
+    const btn = document.getElementById('btn-forgot');
+    if(btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    }
+    
+    const email = document.getElementById('forgot-email').value.trim();
+    if(!email) {
+      AuthUI.showError("Please enter your email address.");
+      if(btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset Link';
+      }
+      return;
+    }
+    
+    try {
+      await auth.sendPasswordResetEmail(email);
+      document.getElementById('auth-forgot-view').innerHTML = `
+        <div style="text-align:center; padding: 40px 20px;">
+          <i class="fas fa-check-circle" style="font-size: 48px; color: var(--cv-green); margin-bottom: 20px;"></i>
+          <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 10px;">Check your email</h3>
+          <p style="color: var(--text-3); font-size: 14px; margin-bottom: 20px;">We've sent a password reset link to <strong>${email}</strong>.</p>
+          <button class="auth-btn-primary" onclick="AuthUI.openLogin()">Back to Login</button>
+        </div>
+      `;
+    } catch(error) {
+      AuthUI.showError(error.message);
+      if(btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset Link';
+      }
+    }
   }
-  
-  try {
-    await auth.sendPasswordResetEmail(email);
-    if(typeof App !== 'undefined') App.showToast("Password reset email sent! Check your inbox.");
-  } catch(error) {
-    AuthUI.showError(error.message);
-  }
-}
 
 async function handleGoogleLogin() {
   if(!auth) {
@@ -258,3 +288,17 @@ window.handleSignup = handleSignup;
 window.handleForgotPassword = handleForgotPassword;
 window.handleLogout = handleLogout;
 window.handleGoogleLogin = handleGoogleLogin;
+
+window.togglePassword = function(inputId) {
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  const icon = input.nextElementSibling.querySelector('i') || input.nextElementSibling;
+  
+  if(input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'fas fa-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'fas fa-eye';
+  }
+};
