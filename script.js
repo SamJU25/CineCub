@@ -1432,12 +1432,32 @@ var Watchlist = {
     this.toggleById(e,State.activeId,State.activeType,d.title||d.name,d.poster_path,d.vote_average,d.release_date||d.first_air_date);
   },
   toggleById: function(e,id,type,title,poster,vote,date){
-    if(e) e.stopPropagation();
-    var idx=State.watchlist.findIndex(function(x){return x.id===id;});
-    var added=false;
-    if(idx===-1){State.watchlist.unshift({id:id,type:type,title:title,poster_path:poster,vote_average:vote,release_date:date});added=true;Toast.show('Added to watchlist','success');}
-    else{State.watchlist.splice(idx,1);Toast.show('Removed from watchlist','info');}
-    Library.saveUserData();
+      if(e) e.stopPropagation();
+      if(typeof currentUser === 'undefined' || !currentUser) {
+        if(typeof AuthUI !== 'undefined') AuthUI.openLogin();
+        else Toast.show('Please log in to add to your wishlist', 'error');
+        return false;
+      }
+      var idx=State.watchlist.findIndex(function(x){return x.id===id;});
+      var added=false;
+      if(idx===-1){
+        State.watchlist.unshift({id:id,type:type,title:title,poster_path:poster,vote_average:vote,release_date:date});
+        added=true;
+        Toast.show('Added to watchlist','success');
+        if(typeof db !== 'undefined' && currentUser) {
+          db.collection("users").doc(currentUser.uid).collection("wishlist").doc(id.toString()).set({
+            id:id,type:type,title:title,poster_path:poster,vote_average:vote,release_date:date
+          });
+        }
+      }
+      else{
+        State.watchlist.splice(idx,1);
+        Toast.show('Removed from watchlist','info');
+        if(typeof db !== 'undefined' && currentUser) {
+          db.collection("users").doc(currentUser.uid).collection("wishlist").doc(id.toString()).delete();
+        }
+      }
+      Library.saveUserData();
     document.querySelectorAll('.wl-btn-'+id).forEach(function(btn){
       var icon=btn.querySelector('i');
       btn.classList.toggle('in-list',added);
