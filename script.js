@@ -1084,6 +1084,7 @@ var Modal = {
       }
 
       FVTabs.showTab('overview');
+      CustomSelect.init(); // Initialize combobox synchronously for 'watch' tab
       UIHelper.lockScroll();
       document.getElementById('modal-overlay').classList.add('open');
       Prog.done();
@@ -1394,7 +1395,24 @@ var FVTabs = {
     document.getElementById('tab-'+t).classList.add('active');
     
     if(t==='watch') Player.loadVideo();
+    else {
+      var iframe = document.getElementById('main-player');
+      if (iframe) iframe.src = '';
+    }
+    
     if(t==='watch_adfree') AdFreePlayer.loadVideo();
+    else {
+      if (typeof AdFreePlayer !== 'undefined' && AdFreePlayer.hls) {
+         AdFreePlayer.hls.destroy();
+         AdFreePlayer.hls = null;
+      }
+      var nativeVideo = document.getElementById('native-player-adfree');
+      if (nativeVideo) {
+         nativeVideo.pause();
+         nativeVideo.removeAttribute('src');
+         nativeVideo.load();
+      }
+    }
     
     if(t==='trailer' && State.activeTrailer) {
        document.getElementById('trailer-player').src = 'https://www.youtube.com/embed/' + State.activeTrailer + '?autoplay=1';
