@@ -1159,7 +1159,7 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 .pf-modal-title { font-size: 22px; font-weight: 900; margin-bottom: 24px; color: var(--text-1); text-align: center; }
 
   .pf-avatar-grid {
-    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; max-height: 300px; overflow-y: auto; padding-right: 8px;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: -16px -16px 8px -16px; padding: 16px; max-height: 300px; overflow-y: auto;
   }
   .pf-avatar-grid::-webkit-scrollbar { width: 6px; }
   .pf-avatar-grid::-webkit-scrollbar-track { background: var(--cv-dark-2); border-radius: 10px; }
