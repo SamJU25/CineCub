@@ -48,7 +48,7 @@
 *,*::before,*::after {margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html {scroll-behavior:smooth;font-size:16px;overflow-x:hidden}
 body {font-family:'Plus Jakarta Sans',sans-serif;background:var(--cv-black);color:var(--text-1);-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh;line-height:1.6}
-.no-scroll {overflow: hidden !important;}
+.no-scroll {overflow: hidden !important; height: 100vh !important; touch-action: none !important;}
 a {text-decoration:none;color:inherit}
 ul {list-style:none}
 button,input,select {font-family:inherit;outline:none;border:none}
