@@ -130,7 +130,10 @@ iframe {border:none}
     border: none !important;
   }
   .cv-sidebar.collapsed .sf-logout-img {
+    width: 36px;
+    height: 36px;
     margin: 0 !important;
+    border-radius: 8px;
   }
   .cv-sidebar.collapsed .sf-logout-text {
   display: none;
@@ -1150,25 +1153,30 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 }
 .sf-logout-btn {
   width: 100%;
-  padding: 0;
-  margin-top: 12px;
-  background: transparent !important;
-  border: none !important;
+  padding: 10px;
+  margin-top: 8px;
+  background: rgba(255, 59, 48, 0.1) !important;
+  color: #ff3b30 !important;
+  border: 1px solid rgba(255, 59, 48, 0.2) !important;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
   transition: var(--t-fast);
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   outline: none;
 }
 .sf-logout-btn:hover {
-  opacity: 0.8;
+  background: rgba(255, 59, 48, 0.2) !important;
 }
 .sf-logout-img {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  object-fit: contain;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
 }
 
 .auth-divider {
