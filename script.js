@@ -646,7 +646,7 @@ var Spotlight = {
         + '</div></div></div>';
     }).join('');
     
-    th.innerHTML = data.map((x,i) => '<div class="spotlight-thumb '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')"><img src="'+CFG.IMG185+x.backdrop_path+'" onerror="this.src=Utils.placeholder()"/></div>').join('');
+    th.innerHTML = data.map((x,i) => '<div class="spotlight-thumb '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')"><img alt="Spotlight Thumbnail" src="'+CFG.IMG185+x.backdrop_path+'" onerror="this.src=Utils.placeholder()"/></div>').join('');
     d.innerHTML = data.map((x,i) => '<div class="spotlight-dot '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')"></div>').join('');
     this.goTo(0); this.startAuto();
   },
@@ -1009,7 +1009,7 @@ var Modal = {
       document.getElementById('fv-runtime').textContent = type==='movie'?Utils.runtime(data.runtime):((data.number_of_seasons||1)+' Season(s)');
       
       var cast = ((data.credits&&data.credits.cast)||[]).slice(0,10);
-      document.getElementById('fv-cast').innerHTML = cast.map(c => '<div class="cast-card"><img class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'" onerror="this.src=Utils.placeholder()"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>').join('');
+      document.getElementById('fv-cast').innerHTML = cast.map(c => '<div class="cast-card"><img alt="'+Utils.escape(c.name)+'" class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'" onerror="this.src=Utils.placeholder()"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>').join('');
       
       var similar = ((data.similar&&data.similar.results)||[]).filter(x => x.poster_path);
       if(similar.length) {
