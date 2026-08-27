@@ -275,14 +275,12 @@ async function handleSignup(e) {
     
     try {
       await auth.sendPasswordResetEmail(email);
-      document.getElementById('auth-forgot-view').innerHTML = `
-        <div style="text-align:center; padding: 40px 20px;">
-          <i class="fas fa-check-circle" style="font-size: 48px; color: var(--cv-green); margin-bottom: 20px;"></i>
-          <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 10px;">Check your email</h3>
-          <p style="color: var(--text-3); font-size: 14px; margin-bottom: 20px;">We've sent a password reset link to <strong>${email}</strong>.</p>
-          <button class="auth-btn-primary" onclick="AuthUI.openLogin()">Back to Login</button>
-        </div>
-      `;
+      if(typeof App !== 'undefined') {
+        App.showToast("Reset link sent to " + email, "success");
+      } else if (typeof AuthUI !== 'undefined') {
+        AuthUI.showError("Reset link sent to " + email, false);
+      }
+      setTimeout(() => AuthUI.openLogin(), 2000);
     } catch(error) {
       AuthUI.showError(error.message);
       if(btn) {

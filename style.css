@@ -782,7 +782,7 @@ input[type="password"]::-ms-reveal, input[type="password"]::-ms-clear { display:
 .auth-input-wrap input:focus + .input-icon {color: var(--cv-purple-light);}
 
 /* FIX: Anchored the toggle button 10px from the bottom so it vertically centers in the 50px input */
-.auth-password-toggle {position:absolute;right:10px;bottom:10px;width:30px;height:30px;border-radius:8px;background:transparent;color:var(--text-3);display:flex;align-items:center;justify-content:center;}
+.auth-password-toggle {position:absolute;right:10px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:8px;background:transparent;color:var(--text-3);display:flex;align-items:center;justify-content:center;border:none;outline:none;cursor:pointer;}
 .auth-password-toggle:hover {color:#fff;background:rgba(255,255,255,.04)}
 
 .auth-submit {
