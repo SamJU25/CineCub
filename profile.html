@@ -77,7 +77,8 @@
     }
     .pf-hero-info { flex: 1; }
     .pf-hero-name { font-size: 26px; font-weight: 900; line-height: 1.2; margin-bottom: 4px; }
-    .pf-hero-email { font-size: 13px; color: rgba(232,232,240,0.5); margin-bottom: 12px; }
+    .pf-hero-username { font-size: 15px; color: var(--cv-purple); font-weight: 600; margin-bottom: 2px; }
+      .pf-hero-email { font-size: 13px; color: rgba(232,232,240,0.5); margin-bottom: 12px; }
     .pf-hero-badge {
       display: inline-flex; align-items: center; gap: 6px;
       background: rgba(6,214,160,0.12); color: #06d6a0;
@@ -262,13 +263,20 @@
           <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
         </div>
         <div class="pf-settings-row">
-          <div class="pf-settings-row-icon purple"><i class="fas fa-user-edit"></i></div>
-          <div>
-            <div class="pf-settings-row-label">Display Name</div>
-            <div class="pf-settings-row-sub" id="settings-name-sub">—</div>
+            <div class="pf-settings-row-icon purple"><i class="fas fa-at"></i></div>
+            <div>
+              <div class="pf-settings-row-label">Username</div>
+              <div class="pf-settings-row-sub" id="settings-username-sub">...</div>
+            </div>
           </div>
-          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
-        </div>
+          <div class="pf-settings-row" onclick="openNameModal()">
+            <div class="pf-settings-row-icon purple"><i class="fas fa-user-edit"></i></div>
+            <div>
+              <div class="pf-settings-row-label">Display Name</div>
+              <div class="pf-settings-row-sub" id="settings-name-sub">...</div>
+            </div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
         <div class="pf-settings-row" onclick="openEmailModal()">
           <div class="pf-settings-row-icon purple"><i class="fas fa-envelope"></i></div>
           <div>
@@ -388,6 +396,21 @@
     </div>
   </div>
 
+    <!-- Name Modal -->
+    <div class="pf-modal-overlay" id="modal-name" onclick="closeModals(event)">
+      <div class="pf-modal" onclick="event.stopPropagation()">
+        <div class="pf-modal-close" onclick="closeModal('modal-name')"><i class="fas fa-times"></i></div>
+        <div class="pf-modal-title">Change Display Name</div>
+        <form class="pf-modal-form" onsubmit="updateDisplayName(event)">
+          <div class="auth-input-group">
+            <label>New Display Name</label>
+            <input type="text" id="new-display-name" required placeholder="Enter new display name">
+          </div>
+          <button type="submit" class="auth-btn-primary" id="btn-update-name" style="margin-top:20px;">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
   <!-- Password Modal -->
   <div class="pf-modal-overlay" id="modal-password" onclick="closeModals(event)">
     <div class="pf-modal" onclick="event.stopPropagation()">
@@ -478,7 +501,41 @@
     }
 
     function openAvatarModal() { document.getElementById('modal-avatar').classList.add('open'); }
-    function openEmailModal() { document.getElementById('modal-email').classList.add('open'); }
+    function openNameModal() {
+        var currentName = document.getElementById('settings-name-sub').textContent;
+        document.getElementById('new-display-name').value = currentName === '...' ? '' : currentName;
+        document.getElementById('modal-name').classList.add('open');
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+      }
+
+      function updateDisplayName(e) {
+        e.preventDefault();
+        const newName = document.getElementById('new-display-name').value.trim();
+        if(!newName) return;
+        const btn = document.getElementById('btn-update-name');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        const user = firebase.auth().currentUser;
+        if(user) {
+          db.collection('users').doc(user.uid).set({ displayName: newName }, { merge: true }).then(() => {
+            document.getElementById('pf-name').textContent = newName;
+            document.getElementById('settings-name-sub').textContent = newName;
+            closeModal('modal-name');
+          }).catch(err => {
+            console.error(err);
+            alert("Error updating display name.");
+          }).finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = 'Save Changes';
+          });
+        }
+      }
+
+      function openEmailModal() { document.getElementById('modal-email').classList.add('open'); }
     function openPasswordModal() { document.getElementById('modal-password').classList.add('open'); }
     function closeModals(e) {
       if (e && e.target !== e.currentTarget) return;
@@ -593,24 +650,45 @@
             } else {
               document.getElementById('pf-avatar').innerHTML = initial + '<div class="pf-avatar-badge"></div>';
             }
+            
+            var username = displayName;
+            var display = displayName;
+            document.getElementById('pf-username').textContent = '@' + username;
+            var su = document.getElementById('settings-username-sub');
+            if (su) su.textContent = '@' + username;
+            document.getElementById('pf-name').textContent  = display;
+            var sn = document.getElementById('settings-name-sub');
+            if (sn) sn.textContent = display;
+            document.getElementById('pf-email').textContent = user.email;
+            var se = document.getElementById('settings-email-sub');
+            if (se) se.textContent = user.email;
 
             db.collection("users").doc(user.uid).get().then(doc => {
-              if (doc.exists && doc.data().avatar) {
-                  const fsAvatar = doc.data().avatar;
-                  if (fsAvatar !== photoURL) {
-                      user.updateProfile({ photoURL: fsAvatar }).catch(()=>{});
-                      updateProfileAvatar(fsAvatar);
+              if (doc.exists) {
+                  const data = doc.data();
+                  if (data.avatar) {
+                      const fsAvatar = data.avatar;
+                      if (fsAvatar !== photoURL) {
+                          user.updateProfile({ photoURL: fsAvatar }).catch(()=>{});
+                          updateProfileAvatar(fsAvatar);
+                      }
+                  }
+                  if (data.username) {
+                      username = data.username;
+                      document.getElementById('pf-username').textContent = '@' + username;
+                      if (su) su.textContent = '@' + username;
+                  }
+                  if (data.displayName) {
+                      display = data.displayName;
+                      document.getElementById('pf-name').textContent = display;
+                      if (sn) sn.textContent = display;
+                  } else if (data.username) {
+                      display = data.username;
+                      document.getElementById('pf-name').textContent = display;
+                      if (sn) sn.textContent = display;
                   }
               }
-            }).catch(e => console.warn("Avatar sync error:", e));
-            
-            document.getElementById('pf-name').textContent  = displayName;
-            document.getElementById('pf-email').textContent = user.email;
-
-            var sn = document.getElementById('settings-name-sub');
-            var se = document.getElementById('settings-email-sub');
-            if (sn) sn.textContent = displayName;
-            if (se) se.textContent = user.email;
+            }).catch(e => console.warn("Firestore fetch error:", e));
 
             if (user.metadata && user.metadata.creationTime) {
               var d = new Date(user.metadata.creationTime);
