@@ -234,7 +234,9 @@ if (auth) {
     const initial = displayName.charAt(0).toUpperCase();
         // Update the popup username
       const popupUsername = document.getElementById('popup-username');
+      const headerUsername = document.getElementById('header-username');
       if(popupUsername) popupUsername.textContent = displayName;
+      if(headerUsername) headerUsername.textContent = displayName;
       
       if(sidebarFooter) {
       sidebarFooter.innerHTML = `
@@ -252,8 +254,10 @@ if (auth) {
     syncWishlistFromCloud();
   } else {
     // Update the popup username
-    const popupUsername = document.getElementById('popup-username');
-    if(popupUsername) popupUsername.textContent = 'Guest';
+      const popupUsername = document.getElementById('popup-username');
+      const headerUsername = document.getElementById('header-username');
+      if(popupUsername) popupUsername.textContent = 'Guest';
+      if(headerUsername) headerUsername.textContent = 'Guest';
 
     // Logged Out State
     if(sidebarFooter) {
