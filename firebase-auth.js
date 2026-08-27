@@ -2,10 +2,13 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const cachedAvatar = localStorage.getItem('cachedAvatar');
+    const cachedName = localStorage.getItem('cachedName');
     if (cachedAvatar) {
         const topProfileBtn = document.getElementById('header-profile-btn');
         if (topProfileBtn) {
-            topProfileBtn.innerHTML = `<img src="${cachedAvatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="Profile">`;
+            topProfileBtn.className = 'header-profile-wrap';
+            let nameHtml = cachedName ? `<div class="header-profile-name">${cachedName}</div>` : '';
+            topProfileBtn.innerHTML = `${nameHtml}<div class="header-profile-avatar"><img src="${cachedAvatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="Profile"></div>`;
         }
     }
 });
@@ -384,17 +387,19 @@ if (auth) {
       const initial = displayName.charAt(0).toUpperCase();
       let photoURL = user.photoURL;
       
-      const updateUIWithPhoto = (url) => {
+      const updateUIWithPhoto = (url, nameToShow = '') => {
         const topProfileBtn = document.getElementById('header-profile-btn');
         if (topProfileBtn) {
-          topProfileBtn.className = 'header-profile-avatar';
-          topProfileBtn.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="Profile">`;
+          topProfileBtn.className = 'header-profile-wrap';
+          let nameHtml = nameToShow ? `<div class="header-profile-name">${nameToShow}</div>` : '';
+          topProfileBtn.innerHTML = `${nameHtml}<div class="header-profile-avatar"><img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="Profile"></div>`;
           topProfileBtn.onclick = (e) => {
             e.preventDefault();
             window.location.href = 'profile.html';
           };
         }
         localStorage.setItem('cachedAvatar', url);
+        if (nameToShow) localStorage.setItem('cachedName', nameToShow);
       };
 
       if (photoURL && photoURL.includes('assets/avatars/av_')) {
@@ -406,26 +411,35 @@ if (auth) {
       }
       
       if (photoURL) {
-          updateUIWithPhoto(photoURL);
+        updateUIWithPhoto(photoURL, displayName);
       } else {
           const topProfileBtn = document.getElementById('header-profile-btn');
           if (topProfileBtn) {
-            topProfileBtn.className = 'header-profile-avatar';
-            topProfileBtn.innerHTML = initial;
+            topProfileBtn.className = 'header-profile-wrap';
+            let nameHtml = displayName ? `<div class="header-profile-name">${displayName}</div>` : '';
+            topProfileBtn.innerHTML = `${nameHtml}<div class="header-profile-avatar">${initial}</div>`;
             topProfileBtn.onclick = (e) => {
               e.preventDefault();
               window.location.href = 'profile.html';
             };
+            localStorage.setItem('cachedName', displayName);
           }
       }
 
       // Sync from Firestore in case Firebase Auth dropped the relative URL
       db.collection("users").doc(user.uid).get().then(doc => {
-          if (doc.exists && doc.data().avatar) {
+          if (doc.exists) {
               const fsAvatar = doc.data().avatar;
-              if (fsAvatar !== photoURL) {
+              const fsName = doc.data().displayName || displayName;
+              let photoToUse = photoURL;
+              
+              if (fsAvatar && fsAvatar !== photoURL) {
                   user.updateProfile({ photoURL: fsAvatar }).catch(()=>{});
-                  updateUIWithPhoto(fsAvatar);
+                  photoToUse = fsAvatar;
+              }
+              
+              if (photoToUse) {
+                  updateUIWithPhoto(photoToUse, fsName);
               }
           }
       }).catch(e => console.warn("Avatar sync error:", e));
