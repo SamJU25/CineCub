@@ -568,7 +568,9 @@ window.handleGoogleLogin = handleGoogleLogin;
 window.togglePassword = function(inputId) {
   const input = document.getElementById(inputId);
   if(!input) return;
-  const icon = input.nextElementSibling.querySelector('i') || input.nextElementSibling;
+  const toggleBtn = input.parentElement.querySelector('.auth-password-toggle');
+  if(!toggleBtn) return;
+  const icon = toggleBtn.querySelector('i');
   
   if(input.type === 'password') {
     input.type = 'text';
