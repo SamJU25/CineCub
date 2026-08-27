@@ -232,8 +232,11 @@ if (auth) {
       // Logged In State
     const displayName = user.displayName || user.email.split('@')[0];
     const initial = displayName.charAt(0).toUpperCase();
-    
-    if(sidebarFooter) {
+        // Update the popup username
+      const popupUsername = document.getElementById('popup-username');
+      if(popupUsername) popupUsername.textContent = displayName;
+      
+      if(sidebarFooter) {
       sidebarFooter.innerHTML = `
         <div class="sf-profile" onclick="handleLogout()" title="Click to logout">
           <div class="sf-avatar active">${initial}</div>
@@ -248,6 +251,10 @@ if (auth) {
     // Attempt to load cloud wishlist
     syncWishlistFromCloud();
   } else {
+    // Update the popup username
+    const popupUsername = document.getElementById('popup-username');
+    if(popupUsername) popupUsername.textContent = 'Guest';
+
     // Logged Out State
     if(sidebarFooter) {
       sidebarFooter.innerHTML = `
