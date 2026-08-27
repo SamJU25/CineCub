@@ -382,7 +382,7 @@ var Search = {
       var html = r.map(item => {
         var t = item.media_type||'movie';
         return '<div class="srd-item" onclick="Modal.openFull('+item.id+',\''+t+'\')">'
-          + '<img class="srd-poster" src="'+CFG.IMG185+item.poster_path+'" loading="lazy" decoding="async" alt="'+Utils.escape(item.title||item.name)+'"/>'
+          + '<img class="srd-poster" src="'+CFG.IMG185+item.poster_path+'" loading="lazy" decoding="async" alt="'+Utils.escape(item.title||item.name)+'" onerror="this.src=Utils.placeholder()"/>'
           + '<div class="srd-info"><div class="srd-title">'+Utils.escape(item.title||item.name)+'</div><div class="srd-meta">'+Utils.year(item.release_date||item.first_air_date)+' &middot; '+t.toUpperCase()+'</div></div></div>';
       }).join('');
       
@@ -658,7 +658,7 @@ var Spotlight = {
         + '</div></div></div>';
     }).join('');
     
-    th.innerHTML = data.map((x,i) => '<div class="spotlight-thumb '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')"><img src="'+CFG.IMG185+x.backdrop_path+'"/></div>').join('');
+    th.innerHTML = data.map((x,i) => '<div class="spotlight-thumb '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')"><img src="'+CFG.IMG185+x.backdrop_path+'" onerror="this.src=Utils.placeholder()"/></div>').join('');
     d.innerHTML = data.map((x,i) => '<div class="spotlight-dot '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')"></div>').join('');
     this.goTo(0); this.startAuto();
   },
@@ -796,7 +796,7 @@ var Render = {
     var wlClass = inWl?'in-list':''; var wlIcon=inWl?'fa-check':'fa-heart';
     return '<div class="poster-card" onclick="Modal.openFull('+item.id+', '+Utils.jsAttr(mType)+')">'
       + '<div class="poster-card-img-wrap">'
-      + '<img class="poster-card-img" src="'+img+'" loading="lazy" decoding="async" alt="'+Utils.escape(title)+'"/>'
+      + '<img class="poster-card-img" src="'+img+'" loading="lazy" decoding="async" alt="'+Utils.escape(title)+'" onerror="this.src=Utils.placeholder()"/>'
       + '<div class="poster-card-grad"></div>'
       + '<div class="poster-card-top">'+badge+ratingHtml+'</div>'
       + '<div class="pc-play-wrap"><div class="pc-play-btn"><i class="fas fa-play"></i></div></div>'
@@ -817,7 +817,7 @@ var Render = {
     var year = Utils.year(item.release_date||item.first_air_date);
     var yearHtml = year && year !== 'N/A' ? Utils.escape(year)+(genreHtml?' &middot; ':'') : '';
     return '<div class="landscape-card" onclick="Modal.openFull('+item.id+', '+Utils.jsAttr(mType)+')">'
-      + '<div class="lc-img-wrap"><img class="lc-img" src="'+img+'" loading="lazy" decoding="async" alt="'+Utils.escape(title)+'"/><div class="lc-overlay"></div>'
+      + '<div class="lc-img-wrap"><img class="lc-img" src="'+img+'" loading="lazy" decoding="async" alt="'+Utils.escape(title)+'" onerror="this.src=Utils.placeholder()"/><div class="lc-overlay"></div>'
       + '<div class="lc-top"><span class="pc-badge pc-badge-quality">'+(mType==='tv'?'TV SERIES':'MOVIE')+'</span>'+ratingHtml+'</div>'
       + '<div class="pc-play-wrap"><div class="pc-play-btn"><i class="fas fa-play"></i></div></div>'
       + '<div class="pc-wl-btn wl-btn-'+item.id+' '+wlClass+'" title="'+(inWl?'Remove from watchlist':'Add to watchlist')+'" onclick="Watchlist.toggleById(event,'+item.id+','+Utils.jsAttr(mType)+','+Utils.jsAttr(title)+','+Utils.jsAttr(item.poster_path||'')+','+Number(item.vote_average||0)+','+Utils.jsAttr(item.release_date||item.first_air_date||'')+')"><i class="fas '+wlIcon+'"></i></div>'
@@ -836,7 +836,7 @@ var Render = {
 
     return '<div class="compact-card" onclick="Modal.openFull('+item.id+', '+Utils.jsAttr(mType)+')">'
       + '<span class="compact-card-num">'+rank+'</span>'
-      + '<img class="compact-card-img" src="'+img+'" loading="lazy" decoding="async" alt="'+Utils.escape(title)+'"/>'
+      + '<img class="compact-card-img" src="'+img+'" loading="lazy" decoding="async" alt="'+Utils.escape(title)+'" onerror="this.src=Utils.placeholder()"/>'
       + '<div class="compact-card-info"><div class="compact-card-title">'+Utils.escape(title)+'</div><div class="compact-card-meta">'+year+' &middot; '+genre.split(',')[0]+'</div></div>'
       + '<div class="compact-card-right"><span class="compact-card-rating"><i class="fas fa-star"></i> '+rating+'</span><span style="font-size:11px;color:var(--text-4);">'+(mType==='tv'?'TV Series':'Movie')+'</span></div>'
       + '</div>';
@@ -1003,7 +1003,7 @@ var Modal = {
       document.getElementById('fv-runtime').textContent = type==='movie'?Utils.runtime(data.runtime):((data.number_of_seasons||1)+' Season(s)');
       
       var cast = ((data.credits&&data.credits.cast)||[]).slice(0,10);
-      document.getElementById('fv-cast').innerHTML = cast.map(c => '<div class="cast-card"><img class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>').join('');
+      document.getElementById('fv-cast').innerHTML = cast.map(c => '<div class="cast-card"><img class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'" onerror="this.src=Utils.placeholder()"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>').join('');
       
       var similar = ((data.similar&&data.similar.results)||[]).filter(x => x.poster_path);
       if(similar.length) {
@@ -1498,7 +1498,7 @@ var History = {
       State.history.forEach(function(i){
         let type=i.type==='movie'?'Movie':'TV Show';
         out+='<div class="cv-card" onclick="Modal.openItem('+i.id+',\''+i.type+'\')">'+
-             '<img class="cv-card-img" src="'+i.poster+'" alt="'+i.title+'" loading="lazy">'+
+             '<img class="cv-card-img" src="'+i.poster+'" alt="'+i.title+'" loading="lazy" onerror="this.src=Utils.placeholder()">'+
              '<div class="cv-card-info">'+
              '<div class="cv-card-title">'+i.title+'</div>'+
              '<div class="cv-card-meta">Watched</div>'+

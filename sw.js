@@ -1,10 +1,13 @@
-const CACHE_NAME = 'streamheaven-cache-v41';
+const CACHE_NAME = 'streamheaven-cache-v42';
 const urlsToCache = [
   '/',
   '/index.html',
+  '/profile.html',
   '/style.css',
   '/script.js',
-  '/manifest.json'
+  '/firebase-auth.js',
+  '/manifest.json',
+  '/assets/avatars/av_1.png'
 ];
 
 self.addEventListener('install', event => {
