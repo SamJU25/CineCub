@@ -364,58 +364,40 @@ var Search = {
     this.dropdownPage = 1;
     this.dropdownHasMore = true;
     document.getElementById('srd-results').innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);">Searching TMDB...</div>';
-    this.timer = setTimeout(()=>{ this.doSearch(q, false); }, 400);
+    this.timer = setTimeout(()=>{ this.doSearch(q); }, 400);
   },
-  doSearch: function(q, isAppend){
+  doSearch: function(q){
     if(this.isDropdownFetching) return;
     this.isDropdownFetching = true;
-    API.search(q, this.dropdownPage).then(data => {
+    API.search(q, 1).then(data => {
       this.isDropdownFetching = false;
       var r = ((data && data.results) || []).filter(x => x.poster_path && x.media_type!=='person');
       
-      if(!isAppend && !r.length){ 
-        document.getElementById('srd-results').innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);">No results found.</div>'; 
-        this.dropdownHasMore = false;
+      var container = document.getElementById('srd-results');
+      if(!r.length){ 
+        container.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);">No results found.</div>'; 
         return; 
       }
       
-      var html = r.map(item => {
+      var html = r.slice(0, 8).map(item => {
         var t = item.media_type||'movie';
-        return '<div class="srd-item" onclick="Modal.openFull('+item.id+',\''+t+'\')">'
+        return '<div class="srd-item" onclick="document.getElementById(\'search-input\').blur(); Modal.openFull('+item.id+',\''+t+'\')">'
           + '<img class="srd-poster" src="'+CFG.IMG185+item.poster_path+'" loading="lazy" decoding="async" alt="'+Utils.escape(item.title||item.name)+'" onerror="this.src=Utils.placeholder()"/>'
           + '<div class="srd-info"><div class="srd-title">'+Utils.escape(item.title||item.name)+'</div><div class="srd-meta">'+Utils.year(item.release_date||item.first_air_date)+' &middot; '+t.toUpperCase()+'</div></div></div>';
       }).join('');
       
-      this.dropdownHasMore = data && data.page < data.total_pages;
+      container.innerHTML = html;
       
-      var container = document.getElementById('srd-results');
-      var oldSentinel = document.getElementById('srd-infinite-scroll-trigger');
-      if (oldSentinel) oldSentinel.remove();
-      
-      if(isAppend) container.insertAdjacentHTML('beforeend', html);
-      else container.innerHTML = html;
-      
-      if(this.dropdownHasMore) {
-        container.insertAdjacentHTML('beforeend', '<div id="srd-infinite-scroll-trigger" style="height:10px; opacity:0;"></div>');
-        this.initDropdownObserver();
+      if(data && (data.total_results > r.slice(0, 8).length || data.total_pages > 1)) {
+        var btnHtml = '<div class="srd-view-all" onclick="document.getElementById(\'search-input\').blur(); Search.executeFullSearch(\''+Utils.escape(q).replace(/'/g, "\\'")+'\')">View all results <i class="fas fa-arrow-right" style="margin-left:5px;"></i></div>';
+        container.insertAdjacentHTML('beforeend', btnHtml);
       }
     }).catch(err => {
       this.isDropdownFetching = false;
-      if(isAppend) this.dropdownPage--;
     });
   },
   initDropdownObserver: function() {
-    var sentinel = document.getElementById('srd-infinite-scroll-trigger');
-    if(!sentinel || !window.IntersectionObserver) return;
-    if(this.dropdownObserver) this.dropdownObserver.disconnect();
-    
-    this.dropdownObserver = new IntersectionObserver((entries) => {
-      if(entries[0].isIntersecting && !this.isDropdownFetching && this.dropdownHasMore) {
-        this.dropdownPage++;
-        this.doSearch(this.dropdownQuery, true);
-      }
-    }, {root: document.getElementById('srd-results'), rootMargin: '100px'});
-    this.dropdownObserver.observe(sentinel);
+    // Deprecated: Dropdown uses 'View all results' button now instead of infinite scroll
   },
   closeDropdown: function(){ document.getElementById('search-dropdown').classList.remove('open'); },
   executeFullSearch: function(q, isAppend) {
@@ -456,7 +438,7 @@ var Search = {
         } else if (State.hasMore && window.observerSearch) {
           var sentinelSearch = document.getElementById('search-infinite-scroll-trigger');
           if (sentinelSearch) {
-            window.observerSearch.unobserve(sentinelSearch);
+            window.observerSearch.disconnect();
             window.observerSearch.observe(sentinelSearch);
           }
         }
@@ -1362,7 +1344,7 @@ var AdFreePlayer = {
         clearInterval(checkWakeup);
         var streams = resp.streams || resp;
         if (!streams || !streams.length || streams.length === 0) {
-          sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">No streams found. Try the regular Watch tab.</div>';
+          sTabs.innerHTML = '<div style="padding:10px; color:var(--cv-red);">No streams found. Try the regular Watch tab.</div>';
           return;
         }
         
@@ -1384,7 +1366,7 @@ var AdFreePlayer = {
       .catch(e => {
         clearInterval(checkWakeup);
         console.error('AdFree Fetch Error:', e);
-        sTabs.innerHTML = '<div style="padding:10px; color:var(--text-red);">Ad-Free streams are unavailable right now. Try the regular Watch tab instead.</div>';
+        sTabs.innerHTML = '<div style="padding:10px; color:var(--cv-red);">Ad-Free streams are unavailable right now. Try the regular Watch tab instead.</div>';
       });
   },
   onServerSelect: function(idx) {
@@ -1817,7 +1799,11 @@ window.addEventListener('message', (event) => {
       let vlData = {};
       try { vlData = JSON.parse(localStorage.getItem('vidLinkProgress') || '{}'); } catch(e){}
       vlData[State.activeId] = mediaData;
-      localStorage.setItem('vidLinkProgress', JSON.stringify(vlData));
+      var keys = Object.keys(vlData);
+      if (keys.length > 100) {
+        delete vlData[keys[0]]; // Prune oldest entry to save space
+      }
+      try { localStorage.setItem('vidLinkProgress', JSON.stringify(vlData)); } catch(e){}
     }
   }
 
