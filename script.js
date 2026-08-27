@@ -1487,8 +1487,36 @@ var History = {
     while(State.history.length>50)State.history.pop();
     Library.saveUserData();
   },
-  render: function(){var el=document.getElementById('history-grid');if(!el)return;el.innerHTML=State.history.map(function(x){return Render.posterCard(x,x.type);}).join('')||'<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">Your watch history is empty.</div>';},
-  clearAll: function(){if(!State.history.length){Toast.show('Watch history is already empty.','info');return;}State.history=[];Library.saveUserData();this.render();Toast.show('History cleared successfully.','success');}
+  load: function(){this.render();},
+  render: function(){
+    let out='';
+    if(!State.history.length){
+      out='<div class="empty-state"><i class="fas fa-history"></i><p>Your watch history is empty.</p><span>Shows and movies you watch will appear here.</span></div>';
+    }else{
+      out='<div class="sf-grid" style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));">';
+      State.history.forEach(function(i){
+        let type=i.type==='movie'?'Movie':'TV Show';
+        out+='<div class="cv-card" onclick="Modal.openItem('+i.id+',\''+i.type+'\')">'+
+             '<img class="cv-card-img" src="'+i.poster+'" alt="'+i.title+'" loading="lazy">'+
+             '<div class="cv-card-info">'+
+             '<div class="cv-card-title">'+i.title+'</div>'+
+             '<div class="cv-card-meta">Watched</div>'+
+             '<div class="cv-card-badge '+type.toLowerCase().replace(' ','-')+'">'+type+'</div>'+
+             '</div></div>';
+      });
+      out+='</div>';
+    }
+    document.getElementById('history-grid').innerHTML = out;
+  },
+  clearAll: function(){
+    if(!State.history.length){Toast.show('Watch history is already empty.','info');return;}
+    Confirm.open('Clear History', 'Are you sure you want to clear your watch history?', function() {
+      State.history=[];
+      Library.saveUserData();
+      History.render();
+      Toast.show('History cleared successfully.','success');
+    });
+  }
 };
 
 

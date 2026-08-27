@@ -393,10 +393,9 @@ if (auth) {
           topProfileBtn.className = 'header-profile-wrap';
           let nameHtml = nameToShow ? `<div class="header-profile-name">${nameToShow}</div>` : '';
           topProfileBtn.innerHTML = `${nameHtml}<div class="header-profile-avatar"><img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="Profile"></div>`;
-          topProfileBtn.onclick = (e) => {
-            e.preventDefault();
-            window.location.href = 'profile.html';
-          };
+          topProfileBtn.onclick = (e) => { e.preventDefault(); };
+          const logoutBtn = document.getElementById('header-logout-btn');
+          if (logoutBtn) logoutBtn.style.display = 'flex';
         }
         localStorage.setItem('cachedAvatar', url);
         if (nameToShow) {
@@ -424,10 +423,9 @@ if (auth) {
             topProfileBtn.className = 'header-profile-wrap';
             let nameHtml = displayName ? `<div class="header-profile-name">${displayName}</div>` : '';
             topProfileBtn.innerHTML = `${nameHtml}<div class="header-profile-avatar">${initial}</div>`;
-            topProfileBtn.onclick = (e) => {
-              e.preventDefault();
-              window.location.href = 'profile.html';
-            };
+            topProfileBtn.onclick = (e) => { e.preventDefault(); };
+            const logoutBtn = document.getElementById('header-logout-btn');
+            if (logoutBtn) logoutBtn.style.display = 'flex';
             localStorage.setItem('cachedName', displayName);
           }
       }
@@ -474,13 +472,15 @@ if (auth) {
   } else {
     const topProfileBtn = document.getElementById('header-profile-btn');
     if (topProfileBtn) {
-      topProfileBtn.className = 'header-action-btn';
-      topProfileBtn.innerHTML = `<i class="fas fa-user"></i>`;
+      topProfileBtn.className = 'header-profile-wrap';
+      topProfileBtn.innerHTML = `<div class="header-profile-avatar" style="background: var(--cv-gray);"><i class="fas fa-user" style="font-size: 14px;"></i></div>`;
       topProfileBtn.onclick = (e) => {
         e.preventDefault();
-        AuthUI.openLogin();
+        if(typeof AuthUI !== 'undefined') AuthUI.openLogin();
       };
     }
+    const logoutBtn = document.getElementById('header-logout-btn');
+    if (logoutBtn) logoutBtn.style.display = 'none';
 
     // Logged Out State
     if(sidebarFooter) {
