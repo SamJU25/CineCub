@@ -983,7 +983,7 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   background: var(--cv-dark-3);
   border: 1px solid var(--b-2);
   border-radius: 12px;
-  padding: 16px 16px 16px 45px;
+  padding: 16px 45px 16px 45px;
   color: var(--text-1);
   font-size: 14px;
   font-family: inherit;

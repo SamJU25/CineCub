@@ -89,6 +89,7 @@ var API = {
       return r.json();
     }).catch(err => {
       console.error('TMDB request failed:', err);
+      if(typeof Toast !== 'undefined') Toast.show('Error fetching data. Please try again.', 'error');
       this.cache.delete(url);
       return null;
     });
