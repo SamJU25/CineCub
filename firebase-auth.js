@@ -47,43 +47,7 @@ try {
 // Global Auth State
 let currentUser = null;
 
-// Handle Redirect Result for Google Login
-if (auth) {
-  auth.getRedirectResult().then(async (result) => {
-    if (result.credential && result.user) {
-      let username = result.user.displayName || result.user.email.split('@')[0];
-      let lowerUsername = username.toLowerCase();
-      
-      try {
-        const userDoc = await db.collection("usernames").doc(lowerUsername).get();
-        if (userDoc.exists && userDoc.data().uid !== result.user.uid) {
-           // Username taken by someone else, append random numbers
-           const randomNum = Math.floor(Math.random() * 10000);
-           username = `${username}${randomNum}`;
-           lowerUsername = username.toLowerCase();
-        }
-        db.collection("usernames").doc(lowerUsername).set({
-          uid: result.user.uid,
-          email: result.user.email
-        }, { merge: true }).catch(e => console.warn("Username reserve failed:", e));
-      } catch (err) {
-        console.warn("Error handling Google username:", err);
-      }
-      
-      // Save a small user doc in Firestore just in case this is a new user
-      db.collection("users").doc(result.user.uid).set({
-        username: username,
-        email: result.user.email,
-        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).catch(err => console.warn("Firestore write failed:", err));
-      
-      if(typeof App !== 'undefined') App.showToast("Successfully logged in with Google!");
-    }
-  }).catch((error) => {
-    console.error("Redirect auth error:", error);
-    AuthUI.showError(error.message);
-  });
-}
+// Removed Redirect Result for Google Login - Now handled in signInWithPopup
 
 // The Auth UI Controller
 window.AuthUI = {
@@ -298,8 +262,39 @@ async function handleGoogleLogin() {
   AuthUI.clearErrors();
   const provider = new firebase.auth.GoogleAuthProvider();
   try {
-    await auth.signInWithRedirect(provider);
+    const result = await auth.signInWithPopup(provider);
+    if (result.user) {
+      let username = result.user.displayName || result.user.email.split('@')[0];
+      let lowerUsername = username.toLowerCase();
+      
+      try {
+        const userDoc = await db.collection("usernames").doc(lowerUsername).get();
+        if (userDoc.exists && userDoc.data().uid !== result.user.uid) {
+           // Username taken by someone else, append random numbers
+           const randomNum = Math.floor(Math.random() * 10000);
+           username = `${username}${randomNum}`;
+           lowerUsername = username.toLowerCase();
+        }
+        db.collection("usernames").doc(lowerUsername).set({
+          uid: result.user.uid,
+          email: result.user.email
+        }, { merge: true }).catch(e => console.warn("Username reserve failed:", e));
+      } catch (err) {
+        console.warn("Error handling Google username:", err);
+      }
+      
+      // Save a small user doc in Firestore just in case this is a new user
+      db.collection("users").doc(result.user.uid).set({
+        username: username,
+        email: result.user.email,
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).catch(err => console.warn("Firestore write failed:", err));
+      
+      AuthUI.close();
+      if(typeof App !== 'undefined') App.showToast("Successfully logged in with Google!");
+    }
   } catch(error) {
+    console.error("Popup auth error:", error);
     AuthUI.showError(error.message);
   }
 }
