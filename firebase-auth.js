@@ -291,7 +291,7 @@ window.handleLogout = function() {
       const displayName = user.displayName || user.email.split('@')[0];
       
       if (photoURL) {
-          userImageHtml = `<img src="${photoURL}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; margin: 0 auto 10px auto; display: block; border: 3px solid var(--cv-dark-2);">`;
+          userImageHtml = `<img src="${photoURL}" alt="User Avatar" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; margin: 0 auto 10px auto; display: block; border: 3px solid var(--cv-dark-2);">`;
       } else {
           const initial = displayName.charAt(0).toUpperCase();
           userImageHtml = `<div style="width: 80px; height: 80px; border-radius: 50%; background: var(--cv-dark-2); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 0 auto 10px auto; border: 3px solid var(--cv-dark-2);">${initial}</div>`;
@@ -448,7 +448,7 @@ if (auth) {
       if(sidebarFooter) {
         let avatarHtml = `<div class="sf-avatar active">${initial}</div>`;
         if (photoURL) {
-          avatarHtml = `<div class="sf-avatar active" style="padding:0;overflow:hidden;"><img src="${photoURL}" style="width:100%;height:100%;object-fit:cover;"></div>`;
+          avatarHtml = `<div class="sf-avatar active" style="padding:0;overflow:hidden;"><img src="${photoURL}" alt="User Avatar" style="width:100%;height:100%;object-fit:cover;"></div>`;
         }
         sidebarFooter.innerHTML = `
           <div class="sf-profile">
