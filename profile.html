@@ -305,7 +305,9 @@
       .pf-main { padding: 24px; }
     }
     @media (max-width: 600px) {
-      .pf-stats { grid-template-columns: 1fr; }
+      .pf-stats { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .pf-stat-card { padding: 16px; gap: 12px; }
+      .pf-stat-card:last-child { grid-column: span 2; }
     }
   </style>
 </head>
