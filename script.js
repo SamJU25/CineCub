@@ -1136,7 +1136,7 @@ var Modal = {
   },
   loadActorMovies: function(personId, personName) {
     Prog.start();
-    fetch('https://api.themoviedb.org/3/person/'+personId+'/combined_credits?api_key='+CFG.API_KEY)
+    fetch(CFG.BASE + '/person/' + personId + '/combined_credits')
       .then(res => res.json())
       .then(data => {
         var section = document.getElementById('fv-actor-section');
