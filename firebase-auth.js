@@ -151,17 +151,74 @@ async function handleLogin(e) {
   }
 }
 
+let usernameCheckTimeout = null;
+window.checkUsernameAvailability = function(value) {
+    const feedback = document.getElementById('username-feedback');
+    if(!feedback) return;
+    
+    if(usernameCheckTimeout) clearTimeout(usernameCheckTimeout);
+    
+    const val = value.trim();
+    if(!val) {
+        feedback.style.display = 'none';
+        return;
+    }
+    
+    // Only letters, numbers, and underscores
+    const regex = /^[a-zA-Z0-9_]+$/;
+    if(!regex.test(val)) {
+        feedback.innerHTML = '<i class="fas fa-times-circle"></i> Username can only contain letters, numbers, and underscores.';
+        feedback.style.color = "#ff4b4b";
+        feedback.style.display = 'block';
+        return;
+    }
+    
+    if(val.length < 3) {
+        feedback.innerHTML = '<i class="fas fa-times-circle"></i> Username must be at least 3 characters.';
+        feedback.style.color = "#ff4b4b";
+        feedback.style.display = 'block';
+        return;
+    }
+
+    feedback.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking availability...';
+    feedback.style.color = "var(--text-3)";
+    feedback.style.display = 'block';
+    
+    usernameCheckTimeout = setTimeout(async () => {
+        try {
+            const lowerVal = val.toLowerCase();
+            const userDoc = await db.collection("usernames").doc(lowerVal).get();
+            if(userDoc.exists) {
+                feedback.innerHTML = '<i class="fas fa-times-circle"></i> Username is already taken.';
+                feedback.style.color = "#ff4b4b";
+            } else {
+                feedback.innerHTML = '<i class="fas fa-check-circle"></i> Username is available!';
+                feedback.style.color = "#2ecc71";
+            }
+        } catch(e) {
+            console.error("Availability check failed:", e);
+            feedback.style.display = 'none';
+        }
+    }, 500);
+};
+
 async function handleSignup(e) {
   e.preventDefault();
   AuthUI.clearErrors();
   
+  const name = document.getElementById('signup-name').value.trim();
   const username = document.getElementById('signup-user').value.trim();
   const email = document.getElementById('signup-email').value.trim();
   const pass = document.getElementById('signup-pass').value;
   const confirm = document.getElementById('signup-confirm').value;
   const btn = document.getElementById('btn-signup');
   
-  if(!username || !email || !pass || !confirm) return AuthUI.showError("Please fill in all fields.", true);
+  if(!name || !username || !email || !pass || !confirm) return AuthUI.showError("Please fill in all fields.", true);
+  
+  const regex = /^[a-zA-Z0-9_]+$/;
+  if(!regex.test(username)) return AuthUI.showError("Username can only contain letters, numbers, and underscores.", true);
+  if(username.length < 3) return AuthUI.showError("Username must be at least 3 characters.", true);
+
   if(pass !== confirm) return AuthUI.showError("Passwords do not match.", true);
   if(pass.length < 6) return AuthUI.showError("Password must be at least 6 characters.", true);
   
@@ -197,9 +254,10 @@ async function handleSignup(e) {
       timeoutPromise
     ]);
     // Save display name (non-blocking)
-    cred.user.updateProfile({ displayName: username }).catch(err => console.warn("Profile update failed:", err));
+    cred.user.updateProfile({ displayName: name }).catch(err => console.warn("Profile update failed:", err));
     // Save user doc in Firestore (non-blocking)
     db.collection("users").doc(cred.user.uid).set({
+      name: name,
       username: username,
       email: email,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()

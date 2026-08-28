@@ -690,11 +690,19 @@
         <form onsubmit="handleSignup(event)" class="auth-form">
           <div class="auth-error" id="auth-signup-error" style="display:none;"></div>
           <div class="auth-field">
+            <label>Name</label>
+            <div class="auth-input-wrap">
+              <input type="text" id="signup-name" required placeholder="e.g. John Doe" autocomplete="name" spellcheck="false" autocorrect="off">
+              <i class="fas fa-id-card input-icon"></i>
+            </div>
+          </div>
+          <div class="auth-field">
             <label>Username</label>
             <div class="auth-input-wrap">
-              <input type="text" id="signup-user" required placeholder="Choose a username" autocomplete="username" spellcheck="false" autocorrect="off">
+              <input type="text" id="signup-user" required placeholder="e.g. johndoe" autocomplete="off" spellcheck="false" autocorrect="off" oninput="checkUsernameAvailability(this.value)">
               <i class="fas fa-at input-icon"></i>
             </div>
+            <div id="username-feedback" style="font-size: 12px; margin-top: 6px; display: none;"></div>
           </div>
           <div class="auth-field">
             <label>Email address</label>
