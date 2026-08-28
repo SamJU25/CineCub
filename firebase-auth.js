@@ -381,7 +381,7 @@ window.handleLogout = function() {
           const initial = displayName.charAt(0).toUpperCase();
           userImageHtml = `<div style="width: 80px; height: 80px; border-radius: 50%; background: var(--cv-dark-2); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 0 auto 10px auto; border: 3px solid var(--cv-dark-2);">${initial}</div>`;
       }
-      userNameHtml = `<div style="color: var(--text-2); font-size: 16px; font-weight: 600; margin-bottom: 20px;">@${displayName}</div>`;
+      userNameHtml = `<div style="color: var(--text-2); font-size: 16px; font-weight: 600; margin-bottom: 20px;">${displayName}</div>`;
   }
 
   const overlay = document.createElement('div');

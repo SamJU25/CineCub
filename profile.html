@@ -929,9 +929,9 @@
             var username = localStorage.getItem('cachedUsername') || displayName;
             var display = localStorage.getItem('cachedName') || displayName;
             
-            document.getElementById('pf-username').textContent = '@' + username;
+            document.getElementById('pf-username').textContent = username;
             var su = document.getElementById('settings-username-sub');
-            if (su) su.textContent = '@' + username;
+            if (su) su.textContent = username;
             document.getElementById('pf-name').textContent  = display;
             var sn = document.getElementById('settings-name-sub');
             if (sn) sn.textContent = display;
@@ -951,8 +951,8 @@
                   if (data.username) {
                       username = data.username;
                       localStorage.setItem('cachedUsername', username);
-                      document.getElementById('pf-username').textContent = '@' + username;
-                      if (su) su.textContent = '@' + username;
+                      document.getElementById('pf-username').textContent = username;
+                      if (su) su.textContent = username;
                   }
                   if (data.displayName) {
                       display = data.displayName;
