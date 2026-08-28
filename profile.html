@@ -292,6 +292,7 @@
     /* Responsive */
     @media (max-width: 900px) {
       .pf-layout { flex-direction: column; align-items: stretch; }
+      .pf-sidebar-logo { display: none !important; }
       .pf-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 24px; gap: 24px; }
       .pf-sidebar-user { margin-bottom: 0; padding-bottom: 0; border-bottom: none; display: flex; align-items: center; gap: 16px; text-align: left; }
       .pf-avatar-container { margin: 0; width: 64px; height: 64px; }
@@ -318,11 +319,15 @@
   </nav>
 
   <!-- Logged-In View -->
-  <div class="pf-layout" id="pf-logged-in" style="display:none">
-    
-    <aside class="pf-sidebar">
-      <div class="pf-sidebar-user">
-        <div class="pf-avatar-container">
+    <div class="pf-layout" id="pf-logged-in" style="display:none">
+      
+      <aside class="pf-sidebar">
+        <div class="pf-sidebar-logo" style="display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+          <img src="/assets/images/icon-logo.png" alt="StreamHeaven Icon" style="width: 32px; height: 32px; border-radius: 8px; object-fit: contain;">
+          <span style="font-family:'Nunito', sans-serif;font-weight:800;font-size:22px;color:var(--cv-purple);margin-left:12px;white-space:nowrap;">StreamHeaven</span>
+        </div>
+        <div class="pf-sidebar-user">
+          <div class="pf-avatar-container">
           <div class="pf-avatar" id="pf-avatar">?<div class="pf-avatar-badge" style="display:none;"></div></div>
           <div class="pf-sidebar-edit-avatar" onclick="openAvatarModal()"><i class="fas fa-pencil-alt"></i></div>
         </div>
