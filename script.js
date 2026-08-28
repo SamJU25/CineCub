@@ -1099,18 +1099,18 @@ var Modal = {
       sTabs.innerHTML = serverHtml;
       State.activeServer = 0;
 
-      var trailerSection = document.getElementById('fv-trailer-section');
-      var trailerPlayer = document.getElementById('trailer-player');
-      State.activeTrailer = null;
+      var trailerSection = document.getElementById('fv-preview-section');
+      var trailerPlayer = document.getElementById('preview-player');
+      State.activePreview = null;
       if (data.videos && data.videos.results) {
         var trailer = data.videos.results.find(function(v){return v.site==='YouTube' && v.type==='Trailer';});
         if (!trailer) trailer = data.videos.results.find(function(v){return v.site==='YouTube';});
-        if (trailer) State.activeTrailer = trailer.key;
+        if (trailer) State.activePreview = trailer.key;
       }
       if (trailerSection && trailerPlayer) {
-        if (State.activeTrailer) {
+        if (State.activePreview) {
           trailerSection.style.display = 'block';
-          trailerPlayer.src = 'https://www.youtube.com/embed/' + State.activeTrailer;
+          trailerPlayer.src = 'https://www.youtube.com/embed/' + State.activePreview;
         } else {
           trailerSection.style.display = 'none';
           trailerPlayer.src = '';
@@ -1239,6 +1239,13 @@ var Player = {
       eSelect.value = e - 1;
     }
     this.loadVideo();
+  },
+  closePreviewPlayer: function() {
+    var tp = document.getElementById('preview-player');
+    iframe.style.display = 'block';
+    
+    // Removed sandbox completely because most providers actively detect and block it
+    iframe.removeAttribute('sandbox');
   },
   loadVideo: function(){
     var iframe = document.getElementById('main-player');
@@ -1520,12 +1527,12 @@ var FVTabs = {
       }
     }
     
-    var tp = document.getElementById('trailer-player');
+    var tp = document.getElementById('preview-player');
     if (tp) {
        if (t !== 'overview') {
            tp.src = ''; 
-       } else if (State.activeTrailer && tp.src === '') {
-           tp.src = 'https://www.youtube.com/embed/' + State.activeTrailer;
+       } else if (State.activePreview && tp.src === '') {
+           tp.src = 'https://www.youtube.com/embed/' + State.activePreview;
        }
     }
   }
