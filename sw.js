@@ -1,4 +1,4 @@
-const CACHE_NAME = 'streamheaven-cache-v121';
+const CACHE_NAME = 'streamheaven-cache-v122';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -26,8 +26,20 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
   const isStatic = urlsToCache.includes(requestUrl.pathname);
+  // HTML documents (navigations) must always come from the network first so
+  // updated markup (e.g. CSP changes) reaches the browser immediately.
+  const isHtml = event.request.mode === 'navigate' || event.request.destination === 'document';
 
-  if (isStatic) {
+  if (isHtml) {
+    event.respondWith(
+      fetch(event.request).then(networkResponse => {
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, networkResponse.clone());
+        });
+        return networkResponse;
+      }).catch(() => caches.match(event.request).then(c => c || caches.match('/')))
+    );
+  } else if (isStatic) {
     event.respondWith(
       caches.match(event.request).then(cachedResponse => {
         const fetchPromise = fetch(event.request).then(networkResponse => {
