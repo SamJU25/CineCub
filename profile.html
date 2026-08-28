@@ -240,8 +240,9 @@
     }
     .pf-settings-row-icon.purple { background: rgba(157,78,221,0.15); color: #c77dff; }
     
-    .pf-settings-row-label { font-size: 14px; font-weight: 500; color: rgba(232,232,240,0.8); width: 140px; flex-shrink: 0; }
-    .pf-settings-row-val { font-size: 14px; color: rgba(232,232,240,0.5); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pf-settings-row-text { flex: 1; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+    .pf-settings-row-label { font-size: 14px; font-weight: 500; color: rgba(232,232,240,0.8); }
+    .pf-settings-row-val { font-size: 13px; color: rgba(232,232,240,0.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pf-settings-row-arrow { color: rgba(232,232,240,0.3); font-size: 14px; }
     
     /* Danger Settings */
@@ -379,26 +380,34 @@
         <div class="pf-settings-list">
           <div class="pf-settings-row">
             <div class="pf-settings-row-icon purple"><i class="fas fa-image"></i></div>
-            <div class="pf-settings-row-label">Username</div>
-            <div class="pf-settings-row-val" id="settings-username-sub">...</div>
+            <div class="pf-settings-row-text">
+              <div class="pf-settings-row-label">Username</div>
+              <div class="pf-settings-row-val" id="settings-username-sub">...</div>
+            </div>
             <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
           <div class="pf-settings-row" onclick="openNameModal()">
             <div class="pf-settings-row-icon purple"><i class="fas fa-user-edit"></i></div>
-            <div class="pf-settings-row-label">Display Name</div>
-            <div class="pf-settings-row-val" id="settings-name-sub">...</div>
+            <div class="pf-settings-row-text">
+              <div class="pf-settings-row-label">Display Name</div>
+              <div class="pf-settings-row-val" id="settings-name-sub">...</div>
+            </div>
             <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
           <div class="pf-settings-row" onclick="openEmailModal()">
             <div class="pf-settings-row-icon purple"><i class="fas fa-envelope"></i></div>
-            <div class="pf-settings-row-label">Email Address</div>
-            <div class="pf-settings-row-val" id="settings-email-sub">—</div>
+            <div class="pf-settings-row-text">
+              <div class="pf-settings-row-label">Email Address</div>
+              <div class="pf-settings-row-val" id="settings-email-sub">—</div>
+            </div>
             <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
           <div class="pf-settings-row" onclick="openPasswordModal()">
             <div class="pf-settings-row-icon purple"><i class="fas fa-lock"></i></div>
-            <div class="pf-settings-row-label">Password</div>
-            <div class="pf-settings-row-val">••••••••</div>
+            <div class="pf-settings-row-text">
+              <div class="pf-settings-row-label">Password</div>
+              <div class="pf-settings-row-val">••••••••</div>
+            </div>
             <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
         </div>
