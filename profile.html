@@ -19,115 +19,234 @@
   <link rel="manifest" href="/manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
-  <link href="style.css?v=29" rel="stylesheet">
+  <link href="style.css?v=30" rel="stylesheet">
   <style>
     :root { --profile-gutter: 28px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0a0a0f; color: #e8e8f0; min-height: 100vh; }
-
-    /* Top Nav */
-    .pf-nav {
-      position: sticky; top: 0; z-index: 900;
-      background: rgba(10,10,18,0.92);
-      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      height: 64px; display: flex; align-items: center;
-      padding: 0 var(--profile-gutter); gap: 16px;
+    
+    /* Global Layout */
+    .pf-layout {
+      display: flex;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 var(--profile-gutter);
+      gap: 32px;
+      align-items: flex-start;
     }
-    .pf-nav-back {
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(157,78,221,0.12); border: 1px solid rgba(157,78,221,0.25);
-      color: #c77dff; font-size: 13px; font-weight: 700;
-      padding: 8px 16px; border-radius: 999px; cursor: pointer;
-      transition: all .18s ease; text-decoration: none;
+    
+    /* Sidebar */
+    .pf-sidebar {
+      width: 280px;
+      background: rgba(20,20,28,0.6);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 20px;
+      padding: 32px 24px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
     }
-    .pf-nav-back:hover { background: rgba(157,78,221,0.22); border-color: #c77dff; transform: translateX(-2px); }
-    .pf-nav-spacer { flex: 1; }
-
-    /* Page */
-    .pf-page { max-width: 1100px; margin: 0 auto; padding: 40px var(--profile-gutter) 80px; }
-
-    /* Hero */
-    .pf-hero {
-      background: linear-gradient(135deg, rgba(157,78,221,0.12) 0%, rgba(10,10,18,0) 60%);
-      border: 1px solid rgba(157,78,221,0.18); border-radius: 24px;
-      padding: 36px 40px; display: flex; align-items: center; gap: 32px;
-      margin-bottom: 32px; position: relative; overflow: hidden;
+    
+    .pf-sidebar-user {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px dashed rgba(255,255,255,0.1);
+      position: relative;
     }
-    .pf-hero::before {
-      content: ''; position: absolute; top: -60px; right: -60px;
-      width: 200px; height: 200px;
-      background: radial-gradient(circle, rgba(157,78,221,0.18) 0%, transparent 70%);
-      pointer-events: none;
+    
+    .pf-avatar-container {
+      width: 100px; height: 100px;
+      margin: 0 auto 16px;
+      position: relative;
     }
+    
     .pf-avatar {
-      width: 88px; height: 88px; border-radius: 50%;
+      width: 100%; height: 100%;
+      border-radius: 50%;
       background: linear-gradient(135deg, #b55fe6, #6b1fad);
       display: flex; align-items: center; justify-content: center;
       font-size: 34px; font-weight: 900; color: #fff;
-      border: 3px solid rgba(199,125,255,0.4);
-      box-shadow: 0 0 32px rgba(157,78,221,0.35); flex-shrink: 0; position: relative;
+      border: 3px solid rgba(230,57,70,0.8); /* Red glowing border */
+      box-shadow: 0 0 20px rgba(230,57,70,0.3);
+      position: relative;
+      overflow: hidden;
     }
-    .pf-avatar-badge {
-      position: absolute; bottom: 4px; right: 4px;
-      width: 18px; height: 18px; background: #06d6a0;
-      border-radius: 50%; border: 2px solid #0a0a0f;
+    
+    .pf-sidebar-edit-avatar {
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 32px;
+      background: #c77dff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      border: 3px solid #14141c;
+      transition: all 0.2s;
     }
-    .pf-hero-info { flex: 1; }
-    .pf-hero-name { font-size: 26px; font-weight: 900; line-height: 1.2; margin-bottom: 4px; }
-    .pf-hero-username { font-size: 15px; color: var(--cv-purple); font-weight: 600; margin-bottom: 2px; }
-      .pf-hero-email { font-size: 13px; color: rgba(232,232,240,0.5); margin-bottom: 12px; }
-    .pf-hero-badge {
+    .pf-sidebar-edit-avatar:hover { background: #dcaaff; transform: translateX(-50%) scale(1.1); color: #000; }
+    
+    .pf-sidebar-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; font-family: 'Nunito', sans-serif;}
+    .pf-sidebar-username { font-size: 13px; color: rgba(232,232,240,0.5); }
+    
+    .pf-sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    
+    .pf-sidebar-tab {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 20px; font-size: 14px; font-weight: 600;
+      color: rgba(232,232,240,0.6); cursor: pointer;
+      border-radius: 12px;
+      transition: all .2s ease; background: transparent;
+      border: 1px solid transparent;
+      text-align: left;
+      font-family: inherit;
+    }
+    .pf-sidebar-tab:hover { color: #e8e8f0; background: rgba(255,255,255,0.03); }
+    .pf-sidebar-tab.active {
+      color: #c77dff; 
+      background: rgba(157,78,221,0.15); 
+      border-color: rgba(157,78,221,0.3);
+      box-shadow: 0 4px 15px rgba(157,78,221,0.1);
+    }
+    .pf-sidebar-tab i { font-size: 16px; width: 20px; text-align: center; }
+    
+    .pf-sidebar-bottom {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .pf-sidebar-bottom-btn {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 20px; font-size: 14px; font-weight: 600;
+      color: rgba(232,232,240,0.5); cursor: pointer;
+      border-radius: 12px;
+      transition: all .2s ease; background: transparent;
+      border: none;
+      text-align: left;
+      font-family: inherit;
+      text-decoration: none;
+    }
+    .pf-sidebar-bottom-btn:hover { color: #e8e8f0; background: rgba(255,255,255,0.03); }
+    
+    /* Main Content */
+    .pf-main {
+      flex: 1;
+      background: rgba(20,20,28,0.4);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 20px;
+      padding: 36px 40px;
+      min-width: 0;
+    }
+    
+    .pf-main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .pf-main-title {
+      font-size: 22px; font-weight: 800; font-family: 'Nunito', sans-serif;
+      color: #c77dff;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .pf-main-badge {
       display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(6,214,160,0.12); color: #06d6a0;
-      border: 1px solid rgba(6,214,160,0.25);
-      font-size: 11px; font-weight: 800; padding: 4px 12px;
+      background: #a3e635; color: #1a2e05;
+      font-size: 10px; font-weight: 800; padding: 4px 12px;
       border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .pf-hero-badge-dot { width: 6px; height: 6px; background: #06d6a0; border-radius: 50%; animation: pulse-dot 2s ease-in-out infinite; }
-    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
-
+    .pf-main-badge-dot { width: 6px; height: 6px; background: #1a2e05; border-radius: 50%; }
+    
+    .pf-main-edit-btn {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: transparent; border: none;
+      color: #c77dff; font-size: 16px; cursor: pointer; transition: all 0.2s;
+    }
+    .pf-main-edit-btn:hover { transform: scale(1.1); }
+    
     /* Stats */
     .pf-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 32px; }
     .pf-stat-card {
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 18px; padding: 22px 24px; display: flex; align-items: center; gap: 16px;
-      transition: all .2s ease;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-    .pf-stat-card:hover { background: rgba(157,78,221,0.08); border-color: rgba(157,78,221,0.2); transform: translateY(-2px); }
-    .pf-stat-icon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .pf-stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .pf-stat-icon.purple { background: rgba(157,78,221,0.15); color: #c77dff; }
     .pf-stat-icon.blue   { background: rgba(58,134,255,0.15);  color: #78b4ff; }
     .pf-stat-icon.green  { background: rgba(6,214,160,0.15);   color: #06d6a0; }
-    .pf-stat-val { font-size: 26px; font-weight: 900; line-height: 1; }
-    .pf-stat-val.pf-stat-date { font-size: 14px; font-weight: 700; white-space: nowrap; }
-    .pf-stat-val.pf-stat-date + .pf-stat-lbl { margin-top: 8px; }
-    .pf-stat-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(232,232,240,0.5); margin-top: 6px; }
-
-    /* Tabs */
-    .pf-tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }
-    .pf-tab {
-      display: flex; align-items: center; gap: 8px;
-      padding: 12px 20px; font-size: 13px; font-weight: 700;
-      color: rgba(232,232,240,0.45); cursor: pointer;
-      border-bottom: 2px solid transparent; margin-bottom: -1px;
-      transition: all .18s ease; background: none;
-      border-left: none; border-right: none; border-top: none;
-      font-family: inherit;
-    }
-    .pf-tab:hover { color: #e8e8f0; }
-    .pf-tab.active { color: #c77dff; border-bottom-color: #c77dff; }
-
+    .pf-stat-val { font-size: 22px; font-weight: 800; line-height: 1; font-family: 'Nunito', sans-serif; margin-bottom: 6px; }
+    .pf-stat-val.pf-stat-date { font-size: 16px; }
+    .pf-stat-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: rgba(232,232,240,0.5); }
+    
     /* Panels */
     .pf-panel { display: none; }
     .pf-panel.active { display: block; }
-
-    /* Grid */
-    .pf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 16px; }
-    .pf-media-card {
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 14px; overflow: hidden; cursor: pointer; transition: all .2s ease;
+    
+    /* Settings Lists */
+    .pf-settings-list {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 14px;
+      margin-bottom: 24px;
+      overflow: hidden;
     }
+    
+    .pf-settings-row {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .pf-settings-row:last-child { border-bottom: none; }
+    .pf-settings-row:hover { background: rgba(255,255,255,0.04); }
+    
+    .pf-settings-row-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;
+    }
+    .pf-settings-row-icon.purple { background: rgba(157,78,221,0.15); color: #c77dff; }
+    
+    .pf-settings-row-label { font-size: 14px; font-weight: 500; color: rgba(232,232,240,0.8); width: 140px; flex-shrink: 0; }
+    .pf-settings-row-val { font-size: 14px; color: rgba(232,232,240,0.5); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pf-settings-row-arrow { color: rgba(232,232,240,0.3); font-size: 14px; }
+    
+    /* Danger Settings */
+    .pf-settings-danger-list {
+      background: transparent;
+      border: 1px solid rgba(230,57,70,0.3);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .pf-settings-danger-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(230,57,70,0.2);
+      cursor: pointer;
+      transition: background 0.15s;
+      color: #e63946;
+    }
+    .pf-settings-danger-row:last-child { border-bottom: none; }
+    .pf-settings-danger-row:hover { background: rgba(230,57,70,0.1); }
+    .pf-settings-danger-label { display: flex; align-items: center; gap: 14px; font-size: 14px; font-weight: 500; }
+    
+    /* Grids */
+    .pf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 16px; }
+    .pf-media-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; overflow: hidden; cursor: pointer; transition: all .2s ease; }
     .pf-media-card:hover { transform: translateY(-4px); border-color: rgba(157,78,221,0.3); box-shadow: 0 12px 30px rgba(0,0,0,.5); }
     .pf-media-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; background: rgba(255,255,255,0.05); }
     .pf-media-poster-ph { width: 100%; aspect-ratio: 2/3; display: flex; align-items: center; justify-content: center; background: rgba(157,78,221,0.08); color: rgba(199,125,255,0.3); font-size: 32px; }
@@ -137,212 +256,180 @@
     .pf-media-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 999px; margin-top: 5px; }
     .pf-media-badge.movie { background: rgba(58,134,255,0.18); color: #78b4ff; }
     .pf-media-badge.tv    { background: rgba(157,78,221,0.18); color: #c77dff; }
-
-    /* Empty */
+    
     .pf-empty { text-align: center; padding: 64px 24px; color: rgba(232,232,240,0.35); }
     .pf-empty i { font-size: 52px; margin-bottom: 16px; display: block; }
     .pf-empty p { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: rgba(232,232,240,0.55); }
     .pf-empty span { font-size: 13px; }
-
-    /* Settings */
-    .pf-settings-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 18px; overflow: hidden; margin-bottom: 16px; }
-    .pf-settings-title { padding: 16px 22px; font-size: 12px; font-weight: 800; color: rgba(232,232,240,0.4); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .pf-settings-row { display: flex; align-items: center; gap: 14px; padding: 16px 22px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background .15s; cursor: pointer; }
-    .pf-settings-row:last-child { border-bottom: none; }
-    .pf-settings-row:hover { background: rgba(255,255,255,0.03); }
-    .pf-settings-row-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
-    .pf-settings-row-icon.purple { background: rgba(157,78,221,0.12); color: #c77dff; }
-    .pf-settings-row-icon.red    { background: rgba(230,57,70,0.12);  color: #e63946; }
-    .pf-settings-row-label { flex: 1; font-size: 14px; font-weight: 600; }
-    .pf-settings-row-sub { font-size: 12px; color: rgba(232,232,240,0.4); margin-top: 2px; }
-    .pf-settings-row-arrow { color: rgba(232,232,240,0.25); font-size: 12px; }
-    .pf-settings-danger { color: #e63946; }
-
+    
     /* Guest Wall */
-    .pf-guest-wall { text-align: center; padding: 80px 24px; }
+    .pf-guest-wall { text-align: center; padding: 80px 24px; max-width: 600px; margin: 0 auto; }
     .pf-guest-icon { width: 90px; height: 90px; border-radius: 50%; background: rgba(157,78,221,0.12); display: flex; align-items: center; justify-content: center; font-size: 36px; color: #c77dff; margin: 0 auto 24px; border: 1px solid rgba(157,78,221,0.2); }
     .pf-guest-wall h2 { font-size: 22px; font-weight: 900; margin-bottom: 10px; }
     .pf-guest-wall p { font-size: 14px; color: rgba(232,232,240,0.5); margin-bottom: 28px; line-height: 1.6; }
-    .pf-auth-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .pf-btn-login {
-      background: linear-gradient(135deg, #b55fe6, #9d4edd); color: #fff; border: 1px solid transparent;
-      padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700;
-      cursor: pointer; transition: all .2s ease; font-family: inherit; white-space: nowrap; box-sizing: border-box;
-    }
-    .pf-btn-login:hover { transform: translateY(0); box-shadow: 0 4px 15px rgba(157,78,221,0.25); }
-
+    .pf-btn-login { background: linear-gradient(135deg, #b55fe6, #9d4edd); color: #fff; border: none; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s; }
+    .pf-btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(157,78,221,0.3); }
+    
     /* Responsive */
-    @media (max-width: 768px) {
-      .pf-nav {
-        flex-wrap: wrap; height: auto; padding: 12px var(--profile-gutter); gap: 10px; justify-content: center;
-      }
-      .pf-nav-spacer { display: none; }
-      .pf-nav-back { flex: none; font-size: 13px; padding: 10px 16px; }
-      .pf-hero { flex-direction: column; text-align: center; padding: 28px 24px; }
-      .pf-stats { grid-template-columns: repeat(2,1fr); }
-      .pf-grid { grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); }
-      .pf-page { padding: 24px 16px 60px; }
+    @media (max-width: 900px) {
+      .pf-layout { flex-direction: column; align-items: stretch; }
+      .pf-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 24px; gap: 24px; }
+      .pf-sidebar-user { margin-bottom: 0; padding-bottom: 0; border-bottom: none; display: flex; align-items: center; gap: 16px; text-align: left; }
+      .pf-avatar-container { margin: 0; width: 64px; height: 64px; }
+      .pf-sidebar-nav { flex-direction: row; margin-bottom: 0; flex: 1; justify-content: center; overflow-x: auto; padding-bottom: 4px; }
+      .pf-sidebar-bottom { flex-direction: row; }
+      .pf-main-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .pf-stats { grid-template-columns: repeat(3,1fr); }
+      .pf-main { padding: 24px; }
     }
-    @media (max-width: 480px) {
-      .pf-stats { grid-template-columns: 1fr 1fr; }
-      .pf-hero-name { font-size: 22px; }
-      :root { --profile-gutter: 16px; }
+    @media (max-width: 600px) {
+      .pf-stats { grid-template-columns: 1fr; }
+      .pf-sidebar-nav { flex-direction: column; width: 100%; }
+      .pf-sidebar-bottom { width: 100%; justify-content: space-between; }
     }
   </style>
 </head>
 <body>
 
-  <nav class="pf-nav">
-    <a class="pf-nav-back" href="index.html"><i class="fas fa-arrow-left"></i> Back</a>
-    <div style="display: flex; align-items: center; margin-left: 12px;">
-      <img src="/assets/images/icon-logo.png" alt="StreamHeaven Icon" class="sidebar-logo-icon-img">
-      <span class="sidebar-logo-text">StreamHeaven</span>
+  <nav class="pf-nav" style="position: sticky; top: 0; z-index: 900; background: rgba(10,10,18,0.92); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); height: 72px; padding: 0 32px; display: flex; align-items: center;">
+    <div style="display: flex; align-items: center;">
+      <img src="/assets/images/icon-logo.png" alt="StreamHeaven Icon" style="width: 36px; height: 36px; border-radius: 8px; object-fit: contain;">
+      <span style="font-family:'Nunito', sans-serif;font-weight:800;font-size:24px;color:var(--cv-purple);margin-left:12px;white-space:nowrap;">StreamHeaven</span>
     </div>
-    <div class="pf-nav-spacer"></div>
   </nav>
 
   <!-- Logged-In View -->
-  <div class="pf-page" id="pf-logged-in" style="display:none">
-
-    <div class="pf-hero">
-      <div class="pf-avatar" id="pf-avatar">?<div class="pf-avatar-badge"></div></div>
-      <div class="pf-hero-info">
-        <div class="pf-hero-name" id="pf-name">Loading…</div>
-        <div class="pf-hero-username" id="pf-username"></div>
-        <div class="pf-hero-email" id="pf-email"></div>
-        <div class="pf-hero-badge"><span class="pf-hero-badge-dot"></span>Active Session</div>
-      </div>
-    </div>
-
-    <div class="pf-stats">
-      <div class="pf-stat-card">
-        <div class="pf-stat-icon purple"><i class="fas fa-heart"></i></div>
-        <div><div class="pf-stat-val" id="stat-wl">0</div><div class="pf-stat-lbl">Watchlist</div></div>
-      </div>
-      <div class="pf-stat-card">
-        <div class="pf-stat-icon blue"><i class="fas fa-history"></i></div>
-        <div><div class="pf-stat-val" id="stat-hist">0</div><div class="pf-stat-lbl">Watched</div></div>
-      </div>
-      <div class="pf-stat-card">
-        <div class="pf-stat-icon green"><i class="fas fa-calendar-check"></i></div>
-        <div><div class="pf-stat-val pf-stat-date" id="stat-days">—</div><div class="pf-stat-lbl">Member Since</div></div>
-      </div>
-    </div>
-
-    <div class="pf-tabs">
-      <button class="pf-tab active" id="tab-watchlist" onclick="switchTab('watchlist')"><i class="fas fa-heart"></i> Watchlist</button>
-      <button class="pf-tab" id="tab-history"   onclick="switchTab('history')"><i class="fas fa-history"></i> History</button>
-      <button class="pf-tab" id="tab-settings"  onclick="switchTab('settings')"><i class="fas fa-cog"></i> Settings</button>
-    </div>
-
-    <!-- Watchlist Panel -->
-    <div class="pf-panel active" id="panel-watchlist">
-      <div class="pf-grid" id="pf-wl-grid"></div>
-      <div class="pf-empty" id="pf-wl-empty" style="display:none">
-        <i class="fas fa-heart"></i>
-        <p>No titles in your Watchlist</p>
-        <span>Browse movies &amp; shows and hit the heart icon to save them here.</span>
-      </div>
-    </div>
-
-    <!-- History Panel -->
-    <div class="pf-panel" id="panel-history">
-      <div class="pf-grid" id="pf-hist-grid"></div>
-      <div class="pf-empty" id="pf-hist-empty" style="display:none">
-        <i class="fas fa-history"></i>
-        <p>No watch history yet</p>
-        <span>Movies and shows you watch will appear here.</span>
-      </div>
-    </div>
-
-    <!-- Settings Panel -->
-    <div class="pf-panel" id="panel-settings">
-      <div class="pf-settings-card">
-        <div class="pf-settings-title">Account</div>
-        <div class="pf-settings-row" onclick="openAvatarModal()">
-          <div class="pf-settings-row-icon purple"><i class="fas fa-image"></i></div>
-          <div>
-            <div class="pf-settings-row-label">Profile Picture</div>
-            <div class="pf-settings-row-sub">Choose a custom avatar</div>
-          </div>
-          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+  <div class="pf-layout" id="pf-logged-in" style="display:none">
+    
+    <aside class="pf-sidebar">
+      <div class="pf-sidebar-user">
+        <div class="pf-avatar-container">
+          <div class="pf-avatar" id="pf-avatar">?<div class="pf-avatar-badge" style="display:none;"></div></div>
+          <div class="pf-sidebar-edit-avatar" onclick="openAvatarModal()"><i class="fas fa-pencil-alt"></i></div>
         </div>
-        <div class="pf-settings-row">
-            <div class="pf-settings-row-icon purple"><i class="fas fa-at"></i></div>
-            <div>
-              <div class="pf-settings-row-label">Username</div>
-              <div class="pf-settings-row-sub" id="settings-username-sub">...</div>
-            </div>
+        <div>
+          <div class="pf-sidebar-name" id="pf-name">Loading…</div>
+          <div class="pf-sidebar-username" id="pf-username"></div>
+        </div>
+      </div>
+      
+      <div class="pf-sidebar-nav">
+        <button class="pf-sidebar-tab" id="tab-watchlist" onclick="switchTab('watchlist')"><i class="far fa-heart"></i> Watchlist</button>
+        <button class="pf-sidebar-tab" id="tab-history" onclick="switchTab('history')"><i class="fas fa-history"></i> History</button>
+        <button class="pf-sidebar-tab active" id="tab-settings" onclick="switchTab('settings')"><i class="fas fa-cog"></i> Settings</button>
+      </div>
+      
+      <div class="pf-sidebar-bottom">
+        <a class="pf-sidebar-bottom-btn" href="index.html"><i class="fas fa-arrow-left"></i> Back</a>
+        <button class="pf-sidebar-bottom-btn" onclick="handleLogout()" style="color: rgba(232,232,240,0.5);"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </aside>
+
+    <main class="pf-main">
+      <div class="pf-main-header">
+        <div class="pf-main-title">My Profile & Account Settings <div class="pf-main-badge"><div class="pf-main-badge-dot"></div> ACTIVE SESSION</div></div>
+        <button class="pf-main-edit-btn" onclick="openNameModal()"><i class="far fa-edit"></i></button>
+      </div>
+      
+      <div class="pf-stats">
+        <div class="pf-stat-card">
+          <div class="pf-stat-icon purple"><i class="fas fa-heart"></i></div>
+          <div>
+            <div class="pf-stat-val" id="stat-wl">0</div>
+            <div class="pf-stat-lbl">Watchlist</div>
+          </div>
+        </div>
+        <div class="pf-stat-card">
+          <div class="pf-stat-icon blue"><i class="fas fa-history"></i></div>
+          <div>
+            <div class="pf-stat-val" id="stat-hist">0</div>
+            <div class="pf-stat-lbl">Watched</div>
+          </div>
+        </div>
+        <div class="pf-stat-card">
+          <div class="pf-stat-icon green"><i class="fas fa-calendar-check"></i></div>
+          <div>
+            <div class="pf-stat-val pf-stat-date" id="stat-days">—</div>
+            <div class="pf-stat-lbl">Member Since</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watchlist Panel -->
+      <div class="pf-panel" id="panel-watchlist">
+        <div class="pf-grid" id="pf-wl-grid"></div>
+        <div class="pf-empty" id="pf-wl-empty" style="display:none">
+          <i class="fas fa-heart"></i>
+          <p>No titles in your Watchlist</p>
+          <span>Browse movies &amp; shows and hit the heart icon to save them here.</span>
+        </div>
+      </div>
+
+      <!-- History Panel -->
+      <div class="pf-panel" id="panel-history">
+        <div class="pf-grid" id="pf-hist-grid"></div>
+        <div class="pf-empty" id="pf-hist-empty" style="display:none">
+          <i class="fas fa-history"></i>
+          <p>No watch history yet</p>
+          <span>Movies and shows you watch will appear here.</span>
+        </div>
+      </div>
+
+      <!-- Settings Panel -->
+      <div class="pf-panel active" id="panel-settings">
+        
+        <div class="pf-settings-list">
+          <div class="pf-settings-row">
+            <div class="pf-settings-row-icon purple"><i class="fas fa-image"></i></div>
+            <div class="pf-settings-row-label">Username</div>
+            <div class="pf-settings-row-val" id="settings-username-sub">...</div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
           <div class="pf-settings-row" onclick="openNameModal()">
             <div class="pf-settings-row-icon purple"><i class="fas fa-user-edit"></i></div>
-            <div>
-              <div class="pf-settings-row-label">Display Name</div>
-              <div class="pf-settings-row-sub" id="settings-name-sub">...</div>
-            </div>
+            <div class="pf-settings-row-label">Display Name</div>
+            <div class="pf-settings-row-val" id="settings-name-sub">...</div>
             <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
-        <div class="pf-settings-row" onclick="openEmailModal()">
-          <div class="pf-settings-row-icon purple"><i class="fas fa-envelope"></i></div>
-          <div>
+          <div class="pf-settings-row" onclick="openEmailModal()">
+            <div class="pf-settings-row-icon purple"><i class="fas fa-envelope"></i></div>
             <div class="pf-settings-row-label">Email Address</div>
-            <div class="pf-settings-row-sub" id="settings-email-sub">—</div>
+            <div class="pf-settings-row-val" id="settings-email-sub">—</div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
-          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <div class="pf-settings-row" onclick="openPasswordModal()">
-          <div class="pf-settings-row-icon purple"><i class="fas fa-lock"></i></div>
-          <div>
+          <div class="pf-settings-row" onclick="openPasswordModal()">
+            <div class="pf-settings-row-icon purple"><i class="fas fa-lock"></i></div>
             <div class="pf-settings-row-label">Password</div>
-            <div class="pf-settings-row-sub">Update your account password</div>
+            <div class="pf-settings-row-val">••••••••</div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
-          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
         </div>
+
+        <div class="pf-settings-danger-list">
+          <div class="pf-settings-danger-row" onclick="clearHistory()">
+            <div class="pf-settings-danger-label"><i class="fas fa-trash-alt"></i> Clear Watch History</div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+          <div class="pf-settings-danger-row" onclick="clearWatchlist()">
+            <div class="pf-settings-danger-label"><i class="fas fa-heart-broken"></i> Clear Watchlist</div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+        </div>
+
       </div>
-      <div class="pf-settings-card">
-        <div class="pf-settings-title">Data</div>
-        <div class="pf-settings-row" onclick="clearHistory()">
-          <div class="pf-settings-row-icon red"><i class="fas fa-trash-alt"></i></div>
-          <div>
-            <div class="pf-settings-row-label pf-settings-danger">Clear Watch History</div>
-            <div class="pf-settings-row-sub">Permanently remove all watched titles</div>
-          </div>
-          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
-        </div>
-        <div class="pf-settings-row" onclick="clearWatchlist()">
-          <div class="pf-settings-row-icon red"><i class="fas fa-heart-broken"></i></div>
-          <div>
-            <div class="pf-settings-row-label pf-settings-danger">Clear Watchlist</div>
-            <div class="pf-settings-row-sub">Remove all saved titles from your watchlist</div>
-          </div>
-          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
-        </div>
-      </div>
-      <div class="pf-settings-card">
-        <div class="pf-settings-title">Session</div>
-        <div class="pf-settings-row" onclick="handleLogout()">
-          <div class="pf-settings-row-icon red"><i class="fas fa-sign-out-alt"></i></div>
-          <div>
-            <div class="pf-settings-row-label pf-settings-danger">Logout</div>
-            <div class="pf-settings-row-sub">Sign out of your StreamHeaven account</div>
-          </div>
-          <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
-        </div>
-      </div>
-    </div>
+
+    </main>
   </div>
 
   <!-- Guest Wall -->
-  <div class="pf-page" id="pf-guest" style="display:none">
+  <div class="pf-layout" id="pf-guest" style="display:none; justify-content: center; align-items: center; min-height: 60vh;">
     <div class="pf-guest-wall">
       <div class="pf-guest-icon"><i class="fas fa-user-lock"></i></div>
       <h2>Sign in to view your Profile</h2>
       <p>Create a free account to save your watchlist,<br>track your watch history, and more.</p>
-      <div class="pf-auth-btns">
-        <button class="pf-btn-login" onclick="window.location.href='index.html'">
-          <i class="fas fa-sign-in-alt" style="margin-right:8px"></i>Go to StreamHeaven
-        </button>
-      </div>
+      <button class="pf-btn-login" onclick="window.location.href='index.html'">
+        <i class="fas fa-sign-in-alt" style="margin-right:8px"></i>Go to StreamHeaven
+      </button>
     </div>
   </div>
 
