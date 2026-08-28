@@ -1,0 +1,17 @@
+services:
+  web:
+    image: node:22-bookworm
+    working_dir: /app
+    command: sh -c "npm install -g wrangler@latest && wrangler pages dev . --port 8788 --ip 0.0.0.0 --compatibility-date=2024-01-01"
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:8788"
+    environment:
+      - BASE44_PUBLIC_HOST_SUFFIX=${BASE44_PUBLIC_HOST_SUFFIX}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:8788/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
