@@ -364,8 +364,8 @@ var App = {
   showWatchlist: function(){
     Prog.start();
     document.getElementById('search-input').value='';
-    document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active'));
     this.showPage('page-watchlist');
+    this.setNav('nav-watchlist', 'Watchlist');
     Watchlist.render();
     document.title = "Watchlist \u2014 StreamHeaven";
     Prog.done();
@@ -373,8 +373,8 @@ var App = {
   showHistory: function(){
     Prog.start();
     document.getElementById('search-input').value='';
-    document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active'));
     this.showPage('page-history');
+    this.setNav('nav-history', 'Watch History');
     History.render();
     document.title = "Watch History \u2014 StreamHeaven";
     Prog.done();
@@ -1611,24 +1611,11 @@ var History = {
   },
   load: function(){this.render();},
   render: function(){
-    let out='';
-    if(!State.history.length){
-      out='<div class="empty-state"><i class="fas fa-history"></i><p>Your watch history is empty.</p><span>Shows and movies you watch will appear here.</span></div>';
-    }else{
-      out='<div class="sf-grid" style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));">';
-      State.history.forEach(function(i){
-        let type=i.type==='movie'?'Movie':'TV Show';
-        out+='<div class="cv-card" onclick="Modal.openFull('+i.id+',\''+i.type+'\')">'+
-             '<img class="cv-card-img" src="'+i.poster+'" alt="'+i.title+'" loading="lazy" onerror="this.src=Utils.placeholder()">'+
-             '<div class="cv-card-info">'+
-             '<div class="cv-card-title">'+i.title+'</div>'+
-             '<div class="cv-card-meta">Watched</div>'+
-             '<div class="cv-card-badge '+type.toLowerCase().replace(' ','-')+'">'+type+'</div>'+
-             '</div></div>';
-      });
-      out+='</div>';
-    }
-    document.getElementById('history-grid').innerHTML = out;
+    let el = document.getElementById('history-grid');
+    if(!el) return;
+    el.innerHTML = State.history.map(function(x){
+      return Render.posterCard(x, x.type);
+    }).join('') || '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">Your watch history is empty.</div>';
   },
   clearAll: function(){
     if(!State.history.length){Toast.show('Watch history is already empty.','info');return;}
