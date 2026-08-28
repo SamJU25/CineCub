@@ -334,6 +334,33 @@ var App = {
   browseTrending: function(){ State.browseCategory='all'; State.browseType='all'; State.browseMode='trending'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-trending','Trending'); this.setBrowseHeader('Trending', false); Browse.load(); },
   browseTopRated: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='toprated'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-toprated','Top Rated'); this.setBrowseHeader('Top Rated', false); Browse.load(); },
   browseUpcoming: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='upcoming'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-upcoming','Upcoming'); this.setBrowseHeader('Upcoming', false); Browse.load(); },
+  updateWatchlistButtons: function() {
+    document.querySelectorAll('[class*="wl-btn-"]').forEach(function(btn) {
+      var match = btn.className.match(/wl-btn-(\d+)/);
+      if (match && match[1]) {
+        var id = parseInt(match[1]);
+        var inWl = State.watchlist.some(function(w){return w.id===id;});
+        var icon = btn.querySelector('i');
+        btn.classList.toggle('in-list', inWl);
+        btn.setAttribute('title', inWl ? 'Remove from watchlist' : 'Add to watchlist');
+        if(icon) {
+          icon.classList.toggle('fa-check', inWl);
+          icon.classList.toggle('fa-heart', !inWl);
+        }
+      }
+    });
+    var fv = document.getElementById('fv-wl-btn');
+    if(fv && State.activeId) {
+      var inWl = State.watchlist.some(function(w){return w.id===State.activeId;});
+      fv.classList.toggle('active-wl', inWl);
+      fv.setAttribute('title', inWl ? 'Remove from watchlist' : 'Add to watchlist');
+      var fi = fv.querySelector('i');
+      if(fi) {
+        fi.classList.toggle('fa-check', inWl);
+        fi.classList.toggle('fa-heart', !inWl);
+      }
+    }
+  },
   showWatchlist: function(){
     Prog.start();
     document.getElementById('search-input').value='';
@@ -1547,18 +1574,10 @@ var Watchlist = {
         State.watchlist.unshift({id:id,type:type,title:title,poster_path:poster,vote_average:vote,release_date:date});
         added=true;
         Toast.show('Added to watchlist','success');
-        if(typeof db !== 'undefined' && currentUser) {
-          db.collection("users").doc(currentUser.uid).collection("wishlist").doc(id.toString()).set({
-            id:id,type:type,title:title,poster_path:poster,vote_average:vote,release_date:date
-          });
-        }
       }
       else{
         State.watchlist.splice(idx,1);
         Toast.show('Removed from watchlist','info');
-        if(typeof db !== 'undefined' && currentUser) {
-          db.collection("users").doc(currentUser.uid).collection("wishlist").doc(id.toString()).delete();
-        }
       }
       Library.saveUserData();
     document.querySelectorAll('.wl-btn-'+id).forEach(function(btn){

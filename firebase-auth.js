@@ -35,6 +35,8 @@ const firebaseConfig = {
 
 let auth = null;
 let db = null;
+let currentUser = null;
+let userDataUnsubscribe = null;
 
 try {
   firebase.initializeApp(firebaseConfig);
@@ -45,7 +47,6 @@ try {
 }
 
 // Global Auth State
-let currentUser = null;
 
 
 // The Auth UI Controller
@@ -424,6 +425,10 @@ window.handleLogout = function() {
   document.getElementById('btn-confirm-logout').addEventListener('click', () => {
     close();
     if(auth) {
+      if (typeof userDataUnsubscribe === 'function') {
+        userDataUnsubscribe();
+        userDataUnsubscribe = null;
+      }
       auth.signOut().then(() => {
         if (window.location.pathname.includes('profile.html')) {
           window.location.href = 'index.html';
@@ -555,7 +560,7 @@ if (auth) {
       }
     
     // Attempt to load cloud data
-    fetchUserDataFromCloud();
+    subscribeToUserData();
   } else {
     const topProfileBtn = document.getElementById('header-profile-btn');
     const topProfileName = document.getElementById('header-profile-name');
@@ -592,30 +597,49 @@ if (auth) {
 }
 
 // User Data Cloud Sync
-async function fetchUserDataFromCloud() {
+// User Data Cloud Sync - Real Time Listener
+function subscribeToUserData() {
   if(!currentUser || typeof State === 'undefined') return;
   
+  if (typeof userDataUnsubscribe === 'function') {
+    userDataUnsubscribe();
+  }
+  
   try {
-    const docSnap = await db.collection("users").doc(currentUser.uid).get();
-    if(docSnap.exists) {
-      const data = docSnap.data();
-      if(data.watchlist) {
-        State.watchlist = data.watchlist;
-        localStorage.setItem('sh_watchlist', JSON.stringify(data.watchlist));
+    userDataUnsubscribe = db.collection("users").doc(currentUser.uid).onSnapshot(docSnap => {
+      if(docSnap.exists) {
+        const data = docSnap.data();
+        let changed = false;
+        
+        if(data.watchlist) {
+          State.watchlist = data.watchlist;
+          localStorage.setItem('sh_watchlist', JSON.stringify(data.watchlist));
+          changed = true;
+        }
+        if(data.history) {
+          State.history = data.history;
+          localStorage.setItem('sh_history', JSON.stringify(data.history));
+          changed = true;
+        }
+        
+        if(changed) {
+          // Re-render active UI dynamically
+          if(State.activePage === 'page-watchlist') {
+            if(typeof Watchlist !== 'undefined' && Watchlist.render) Watchlist.render();
+          } else if(State.activePage === 'page-history') {
+            if(typeof History !== 'undefined' && History.render) History.render();
+          }
+          
+          if(typeof App !== 'undefined' && App.updateWatchlistButtons) {
+            App.updateWatchlistButtons();
+          }
+        }
       }
-      if(data.history) {
-        State.history = data.history;
-        localStorage.setItem('sh_history', JSON.stringify(data.history));
-      }
-      
-      // Re-render if on watchlist page
-      const wlPage = document.getElementById('page-watchlist');
-      if(wlPage && wlPage.classList.contains('active')) {
-        if(typeof Watchlist !== 'undefined' && Watchlist.render) Watchlist.render();
-      }
-    }
+    }, err => {
+      console.error("Error listening to user data", err);
+    });
   } catch(e) {
-    console.error("Error fetching user data from cloud", e);
+    console.error("Error subscribing to user data", e);
   }
 }
 
