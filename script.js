@@ -1463,9 +1463,10 @@ var FVTabs = {
     if(t==='watch') Player.loadVideo();
     else {
       var iframe = document.getElementById('main-player');
-      if (iframe) {
-        iframe.src = 'about:blank';
-        iframe.removeAttribute('src');
+      if (iframe && iframe.src && iframe.src !== 'about:blank') {
+        var clone = iframe.cloneNode(true);
+        clone.setAttribute('src', 'about:blank');
+        iframe.parentNode.replaceChild(clone, iframe);
       }
     }
     
@@ -1487,9 +1488,10 @@ var FVTabs = {
        document.getElementById('trailer-player').src = 'https://www.youtube.com/embed/' + State.activeTrailer + '?autoplay=1&mute=1';
     } else {
        var tp = document.getElementById('trailer-player');
-       if(tp) {
-         tp.src = 'about:blank';
-         tp.removeAttribute('src');
+       if (tp && tp.src && tp.src !== 'about:blank') {
+         var tpClone = tp.cloneNode(true);
+         tpClone.setAttribute('src', 'about:blank');
+         tp.parentNode.replaceChild(tpClone, tp);
        }
     }
   }
