@@ -134,6 +134,25 @@ async function handleLogin(e) {
         return;
       }
       loginEmail = userDoc.data().email;
+      
+      // Fallback for older accounts that might not have email in usernames collection
+      if (!loginEmail && userDoc.data().uid) {
+         try {
+            const userProfile = await db.collection("users").doc(userDoc.data().uid).get();
+            if (userProfile.exists && userProfile.data().email) {
+               loginEmail = userProfile.data().email;
+            }
+         } catch(e) {
+            console.warn("Could not fetch user profile for email fallback", e);
+         }
+      }
+      
+      if (!loginEmail) {
+        AuthUI.showError("We couldn't find the email linked to this username. Please login using your email address.");
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+        return;
+      }
     }
     
     await auth.signInWithEmailAndPassword(loginEmail, pass);
