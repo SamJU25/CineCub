@@ -165,7 +165,7 @@ async function handleLogin(e) {
     } else if (error.code === 'auth/user-not-found') {
       msg = "No account found with this email/username.";
     } else if (error.code === 'auth/invalid-email') {
-      msg = "Please enter a valid email address.";
+      msg = "Please enter a valid username or email address.";
     } else if (error.code === 'auth/too-many-requests') {
       msg = "Too many failed login attempts. Please try again later.";
     } else if (msg.includes('network-request-failed')) {
