@@ -562,6 +562,8 @@
   </div>
 
 
+  <div id="toast-container"></div>
+
   <!-- Firebase -->
   <script src="lib/firebase-app-compat.js"></script>
   <script src="lib/firebase-auth-compat.js"></script>
@@ -569,6 +571,20 @@
   <script src="firebase-auth.js?v=27"></script>
 
   <script>
+    var Toast = {
+      show: function(msg, type){
+        var c = document.getElementById('toast-container'); if(!c) return;
+        var t = document.createElement('div'); t.className='toast';
+        var icon = document.createElement('i');
+        var iconClass = type==='error' ? 'fa-exclamation-circle' : (type==='success' ? 'fa-check-circle' : 'fa-info-circle');
+        var iconColor = type==='error' ? 'var(--cv-red)' : (type==='success' ? 'var(--cv-green)' : 'var(--cv-purple-light)');
+        icon.className='fas '+iconClass; icon.style.color=iconColor;
+        var text=document.createElement('span'); text.textContent=String(msg==null?'':msg);
+        t.appendChild(icon); t.appendChild(text); c.appendChild(t);
+        setTimeout(function(){ t.style.opacity=0; setTimeout(function(){t.remove();},300); },3000);
+      }
+    };
+
     const WATCH_KEY   = 'sh_watchlist';
     const HISTORY_KEY = 'sh_history';
 
@@ -699,9 +715,13 @@
           btn.disabled = false;
           console.error(error);
           if (error.code === 'auth/requires-recent-login') {
-            if (typeof Toast !== 'undefined') Toast.show("Please log out and log back in to delete your account.", "error");
+            const msg = "Security Check: Please log out and log back in before deleting your account.";
+            if (typeof Toast !== 'undefined') Toast.show(msg, "error");
+            else alert(msg);
           } else {
-            if (typeof Toast !== 'undefined') Toast.show(error.message || "Failed to delete account.", "error");
+            const msg = error.message || "Failed to delete account.";
+            if (typeof Toast !== 'undefined') Toast.show(msg, "error");
+            else alert(msg);
           }
           closeModals();
         }
