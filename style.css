@@ -1658,12 +1658,12 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 }
 .sf-download-btn {
   width: 100%;
-  padding: 10px;
+  padding: 14px 12px;
   background: rgba(199, 125, 255, 0.1) !important;
   color: #c77dff !important;
   border: 1px solid rgba(199, 125, 255, 0.2) !important;
   border-radius: 12px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -1671,7 +1671,7 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 10px;
   outline: none;
 }
 .sf-download-btn:hover {
