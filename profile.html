@@ -824,19 +824,16 @@
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         await reauthenticate(pass);
-        await user.updateEmail(newEmail);
-        if (typeof db !== 'undefined') {
-          db.collection("users").doc(user.uid).update({ email: newEmail });
-        }
         
-        // Update UI without reload
-        var se = document.getElementById('settings-email-sub');
-        if (se) se.textContent = newEmail;
+        // Send a verification link to the new email address
+        await user.verifyBeforeUpdateEmail(newEmail);
+        
         document.getElementById('pf-new-email').value = '';
         passField.value = '';
         
-        if(typeof Toast !== 'undefined') Toast.show("Email updated successfully!", "success");
-        else alert("Email updated successfully!");
+        if(typeof Toast !== 'undefined') Toast.show("Verification link sent! Please check your new email's inbox.", "success");
+        else alert("Verification link sent! Please check your new email's inbox.");
+        
         closeModals();
       } catch (e) {
         if(typeof Toast !== 'undefined') Toast.show(e.message, "error");
