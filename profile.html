@@ -147,7 +147,7 @@
       background: rgba(20,20,28,0.4);
       border: 1px solid rgba(255,255,255,0.05);
       border-radius: 20px;
-      padding: 36px 40px;
+      padding: 32px 40px;
       min-width: 0;
     }
     
@@ -827,12 +827,12 @@
       function initProfile() {
         if (typeof auth === 'undefined' || !auth) {
           document.getElementById('pf-logged-in').style.display = 'none';
-          document.getElementById('pf-guest').style.display = 'block';
+          document.getElementById('pf-guest').style.display = 'flex';
           return;
         }
         auth.onAuthStateChanged(function(user) {
           if (user) {
-            document.getElementById('pf-logged-in').style.display = 'block';
+            document.getElementById('pf-logged-in').style.display = 'flex';
             document.getElementById('pf-guest').style.display = 'none';
 
             var displayName = user.displayName || user.email.split('@')[0];
@@ -916,7 +916,7 @@
 
           } else {
             document.getElementById('pf-logged-in').style.display = 'none';
-            document.getElementById('pf-guest').style.display = 'block';
+            document.getElementById('pf-guest').style.display = 'flex';
           }
         });
       }
