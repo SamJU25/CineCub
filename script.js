@@ -974,7 +974,7 @@ var Modal = {
   closeAll: function(skipHistory){
     document.getElementById('modal-overlay').classList.remove('open');
     
-    var tp = document.getElementById('preview-player');
+    var tp = document.getElementById('fv-embedded-frame');
     if (tp) {
       tp.src = 'about:blank';
       var cloneTp = tp.cloneNode(true);
@@ -1099,8 +1099,8 @@ var Modal = {
       sTabs.innerHTML = serverHtml;
       State.activeServer = 0;
 
-      var trailerSection = document.getElementById('fv-preview-section');
-      var trailerPlayer = document.getElementById('preview-player');
+      var trailerSection = document.getElementById('fv-feature-box');
+      var trailerPlayer = document.getElementById('fv-embedded-frame');
       State.activePreview = null;
       if (data.videos && data.videos.results) {
         var trailer = data.videos.results.find(function(v){return v.site==='YouTube' && v.type==='Trailer';});
@@ -1245,7 +1245,7 @@ var Player = {
     this.loadVideo();
   },
   closePreviewPlayer: function() {
-    var tp = document.getElementById('preview-player');
+    var tp = document.getElementById('fv-embedded-frame');
     iframe.style.display = 'block';
     
     // Removed sandbox completely because most providers actively detect and block it
@@ -1531,7 +1531,7 @@ var FVTabs = {
       }
     }
     
-    var tp = document.getElementById('preview-player');
+    var tp = document.getElementById('fv-embedded-frame');
     if (tp) {
        if (t !== 'overview') {
            tp.src = ''; 
