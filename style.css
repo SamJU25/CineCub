@@ -1446,6 +1446,201 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.header-profile-name {
+  font-size: 13px;
+  font-weight: 600;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 768px) {
+  .header-profile-name { display: none !important; }
+}
+
+/* Performance Optimizations */
+.row-container, .compact-list, .grid, .poster-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 250px;
+}
+.modal-content, .spotlight-bg {
+  will-change: transform, opacity;
+}
+
+/* SKELETON LOADER */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-card {
+  background: var(--cv-dark-2);
+  background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--r-sm);
+  display: inline-block;
+}
+.cv-hscroll .skeleton-card {
+  flex: 0 0 auto;
+  width: 150px;
+  height: 225px;
+  margin-right: 12px;
+}
+.poster-grid .skeleton-card {
+  width: 100%;
+  aspect-ratio: 2/3;
+}
+
+/* ================================================================ 
+   APPS DOWNLOAD MODAL
+================================================================ */
+.cv-modal {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(5px);
+  align-items: center;
+  justify-content: center;
+}
+.cv-modal-content {
+  background-color: var(--cv-dark-4);
+  padding: 25px;
+  border-radius: var(--r-md);
+  width: 90%;
+  max-width: 380px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.05);
+  animation: modalFadeIn 0.3s ease;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cv-modal-close {
+  color: #a0a0b5;
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.cv-modal-close:hover {
+  color: #fff;
+}
+.apps-btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.app-btn {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-radius: var(--r-sm);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.app-btn-icon {
+  font-size: 24px;
+  width: 40px;
+  display: flex;
+  justify-content: center;
+  margin-right: 15px;
+}
+.app-btn-text strong {
+  display: block;
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 3px;
+}
+.app-btn-text span {
+  display: block;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.7);
+}
+.app-btn-action {
+  margin-left: auto;
+  font-size: 18px;
+  color: rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.2);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+.app-btn-primary {
+  background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+}
+.app-btn-primary .app-btn-icon {
+  color: #fff;
+}
+.app-btn-primary .app-btn-action {
+  color: #fff;
+  background: rgba(255,255,255,0.2);
+}
+.app-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(58, 123, 213, 0.4);
+}
+.app-btn-secondary {
+  background: var(--cv-dark-3);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.app-btn-secondary:hover {
+  background: var(--cv-dark-5);
+  transform: translateY(-2px);
+}
+.app-back-btn {
+  background: none;
+  border: none;
+  color: #c77dff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: inherit;
+}
+.ios-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.ios-step {
+  display: flex;
+  align-items: center;
+  background: var(--cv-dark-3);
+  padding: 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.step-num {
+  background: var(--cv-purple);
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: bold;
   font-size: 0.9rem;
   flex-shrink: 0;
@@ -1455,4 +1650,41 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   color: #e0e0e0;
   font-size: 0.95rem;
   line-height: 1.4;
+}
+.sf-download-btn {
+  width: 100%;
+  padding: 10px;
+  background: rgba(199, 125, 255, 0.1) !important;
+  color: #c77dff !important;
+  border: 1px solid rgba(199, 125, 255, 0.2) !important;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--t-fast);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  outline: none;
+}
+.sf-download-btn:hover {
+  background: rgba(199, 125, 255, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(199, 125, 255, 0.2);
+}
+.sf-download-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+.cv-sidebar.collapsed .sf-download-btn {
+  padding: 10px 0;
+  justify-content: center;
+}
+.cv-sidebar.collapsed .sf-download-text {
+  display: none;
 }
