@@ -309,8 +309,8 @@
     }
     @media (max-width: 600px) {
       .pf-stats { grid-template-columns: 1fr 1fr; gap: 12px; }
-      .pf-stat-card { padding: 16px; gap: 12px; }
-      .pf-stat-card:last-child { grid-column: span 2; }
+      .pf-stat-card { padding: 16px; gap: 8px; flex-direction: column; text-align: center; justify-content: center; }
+      .pf-stat-card:last-child { grid-column: span 2; flex-direction: row; text-align: left; justify-content: flex-start; }
     }
   </style>
 </head>
