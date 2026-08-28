@@ -1022,6 +1022,8 @@ var Modal = {
     }
     
     State.activeId = id; State.activeType = type;
+    document.getElementById('fv-actor-section').style.display = 'none';
+    document.getElementById('fv-actor-movies').innerHTML = '';
     Prog.start();
     API.detail(id, type).then(data => {
       this.isOpening = false; 
