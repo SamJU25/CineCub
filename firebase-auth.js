@@ -116,9 +116,17 @@ async function handleLogin(e) {
     }
     
     let loginEmail = inputStr;
-    // If input does not contain '@', assume it's a username
-    if (!inputStr.includes('@')) {
-      const userDoc = await db.collection("usernames").doc(inputStr.toLowerCase()).get();
+    let isUsername = false;
+    
+    // If input does not contain '@' or starts with '@' and has no other '@', assume it's a username
+    if (!inputStr.includes('@') || (inputStr.startsWith('@') && inputStr.indexOf('@') === inputStr.lastIndexOf('@'))) {
+      isUsername = true;
+      let checkUsername = inputStr;
+      if (checkUsername.startsWith('@')) {
+        checkUsername = checkUsername.substring(1);
+      }
+      
+      const userDoc = await db.collection("usernames").doc(checkUsername.toLowerCase()).get();
       if (!userDoc.exists) {
         AuthUI.showError("Username not found.");
         btn.disabled = false;
