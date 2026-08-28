@@ -233,6 +233,8 @@
     }
     .pf-settings-row:last-child { border-bottom: none; }
     .pf-settings-row:hover { background: rgba(255,255,255,0.04); }
+    .pf-settings-row.static { cursor: default; }
+    .pf-settings-row.static:hover { background: transparent; }
     
     .pf-settings-row-icon {
       width: 28px; height: 28px; border-radius: 8px;
@@ -378,13 +380,12 @@
       <div class="pf-panel active" id="panel-settings">
         
         <div class="pf-settings-list">
-          <div class="pf-settings-row">
+          <div class="pf-settings-row static">
             <div class="pf-settings-row-icon purple"><i class="fas fa-image"></i></div>
             <div class="pf-settings-row-text">
               <div class="pf-settings-row-label">Username</div>
               <div class="pf-settings-row-val" id="settings-username-sub">...</div>
             </div>
-            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
           <div class="pf-settings-row" onclick="openNameModal()">
             <div class="pf-settings-row-icon purple"><i class="fas fa-user-edit"></i></div>
