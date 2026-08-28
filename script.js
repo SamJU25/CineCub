@@ -1463,7 +1463,10 @@ var FVTabs = {
     if(t==='watch') Player.loadVideo();
     else {
       var iframe = document.getElementById('main-player');
-      if (iframe) iframe.src = '';
+      if (iframe) {
+        iframe.src = 'about:blank';
+        iframe.removeAttribute('src');
+      }
     }
     
     if(t==='watch_adfree') AdFreePlayer.loadVideo();
@@ -1481,10 +1484,13 @@ var FVTabs = {
     }
     
     if(t==='trailer' && State.activeTrailer) {
-       document.getElementById('trailer-player').src = 'https://www.youtube.com/embed/' + State.activeTrailer + '?autoplay=1';
+       document.getElementById('trailer-player').src = 'https://www.youtube.com/embed/' + State.activeTrailer + '?autoplay=1&mute=1';
     } else {
        var tp = document.getElementById('trailer-player');
-       if(tp) tp.src = '';
+       if(tp) {
+         tp.src = 'about:blank';
+         tp.removeAttribute('src');
+       }
     }
   }
 };
