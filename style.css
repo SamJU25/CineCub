@@ -1168,7 +1168,7 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   transition: var(--t-fast);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
   outline: none;
 }
