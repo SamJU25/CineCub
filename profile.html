@@ -499,11 +499,9 @@
             <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('pf-email-pass')"><i class="fas fa-eye"></i></button>
           </div>
         </div>
-      <div class="pf-modal-actions" style="flex-direction: column;">
-        <button type="submit" class="pf-btn-login" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
-          <i class="fas fa-save"></i> Update Email
-        </button>
-        <button type="button" class="pf-btn-secondary" onclick="closeModals()" style="width: 100%;">Cancel</button>
+      <div class="pf-modal-actions">
+        <button type="button" class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
+        <button type="submit" class="pf-btn-login">Update</button>
       </div>
       </form>
     </div>
@@ -878,7 +876,7 @@
         const btn = document.querySelector('#modal-email .pf-btn-login');
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = '<i class="fas fa-save"></i> Update Email';
+          btn.innerHTML = 'Update';
         }
       }
     }
