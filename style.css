@@ -76,7 +76,7 @@ iframe {border:none}
 .cv-sidebar.collapsed {width:var(--sidebar-w-col)}
 .sidebar-logo {display:flex;align-items:center;padding:18px 20px 16px;border-bottom:1px solid var(--b-1);cursor:pointer;position:relative;min-height:70px}
 .sidebar-logo-icon-img {width:38px;height:auto;transition:transform var(--t-fast);}
-.sidebar-logo-text {font-family:'Nunito', sans-serif;font-weight:800;font-size:21px;color:var(--cv-purple);margin-left:12px;white-space:nowrap;transition:opacity var(--t-fast);}
+.sidebar-logo-text {font-family:'Nunito', sans-serif;font-weight:800;font-size:21px;color:#ffffff;letter-spacing:-0.5px;margin-left:12px;white-space:nowrap;transition:opacity var(--t-fast);}
 .cv-sidebar.collapsed .sidebar-logo-text {opacity:0;pointer-events:none;}
 .sidebar-toggle {position:absolute;right:-13px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--cv-dark-4);border:2px solid var(--b-3);display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:10px;cursor:pointer;z-index:4001;transition:var(--t-fast)}
 .sidebar-toggle:hover {color:white;background:var(--cv-purple);border-color:var(--cv-purple);box-shadow:var(--cv-purple-glow)}
