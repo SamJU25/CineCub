@@ -293,19 +293,20 @@
     @media (max-width: 900px) {
       .pf-layout { flex-direction: column; align-items: stretch; }
       .pf-sidebar-logo { display: none !important; }
-      .pf-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 24px; gap: 24px; }
+      .pf-sidebar { width: 100%; flex-direction: column; align-items: stretch; padding: 24px; gap: 16px; }
       .pf-sidebar-user { margin-bottom: 0; padding-bottom: 0; border-bottom: none; display: flex; align-items: center; gap: 16px; text-align: left; }
       .pf-avatar-container { margin: 0; width: 64px; height: 64px; }
-      .pf-sidebar-nav { flex-direction: row; margin-bottom: 0; flex: 1; justify-content: center; overflow-x: auto; padding-bottom: 4px; }
-      .pf-sidebar-bottom { flex-direction: row; }
+      .pf-sidebar-nav { flex-direction: column; margin-bottom: 0; width: 100%; }
+      .pf-sidebar-tab { justify-content: center; }
+      .pf-sidebar-bottom { flex-direction: row; gap: 12px; }
+      .pf-sidebar-bottom-btn { flex: 1; justify-content: center; }
       .pf-main-header { flex-direction: column; align-items: flex-start; gap: 16px; }
       .pf-stats { grid-template-columns: repeat(3,1fr); }
       .pf-main { padding: 24px; }
     }
     @media (max-width: 600px) {
       .pf-stats { grid-template-columns: 1fr; }
-      .pf-sidebar-nav { flex-direction: column; width: 100%; }
-      .pf-sidebar-bottom { width: 100%; justify-content: space-between; }
+      .pf-sidebar-bottom { flex-direction: column; }
     }
   </style>
 </head>
