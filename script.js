@@ -71,6 +71,14 @@ var Utils = {
   runtime: function(m){ if(!m) return 'N/A'; var h=Math.floor(m/60), mins=m%60; return h ? h+'h '+(mins?mins+'m':'') : mins+'m'; },
   genreNames: function(ids){ return (ids||[]).slice(0,2).map(function(id){ return CFG.GENRE_MAP[id]||''; }).filter(Boolean).join(', ') || 'General'; },
   placeholder: function(){ return 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22450%22%3E%3Crect fill=%22%2312121e%22 width=%22300%22 height=%22450%22/%3E%3C/svg%3E'; },
+  skeletonHtml: function(count, isHScroll) {
+    var style = isHScroll ? 'style="flex: 0 0 auto; width: 150px; height: 225px; margin-right: 12px;"' : 'style="width: 100%; aspect-ratio: 2/3;"';
+    var html = '';
+    for(var i=0; i<count; i++){
+      html += '<div class="skeleton-card" ' + style + '></div>';
+    }
+    return isHScroll ? html : '<div class="poster-grid" style="width:100%; margin-top:20px;">' + html + '</div>';
+  },
   escape: function(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); },
   jsAttr: function(s){ return JSON.stringify(String(s == null ? '' : s)).replace(/"/g,'&quot;'); }
 };
@@ -589,7 +597,7 @@ var HomeGenre = {
   load: function() {
     HScrollLoad.reset('row-home-genre');
     var container = document.getElementById('row-home-genre');
-    container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%">Loading...</div>';
+    container.innerHTML = Utils.skeletonHtml(8, true);
     
     var fetchType = this.type === 'anime' ? 'tv' : this.type;
     var params = {page:1, sort_by:'popularity.desc'};
