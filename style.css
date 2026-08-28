@@ -127,11 +127,11 @@ iframe {border:none}
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #ef4444 !important;
-    border: none !important;
+    background: rgba(255, 75, 75, 0.1) !important;
+    border: 1px solid rgba(255, 75, 75, 0.2) !important;
   }
   .cv-sidebar.collapsed .sf-logout-btn:hover {
-    background: #dc2626 !important;
+    background: rgba(255, 75, 75, 0.2) !important;
   }
   .cv-sidebar.collapsed .sf-logout-icon {
     width: 20px;
