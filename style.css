@@ -1586,7 +1586,7 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   transition: 0.2s;
 }
 .app-btn-primary {
-  background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+  background: linear-gradient(135deg, #c77dff 0%, #902bf5 100%);
 }
 .app-btn-primary .app-btn-icon {
   color: #fff;
@@ -1597,7 +1597,7 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 }
 .app-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(58, 123, 213, 0.4);
+  box-shadow: 0 5px 15px rgba(199, 125, 255, 0.4);
 }
 .app-btn-secondary {
   background: var(--cv-dark-3);
