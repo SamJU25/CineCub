@@ -1099,16 +1099,16 @@ var Modal = {
       sTabs.innerHTML = serverHtml;
       State.activeServer = 0;
 
-      var trailerTab = document.getElementById('fv-tab-trailer');
+      var trailerContainer = document.getElementById('trailer-container');
       State.activeTrailer = null;
       if (data.videos && data.videos.results) {
         var trailer = data.videos.results.find(function(v){return v.site==='YouTube' && v.type==='Trailer';});
         if (!trailer) trailer = data.videos.results.find(function(v){return v.site==='YouTube';});
         if (trailer) State.activeTrailer = trailer.key;
       }
-      if (trailerTab) {
-        if (State.activeTrailer) trailerTab.classList.remove('hidden');
-        else trailerTab.classList.add('hidden');
+      if (trailerContainer) {
+        if (State.activeTrailer) trailerContainer.style.display = 'block';
+        else trailerContainer.style.display = 'none';
       }
 
       var fvWl = document.getElementById('fv-wl-btn');
@@ -1483,7 +1483,7 @@ var FVTabs = {
       }
     }
     
-    if(t==='trailer' && State.activeTrailer) {
+    if(t==='overview' && State.activeTrailer) {
        document.getElementById('trailer-player').src = 'https://www.youtube.com/embed/' + State.activeTrailer + '?autoplay=1&mute=1';
     } else {
        var tp = document.getElementById('trailer-player');

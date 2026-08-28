@@ -499,7 +499,6 @@
         </div>
         <div class="fv-tabs cv-hscroll">
           <div class="fv-tab active" onclick="FVTabs.showTab('overview', this)">Overview</div>
-          <div class="fv-tab hidden" id="fv-tab-trailer" onclick="FVTabs.showTab('trailer', this)">Trailer</div>
           <div class="fv-tab" onclick="FVTabs.showTab('watch', this)">Watch</div>
           <div class="fv-tab" onclick="FVTabs.showTab('watch_adfree', this)">Ad-Free Watch</div>
           <div class="fv-tab" onclick="FVTabs.showTab('similar', this)">Similar</div>
@@ -514,6 +513,14 @@
               <div class="fv-info-item"><span class="fv-info-key">Runtime</span><span class="fv-info-val" id="fv-runtime"></span></div>
             </div>
           </div>
+          
+          <!-- Trailer Container -->
+          <div id="trailer-container" style="display:none; margin-top:24px; margin-bottom:24px;">
+            <div class="player-wrap">
+              <iframe id="trailer-player" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write" allowfullscreen scrolling="no"></iframe>
+            </div>
+          </div>
+
           <div class="fv-cast-section">
             <div class="fv-cast-header">CAST</div>
             <div class="fv-cast-scroll cv-hscroll" id="fv-cast"></div>
@@ -593,12 +600,6 @@
           </div>
         </div>
 
-        <!-- Trailer Pane -->
-        <div class="fv-tab-pane" id="tab-trailer">
-          <div class="player-wrap">
-            <iframe id="trailer-player" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write" allowfullscreen scrolling="no"></iframe>
-          </div>
-        </div>
 
         <!-- Similar Pane -->
         <div class="fv-tab-pane" id="tab-similar">
