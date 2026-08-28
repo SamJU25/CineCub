@@ -1,4 +1,4 @@
-const CACHE_NAME = 'streamheaven-cache-v118';
+const CACHE_NAME = 'streamheaven-cache-v119';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -25,22 +25,28 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
-  const isStatic = urlsToCache.includes(requestUrl.pathname);
+  
+  // Use Network-First strategy for our app's static files
+  // This guarantees users always get the freshest code instantly on refresh
+  const isOurFile = requestUrl.origin === location.origin;
 
-  if (isStatic) {
+  if (isOurFile) {
     event.respondWith(
-      caches.match(event.request).then(cachedResponse => {
-        const fetchPromise = fetch(event.request).then(networkResponse => {
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, networkResponse.clone());
-          });
+      fetch(event.request)
+        .then(networkResponse => {
+          // If we got a valid response, cache it for offline use later
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+          }
           return networkResponse;
-        }).catch(() => {
-           // network failed, just silently fail since we might have cache
-        });
-        
-        return cachedResponse || fetchPromise;
-      })
+        })
+        .catch(() => {
+          // If network fails (offline), try to serve from cache
+          return caches.match(event.request);
+        })
     );
   } else {
     event.respondWith(fetch(event.request));
