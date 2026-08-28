@@ -1,4 +1,4 @@
-const CACHE_NAME = 'streamheaven-cache-v82';
+const CACHE_NAME = 'streamheaven-cache-v83';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -28,15 +28,12 @@ self.addEventListener('fetch', event => {
 
   if (isStatic) {
     event.respondWith(
-      caches.match(event.request).then(cachedResponse => {
-        const fetchPromise = fetch(event.request).then(networkResponse => {
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, networkResponse.clone());
-          });
-          return networkResponse;
+      fetch(event.request).then(networkResponse => {
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, networkResponse.clone());
         });
-        return cachedResponse || fetchPromise;
-      })
+        return networkResponse;
+      }).catch(() => caches.match(event.request))
     );
   } else {
     event.respondWith(fetch(event.request));
