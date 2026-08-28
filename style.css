@@ -1296,3 +1296,39 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   width: 100%;
   aspect-ratio: 2/3;
 }
+
+/* Reviews Styles */
+.fv-reviews-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.review-card {
+  background: var(--cv-dark-3);
+  border: 1px solid var(--b-2);
+  border-radius: var(--r-md);
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.review-author {
+  font-weight: 600;
+  color: var(--text-1);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.review-author i {
+  color: var(--cv-purple);
+  font-size: 16px;
+}
+.review-content {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
