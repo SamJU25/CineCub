@@ -1,10 +1,8 @@
 [{
-  "relation": ["delegate_permission/common.handle_all_urls"],
-  "target": {
-    "namespace": "android_app",
-    "package_name": "com.streamheaven.app",
-    "sha256_cert_fingerprints": [
-      "YOUR_SHA256_FINGERPRINT_GOES_HERE"
-    ]
-  }
-}]
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "online.streamheaven.twa",
+        "sha256_cert_fingerprints": ["D0:DD:59:84:50:3B:DD:35:DE:26:DA:80:EB:AE:E0:C3:F1:2E:36:D9:A4:E6:97:65:6C:5B:83:30:DB:32:93:DF"]
+      }
+    }]
