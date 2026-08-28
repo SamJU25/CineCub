@@ -513,10 +513,15 @@
             </div>
           </div>
           
-          <div class="fv-preview-section" id="fv-preview-section" style="display:block; margin-top:20px;">
+          <div class="fv-preview-section" id="fv-preview-section" style="display:none; margin-top:20px;">
             <div class="fv-cast-header">TRAILER</div>
             <div class="player-wrap">
-              <iframe id="preview-player" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write" allowfullscreen scrolling="no"></iframe>
+              <iframe id="preview-player" style="display:none;" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write" allowfullscreen scrolling="no"></iframe>
+              <div id="trailer-cover" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center; cursor:pointer; z-index:2; align-items:center; justify-content:center;">
+                <div style="width:60px; height:60px; background:rgba(0,0,0,0.7); border-radius:50%; display:flex; align-items:center; justify-content:center; border: 2px solid rgba(255,255,255,0.8); transition: transform 0.2s;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="white" style="margin-left: 4px;"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
               <div id="fv-no-trailer" style="display:none; color:var(--text-3); font-size:14px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">No trailer available.</div>
             </div>
           </div>
