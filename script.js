@@ -1038,7 +1038,10 @@ var Modal = {
       document.getElementById('fv-runtime').textContent = type==='movie'?Utils.runtime(data.runtime):((data.number_of_seasons||1)+' Season(s)');
       
       var cast = ((data.credits&&data.credits.cast)||[]).slice(0,10);
-      document.getElementById('fv-cast').innerHTML = cast.map(c => '<div class="cast-card"><img alt="'+Utils.escape(c.name)+'" class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'" loading="lazy" decoding="async" onerror="this.src=Utils.placeholder()"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>').join('');
+      document.getElementById('fv-cast').innerHTML = cast.map(c => {
+         var safeName = Utils.escape(c.name).replace(/'/g, "\\'");
+         return '<div class="cast-card" onclick="Modal.loadActorMovies('+c.id+', \''+safeName+'\')" style="cursor:pointer;"><img alt="'+Utils.escape(c.name)+'" class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'" loading="lazy" decoding="async" onerror="this.src=Utils.placeholder()"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>';
+      }).join('');
       
       var similar = ((data.similar&&data.similar.results)||[]).filter(x => x.poster_path);
       if(similar.length) {
@@ -1130,6 +1133,32 @@ var Modal = {
       Toast.show('Error loading details.');
       Prog.done();
     });
+  },
+  loadActorMovies: function(personId, personName) {
+    Prog.start();
+    fetch('https://api.themoviedb.org/3/person/'+personId+'/combined_credits?api_key='+CFG.API_KEY)
+      .then(res => res.json())
+      .then(data => {
+        var section = document.getElementById('fv-actor-section');
+        var header = document.getElementById('fv-actor-header');
+        var container = document.getElementById('fv-actor-movies');
+        
+        var movies = (data.cast || []).filter(x => x.poster_path).sort((a,b) => b.popularity - a.popularity).slice(0, 30);
+        
+        if (movies.length > 0) {
+          section.style.display = 'block';
+          header.textContent = personName.toUpperCase() + ' - KNOWN FOR';
+          container.innerHTML = movies.map(item => Render.posterCard(item, item.media_type || 'movie')).join('');
+          section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          section.style.display = 'none';
+          Toast.show('No titles found for ' + personName);
+        }
+        Prog.done();
+      }).catch(err => {
+        Toast.show('Error loading actor info.');
+        Prog.done();
+      });
   }
 };
 
