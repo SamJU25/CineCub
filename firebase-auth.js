@@ -132,7 +132,19 @@ async function handleLogin(e) {
     AuthUI.close();
     if(typeof App !== 'undefined') App.showToast("Successfully logged in!");
   } catch(error) {
-    AuthUI.showError(error.message);
+    let msg = error.message || "Login failed. Please try again.";
+    if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+      msg = "Incorrect password or email. Please try again.";
+    } else if (error.code === 'auth/user-not-found') {
+      msg = "No account found with this email/username.";
+    } else if (error.code === 'auth/invalid-email') {
+      msg = "Please enter a valid email address.";
+    } else if (error.code === 'auth/too-many-requests') {
+      msg = "Too many failed login attempts. Please try again later.";
+    } else if (msg.includes('network-request-failed')) {
+      msg = "Network error. Please check your connection.";
+    }
+    AuthUI.showError(msg);
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
@@ -245,7 +257,15 @@ async function handleSignup(e) {
       }
       setTimeout(() => AuthUI.openLogin(), 2000);
     } catch(error) {
-      AuthUI.showError(error.message);
+      let msg = error.message || "Failed to send reset link.";
+      if (error.code === 'auth/user-not-found') {
+        msg = "No account found with this email.";
+      } else if (error.code === 'auth/invalid-email') {
+        msg = "Please enter a valid email address.";
+      } else if (msg.includes('network-request-failed')) {
+        msg = "Network error. Please check your connection.";
+      }
+      AuthUI.showError(msg);
       if(btn) {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset Link';
