@@ -1044,7 +1044,7 @@ var Modal = {
       if(similar.length) {
         document.getElementById('fv-similar').innerHTML = similar.map(item => Render.posterCard(item, item.media_type || type)).join('');
       } else {
-        document.getElementById('fv-similar').innerHTML = '<div style="color:var(--text-3); font-size:14px; text-align:center; padding: 20px; width:100%; grid-column:1/-1;">No similar titles found.</div>';
+        document.getElementById('fv-similar').innerHTML = '<div style="color:var(--text-3); font-size:14px; text-align:center; padding: 20px; width:100%;">No similar titles found.</div>';
       }
       
       var epNav = document.getElementById('ep-nav-controls');

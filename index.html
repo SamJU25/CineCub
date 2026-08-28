@@ -501,7 +501,6 @@
           <div class="fv-tab active" onclick="FVTabs.showTab('overview', this)">Overview</div>
           <div class="fv-tab" onclick="FVTabs.showTab('watch', this)">Watch</div>
           <div class="fv-tab" onclick="FVTabs.showTab('watch_adfree', this)">Ad-Free Watch</div>
-          <div class="fv-tab" onclick="FVTabs.showTab('similar', this)">Similar</div>
         </div>
         
         <!-- Overview Pane -->
@@ -525,6 +524,11 @@
           <div class="fv-cast-section" style="border-top: 1px solid var(--b-2); padding-top: 24px;">
             <div class="fv-cast-header">CAST</div>
             <div class="fv-cast-scroll cv-hscroll" id="fv-cast"></div>
+          </div>
+
+          <div class="fv-cast-section" style="border-top: 1px solid var(--b-2); padding-top: 24px;">
+            <div class="fv-cast-header">SIMILAR</div>
+            <div class="fv-cast-scroll cv-hscroll" id="fv-similar"></div>
           </div>
         </div>
 
@@ -602,10 +606,6 @@
         </div>
 
 
-        <!-- Similar Pane -->
-        <div class="fv-tab-pane" id="tab-similar">
-          <div class="fv-similar-grid" id="fv-similar"></div>
-        </div>
       </div>
     </div>
   </div>
@@ -773,7 +773,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=27"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=5"></script>
+  <script src="script.js?v=6"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
