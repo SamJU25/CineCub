@@ -422,6 +422,10 @@
             <div class="pf-settings-danger-label"><i class="fas fa-heart-broken"></i> Clear Watchlist</div>
             <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
+          <div class="pf-settings-danger-row" onclick="deleteAccount()">
+            <div class="pf-settings-danger-label"><i class="fas fa-user-slash"></i> Delete Account</div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
         </div>
 
       </div>
@@ -671,6 +675,35 @@
           localStorage.removeItem(WATCH_KEY);
           renderGrid([], 'pf-wl-grid', 'pf-wl-empty');
           document.getElementById('stat-wl').textContent = '0';
+        }
+      });
+    }
+
+    function deleteAccount() {
+      openConfirmModal('Delete Account', 'Do you want to delete your profile? This action is permanent and will delete all your data from the server.', async function() {
+        if (!auth.currentUser) return;
+        const btn = document.getElementById('confirm-modal-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; 
+        btn.disabled = true;
+        try {
+          const uid = auth.currentUser.uid;
+          if (typeof db !== 'undefined') {
+            await db.collection("users").doc(uid).delete().catch(e => console.warn(e));
+          }
+          await auth.currentUser.delete();
+          if (typeof Toast !== 'undefined') Toast.show("Profile deleted successfully", "success");
+          closeModals();
+        } catch (error) {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          console.error(error);
+          if (error.code === 'auth/requires-recent-login') {
+            if (typeof Toast !== 'undefined') Toast.show("Please log out and log back in to delete your account.", "error");
+          } else {
+            if (typeof Toast !== 'undefined') Toast.show(error.message || "Failed to delete account.", "error");
+          }
+          closeModals();
         }
       });
     }
