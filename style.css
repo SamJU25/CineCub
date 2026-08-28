@@ -1693,3 +1693,47 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 .cv-sidebar.collapsed .sf-download-text {
   display: none;
 }
+
+/* FAQ Accordion */
+.faq-item {
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: all var(--t-fast);
+}
+.faq-item:hover {
+  border-color: rgba(199, 125, 255, 0.2);
+}
+.faq-summary {
+  padding: 16px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-1);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.faq-summary::-webkit-details-marker {
+  display: none;
+}
+.faq-summary:after {
+  content: '\f078';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  font-size: 12px;
+  color: var(--cv-purple);
+  transition: transform 0.3s ease;
+}
+.faq-item[open] .faq-summary:after {
+  transform: rotate(180deg);
+}
+.faq-content {
+  padding: 0 20px 20px 20px;
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
