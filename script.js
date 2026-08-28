@@ -1108,11 +1108,15 @@ var Modal = {
         if (trailer) State.activePreview = trailer.key;
       }
       if (trailerSection && trailerPlayer) {
+        var noTrailerMsg = document.getElementById('fv-no-trailer');
+        trailerSection.style.display = 'block';
         if (State.activePreview) {
-          trailerSection.style.display = 'block';
+          trailerPlayer.style.display = 'block';
+          if(noTrailerMsg) noTrailerMsg.style.display = 'none';
           trailerPlayer.src = 'https://www.youtube.com/embed/' + State.activePreview;
         } else {
-          trailerSection.style.display = 'none';
+          trailerPlayer.style.display = 'none';
+          if(noTrailerMsg) noTrailerMsg.style.display = 'block';
           trailerPlayer.src = '';
         }
       }
