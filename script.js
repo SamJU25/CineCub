@@ -974,12 +974,9 @@ var Modal = {
   closeAll: function(skipHistory){
     document.getElementById('modal-overlay').classList.remove('open');
     
-    var tp = document.getElementById('fv-embedded-frame');
+    var tp = document.getElementById('media-preview-wrapper');
     if (tp) {
-      tp.src = 'about:blank';
-      var cloneTp = tp.cloneNode(true);
-      cloneTp.removeAttribute('src');
-      tp.parentNode.replaceChild(cloneTp, tp);
+      tp.innerHTML = '';
     }
     
     var toast = document.getElementById('up-next-toast');
@@ -1099,25 +1096,21 @@ var Modal = {
       sTabs.innerHTML = serverHtml;
       State.activeServer = 0;
 
-      var trailerSection = document.getElementById('fv-feature-box');
-      var trailerPlayer = document.getElementById('fv-embedded-frame');
+      var trailerSection = document.getElementById('media-preview-container');
+      var trailerWrapper = document.getElementById('media-preview-wrapper');
       State.activePreview = null;
       if (data.videos && data.videos.results) {
         var trailer = data.videos.results.find(function(v){return v.site==='YouTube' && v.type==='Trailer';});
         if (!trailer) trailer = data.videos.results.find(function(v){return v.site==='YouTube';});
         if (trailer) State.activePreview = trailer.key;
       }
-      if (trailerSection && trailerPlayer) {
-        var noTrailerMsg = document.getElementById('fv-no-trailer');
-        trailerSection.style.display = 'block';
+      if (trailerSection && trailerWrapper) {
         if (State.activePreview) {
-          trailerPlayer.style.display = 'block';
-          if(noTrailerMsg) noTrailerMsg.style.display = 'none';
-          trailerPlayer.src = 'https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1';
+          trailerSection.style.display = 'block';
+          trailerWrapper.innerHTML = '<iframe allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen scrolling="no" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" src="https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1&playsinline=1"></iframe>';
         } else {
-          trailerPlayer.style.display = 'none';
-          if(noTrailerMsg) noTrailerMsg.style.display = 'block';
-          trailerPlayer.src = '';
+          trailerSection.style.display = 'none';
+          trailerWrapper.innerHTML = '';
         }
       }
       
@@ -1245,11 +1238,10 @@ var Player = {
     this.loadVideo();
   },
   closePreviewPlayer: function() {
-    var tp = document.getElementById('fv-embedded-frame');
-    iframe.style.display = 'block';
-    
-    // Removed sandbox completely because most providers actively detect and block it
-    iframe.removeAttribute('sandbox');
+    var tp = document.getElementById('media-preview-wrapper');
+    if (tp) {
+      tp.innerHTML = '';
+    }
   },
   loadVideo: function(){
     var iframe = document.getElementById('main-player');
@@ -1531,12 +1523,12 @@ var FVTabs = {
       }
     }
     
-    var tp = document.getElementById('fv-embedded-frame');
+    var tp = document.getElementById('media-preview-wrapper');
     if (tp) {
        if (t !== 'overview') {
-           tp.src = ''; 
-       } else if (State.activePreview && tp.src === '') {
-           tp.src = 'https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1';
+           tp.innerHTML = ''; 
+       } else if (State.activePreview && tp.innerHTML === '') {
+           tp.innerHTML = '<iframe allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen scrolling="no" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" src="https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1&playsinline=1"></iframe>';
        }
     }
   }
