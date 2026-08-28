@@ -485,6 +485,10 @@
       <div class="pf-modal-title">Update Email</div>
       <form class="pf-modal-form" onsubmit="event.preventDefault(); saveEmail();">
         <div class="auth-input-group">
+          <label>Current Email</label>
+          <input type="email" id="pf-curr-email" class="auth-input" placeholder="Enter current email" autocomplete="email" spellcheck="false" autocorrect="off" />
+        </div>
+        <div class="auth-input-group">
           <label>New Email</label>
           <input type="email" id="pf-new-email" class="auth-input" placeholder="Enter new email" autocomplete="email" spellcheck="false" autocorrect="off" />
         </div>
@@ -813,13 +817,26 @@
     async function saveEmail() {
       const user = auth.currentUser;
       if (!user) return;
-      const newEmail = document.getElementById('pf-new-email').value;
+      const currEmail = document.getElementById('pf-curr-email').value.trim();
+      const newEmail = document.getElementById('pf-new-email').value.trim();
       const passField = document.getElementById('pf-email-pass');
       const pass = passField.value;
-      if (!newEmail || !pass) {
+      
+      if (!currEmail || !newEmail || !pass) {
         if(typeof Toast !== 'undefined') Toast.show("Please fill all fields", "error");
         return;
       }
+      
+      if (currEmail === newEmail) {
+        if(typeof Toast !== 'undefined') Toast.show("New email must be different from current email.", "error");
+        return;
+      }
+      
+      if (currEmail.toLowerCase() !== user.email.toLowerCase()) {
+        if(typeof Toast !== 'undefined') Toast.show("The current email you entered is incorrect.", "error");
+        return;
+      }
+      
       try {
         const btn = document.querySelector('#modal-email .pf-btn-login');
         btn.disabled = true;
@@ -843,6 +860,7 @@
             }).catch(e => console.warn("Could not update username mapping", e));
         }
         
+        document.getElementById('pf-curr-email').value = '';
         document.getElementById('pf-new-email').value = '';
         passField.value = '';
         
