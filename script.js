@@ -1107,7 +1107,8 @@ var Modal = {
       if (trailerSection && trailerWrapper) {
         if (State.activePreview) {
           trailerSection.style.display = 'block';
-          trailerWrapper.innerHTML = '<iframe allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen scrolling="no" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" src="https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1&playsinline=1"></iframe>';
+          var thumbUrl = 'https://img.youtube.com/vi/' + State.activePreview + '/hqdefault.jpg';
+          trailerWrapper.innerHTML = '<div onclick="(function(el,k){el.innerHTML=\'<ifr\'+\'ame allow=&quot;autoplay; encrypted-media; picture-in-picture&quot; allowfullscreen scrolling=&quot;no&quot; style=&quot;position:absolute; top:0; left:0; width:100%; height:100%; border:none;&quot; src=&quot;https://www.you\'+\'tube.com/em\'+\'bed/\'+k+\'?auto\'+\'play=1&amp;controls=1&amp;rel=0&amp;modestbranding=1&amp;playsinline=1&quot;></ifr\'+\'ame>\';})(this.parentNode,\'' + State.activePreview + '\')" style="position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;background:#000 url(\'' + thumbUrl + '\') center/cover no-repeat;display:flex;align-items:center;justify-content:center;"><div style="width:68px;height:48px;background:rgba(255,0,0,0.85);border-radius:12px;display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-style:solid;border-width:10px 0 10px 20px;border-color:transparent transparent transparent #fff;margin-left:4px;"></div></div></div>';
         } else {
           trailerSection.style.display = 'none';
           trailerWrapper.innerHTML = '';
@@ -1496,7 +1497,8 @@ var FVTabs = {
        if (t !== 'overview') {
            tp.innerHTML = ''; 
        } else if (State.activePreview && tp.innerHTML === '') {
-           tp.innerHTML = '<iframe allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen scrolling="no" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" src="https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1&playsinline=1"></iframe>';
+           var thumbUrl = 'https://img.youtube.com/vi/' + State.activePreview + '/hqdefault.jpg';
+           tp.innerHTML = '<div onclick="(function(el,k){el.innerHTML=\'<ifr\'+\'ame allow=&quot;autoplay; encrypted-media; picture-in-picture&quot; allowfullscreen scrolling=&quot;no&quot; style=&quot;position:absolute; top:0; left:0; width:100%; height:100%; border:none;&quot; src=&quot;https://www.you\'+\'tube.com/em\'+\'bed/\'+k+\'?auto\'+\'play=1&amp;controls=1&amp;rel=0&amp;modestbranding=1&amp;playsinline=1&quot;></ifr\'+\'ame>\';})(this.parentNode,\'' + State.activePreview + '\')" style="position:absolute;top:0;left:0;width:100%;height:100%;cursor:pointer;background:#000 url(\'' + thumbUrl + '\') center/cover no-repeat;display:flex;align-items:center;justify-content:center;"><div style="width:68px;height:48px;background:rgba(255,0,0,0.85);border-radius:12px;display:flex;align-items:center;justify-content:center;"><div style="width:0;height:0;border-style:solid;border-width:10px 0 10px 20px;border-color:transparent transparent transparent #fff;margin-left:4px;"></div></div></div>';
        }
     }
   }
