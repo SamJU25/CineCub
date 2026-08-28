@@ -12,7 +12,7 @@
   --cv-purple-light: #c77dff;
   --cv-purple-dark: #5a189a;
   --cv-purple-dim: rgba(157, 78, 221, 0.15);
-  --cv-purple-glow: 0 0 30px rgba(157, 78, 221, 0.45);
+  --cv-purple-glow: 0 5px 15px rgba(157, 78, 221, 0.25);
   --cv-pink: #f72585;
   --cv-pink-dim: rgba(247, 37, 133, 0.15);
   --cv-gold: #ffb703;
