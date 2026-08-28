@@ -605,21 +605,48 @@ var HomeGenre = {
     this.type = type;
     document.querySelectorAll('.bgt-btn').forEach(b => b.classList.remove('active'));
     el.classList.add('active');
+    var ind = document.getElementById('bgt-indicator');
+    if(ind) {
+      ind.style.left = el.offsetLeft + 'px';
+      ind.style.width = el.offsetWidth + 'px';
+    }
     this.load();
   },
   setGenre: function(id, el) {
     this.genreId = id;
     document.querySelectorAll('.genre-sq-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
+    if(el) {
+      el.classList.add('active');
+      var ind = document.getElementById('genre-sq-indicator');
+      if(ind) {
+        ind.style.left = el.offsetLeft + 'px';
+        ind.style.width = el.offsetWidth + 'px';
+      }
+    }
     this.load();
   },
   renderBtns: function() {
-    var html = '<div class="genre-sq-btn ' + (this.genreId === 'all' ? 'active' : '') + '" onclick="HomeGenre.setGenre(\'all\', this)">ALL</div>';
+    var html = '<div class="genre-sq-indicator" id="genre-sq-indicator"></div>';
+    html += '<div class="genre-sq-btn ' + (this.genreId === 'all' ? 'active' : '') + '" onclick="HomeGenre.setGenre(\'all\', this)">ALL</div>';
     html += CFG.GENRES.map(g => {
       var act = g.id === this.genreId ? 'active' : '';
       return '<div class="genre-sq-btn '+act+'" onclick="HomeGenre.setGenre('+g.id+', this)">'+g.name+'</div>';
     }).join('');
     document.getElementById('home-genre-btns').innerHTML = html;
+    setTimeout(() => {
+      var activeEl = document.querySelector('.genre-sq-btn.active');
+      var ind = document.getElementById('genre-sq-indicator');
+      if(activeEl && ind) {
+        ind.style.left = activeEl.offsetLeft + 'px';
+        ind.style.width = activeEl.offsetWidth + 'px';
+      }
+      var bgtActive = document.querySelector('.bgt-btn.active');
+      var bgtInd = document.getElementById('bgt-indicator');
+      if(bgtActive && bgtInd) {
+        bgtInd.style.left = bgtActive.offsetLeft + 'px';
+        bgtInd.style.width = bgtActive.offsetWidth + 'px';
+      }
+    }, 50);
   },
   load: function() {
     HScrollLoad.reset('row-home-genre');
