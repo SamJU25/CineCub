@@ -328,7 +328,6 @@
     <main class="pf-main">
       <div class="pf-main-header">
         <div class="pf-main-title">My Profile & Account Settings <div class="pf-main-badge"><div class="pf-main-badge-dot"></div> ACTIVE SESSION</div></div>
-        <button class="pf-main-edit-btn" onclick="openNameModal()"><i class="far fa-edit"></i></button>
       </div>
       
       <div class="pf-stats">
@@ -749,7 +748,8 @@
         }
         
         // Update UI without reload
-        document.getElementById('pf-email').textContent = newEmail;
+        var se = document.getElementById('settings-email-sub');
+        if (se) se.textContent = newEmail;
         document.getElementById('pf-new-email').value = '';
         passField.value = '';
         
@@ -849,7 +849,6 @@
             document.getElementById('pf-name').textContent  = display;
             var sn = document.getElementById('settings-name-sub');
             if (sn) sn.textContent = display;
-            document.getElementById('pf-email').textContent = user.email;
             var se = document.getElementById('settings-email-sub');
             if (se) se.textContent = user.email;
 
