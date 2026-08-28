@@ -554,8 +554,8 @@ if (auth) {
         `;
       }
     
-    // Attempt to load cloud wishlist
-    syncWishlistFromCloud();
+    // Attempt to load cloud data
+    fetchUserDataFromCloud();
   } else {
     const topProfileBtn = document.getElementById('header-profile-btn');
     const topProfileName = document.getElementById('header-profile-name');
@@ -591,29 +591,45 @@ if (auth) {
   });
 }
 
-// Wishlist Cloud Sync
-async function syncWishlistFromCloud() {
-  if(!currentUser) return;
+// User Data Cloud Sync
+async function fetchUserDataFromCloud() {
+  if(!currentUser || typeof State === 'undefined') return;
   
   try {
-    const snap = await db.collection("users").doc(currentUser.uid).collection("wishlist").get();
-    let cloudList = [];
-    snap.forEach(doc => {
-      cloudList.push(doc.data());
-    });
-    
-    // Save to local storage for offline fast-access, but cloud is source of truth
-    localStorage.setItem('cv_watchlist', JSON.stringify(cloudList));
-    
-    // Re-render if on wishlist page
-    const wlPage = document.getElementById('page-watchlist');
-    if(wlPage && wlPage.classList.contains('active')) {
-      if(typeof App !== 'undefined') App.showWatchlist();
+    const docSnap = await db.collection("users").doc(currentUser.uid).get();
+    if(docSnap.exists) {
+      const data = docSnap.data();
+      if(data.watchlist) {
+        State.watchlist = data.watchlist;
+        localStorage.setItem('sh_watchlist', JSON.stringify(data.watchlist));
+      }
+      if(data.history) {
+        State.history = data.history;
+        localStorage.setItem('sh_history', JSON.stringify(data.history));
+      }
+      
+      // Re-render if on watchlist page
+      const wlPage = document.getElementById('page-watchlist');
+      if(wlPage && wlPage.classList.contains('active')) {
+        if(typeof Watchlist !== 'undefined' && Watchlist.render) Watchlist.render();
+      }
     }
   } catch(e) {
-    console.error("Error syncing wishlist", e);
+    console.error("Error fetching user data from cloud", e);
   }
 }
+
+window.syncUserDataToCloud = async function(watchlist, history) {
+  if(!currentUser || !db) return;
+  try {
+    await db.collection("users").doc(currentUser.uid).set({
+      watchlist: watchlist || [],
+      history: history || []
+    }, { merge: true });
+  } catch(e) {
+    console.error("Error syncing user data to cloud", e);
+  }
+};
 
 // Expose to window for inline HTML onclicks
 window.AuthUI = AuthUI;

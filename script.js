@@ -1669,8 +1669,14 @@ var Library = (function(){
   }
 
   function saveUserData(){
-    try{localStorage.setItem(WATCH_KEY,JSON.stringify(State.watchlist));localStorage.setItem(HISTORY_KEY,JSON.stringify(State.history));}
-    catch(e){console.error('Unable to save guest media data:',e);}
+    try{
+      localStorage.setItem(WATCH_KEY,JSON.stringify(State.watchlist));
+      localStorage.setItem(HISTORY_KEY,JSON.stringify(State.history));
+      if (typeof window.syncUserDataToCloud === 'function') {
+        window.syncUserDataToCloud(State.watchlist, State.history);
+      }
+    }
+    catch(e){console.error('Unable to save media data:',e);}
   }
 
   function init(){
