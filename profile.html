@@ -596,7 +596,7 @@
         const posterUrl = item.poster_path ? 'https://image.tmdb.org/t/p/w300' + item.poster_path : null;
 
         if (posterUrl) {
-          card.innerHTML = '<img class="pf-media-poster" src="' + posterUrl + '" alt="" loading="lazy">';
+          card.innerHTML = '<img class="pf-media-poster" src="' + posterUrl + '" alt="' + String(item.title || item.name || 'Poster').replace(/"/g, '&quot;') + '" loading="lazy">';
         } else {
           card.innerHTML = '<div class="pf-media-poster-ph"><i class="fas fa-film"></i></div>';
         }
@@ -732,7 +732,7 @@
       document.getElementById('pf-avatar').src = selectedAvatarUrl;
       const topProfileBtn = document.getElementById('header-profile-btn');
       if(topProfileBtn) {
-        topProfileBtn.innerHTML = `<img src="${selectedAvatarUrl}" class="header-profile-avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+        topProfileBtn.innerHTML = `<img src="${selectedAvatarUrl}" alt="User Avatar" class="header-profile-avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
       }
       localStorage.setItem('cachedAvatar', selectedAvatarUrl);
       closeModals();
@@ -857,7 +857,7 @@
             }
 
             const updateProfileAvatar = (url) => {
-              document.getElementById('pf-avatar').innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt=""><div class="pf-avatar-badge"></div>';
+              document.getElementById('pf-avatar').innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="User Avatar"><div class="pf-avatar-badge"></div>';
               document.getElementById('pf-avatar').style.border = 'none';
               localStorage.setItem('cachedAvatar', url);
             };
