@@ -1586,18 +1586,23 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   transition: 0.2s;
 }
 .app-btn-primary {
-  background: linear-gradient(135deg, #c77dff 0%, #902bf5 100%);
+  background: rgba(199, 125, 255, 0.1);
+  border: 1px solid rgba(199, 125, 255, 0.3);
 }
 .app-btn-primary .app-btn-icon {
-  color: #fff;
+  color: #c77dff;
+}
+.app-btn-primary .app-btn-text strong {
+  color: #c77dff;
 }
 .app-btn-primary .app-btn-action {
-  color: #fff;
-  background: rgba(255,255,255,0.2);
+  color: #c77dff;
+  background: rgba(199, 125, 255, 0.15);
 }
 .app-btn-primary:hover {
+  background: rgba(199, 125, 255, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(199, 125, 255, 0.4);
+  box-shadow: 0 5px 15px rgba(199, 125, 255, 0.15);
 }
 .app-btn-secondary {
   background: var(--cv-dark-3);
