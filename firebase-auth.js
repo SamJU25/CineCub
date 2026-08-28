@@ -292,7 +292,7 @@ window.handleLogout = function() {
     <p style="color: var(--text-3); font-size: 15px; margin-bottom: 30px;">Are you sure you want to log out of StreamHeaven?</p>
     <div style="display: flex; gap: 15px; justify-content: center;">
       <button id="btn-cancel-logout" style="background: var(--cv-dark-2); color: #fff; border: 1px solid var(--b-2); padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; flex: 1;">Cancel</button>
-      <button id="btn-confirm-logout" style="background: var(--cv-red); color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; flex: 1;">Logout</button>
+      <button id="btn-confirm-logout" style="background: rgba(180,30,30,0.35); color: #ff4d4d; border: 1px solid rgba(255,77,77,0.25); padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; flex: 1;">Logout</button>
     </div>
   `;
 
@@ -328,8 +328,8 @@ window.handleLogout = function() {
       });
     }
   });
-  document.getElementById('btn-confirm-logout').addEventListener('mouseover', function() { this.style.background = '#ff4d5a'; });
-  document.getElementById('btn-confirm-logout').addEventListener('mouseout', function() { this.style.background = 'var(--cv-red)'; });
+  document.getElementById('btn-confirm-logout').addEventListener('mouseover', function() { this.style.background = 'rgba(180,30,30,0.55)'; });
+  document.getElementById('btn-confirm-logout').addEventListener('mouseout', function() { this.style.background = 'rgba(180,30,30,0.35)'; });
 }
 
 // Global Auth State Observer
