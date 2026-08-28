@@ -40,6 +40,7 @@
   <!-- FONTS & ICONS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
   <link rel="preconnect" href="https://streamheaven-api.onrender.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -98,7 +99,7 @@
     <div class="sidebar-logo" onclick="App.goHome()">
       <img src="/assets/images/icon-logo.png" alt="StreamHeaven Icon" class="sidebar-logo-icon-img">
       <span class="sidebar-logo-text">StreamHeaven</span>
-      <button class="sidebar-toggle" onclick="Sidebar.toggle(event)"><i class="fas fa-chevron-left"></i></button>
+      <button aria-label="Toggle sidebar" class="sidebar-toggle" onclick="Sidebar.toggle(event)"><i class="fas fa-chevron-left"></i></button>
     </div>
     <nav class="sidebar-nav" id="sidebar-nav">
       <div class="nav-section-label">Discover</div>
@@ -152,7 +153,7 @@
     <!-- TOP HEADER -->
     <header class="cv-header" id="cv-header">
       <div class="header-title-area">
-        <button class="mob-hamburger" onclick="Sidebar.open()"><i class="fas fa-bars"></i></button>
+        <button aria-label="Open menu" class="mob-hamburger" onclick="Sidebar.open()"><i class="fas fa-bars"></i></button>
         <div>
           <div class="header-page-title" id="header-page-title">Discover</div>
           <div class="header-breadcrumb" id="header-breadcrumb"><span>StreamHeaven</span><span> &#8250; </span><span id="breadcrumb-current">Home</span></div>
@@ -193,9 +194,9 @@
         <div class="spotlight-right-col">
           <div class="spotlight-thumbstrip" id="spotlight-thumbstrip"></div>
           <div class="spotlight-controls">
-            <button class="spotlight-arrow" onclick="Spotlight.prev()"><i class="fas fa-chevron-left"></i></button>
+            <button aria-label="Previous slide" class="spotlight-arrow" onclick="Spotlight.prev()"><i class="fas fa-chevron-left"></i></button>
             <div class="spotlight-dots" id="spotlight-dots"></div>
-            <button class="spotlight-arrow" onclick="Spotlight.next()"><i class="fas fa-chevron-right"></i></button>
+            <button aria-label="Next slide" class="spotlight-arrow" onclick="Spotlight.next()"><i class="fas fa-chevron-right"></i></button>
           </div>
         </div>
         <div class="spotlight-progress"><div class="spotlight-progress-bar" id="spotlight-progress-bar"></div></div>
@@ -471,7 +472,7 @@
         <img alt="backdrop" class="fv-backdrop" id="fv-backdrop" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
         <div class="fv-hero-grad"></div>
         <img alt="poster" class="fv-hero-poster" id="fv-poster" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
-        <button class="fv-hero-close" onclick="Modal.closeAll()"><i class="fas fa-times"></i></button>
+        <button aria-label="Close modal" class="fv-hero-close" onclick="Modal.closeAll()"><i class="fas fa-times"></i></button>
       </div>
       <div class="fv-body">
         <div class="fv-title-row">
@@ -605,7 +606,7 @@
   ============================================================ -->
   <div class="legal-modal-overlay" id="legal-modal-overlay" onclick="Legal.overlayClick(event)">
     <div class="legal-modal" onclick="event.stopPropagation()">
-      <button class="legal-close" onclick="Legal.close()" type="button">
+      <button aria-label="Close legal document" class="legal-close" onclick="Legal.close()" type="button">
         <i class="fas fa-times"></i>
       </button>
       <div class="legal-title" id="legal-modal-title">Policy</div>
@@ -630,7 +631,7 @@
   ============================================================ -->
   <div class="modal-overlay" id="auth-modal-overlay" onclick="AuthUI.overlayClick(event)">
     <div class="auth-modal" id="auth-modal">
-      <button class="auth-close" onclick="AuthUI.close()"><i class="fas fa-times"></i></button>
+      <button aria-label="Close auth modal" class="auth-close" onclick="AuthUI.close()"><i class="fas fa-times"></i></button>
       
       <!-- LOGIN VIEW -->
       <div id="auth-login-view">
@@ -647,16 +648,16 @@
           <div class="auth-field">
             <label>Username or email</label>
             <div class="auth-input-wrap">
-              <input type="email" id="login-email" required placeholder="Enter username or email">
+              <input type="email" id="login-email" required placeholder="Enter username or email" autocomplete="username" spellcheck="false" autocorrect="off">
               <i class="fas fa-user input-icon"></i>
             </div>
           </div>
           <div class="auth-field">
             <label>Password</label>
             <div class="auth-input-wrap">
-              <input type="password" id="login-pass" required placeholder="Enter password">
+              <input type="password" id="login-pass" required placeholder="Enter password" autocomplete="current-password">
               <i class="fas fa-lock input-icon"></i>
-              <button type="button" class="auth-password-toggle" onclick="togglePassword('login-pass')"><i class="fas fa-eye"></i></button>
+              <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('login-pass')"><i class="fas fa-eye"></i></button>
             </div>
           </div>
           <div style="text-align: right; margin-bottom: 20px;">
@@ -684,23 +685,23 @@
           <div class="auth-field">
             <label>Username</label>
             <div class="auth-input-wrap">
-              <input type="text" id="signup-user" required placeholder="Choose a username">
+              <input type="text" id="signup-user" required placeholder="Choose a username" autocomplete="username" spellcheck="false" autocorrect="off">
               <i class="fas fa-at input-icon"></i>
             </div>
           </div>
           <div class="auth-field">
             <label>Email address</label>
             <div class="auth-input-wrap">
-              <input type="email" id="signup-email" required placeholder="you@example.com">
+              <input type="email" id="signup-email" required placeholder="you@example.com" autocomplete="email" spellcheck="false" autocorrect="off">
               <i class="fas fa-envelope input-icon"></i>
             </div>
           </div>
           <div class="auth-field">
             <label>Password</label>
             <div class="auth-input-wrap">
-              <input type="password" id="signup-pass" required placeholder="At least 6 characters">
+              <input type="password" id="signup-pass" required placeholder="At least 6 characters" autocomplete="new-password">
               <i class="fas fa-lock input-icon"></i>
-              <button type="button" class="auth-password-toggle" onclick="togglePassword('signup-pass')"><i class="fas fa-eye"></i></button>
+              <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('signup-pass')"><i class="fas fa-eye"></i></button>
             </div>
           </div>
           <div class="auth-field">
@@ -708,7 +709,7 @@
             <div class="auth-input-wrap">
               <input type="password" id="signup-confirm" required placeholder="Re-enter your password">
               <i class="fas fa-lock input-icon"></i>
-              <button type="button" class="auth-password-toggle" onclick="togglePassword('signup-confirm')"><i class="fas fa-eye"></i></button>
+              <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('signup-confirm')"><i class="fas fa-eye"></i></button>
             </div>
           </div>
           <button type="submit" class="auth-btn-primary" id="btn-signup" style="margin-top:20px;"><i class="fas fa-user-plus"></i> Create Account</button>
@@ -733,7 +734,7 @@
           <div class="auth-field">
             <label>Email address</label>
             <div class="auth-input-wrap">
-              <input type="email" id="forgot-email" required placeholder="you@example.com">
+              <input type="email" id="forgot-email" required placeholder="you@example.com" autocomplete="email" spellcheck="false" autocorrect="off">
               <i class="fas fa-envelope input-icon"></i>
             </div>
           </div>
@@ -765,7 +766,7 @@
     }
   </script>
   <!-- BACK TO TOP BUTTON -->
-  <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Go to top">
+  <button aria-label="Scroll to top" id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Go to top">
     <i class="fas fa-chevron-up"></i>
   </button>
 

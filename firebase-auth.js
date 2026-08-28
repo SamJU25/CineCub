@@ -130,7 +130,7 @@ async function handleLogin(e) {
     
     await auth.signInWithEmailAndPassword(loginEmail, pass);
     AuthUI.close();
-    if(typeof App !== 'undefined') App.showToast("Successfully logged in!");
+    if(typeof Toast !== 'undefined') Toast.show("Successfully logged in!");
   } catch(error) {
     let msg = error.message || "Login failed. Please try again.";
     if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
@@ -213,7 +213,7 @@ async function handleSignup(e) {
     }).catch(err => console.warn("Failed to save username mapping:", err));
     
     AuthUI.close();
-    if(typeof App !== 'undefined') App.showToast("Account created successfully! Welcome, " + username + "!");
+    if(typeof Toast !== 'undefined') Toast.show("Account created successfully! Welcome, " + username + "!");
   } catch(error) {
     let msg = error.message || "Something went wrong. Please try again.";
     // Make Firebase error messages friendlier
@@ -251,7 +251,7 @@ async function handleSignup(e) {
     try {
       await auth.sendPasswordResetEmail(email);
       if(typeof App !== 'undefined') {
-        App.showToast("Reset link sent to " + email, "success");
+        if(typeof Toast !== 'undefined') Toast.show("Reset link sent to " + email, "success");
       } else if (typeof AuthUI !== 'undefined') {
         AuthUI.showError("Reset link sent to " + email, false);
       }
@@ -343,7 +343,7 @@ window.handleLogout = function() {
         if (window.location.pathname.includes('profile.html')) {
           window.location.href = 'index.html';
         } else if(typeof App !== 'undefined') {
-          App.showToast("Logged out successfully");
+          if(typeof Toast !== 'undefined') Toast.show("Logged out successfully", "success");
         }
       });
     }

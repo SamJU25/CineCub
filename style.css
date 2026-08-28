@@ -1263,3 +1263,12 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 @media (max-width: 768px) {
   .header-profile-name { display: none !important; }
 }
+
+/* Performance Optimizations */
+.row-container, .compact-list, .grid, .poster-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 250px;
+}
+.modal-content, .spotlight-bg {
+  will-change: transform, opacity;
+}

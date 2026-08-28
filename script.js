@@ -84,15 +84,32 @@ var API = {
   cache: new Map(),
   fetch: async function(url){
     if (this.cache.has(url)) return await this.cache.get(url);
+    
+    try {
+      var sessData = sessionStorage.getItem('tmdb_' + url);
+      if (sessData) {
+        var parsed = JSON.parse(sessData);
+        if (parsed) {
+           var p = Promise.resolve(parsed);
+           this.cache.set(url, p);
+           return p;
+        }
+      }
+    } catch(e) {}
+    
     var promise = fetch(url, {credentials:'omit'}).then(r => {
       if(!r.ok) throw new Error('HTTP '+r.status);
       return r.json();
+    }).then(data => {
+      try { sessionStorage.setItem('tmdb_' + url, JSON.stringify(data)); } catch(e) {}
+      return data;
     }).catch(err => {
       console.error('TMDB request failed:', err);
       if(typeof Toast !== 'undefined') Toast.show('Error fetching data. Please try again.', 'error');
       this.cache.delete(url);
       return null;
     });
+    
     if (this.cache.size > 150) this.cache.delete(this.cache.keys().next().value);
     this.cache.set(url, promise);
     return await promise;
@@ -646,7 +663,7 @@ var Spotlight = {
         + '</div></div></div>';
     }).join('');
     
-    th.innerHTML = data.map((x,i) => '<div class="spotlight-thumb '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')"><img alt="Spotlight Thumbnail" src="'+CFG.IMG185+x.backdrop_path+'" onerror="this.src=Utils.placeholder()"/></div>').join('');
+    th.innerHTML = data.map((x,i) => '<div class="spotlight-thumb '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')"><img alt="Spotlight Thumbnail" src="'+CFG.IMG185+x.backdrop_path+'" loading="lazy" decoding="async" onerror="this.src=Utils.placeholder()"/></div>').join('');
     d.innerHTML = data.map((x,i) => '<div class="spotlight-dot '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')"></div>').join('');
     this.goTo(0); this.startAuto();
   },
@@ -759,7 +776,11 @@ function initScrollButtons(){
       observerTimeout = setTimeout(updateBtns, 100);
     });
     observer.observe(el, { childList: true, subtree: true });
-    window.addEventListener('resize', updateBtns);
+    var resizeTimeout = null;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(updateBtns, 100);
+    });
   });
 }
 
@@ -1009,7 +1030,7 @@ var Modal = {
       document.getElementById('fv-runtime').textContent = type==='movie'?Utils.runtime(data.runtime):((data.number_of_seasons||1)+' Season(s)');
       
       var cast = ((data.credits&&data.credits.cast)||[]).slice(0,10);
-      document.getElementById('fv-cast').innerHTML = cast.map(c => '<div class="cast-card"><img alt="'+Utils.escape(c.name)+'" class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'" onerror="this.src=Utils.placeholder()"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>').join('');
+      document.getElementById('fv-cast').innerHTML = cast.map(c => '<div class="cast-card"><img alt="'+Utils.escape(c.name)+'" class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'" loading="lazy" decoding="async" onerror="this.src=Utils.placeholder()"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>').join('');
       
       var similar = ((data.similar&&data.similar.results)||[]).filter(x => x.poster_path);
       if(similar.length) {

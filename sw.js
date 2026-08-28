@@ -1,4 +1,4 @@
-const CACHE_NAME = 'streamheaven-cache-v93';
+const CACHE_NAME = 'streamheaven-cache-v95';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -8,6 +8,7 @@ const urlsToCache = [
   '/firebase-auth.js',
   '/manifest.json',
   '/assets/images/logo.png',
+  '/assets/images/favicon-square.png',
   '/assets/images/icon-logo.png',
   '/assets/avatars/av_1.png'
 ];
@@ -28,12 +29,18 @@ self.addEventListener('fetch', event => {
 
   if (isStatic) {
     event.respondWith(
-      fetch(event.request).then(networkResponse => {
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, networkResponse.clone());
+      caches.match(event.request).then(cachedResponse => {
+        const fetchPromise = fetch(event.request).then(networkResponse => {
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, networkResponse.clone());
+          });
+          return networkResponse;
+        }).catch(() => {
+           // network failed, just silently fail since we might have cache
         });
-        return networkResponse;
-      }).catch(() => caches.match(event.request))
+        
+        return cachedResponse || fetchPromise;
+      })
     );
   } else {
     event.respondWith(fetch(event.request));
