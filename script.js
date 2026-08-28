@@ -128,7 +128,7 @@ var API = {
   upcoming: function(page){ return API.fetch(API.url('/movie/upcoming',{page:page||1})); },
   anime:    function(page){ return API.fetch(API.url('/discover/tv',{page:page||1, with_genres:16, with_original_language:'ja'})); },
   search:   function(q, page){ return API.fetch(API.url('/search/multi',{query:q,page:page||1,include_adult:false})); },
-  detail:   function(id,type){ return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos,similar,reviews'})); },
+  detail:   function(id,type){ return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos,similar'})); },
   discover: function(type,params){ 
     if(type === 'tv' && params && params.with_genres) {
       var genreMap = {28:10759, 12:10759, 878:10765, 14:10765, 27:9648, 10749:18, 53:9648};
@@ -1114,39 +1114,7 @@ var Modal = {
         }
       }
       
-      var reviewsContainer = document.getElementById('fv-reviews');
-      var reviewsBtn = document.getElementById('fv-reviews-view-all');
-      if (reviewsContainer && reviewsBtn) {
-        var reviews = ((data.reviews && data.reviews.results) || []);
-        if (reviews.length > 0) {
-          var initialReviews = reviews.slice(0, 3);
-          var html = initialReviews.map(r => `
-            <div class="review-card">
-              <div class="review-author"><i class="fas fa-user-circle"></i> ${Utils.escape(r.author)}</div>
-              <div class="review-content">${Utils.escape(r.content)}</div>
-            </div>
-          `).join('');
-          
-          if (reviews.length > 3) {
-             var hiddenReviews = reviews.slice(3);
-             html += `<div id="fv-hidden-reviews" style="display:none;">` + hiddenReviews.map(r => `
-               <div class="review-card">
-                 <div class="review-author"><i class="fas fa-user-circle"></i> ${Utils.escape(r.author)}</div>
-                 <div class="review-content">${Utils.escape(r.content)}</div>
-               </div>
-             `).join('') + `</div>`;
-             reviewsBtn.style.display = 'block';
-             reviewsBtn.innerHTML = '<i class="fas fa-comments"></i> View all reviews';
-             window.fvReviewsExpanded = false;
-          } else {
-             reviewsBtn.style.display = 'none';
-          }
-          reviewsContainer.innerHTML = html;
-        } else {
-          reviewsContainer.innerHTML = '<div style="color:var(--text-3); font-size:14px; padding:10px 0;">No reviews available.</div>';
-          reviewsBtn.style.display = 'none';
-        }
-      }
+
 
       var fvWl = document.getElementById('fv-wl-btn');
       var fvIcon = fvWl ? fvWl.querySelector('i') : null;
@@ -1534,21 +1502,7 @@ var FVTabs = {
   }
 };
 
-window.toggleReviews = function() {
-  var hidden = document.getElementById('fv-hidden-reviews');
-  var btn = document.getElementById('fv-reviews-view-all');
-  if (hidden && btn) {
-     if (window.fvReviewsExpanded) {
-        hidden.style.display = 'none';
-        btn.innerHTML = '<i class="fas fa-comments"></i> View all reviews';
-        window.fvReviewsExpanded = false;
-     } else {
-        hidden.style.display = 'block';
-        btn.innerHTML = '<i class="fas fa-chevron-up"></i> Show less';
-        window.fvReviewsExpanded = true;
-     }
-  }
-};
+
 
 var Watchlist = {
   toggleCurrent: function(e){
