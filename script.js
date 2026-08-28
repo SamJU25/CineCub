@@ -974,7 +974,7 @@ var Modal = {
   closeAll: function(skipHistory){
     document.getElementById('modal-overlay').classList.remove('open');
     
-    var tp = document.getElementById('trailer-player');
+    var tp = document.getElementById('preview-player');
     if (tp) {
       tp.src = 'about:blank';
       var cloneTp = tp.cloneNode(true);
@@ -1113,7 +1113,7 @@ var Modal = {
         if (State.activePreview) {
           trailerPlayer.style.display = 'block';
           if(noTrailerMsg) noTrailerMsg.style.display = 'none';
-          trailerPlayer.src = 'https://www.youtube.com/embed/' + State.activePreview;
+          trailerPlayer.src = 'https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1&mute=0';
         } else {
           trailerPlayer.style.display = 'none';
           if(noTrailerMsg) noTrailerMsg.style.display = 'block';
@@ -1536,7 +1536,7 @@ var FVTabs = {
        if (t !== 'overview') {
            tp.src = ''; 
        } else if (State.activePreview && tp.src === '') {
-           tp.src = 'https://www.youtube.com/embed/' + State.activePreview;
+           tp.src = 'https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1&mute=0';
        }
     }
   }
