@@ -979,11 +979,8 @@ var Modal = {
       tp.src = 'about:blank';
       var cloneTp = tp.cloneNode(true);
       cloneTp.removeAttribute('src');
-      cloneTp.style.display = 'none';
       tp.parentNode.replaceChild(cloneTp, tp);
     }
-    var cover = document.getElementById('trailer-cover');
-    if (cover) cover.style.display = 'none';
     
     var toast = document.getElementById('up-next-toast');
     if (toast) toast.classList.add('hidden');
@@ -1114,27 +1111,13 @@ var Modal = {
         var noTrailerMsg = document.getElementById('fv-no-trailer');
         trailerSection.style.display = 'block';
         if (State.activePreview) {
-          trailerPlayer.style.display = 'none';
+          trailerPlayer.style.display = 'block';
           if(noTrailerMsg) noTrailerMsg.style.display = 'none';
-          var cover = document.getElementById('trailer-cover');
-          if (cover) {
-            cover.style.display = 'flex';
-            cover.style.backgroundImage = 'url(https://img.youtube.com/vi/' + State.activePreview + '/hqdefault.jpg)';
-            cover.onclick = function() {
-              cover.style.display = 'none';
-              trailerPlayer.style.display = 'block';
-              trailerPlayer.src = 'https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1&mute=0';
-            };
-          } else {
-            trailerPlayer.style.display = 'block';
-            trailerPlayer.src = 'https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1&mute=0';
-          }
+          trailerPlayer.src = 'https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1';
         } else {
           trailerPlayer.style.display = 'none';
           if(noTrailerMsg) noTrailerMsg.style.display = 'block';
           trailerPlayer.src = '';
-          var cover = document.getElementById('trailer-cover');
-          if (cover) cover.style.display = 'none';
         }
       }
       
@@ -1553,20 +1536,7 @@ var FVTabs = {
        if (t !== 'overview') {
            tp.src = ''; 
        } else if (State.activePreview && tp.src === '') {
-           var cover = document.getElementById('trailer-cover');
-           tp.style.display = 'none';
-           if (cover) {
-             cover.style.display = 'flex';
-             cover.style.backgroundImage = 'url(https://img.youtube.com/vi/' + State.activePreview + '/hqdefault.jpg)';
-             cover.onclick = function() {
-               cover.style.display = 'none';
-               tp.style.display = 'block';
-               tp.src = 'https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1&mute=0';
-             };
-           } else {
-             tp.style.display = 'block';
-             tp.src = 'https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1&mute=0';
-           }
+           tp.src = 'https://www.youtube.com/embed/' + State.activePreview + '?autoplay=1';
        }
     }
   }
