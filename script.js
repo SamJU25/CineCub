@@ -1936,3 +1936,32 @@ window.addEventListener('message', (event) => {
     }
   }
 });
+
+/* ================================================================ 
+   APPS DOWNLOAD MODAL LOGIC
+================================================================ */
+function openAppsModal() {
+  document.getElementById('apps-modal').style.display = 'flex';
+  showPlatformOptions(); // Reset to default view
+}
+
+function closeAppsModal() {
+  document.getElementById('apps-modal').style.display = 'none';
+}
+
+function showIosInstructions() {
+  document.getElementById('apps-modal-platforms').style.display = 'none';
+  document.getElementById('apps-modal-ios').style.display = 'block';
+}
+
+function showPlatformOptions() {
+  document.getElementById('apps-modal-ios').style.display = 'none';
+  document.getElementById('apps-modal-platforms').style.display = 'block';
+}
+
+window.addEventListener('click', function(event) {
+  var appsModal = document.getElementById('apps-modal');
+  if (event.target == appsModal) {
+    closeAppsModal();
+  }
+});

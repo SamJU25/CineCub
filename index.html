@@ -134,9 +134,9 @@
         <span class="nav-item-icon"><i class="fas fa-history"></i></span><span class="nav-item-text">History</span>
       </div>
       <div class="nav-section-label" style="margin-top: 15px;">Apps</div>
-      <a href="/StreamHeaven.apk" class="nav-item" style="text-decoration: none; color: inherit;" download="StreamHeaven.apk">
-        <span class="nav-item-icon"><i class="fab fa-android" style="color: #3ddc84;"></i></span><span class="nav-item-text">Download App (APK)</span>
-      </a>
+      <div class="nav-item" onclick="openAppsModal()">
+        <span class="nav-item-icon"><i class="fas fa-download" style="color: #00d2ff;"></i></span><span class="nav-item-text">Get StreamHeaven</span>
+      </div>
     </nav>
       <div class="cv-sidebar-bottom">
         <div class="sf-profile guest" onclick="if(typeof AuthUI !== 'undefined') AuthUI.openLogin()">
@@ -800,6 +800,60 @@
   </button>
 
   <input type="file" id="import-file" style="display:none" accept=".json" onchange="Library.importData(event)">
+
+  <!-- APPS MODAL -->
+  <div id="apps-modal" class="cv-modal">
+    <div class="cv-modal-content apps-modal-card">
+      <span class="cv-modal-close" onclick="closeAppsModal()">&times;</span>
+      
+      <!-- DEFAULT VIEW: PLATFORMS -->
+      <div id="apps-modal-platforms">
+        <h2 style="margin-top:0; margin-bottom:20px; font-size: 1.25rem; color: #fff;">Get StreamHeaven</h2>
+        <div class="apps-btn-group">
+          <!-- Android -->
+          <a href="/StreamHeaven.apk" download="StreamHeaven.apk" class="app-btn app-btn-primary">
+            <div class="app-btn-icon"><i class="fab fa-android"></i></div>
+            <div class="app-btn-text">
+              <strong>Android APK</strong>
+              <span>For mobile & TV</span>
+            </div>
+            <div class="app-btn-action"><i class="fas fa-download"></i></div>
+          </a>
+          <!-- iOS -->
+          <button class="app-btn app-btn-secondary" onclick="showIosInstructions()">
+            <div class="app-btn-icon" style="color: #fff;"><i class="fab fa-apple"></i></div>
+            <div class="app-btn-text">
+              <strong>Apple iOS</strong>
+              <span>For iPhone & iPad</span>
+            </div>
+            <div class="app-btn-action"><i class="fas fa-chevron-right"></i></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- IOS INSTRUCTIONS VIEW -->
+      <div id="apps-modal-ios" style="display:none;">
+        <button class="app-back-btn" onclick="showPlatformOptions()"><i class="fas fa-arrow-left"></i> Back</button>
+        <h2 style="margin-top:15px; margin-bottom:10px; font-size: 1.25rem; color: #fff;"><i class="fab fa-apple"></i> Install on iOS</h2>
+        <p style="color: #a0a0b5; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px;">Apple does not allow direct app downloads. Install our Progressive Web App via Safari instead.</p>
+        
+        <div class="ios-steps">
+          <div class="ios-step">
+            <div class="step-num">1</div>
+            <div class="step-desc">Open this site in <strong>Safari</strong> on your iPhone.</div>
+          </div>
+          <div class="ios-step">
+            <div class="step-num">2</div>
+            <div class="step-desc">Tap the <strong>Share</strong> button <i class="fas fa-external-link-alt" style="margin:0 5px; color:#c77dff;"></i> at the bottom of the screen.</div>
+          </div>
+          <div class="ios-step">
+            <div class="step-num">3</div>
+            <div class="step-desc">Scroll down and tap <strong>Add to Home Screen</strong> <i class="fas fa-plus-square" style="margin:0 5px; color:#c77dff;"></i>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
