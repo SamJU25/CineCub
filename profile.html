@@ -495,9 +495,14 @@
             <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('pf-email-pass')"><i class="fas fa-eye"></i></button>
           </div>
         </div>
-      <div class="pf-modal-actions">
-        <button type="button" class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
-        <button type="submit" class="pf-btn-login">Update</button>
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+        <button type="submit" class="pf-btn-login" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <i class="fas fa-paper-plane"></i> Send Verify Link
+        </button>
+        <button type="button" class="pf-btn-secondary" onclick="closeModals()" style="width: 100%;">Cancel</button>
+      </div>
+      <div style="margin-top: 14px; font-size: 13px; color: rgba(232,232,240,0.6); text-align: center;">
+        <i class="fas fa-exclamation-triangle" style="color: #ffb703;"></i> Caution: If not found in primary, please check spam.
       </div>
       </form>
     </div>
@@ -841,8 +846,10 @@
         passField.value = ''; // Clear on error
       } finally {
         const btn = document.querySelector('#modal-email .pf-btn-login');
-        btn.disabled = false;
-        btn.innerHTML = 'Update';
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Verify Link';
+        }
       }
     }
 
