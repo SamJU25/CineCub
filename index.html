@@ -79,7 +79,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=190" rel="stylesheet">
+  <link href="style.css?v=191" rel="stylesheet">
 </head>
 <body>
 
@@ -253,21 +253,26 @@
 
         <!-- TRENDING NOW ROW -->
         <section class="section-wrapper" id="section-trending">
-          <div class="section-header" style="margin-bottom: 12px;">
+          <div class="section-header">
             <div class="section-title-group">
               <div class="section-icon"><i class="fas fa-fire-alt"></i></div>
               <div><h2 class="section-title">Trending Now</h2><div class="section-subtitle">What everyone is watching</div></div>
             </div>
-          </div>
-          <div class="section-controls-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-            <!-- TODAY / THIS WEEK Segmented Toggle on left -->
-            <div class="by-genre-toggle trending-toggle" style="position:relative">
+            <!-- Desktop: TODAY / THIS WEEK Segmented Toggle (Right-aligned) -->
+            <div class="by-genre-toggle trending-toggle trending-toggle-desktop" style="position:relative">
               <div class="bgt-indicator" id="trending-indicator"></div>
               <div class="bgt-btn active" id="btn-trending-today" onclick="TrendingSection.setTimeWindow('day', this)">TODAY</div>
               <div class="bgt-btn" id="btn-trending-week" onclick="TrendingSection.setTimeWindow('week', this)">THIS WEEK</div>
             </div>
-            <!-- View All Button horizontally aligned on right -->
-            <div class="section-view-all" onclick="App.browseTrending()">View All <i class="fas fa-arrow-right"></i></div>
+          </div>
+          <!-- Mobile: Combobox below text left-aligned -->
+          <div class="trending-mobile-controls">
+            <div class="custom-select" id="wrap-home-trending-time" style="width: 140px;">
+              <select id="home-trending-time" onchange="TrendingSection.onMobileChange(this.value)">
+                <option value="day">Today</option>
+                <option value="week">This Week</option>
+              </select>
+            </div>
           </div>
           <div class="cv-hscroll" id="row-trending"></div> 
         </section>
@@ -879,7 +884,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=190"></script>
+  <script src="script.js?v=191"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
