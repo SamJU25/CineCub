@@ -1632,6 +1632,10 @@ var Modal = {
     var actorMov = document.getElementById('fv-actor-movies');
     if (actorMov) actorMov.innerHTML = '';
     
+    if (typeof AdFreePlayer !== 'undefined' && AdFreePlayer.warmUpBackend) {
+      AdFreePlayer.warmUpBackend();
+    }
+    
     Prog.start();
     API.detail(id, type).then(data => {
       if(!data){ 
@@ -2224,10 +2228,42 @@ var AdFreePlayer = {
     }
     this.loadVideo();
   },
+  cache: new Map(),
+  warmUpBackend: function() {
+    try {
+      fetch('https://streamheaven-api.onrender.com/api/auth/forgot-password', {
+        method: 'OPTIONS',
+        mode: 'cors'
+      }).catch(() => {});
+    } catch(e){}
+  },
+  renderServerOptions: function(streams) {
+    var sTabs = document.getElementById('server-tabs-adfree');
+    if (!sTabs) return;
+    if (!streams || !streams.length || streams.length === 0) {
+      sTabs.innerHTML = '<div style="padding:10px; color:var(--cv-red);">No streams found. Try the regular Watch tab.</div>';
+      return;
+    }
+    
+    var html = '<div style="font-size:13px; color:var(--text-2); margin-bottom: 5px; font-weight: 500; margin-left: 2px;">Select server</div>';
+    html += '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
+    html += '<select id="adfree-server-select" onchange="AdFreePlayer.onServerSelect(this.value)">';
+    AdFreePlayer.streams = streams;
+    streams.forEach((s, idx) => {
+       html += '<option value="'+idx+'">' + AdFreePlayer.formatServerName(s, idx, streams) + '</option>';
+    });
+    html += '</select></div></div></div>';
+    
+    sTabs.className = ''; // Remove flex layout from container
+    sTabs.innerHTML = html;
+    CustomSelect.init();
+    
+    AdFreePlayer.onServerSelect(0);
+  },
   loadVideo: function(){
     var video = document.getElementById('native-player-adfree');
     var sTabs = document.getElementById('server-tabs-adfree');
-    video.style.display = 'none';
+    if (video) video.style.display = 'none';
     if(this.hls) { this.hls.destroy(); this.hls = null; }
     if(this.checkWakeup) { clearInterval(this.checkWakeup); this.checkWakeup = null; }
     
@@ -2235,32 +2271,38 @@ var AdFreePlayer = {
     var apiUrl = '';
     
     if (State.activeType === 'tv') {
-      season = Number(document.getElementById('ep-season-adfree').value || 1);
-      episode = Number(document.getElementById('ep-episode-adfree').value || 1);
+      season = Number(document.getElementById('ep-season-adfree')?.value || 1);
+      episode = Number(document.getElementById('ep-episode-adfree')?.value || 1);
       apiUrl = 'https://streamheaven-api.onrender.com/api/streams/series/' + State.activeId + '?season=' + season + '&episode=' + episode;
     } else {
       apiUrl = 'https://streamheaven-api.onrender.com/api/streams/' + State.activeType + '/' + State.activeId;
     }
     
+    var cacheKey = State.activeType + '_' + State.activeId + (season ? '_s' + season + 'e' + episode : '');
+    if (this.cache && this.cache.has(cacheKey)) {
+      var cachedStreams = this.cache.get(cacheKey);
+      this.renderServerOptions(cachedStreams);
+      return;
+    }
+
     var startTime = Date.now();
     sTabs.innerHTML = '<div style="padding:10px; color:var(--text-3);" id="adfree-status"><i class="fas fa-circle-notch fa-spin" style="margin-right:8px;"></i> Searching for streams...</div>';
     
-    // If it takes more than 4 seconds, Render is likely waking up from sleep
+    // If it takes more than 3.5 seconds, Render is likely waking up from cold sleep
     this.checkWakeup = setInterval(function() {
       var statusEl = document.getElementById('adfree-status');
-      if (statusEl && (Date.now() - startTime) > 4000) {
-        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px; color:var(--cv-purple);"></i> Waking up ad-free servers... (this can take ~30s)';
+      if (statusEl && (Date.now() - startTime) > 3500) {
+        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px; color:var(--cv-purple);"></i> Waking up ad-free servers... (this can take ~20s)';
         statusEl.style.color = 'var(--text-1)';
       }
     }, 1000);
 
     var self = this;
 
-    // Smart fetch with auto-retry
-    var fetchStreams = function(retries) {
+    // Fast progressive fetch with quick retries
+    var fetchStreams = function(retries, delay) {
       return fetch(apiUrl)
         .then(r => {
-          // Render might return 502/503 while spinning up container
           if (!r.ok && retries > 0) throw new Error('Retry');
           if (!r.ok) throw new Error('Stream service unavailable');
           
@@ -2272,7 +2314,8 @@ var AdFreePlayer = {
         })
         .catch(e => {
           if (e.message === 'Retry' && retries > 0) {
-            return new Promise(resolve => setTimeout(resolve, 4000)).then(() => fetchStreams(retries - 1));
+            var nextDelay = delay || 1200;
+            return new Promise(resolve => setTimeout(resolve, nextDelay)).then(() => fetchStreams(retries - 1, nextDelay + 800));
           }
           throw e;
         });
@@ -2282,25 +2325,10 @@ var AdFreePlayer = {
       .then(resp => {
         if(self.checkWakeup) { clearInterval(self.checkWakeup); self.checkWakeup = null; }
         var streams = resp.streams || resp;
-        if (!streams || !streams.length || streams.length === 0) {
-          sTabs.innerHTML = '<div style="padding:10px; color:var(--cv-red);">No streams found. Try the regular Watch tab.</div>';
-          return;
+        if (streams && Array.isArray(streams) && streams.length > 0) {
+          self.cache.set(cacheKey, streams);
         }
-        
-        var html = '<div style="font-size:13px; color:var(--text-2); margin-bottom: 5px; font-weight: 500; margin-left: 2px;">Select server</div>';
-        html += '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
-        html += '<select id="adfree-server-select" onchange="AdFreePlayer.onServerSelect(this.value)">';
-        AdFreePlayer.streams = streams;
-        streams.forEach((s, idx) => {
-           html += '<option value="'+idx+'">' + AdFreePlayer.formatServerName(s, idx, streams) + '</option>';
-        });
-        html += '</select></div></div></div>';
-        
-        sTabs.className = ''; // Remove flex layout from container
-        sTabs.innerHTML = html;
-        CustomSelect.init();
-        
-        AdFreePlayer.onServerSelect(0);
+        self.renderServerOptions(streams);
       })
       .catch(e => {
         if(self.checkWakeup) { clearInterval(self.checkWakeup); self.checkWakeup = null; }
@@ -2309,7 +2337,7 @@ var AdFreePlayer = {
       });
   },
   onServerSelect: function(idx) {
-    var s = AdFreePlayer.streams[idx];
+    var s = AdFreePlayer.streams ? AdFreePlayer.streams[idx] : null;
     if(!s) return;
     var streamType = 'm3u8';
     if (s.title && s.title.toLowerCase().indexOf('mp4') !== -1) streamType = 'mp4';
@@ -2319,14 +2347,15 @@ var AdFreePlayer = {
   playStream: function(url, type) {
     var video = document.getElementById('native-player-adfree');
     var wrap = document.getElementById('player-wrap-adfree');
+    if (!video || !wrap) return;
     video.style.display = 'block';
     wrap.classList.add('is-loading');
     var stopLoading = function(){ wrap.classList.remove('is-loading'); };
-    // Hide the spinner the moment playback actually begins (not while merely buffering)
+    // Hide the spinner the moment playback actually begins
     video.addEventListener('playing', stopLoading, { once: true });
     video.addEventListener('canplay', stopLoading, { once: true });
     video.addEventListener('error', stopLoading, { once: true });
-    setTimeout(stopLoading, 15000);
+    setTimeout(stopLoading, 12000);
     
     if (this.hls) {
       this.hls.destroy();
@@ -2341,7 +2370,19 @@ var AdFreePlayer = {
     };
 
     if (type === 'm3u8' && typeof Hls !== 'undefined' && Hls.isSupported()) {
-      this.hls = new Hls({ xhrSetup: function(xhr) { xhr.timeout = 15000; } });
+      this.hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        backBufferLength: 30,
+        maxBufferLength: 20,
+        maxMaxBufferLength: 40,
+        maxBufferSize: 30 * 1000 * 1000,
+        manifestLoadingTimeOut: 10000,
+        manifestLoadingMaxRetry: 3,
+        levelLoadingTimeOut: 10000,
+        fragLoadingTimeOut: 15000,
+        xhrSetup: function(xhr) { xhr.timeout = 15000; }
+      });
       this.hls.loadSource(url);
       this.hls.attachMedia(video);
       this.hls.on(Hls.Events.MANIFEST_PARSED, function() {
@@ -2353,13 +2394,13 @@ var AdFreePlayer = {
           console.error('HLS Fatal Error:', data.type, data.details);
           var sTabs = document.getElementById('server-tabs-adfree');
           var errDiv = document.getElementById('adfree-error');
-          if (!errDiv) {
+          if (!errDiv && sTabs && sTabs.parentNode) {
             errDiv = document.createElement('div');
             errDiv.id = 'adfree-error';
             errDiv.style.cssText = 'padding:10px;color:#ff6b6b;text-align:center;font-size:13px;';
             sTabs.parentNode.insertBefore(errDiv, sTabs.nextSibling);
           }
-          errDiv.textContent = 'This server failed to load. Try clicking another server button above.';
+          if (errDiv) errDiv.textContent = 'This server failed to load. Try clicking another server option above.';
         }
       });
     } else {
@@ -2614,6 +2655,13 @@ document.addEventListener('DOMContentLoaded', function(){
   HomeGenre.init();
   TrendingSection.init();
   PopularSection.init();
+  
+  // Pre-warm Ad-Free backend in background
+  setTimeout(function() {
+    if (typeof AdFreePlayer !== 'undefined' && AdFreePlayer.warmUpBackend) {
+      AdFreePlayer.warmUpBackend();
+    }
+  }, 1500);
 
   /* Populate Genre Select */
   var genreSelect = document.getElementById('browse-genre');
