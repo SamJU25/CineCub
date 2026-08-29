@@ -299,7 +299,7 @@ iframe {border:none}
 .bgt-btn.active {color:#fff;}
 .bgt-btn:hover:not(.active) {color:var(--text-1);}
 
-.genre-btn-scroll {position:relative; display:flex; gap:10px; overflow-x:auto; padding-bottom:12px; scrollbar-width:none;}
+.genre-btn-scroll {position:relative; display:flex; flex-wrap:nowrap; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:12px; scrollbar-width:none;}
 .genre-btn-scroll::-webkit-scrollbar {display:none;}
 .genre-sq-indicator {position:absolute; top:0; bottom:12px; background:var(--cv-purple); z-index:0; transition:left var(--motion-fast) var(--ease-standard), width var(--motion-fast) var(--ease-standard); border-radius:8px; box-shadow:0 4px 12px rgba(181,95,230,0.25);}
 .genre-sq-btn {position:relative; z-index:1; padding:12px 20px; border:1px solid var(--b-2); border-radius:8px; background:transparent; font-size:11px; text-transform:uppercase; font-weight:700; color:var(--text-3); cursor:pointer; white-space:nowrap; transition:color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard); letter-spacing:0.5px; touch-action:manipulation;}
