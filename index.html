@@ -79,7 +79,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=183" rel="stylesheet">
+  <link href="style.css?v=184" rel="stylesheet">
 </head>
 <body>
 
@@ -506,14 +506,20 @@
 
       <!-- Person Dedicated Profile View -->
       <div class="fv-person-view" id="fv-person-view" style="display:none;">
+        <div class="fv-person-header">
+          <h2 class="fv-person-name" id="fv-person-name"></h2>
+        </div>
         <div class="fv-person-top">
-          <div class="fv-person-img-wrap">
-            <img class="fv-person-img" id="fv-person-img" alt="Actor profile photo" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
-          </div>
-          <div class="fv-person-meta">
-            <h2 class="fv-person-name" id="fv-person-name"></h2>
+          <!-- Left Column: Picture + Socials Below -->
+          <div class="fv-person-left-col">
+            <div class="fv-person-img-wrap">
+              <img class="fv-person-img" id="fv-person-img" alt="Actor profile photo" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+            </div>
             <div class="fv-person-socials" id="fv-person-socials"></div>
-            
+          </div>
+          
+          <!-- Right Column: Personal Info Card -->
+          <div class="fv-person-right-col">
             <div class="fv-pinfo-box">
               <div class="fv-pinfo-title">Personal Info</div>
               <div class="fv-pinfo-list">
@@ -855,7 +861,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=183"></script>
+  <script src="script.js?v=184"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

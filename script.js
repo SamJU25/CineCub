@@ -1162,12 +1162,11 @@ var Modal = {
         document.getElementById('fv-person-name').textContent = data.name || data.title;
         document.title = (data.name || data.title) + " \u2014 StreamHeaven";
 
-        // Social Links
+        // Social Links (Twitter / X, Instagram only)
         var ext = data.external_ids || {};
         var sHtml = '';
         if (ext.twitter_id) sHtml += '<a href="https://twitter.com/' + encodeURIComponent(ext.twitter_id) + '" target="_blank" rel="noopener" class="fv-social-link" title="Twitter / X"><i class="fab fa-x-twitter"></i></a>';
         if (ext.instagram_id) sHtml += '<a href="https://instagram.com/' + encodeURIComponent(ext.instagram_id) + '" target="_blank" rel="noopener" class="fv-social-link" title="Instagram"><i class="fab fa-instagram"></i></a>';
-        if (ext.imdb_id) sHtml += '<a href="https://www.imdb.com/name/' + encodeURIComponent(ext.imdb_id) + '" target="_blank" rel="noopener" class="fv-social-link" title="IMDb"><i class="fab fa-imdb"></i></a>';
         var socContainer = document.getElementById('fv-person-socials');
         if (socContainer) {
           socContainer.innerHTML = sHtml;
