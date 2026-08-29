@@ -151,11 +151,16 @@ iframe {border:none}
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(255, 75, 75, 0.1) !important;
-    border: 1px solid rgba(255, 75, 75, 0.2) !important;
+    background: #220f12 !important;
+    color: #ff6b6b !important;
+    border: 1px solid rgba(230, 57, 70, 0.22) !important;
+    box-shadow: none !important;
   }
   .cv-sidebar.collapsed .sf-logout-btn:hover {
-    background: rgba(255, 75, 75, 0.2) !important;
+    background: #2c1317 !important;
+    color: #ff8585 !important;
+    border-color: rgba(230, 57, 70, 0.35) !important;
+    box-shadow: none !important;
   }
   .cv-sidebar.collapsed .sf-logout-icon {
     width: 20px;
@@ -858,9 +863,10 @@ iframe {border:none}
 .profile-popup-btn:hover {background:var(--cv-purple-dim);color:#fff}
 .profile-popup-btn:active {transform:scale(var(--press-scale))}
 .profile-popup-btn i {width:18px;text-align:center;color:var(--cv-purple-light)}
-.profile-popup-btn.danger:hover {background:rgba(230,57,70,.12);color:#fff}
+.profile-popup-btn.danger {color:#ff6b6b}
+.profile-popup-btn.danger:hover {background:#220f12;color:#ff8585}
 .profile-popup-btn.danger:active {transform:scale(var(--press-scale))}
-.profile-popup-btn.danger i {color:var(--cv-red)}
+.profile-popup-btn.danger i {color:#ff6b6b}
 .profile-guest-text {padding:4px 8px 10px;color:var(--text-3);font-size:12px;line-height:1.6}
 .profile-popup-actions {display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .profile-auth-btn {
@@ -1257,31 +1263,35 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 }
 .sf-logout-btn {
   width: 100%;
-  padding: 10px;
+  padding: 11px 14px;
   margin-top: 8px;
-  background: rgba(255, 75, 75, 0.1) !important;
-  color: #ff4b4b !important;
-  border: 1px solid rgba(255, 75, 75, 0.2) !important;
+  background: #220f12 !important;
+  color: #ff6b6b !important;
+  border: 1px solid rgba(230, 57, 70, 0.22) !important;
   border-radius: 12px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  transition: var(--t-fast);
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 10px;
   outline: none;
+  box-shadow: none !important;
+  transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
 }
 .sf-logout-btn:hover {
-  background: rgba(255, 75, 75, 0.2) !important;
-  box-shadow: 0 4px 12px rgba(255, 75, 75, 0.2);
+  background: #2c1317 !important;
+  color: #ff8585 !important;
+  border-color: rgba(230, 57, 70, 0.35) !important;
+  box-shadow: none !important;
 }
 .sf-logout-icon {
   width: 18px;
   height: 18px;
   stroke: currentColor;
+  flex-shrink: 0;
 }
 
 .auth-divider {
