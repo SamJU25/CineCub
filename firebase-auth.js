@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Custom Backend Password Reset URL (Points to your separate backend repo)
+const RESET_PASSWORD_API_URL = "https://streamheaven-api.onrender.com/api/auth/forgot-password";
+
 // Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCLZ7hRHpoh_G_eX3ggZL15iL-xhJOvpIA",
@@ -52,6 +55,7 @@ try {
 // The Auth UI Controller
 window.AuthUI = {
   openLogin: function() {
+    AuthUI.clearErrors();
     document.getElementById('auth-modal-overlay').classList.add('open');
     document.getElementById('auth-login-view').style.display = 'block';
     document.getElementById('auth-signup-view').style.display = 'none';
@@ -60,6 +64,7 @@ window.AuthUI = {
     if(typeof Sidebar !== 'undefined') Sidebar.close(); // Close sidebar if on mobile
   },
   openSignup: function() {
+    AuthUI.clearErrors();
     document.getElementById('auth-modal-overlay').classList.add('open');
     document.getElementById('auth-login-view').style.display = 'none';
     document.getElementById('auth-signup-view').style.display = 'block';
@@ -67,32 +72,62 @@ window.AuthUI = {
     if(forgotView) forgotView.style.display = 'none';
   },
   openForgot: function() {
+    AuthUI.clearErrors();
     document.getElementById('auth-modal-overlay').classList.add('open');
     document.getElementById('auth-login-view').style.display = 'none';
     document.getElementById('auth-signup-view').style.display = 'none';
-    document.getElementById('auth-forgot-view').style.display = 'block';
+    const forgotView = document.getElementById('auth-forgot-view');
+    if(forgotView) forgotView.style.display = 'block';
   },
-    close: function() {
+  close: function() {
     document.getElementById('auth-modal-overlay').classList.remove('open');
+    AuthUI.clearErrors();
   },
   overlayClick: function(e) {
     if(e.target.id === 'auth-modal-overlay') {
       AuthUI.close();
     }
   },
-  showError: function(msg, isSignup = false) {
-    const elId = isSignup ? 'auth-signup-error' : 'auth-login-error';
+  showError: function(msg, target = 'login') {
+    let elId = 'auth-login-error';
+    if (target === true || target === 'signup') {
+      elId = 'auth-signup-error';
+    } else if (target === 'forgot') {
+      elId = 'auth-forgot-error';
+    } else if (target === 'login' || target === false) {
+      elId = 'auth-login-error';
+    }
     const el = document.getElementById(elId);
     if(el) {
+      el.className = 'auth-error';
       el.textContent = msg;
       el.style.display = 'block';
     }
   },
+  showSuccess: function(msg, target = 'forgot') {
+    let elId = 'auth-forgot-error';
+    if (target === 'signup') {
+      elId = 'auth-signup-error';
+    } else if (target === 'login') {
+      elId = 'auth-login-error';
+    }
+    const el = document.getElementById(elId);
+    if(el) {
+      el.className = 'auth-success';
+      el.innerHTML = `<i class="fas fa-check-circle" style="margin-right:6px;"></i> ${msg}`;
+      el.style.display = 'block';
+    }
+  },
   clearErrors: function() {
-    const e1 = document.getElementById('auth-login-error');
-    const e2 = document.getElementById('auth-signup-error');
-    if(e1) e1.style.display = 'none';
-    if(e2) e2.style.display = 'none';
+    const ids = ['auth-login-error', 'auth-signup-error', 'auth-forgot-error'];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) {
+        el.style.display = 'none';
+        el.textContent = '';
+        el.className = 'auth-error';
+      }
+    });
   }
 };
 
@@ -318,15 +353,17 @@ async function handleSignup(e) {
 
   async function handleForgotPassword(e) {
     if(e) e.preventDefault();
+    AuthUI.clearErrors();
     const btn = document.getElementById('btn-forgot');
     if(btn) {
       btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending link...';
     }
     
-    const email = document.getElementById('forgot-email').value.trim();
+    const emailInput = document.getElementById('forgot-email');
+    const email = emailInput ? emailInput.value.trim() : '';
     if(!email) {
-      AuthUI.showError("Please enter your email address.");
+      AuthUI.showError("Please enter your email address.", 'forgot');
       if(btn) {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset Link';
@@ -334,24 +371,85 @@ async function handleSignup(e) {
       return;
     }
     
-    try {
-      await auth.sendPasswordResetEmail(email);
-      if(typeof App !== 'undefined') {
-        if(typeof Toast !== 'undefined') Toast.show("Reset link sent to " + email, "success");
-      } else if (typeof AuthUI !== 'undefined') {
-        AuthUI.showError("Reset link sent to " + email, false);
+    // Attempt custom Mailtrap Node.js backend first
+    let backendSuccess = false;
+    let lastErrorMessage = '';
+    const backendEndpoints = [];
+
+    if (typeof RESET_PASSWORD_API_URL !== 'undefined' && RESET_PASSWORD_API_URL) {
+      backendEndpoints.push(RESET_PASSWORD_API_URL);
+    }
+    backendEndpoints.push('/api/auth/forgot-password', '/auth/forgot-password');
+
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      backendEndpoints.unshift('http://localhost:8787/api/auth/forgot-password', 'http://localhost:5000/api/auth/forgot-password', 'http://localhost:3000/api/auth/forgot-password');
+    }
+
+    for (const endpoint of backendEndpoints) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
+        
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        const data = await response.json().catch(() => ({}));
+        if (response.ok && data.success) {
+          backendSuccess = true;
+          break;
+        } else if (response.status === 404 && data.error === 'USER_NOT_FOUND') {
+          lastErrorMessage = "No account found with this email address.";
+          break;
+        } else if (data.message) {
+          lastErrorMessage = data.message;
+        }
+      } catch (err) {
+        // Backend not reachable on this endpoint, continue to next or fallback
       }
-      setTimeout(() => AuthUI.openLogin(), 2000);
-    } catch(error) {
-      let msg = error.message || "Failed to send reset link.";
-      if (error.code === 'auth/user-not-found') {
-        msg = "No account found with this email.";
-      } else if (error.code === 'auth/invalid-email') {
-        msg = "Please enter a valid email address.";
-      } else if (msg.includes('network-request-failed')) {
-        msg = "Network error. Please check your connection.";
+    }
+
+    // Fallback: Use Firebase client-side SDK if backend is offline or unconfigured
+    if (!backendSuccess && !lastErrorMessage.includes('No account found')) {
+      try {
+        if (auth) {
+          await auth.sendPasswordResetEmail(email);
+          backendSuccess = true;
+        }
+      } catch (fbError) {
+        console.warn("Firebase client reset fallback error:", fbError);
+        if (fbError.code === 'auth/user-not-found') {
+          lastErrorMessage = "No account found with this email address.";
+        } else if (fbError.code === 'auth/invalid-email') {
+          lastErrorMessage = "Please enter a valid email address.";
+        } else if (fbError.message && fbError.message.includes('network-request-failed')) {
+          lastErrorMessage = "Network error. Please check your connection.";
+        } else {
+          lastErrorMessage = fbError.message || "Failed to send reset link.";
+        }
       }
-      AuthUI.showError(msg);
+    }
+
+    if (backendSuccess) {
+      AuthUI.showSuccess(`Password reset link sent to <strong>${email}</strong>.<br><small style="display:block;margin-top:6px;opacity:0.9;">Please check your inbox (and spam folder) to set a new password.</small>`, 'forgot');
+      if (typeof Toast !== 'undefined') {
+        Toast.show("Reset link sent to " + email, "success");
+      }
+      if(btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check"></i> Link Sent';
+      }
+      setTimeout(() => {
+        if (btn) {
+          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Again';
+        }
+      }, 5000);
+    } else {
+      AuthUI.showError(lastErrorMessage || "Failed to send reset link. Please check your email and try again.", 'forgot');
       if(btn) {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset Link';

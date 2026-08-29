@@ -1274,6 +1274,17 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
+  line-height: 1.5;
+}
+.auth-success {
+  background: rgba(46, 196, 182, 0.12);
+  color: #2ec4b6;
+  border: 1px solid rgba(46, 196, 182, 0.3);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 /* ================================================================ 
