@@ -122,7 +122,7 @@ var API = {
     this.cache.set(url, promise);
     return await promise;
   },
-  trending: function(type, page){ return API.fetch(API.url('/trending/'+(type||'all')+'/week',{page:page||1})); },
+  trending: function(type, page, timeWindow){ return API.fetch(API.url('/trending/'+(type||'all')+'/'+(timeWindow||'day'),{page:page||1})); },
   topRated: function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/top_rated',{page:page||1})); },
   popular:  function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/popular',{page:page||1})); },
   upcoming: function(page){ return API.fetch(API.url('/movie/upcoming',{page:page||1})); },
@@ -333,12 +333,16 @@ var App = {
   goHome: function(){ this.showPage('page-home'); this.setNav('nav-home','Discover'); },
   setBrowseHeader: function(title, showSort) {
     document.getElementById('browse-title').innerText = title;
+    var breadcrumbTitle = document.getElementById('browse-breadcrumb-title');
+    if (breadcrumbTitle) breadcrumbTitle.innerText = title;
     document.getElementById('browse-header').style.display = 'flex';
-    document.getElementById('wrap-browse-sort').style.display = showSort ? 'block' : 'none';
-    document.getElementById('wrap-browse-genre').style.display = showSort ? 'block' : 'none';
+    var sortWrap = document.getElementById('wrap-browse-sort');
+    var genreWrap = document.getElementById('wrap-browse-genre');
+    if (sortWrap) sortWrap.style.display = showSort ? 'block' : 'none';
+    if (genreWrap) genreWrap.style.display = showSort ? 'block' : 'none';
     if(showSort) {
       CustomSelect.update('browse-genre', State.genreId || '');
-      CustomSelect.update('browse-sort', State.browseMode);
+      CustomSelect.update('browse-sort', State.browseMode || 'popular');
     }
   },
   changeSort: function(val) {
@@ -353,9 +357,9 @@ var App = {
   browseMovies: function(){ State.browseCategory='movie'; State.browseType='movie'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-movies','Movies'); this.setBrowseHeader('Movies', true); Browse.load(); },
   browseTVShows: function(){ State.browseCategory='tv'; State.browseType='tv'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-tv','TV Series'); this.setBrowseHeader('TV Series', true); Browse.load(); },
   browseAnime: function(){ State.browseCategory='anime'; State.browseType='tv'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-anime','Anime'); this.setBrowseHeader('Anime', true); Browse.load(); },
-  browseTrending: function(){ State.browseCategory='all'; State.browseType='all'; State.browseMode='trending'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-trending','Trending'); this.setBrowseHeader('Trending', false); Browse.load(); },
-  browseTopRated: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='toprated'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-toprated','Top Rated'); this.setBrowseHeader('Top Rated', false); Browse.load(); },
-  browseUpcoming: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='upcoming'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-upcoming','Upcoming'); this.setBrowseHeader('Upcoming', false); Browse.load(); },
+  browseTrending: function(){ State.browseCategory='all'; State.browseType='all'; State.browseMode='trending'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-trending','Trending'); this.setBrowseHeader('Trending', true); Browse.load(); },
+  browseTopRated: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='toprated'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-toprated','Top Rated'); this.setBrowseHeader('Top Rated', true); Browse.load(); },
+  browseUpcoming: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='upcoming'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-upcoming','Upcoming'); this.setBrowseHeader('Upcoming', true); Browse.load(); },
   updateWatchlistButtons: function() {
     document.querySelectorAll('[class*="wl-btn-"]').forEach(function(btn) {
       var match = btn.className.match(/wl-btn-(\d+)/);
@@ -549,7 +553,7 @@ var HScrollLoad = {
     },
     'row-trending': {
       page: 2, fetching: false, hasMore: true,
-      fetch: function(page) { return API.trending('all', page); }
+      fetch: function(page) { return API.trending('all', page, TrendingSection.timeWindow); }
     },
     'row-tvshows': {
       page: 2, fetching: false, hasMore: true,
@@ -705,6 +709,56 @@ var HomeGenre = {
       }
       container.innerHTML = results.map(item => Render.posterCard(item, fetchType)).join('');
     });
+  }
+};
+
+var TrendingSection = {
+  timeWindow: 'day',
+  setTimeWindow: function(win, el) {
+    if (this.timeWindow === win) return;
+    this.timeWindow = win;
+    
+    var container = el.parentElement;
+    container.querySelectorAll('.bgt-btn').forEach(btn => btn.classList.remove('active'));
+    el.classList.add('active');
+    
+    var ind = document.getElementById('trending-indicator');
+    if (ind) {
+      ind.style.left = el.offsetLeft + 'px';
+      ind.style.width = el.offsetWidth + 'px';
+    }
+    
+    var row = document.getElementById('row-trending');
+    if (row) {
+      Render.skeletons('row-trending', 8);
+    }
+    
+    HScrollLoad.reset('row-trending');
+    
+    Promise.all([
+      API.trending('all', 1, win),
+      API.trending('all', 2, win)
+    ]).then(res => {
+      var data = res[0];
+      if (res[1] && res[1].results) data.results = data.results.concat(res[1].results);
+      if (row && data && data.results) {
+        row.innerHTML = data.results.slice(0, 35).map(x => Render.posterCard(x)).join('');
+        initDragScroll();
+        initScrollButtons();
+      }
+    }).catch(err => {
+      if (row) row.innerHTML = '<div style="padding:40px;text-align:center;color:var(--cv-red);width:100%;">Unable to load trending titles right now.</div>';
+    });
+  },
+  init: function() {
+    var activeBtn = document.querySelector('.trending-toggle .bgt-btn.active');
+    var ind = document.getElementById('trending-indicator');
+    if (activeBtn && ind) {
+      setTimeout(function() {
+        ind.style.left = activeBtn.offsetLeft + 'px';
+        ind.style.width = activeBtn.offsetWidth + 'px';
+      }, 50);
+    }
   }
 };
 
@@ -2088,8 +2142,9 @@ document.addEventListener('DOMContentLoaded', function(){
   initScrollButtons();
   HScrollLoad.init();
 
-  /* Init By Genre Section */
+  /* Init By Genre Section & Trending Section */
   HomeGenre.init();
+  TrendingSection.init();
 
   /* Populate Genre Select */
   var genreSelect = document.getElementById('browse-genre');

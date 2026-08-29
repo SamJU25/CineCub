@@ -308,10 +308,10 @@ iframe {border:none}
 .stat-value {font-size:24px;font-weight:900;letter-spacing:-0.5px;background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .stat-label {font-size:12px;color:var(--text-3);font-weight:600}
 
-/* By Genre Section */
-.by-genre-toggle {position:relative; display:flex; border:1px solid var(--b-2); border-radius:6px; overflow:hidden;}
-.bgt-indicator {position:absolute; top:0; bottom:0; background:var(--cv-purple); z-index:0; transition:left var(--motion-fast) var(--ease-standard), width var(--motion-fast) var(--ease-standard); border-radius:4px; margin:2px 0;}
-.bgt-btn {position:relative; z-index:1; padding:8px 16px; font-size:11px; font-weight:700; color:var(--text-3); cursor:pointer; background:transparent; transition:color var(--motion-fast) var(--ease-standard); letter-spacing:1px; touch-action:manipulation;}
+/* By Genre & Trending Toggle Buttons */
+.by-genre-toggle {position:relative; display:inline-flex; border:1px solid var(--b-2); border-radius:8px; overflow:hidden; background:rgba(12,10,20,0.6); padding:2px;}
+.bgt-indicator {position:absolute; top:2px; bottom:2px; background:var(--cv-purple); z-index:0; transition:left var(--motion-fast) var(--ease-standard), width var(--motion-fast) var(--ease-standard); border-radius:6px;}
+.bgt-btn {position:relative; z-index:1; padding:8px 18px; font-size:11.5px; font-weight:800; color:var(--text-3); cursor:pointer; background:transparent; transition:color var(--motion-fast) var(--ease-standard); letter-spacing:0.5px; text-transform:uppercase; touch-action:manipulation; border-radius:6px;}
 .bgt-btn.active {color:#fff;}
 .bgt-btn:hover:not(.active) {color:var(--text-1);}
 
@@ -588,21 +588,21 @@ iframe {border:none}
 .btn-primary i {color:var(--cv-purple-light)}
 .btn-primary:hover {background:var(--cv-purple-dim);border-color:var(--cv-purple)}
 .btn-primary:active {transform:scale(var(--press-scale))}
-.custom-select {position:relative; font-size:12px; font-weight:700; max-width:100%; box-sizing:border-box;}
+.custom-select {position:relative; font-size:14px; font-weight:700; max-width:100%; box-sizing:border-box;}
 .custom-select select {display:none;}
-.select-selected {background:var(--cv-dark-4); color:var(--text-2); border:1px solid var(--b-2); padding:8px 14px; border-radius:var(--r-pill); cursor:pointer; transition:background var(--t-fast), color var(--t-fast), border-color var(--t-fast); display:flex; justify-content:space-between; align-items:center; user-select:none; min-width:0; max-width:100%; box-sizing:border-box; overflow:hidden;}
-.select-selected .select-text {flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:left;}
-.select-selected:hover {background:var(--cv-dark-5); color:var(--text-1); border-color:var(--cv-purple-light);}
-.select-selected:after {content:"\f107"; font-family:"Font Awesome 5 Free"; font-weight:900; color:var(--cv-purple); font-size:14px; flex-shrink:0; margin-left:10px; transition:transform var(--motion-fast) var(--ease-standard)}
+.select-selected {background:rgba(22, 19, 36, 0.95); color:var(--text-1); border:1px solid rgba(157, 78, 221, 0.25); padding:10px 20px; height:44px; border-radius:var(--r-pill); cursor:pointer; transition:background var(--t-fast), color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast); display:flex; justify-content:space-between; align-items:center; user-select:none; min-width:0; max-width:100%; box-sizing:border-box; overflow:hidden; font-size:14px; font-weight:700;}
+.select-selected .select-text {flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:left; color:#ffffff;}
+.select-selected:hover {background:rgba(32, 26, 52, 0.98); color:#ffffff; border-color:rgba(181, 95, 230, 0.55); box-shadow:0 0 16px rgba(157, 78, 221, 0.15);}
+.select-selected:after {content:"\f107"; font-family:"Font Awesome 5 Free"; font-weight:900; color:var(--cv-purple); font-size:15px; flex-shrink:0; margin-left:12px; transition:transform var(--motion-fast) var(--ease-standard)}
 .ep-selects .select-selected { height: 44px; padding: 0 16px; font-size: 13px; }
-.select-selected.select-arrow-active {border-color:var(--cv-purple); box-shadow:0 0 0 2px rgba(181,95,230,0.2);}
+.select-selected.select-arrow-active {border-color:var(--cv-purple); box-shadow:0 0 0 2px rgba(181,95,230,0.25);}
 .select-selected.select-arrow-active:after {transform:rotate(180deg)}
-.select-items {position:absolute; background-color:var(--cv-dark-4); border:1px solid var(--cv-purple-dim); box-shadow:0 8px 24px rgba(0,0,0,0.5); top:100%; left:0; right:0; z-index:6000; border-radius:12px; margin-top:6px; max-height:280px; overflow-y:auto; overscroll-behavior:contain; box-sizing:border-box; transform-origin:top center; animation:dropdownUnfold 160ms var(--ease-standard) forwards}
+.select-items {position:absolute; background-color:#161224; border:1px solid rgba(157, 78, 221, 0.35); box-shadow:0 12px 36px rgba(0,0,0,0.75); top:calc(100% + 6px); left:0; right:0; z-index:6000; border-radius:16px; padding:6px; margin-top:0; max-height:280px; overflow-y:auto; overscroll-behavior:contain; box-sizing:border-box; transform-origin:top center; animation:dropdownUnfold 160ms var(--ease-standard) forwards}
 @keyframes dropdownUnfold { from { opacity: 0; transform: translateY(-6px) scaleY(0.96); } to { opacity: 1; transform: translateY(0) scaleY(1); } }
 .select-items::-webkit-scrollbar {width:6px;}
 .select-items::-webkit-scrollbar-thumb {background:var(--cv-dark-5); border-radius:var(--r-pill);}
-.select-items div {color:var(--text-2); padding:10px 16px; cursor:pointer; user-select:none; transition:background 100ms var(--ease-standard), color 100ms var(--ease-standard); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-.select-items div:hover, .same-as-selected {background-color:var(--cv-purple-dim); color:var(--text-1);}
+.select-items div {color:var(--text-2); padding:10px 16px; border-radius:10px; cursor:pointer; user-select:none; font-size:13.5px; font-weight:600; transition:background 100ms var(--ease-standard), color 100ms var(--ease-standard); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.select-items div:hover, .same-as-selected {background-color:var(--cv-purple-dim); color:#ffffff; font-weight:700;}
 .select-hide {display:none;}
 .ep-select:focus {border-color:var(--cv-purple);box-shadow:0 0 0 2px rgba(181,95,230,0.2);}
 .ep-select option {background:var(--bg);color:var(--text-1);font-weight:600;}
