@@ -171,7 +171,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=210" rel="stylesheet">
+  <link href="style.css?v=211" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -552,10 +552,11 @@
                   <option value="newest">Newest</option>
                 </select>
               </div>
-              <div class="custom-select" id="wrap-browse-popular-type" style="width:150px; display:none;">
-                <select id="browse-popular-type" onchange="App.changePopularType(this.value)">
+              <div class="custom-select" id="wrap-browse-media-type" style="width:150px; display:none;">
+                <select id="browse-media-type" onchange="App.changeBrowseMediaType(this.value)">
                   <option value="movie">Movies</option>
                   <option value="tv">TV Series</option>
+                  <option value="all">All Media</option>
                 </select>
               </div>
               <div class="custom-select" id="wrap-browse-trending-time" style="width:150px; display:none;">
@@ -1071,7 +1072,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=210"></script>
+  <script src="script.js?v=211"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

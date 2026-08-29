@@ -394,43 +394,41 @@ var App = {
     
     var sortWrap = document.getElementById('wrap-browse-sort');
     var genreWrap = document.getElementById('wrap-browse-genre');
-    var popularTypeWrap = document.getElementById('wrap-browse-popular-type');
+    var mediaTypeWrap = document.getElementById('wrap-browse-media-type');
     var timeWrap = document.getElementById('wrap-browse-trending-time');
     
+    if (genreWrap) {
+      genreWrap.style.display = 'block';
+      CustomSelect.update('browse-genre', State.genreId || '');
+    }
+
     if (mode === 'trending') {
       if (sortWrap) sortWrap.style.display = 'none';
-      if (popularTypeWrap) popularTypeWrap.style.display = 'none';
-      if (genreWrap) genreWrap.style.display = 'none';
+      if (mediaTypeWrap) {
+        mediaTypeWrap.style.display = 'block';
+        CustomSelect.update('browse-media-type', State.browseType || 'all');
+      }
       if (timeWrap) {
         timeWrap.style.display = 'block';
         CustomSelect.update('browse-trending-time', State.trendingTimeWindow || 'day');
       }
-    } else if (mode === 'popular') {
+    } else if (mode === 'popular' || mode === 'toprated' || mode === 'upcoming') {
       if (sortWrap) sortWrap.style.display = 'none';
       if (timeWrap) timeWrap.style.display = 'none';
-      if (popularTypeWrap) {
-        popularTypeWrap.style.display = 'block';
-        CustomSelect.update('browse-popular-type', State.browseType || 'movie');
-      }
-      if (genreWrap) {
-        genreWrap.style.display = 'block';
-        CustomSelect.update('browse-genre', State.genreId || '');
+      if (mediaTypeWrap) {
+        mediaTypeWrap.style.display = 'block';
+        CustomSelect.update('browse-media-type', State.browseType || 'movie');
       }
     } else if (mode === true || mode === 'standard') {
-      if (popularTypeWrap) popularTypeWrap.style.display = 'none';
+      if (mediaTypeWrap) mediaTypeWrap.style.display = 'none';
       if (timeWrap) timeWrap.style.display = 'none';
       if (sortWrap) {
         sortWrap.style.display = 'block';
         CustomSelect.update('browse-sort', State.browseMode || 'popular');
       }
-      if (genreWrap) {
-        genreWrap.style.display = 'block';
-        CustomSelect.update('browse-genre', State.genreId || '');
-      }
     } else {
       if (sortWrap) sortWrap.style.display = 'none';
-      if (popularTypeWrap) popularTypeWrap.style.display = 'none';
-      if (genreWrap) genreWrap.style.display = 'none';
+      if (mediaTypeWrap) mediaTypeWrap.style.display = 'none';
       if (timeWrap) timeWrap.style.display = 'none';
     }
   },
@@ -438,12 +436,13 @@ var App = {
     State.browseMode = val;
     Browse.load();
   },
-  changePopularType: function(val) {
+  changeBrowseMediaType: function(val) {
     State.browseType = val || 'movie';
-    State.browseCategory = 'popular';
-    State.browseMode = 'popular';
     State.browsePage = 1;
     Browse.load();
+  },
+  changePopularType: function(val) {
+    this.changeBrowseMediaType(val);
   },
   changeGenre: function(val) {
     State.genreId = val ? parseInt(val) : null;
@@ -481,8 +480,28 @@ var App = {
     this.setBrowseHeader('Popular', 'popular'); 
     Browse.load(); 
   },
-  browseTopRated: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='toprated'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-toprated','Top Rated'); this.setBrowseHeader('Top Rated', false); Browse.load(); },
-  browseUpcoming: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='upcoming'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-upcoming','Upcoming'); this.setBrowseHeader('Upcoming', false); Browse.load(); },
+  browseTopRated: function(){ 
+    State.browseCategory='toprated'; 
+    State.browseType='movie'; 
+    State.browseMode='toprated'; 
+    State.browsePage=1; 
+    State.genreId=null; 
+    this.showPage('page-browse'); 
+    this.setNav('nav-toprated','Top Rated'); 
+    this.setBrowseHeader('Top Rated', 'toprated'); 
+    Browse.load(); 
+  },
+  browseUpcoming: function(){ 
+    State.browseCategory='upcoming'; 
+    State.browseType='movie'; 
+    State.browseMode='upcoming'; 
+    State.browsePage=1; 
+    State.genreId=null; 
+    this.showPage('page-browse'); 
+    this.setNav('nav-upcoming','Upcoming'); 
+    this.setBrowseHeader('Upcoming', 'upcoming'); 
+    Browse.load(); 
+  },
   updateWatchlistButtons: function() {
     document.querySelectorAll('[class*="wl-btn-"]').forEach(function(btn) {
       var match = btn.className.match(/wl-btn-(\d+)/);
@@ -1271,33 +1290,67 @@ var Browse = {
     State.isFetching = true;
     if(!append) { State.browsePage = 1; Prog.start(); Render.skeletons('browse-grid', 18); }
     var p;
+    var currentType = (State.browseType === 'all' || !State.browseType) ? 'movie' : State.browseType;
+
     if(State.browseCategory === 'anime') {
-        var genreParam = State.genreId ? '16,'+State.genreId : 16;
-        if(State.browseMode === 'popular' || State.browseMode === 'trending') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'popularity.desc'});
-        else if(State.browseMode === 'toprated') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'vote_average.desc', 'vote_count.gte':200});
-        else if(State.browseMode === 'newest') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'first_air_date.desc'});
+      var genreParam = State.genreId ? '16,'+State.genreId : 16;
+      if(State.browseMode === 'popular' || State.browseMode === 'trending') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'popularity.desc'});
+      else if(State.browseMode === 'toprated') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'vote_average.desc', 'vote_count.gte':200});
+      else if(State.browseMode === 'newest') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'first_air_date.desc'});
+      else p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'popularity.desc'});
     } else if(State.browseCategory === 'trending' || State.browseMode === 'trending') {
+      if (State.genreId) {
+        p = API.discover(currentType, {page:State.browsePage, sort_by:'popularity.desc', with_genres:State.genreId});
+      } else {
         p = API.trending(State.browseType==='all'?'all':State.browseType, State.browsePage, State.trendingTimeWindow || 'day');
-    } else if(State.browseCategory === 'movie' || State.browseCategory === 'tv') {
-        var sortParam = 'popularity.desc';
-        if(State.browseMode === 'toprated') sortParam = 'vote_average.desc';
-        else if(State.browseMode === 'newest') sortParam = State.browseType==='movie' ? 'primary_release_date.desc' : 'first_air_date.desc';
-        
-        if(State.genreId) {
-            var params = {page:State.browsePage, sort_by:sortParam, with_genres:State.genreId};
-            if(State.browseMode === 'toprated') params['vote_count.gte'] = 200;
-            p = API.discover(State.browseType, params);
+      }
+    } else if(State.browseCategory === 'popular' || State.browseMode === 'popular') {
+      if (State.genreId) {
+        p = API.discover(currentType, {page:State.browsePage, sort_by:'popularity.desc', with_genres:State.genreId});
+      } else {
+        p = API.popular(currentType, State.browsePage);
+      }
+    } else if(State.browseCategory === 'toprated' || State.browseMode === 'toprated') {
+      if (State.genreId) {
+        p = API.discover(currentType, {page:State.browsePage, sort_by:'vote_average.desc', 'vote_count.gte':150, with_genres:State.genreId});
+      } else {
+        p = API.topRated(currentType, State.browsePage);
+      }
+    } else if(State.browseCategory === 'upcoming' || State.browseMode === 'upcoming') {
+      if (currentType === 'tv') {
+        if (State.genreId) {
+          p = API.discover('tv', {page:State.browsePage, sort_by:'first_air_date.desc', with_genres:State.genreId});
         } else {
-            if(State.browseMode === 'popular') p = API.popular(State.browseType, State.browsePage);
-            else if(State.browseMode === 'toprated') p = API.topRated(State.browseType, State.browsePage);
-            else if(State.browseMode === 'newest') p = API.discover(State.browseType, {page:State.browsePage, sort_by: sortParam});
+          p = API.discover('tv', {page:State.browsePage, sort_by:'first_air_date.desc'});
         }
+      } else {
+        if (State.genreId) {
+          p = API.discover('movie', {page:State.browsePage, sort_by:'primary_release_date.desc', with_genres:State.genreId});
+        } else {
+          p = API.upcoming(State.browsePage);
+        }
+      }
+    } else if(State.browseCategory === 'movie' || State.browseCategory === 'tv') {
+      var sortParam = 'popularity.desc';
+      if(State.browseMode === 'toprated') sortParam = 'vote_average.desc';
+      else if(State.browseMode === 'newest') sortParam = State.browseType==='movie' ? 'primary_release_date.desc' : 'first_air_date.desc';
+      
+      if(State.genreId) {
+        var params = {page:State.browsePage, sort_by:sortParam, with_genres:State.genreId};
+        if(State.browseMode === 'toprated') params['vote_count.gte'] = 200;
+        p = API.discover(State.browseType, params);
+      } else {
+        if(State.browseMode === 'popular') p = API.popular(State.browseType, State.browsePage);
+        else if(State.browseMode === 'toprated') p = API.topRated(State.browseType, State.browsePage);
+        else if(State.browseMode === 'trending') p = API.trending(State.browseType, State.browsePage, 'day');
+        else if(State.browseMode === 'newest') p = API.discover(State.browseType, {page:State.browsePage, sort_by: sortParam});
+        else p = API.popular(State.browseType, State.browsePage);
+      }
     } else {
-        // Fallback for global buttons (Trending, Top Rated, Upcoming)
-        if(State.browseMode==='trending') p = API.trending(State.browseType, State.browsePage, State.trendingTimeWindow || 'day');
-        else if(State.browseMode==='toprated') p = API.topRated(State.browseType==='all'?'movie':State.browseType, State.browsePage);
-        else if(State.browseMode==='upcoming') p = API.upcoming(State.browsePage);
-        else p = API.popular(State.browseType==='all'?'movie':State.browseType, State.browsePage);
+      if(State.browseMode==='trending') p = API.trending(State.browseType, State.browsePage, State.trendingTimeWindow || 'day');
+      else if(State.browseMode==='toprated') p = API.topRated(State.browseType==='all'?'movie':State.browseType, State.browsePage);
+      else if(State.browseMode==='upcoming') p = API.upcoming(State.browsePage);
+      else p = API.popular(State.browseType==='all'?'movie':State.browseType, State.browsePage);
     }
 
     p.then(function(data){
@@ -1305,7 +1358,12 @@ var Browse = {
       if(data && data.results){
         var items=data.results.filter(function(x){return x.poster_path;});
         if (items.length === 0) State.hasMore = false;
-        var html = items.map(function(x){return Render.posterCard(x, State.browseType==='all'?null:State.browseType);}).join('');
+        var html = items.map(function(x){
+          var itemType = (State.browseCategory === 'trending' && State.browseType === 'all') 
+            ? (x.media_type || (x.title ? 'movie' : 'tv')) 
+            : (State.browseType === 'all' ? (x.title ? 'movie' : 'tv') : (State.browseType || 'movie'));
+          return Render.posterCard(x, itemType);
+        }).join('');
         if(!html && !append) html = '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No titles found.</div>';
         if(append) document.getElementById('browse-grid').insertAdjacentHTML('beforeend', html);
         else document.getElementById('browse-grid').innerHTML = html;
