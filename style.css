@@ -747,7 +747,7 @@ a.telegram-nav-item {
    08. FOOTER
 ================================================================ */
 .cv-footer {background:var(--cv-dark-1);padding:60px 40px 90px 40px;margin-top:40px;border-top:1px solid var(--b-1);position:relative;z-index:10}
-.footer-grid {display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr 1.3fr;gap:36px;margin-bottom:40px}
+.footer-grid {display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1.6fr;gap:32px;margin-bottom:40px}
 @media (max-width: 1024px) {
   .footer-grid {grid-template-columns:repeat(2, 1fr);gap:30px}
 }
@@ -767,7 +767,8 @@ a.telegram-nav-item {
 .footer-btn:active {transform:scale(0.97)}
 .footer-col-title {font-size:12px;font-weight:800;color:var(--text-1);text-transform:uppercase;margin-bottom:20px;letter-spacing:1px}
 .footer-links {display:flex;flex-direction:column;gap:14px}
-.footer-link {font-size:12px;color:var(--text-3);cursor:pointer;transition:var(--t-fast)}
+.footer-link {display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--text-3);cursor:pointer;transition:var(--t-fast);white-space:nowrap;text-decoration:none}
+.footer-link i {width:16px;text-align:center;flex-shrink:0}
 .footer-link:hover {color:var(--cv-purple-light);transform:translateX(4px)}
 .footer-bottom {border-top:1px solid var(--b-1);padding-top:24px;padding-right:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .footer-copy {font-size:12px;color:var(--text-3)}
