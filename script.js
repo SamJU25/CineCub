@@ -1771,7 +1771,21 @@ var Watchlist = {
       var fi=fv.querySelector('i');
       if(fi){fi.classList.toggle('fa-check',added);fi.classList.toggle('fa-heart',!added);}
     }
-    if(State.activePage==='page-watchlist')this.render();
+    if(State.activePage==='page-watchlist'){
+      if(!added && e && e.target){
+        var card = e.target.closest ? e.target.closest('.poster-card') : null;
+        if(card){
+          card.style.transition = 'opacity 180ms var(--ease-standard), transform 180ms var(--ease-standard)';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.92)';
+          setTimeout(() => { this.render(); }, 180);
+        } else {
+          this.render();
+        }
+      } else {
+        this.render();
+      }
+    }
     return added;
   },
   render: function(){var el=document.getElementById('wl-grid');if(!el)return;el.innerHTML=State.watchlist.map(function(x){return Render.posterCard(x,x.type);}).join('')||'<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">Your watchlist is empty.</div>';}
