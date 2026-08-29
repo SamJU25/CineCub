@@ -767,31 +767,6 @@ var TrendingSection = {
       }
     }
     
-    CustomSelect.update('home-trending-time', win);
-    this.loadData();
-  },
-  onMobileChange: function(win) {
-    if (this.timeWindow === win) return;
-    this.timeWindow = win;
-    
-    var desktopBtn = document.getElementById('btn-trending-' + win);
-    if (desktopBtn) {
-      var container = desktopBtn.parentElement;
-      if (container) {
-        container.querySelectorAll('.bgt-btn').forEach(btn => btn.classList.remove('active'));
-      }
-      desktopBtn.classList.add('active');
-      var ind = document.getElementById('trending-indicator');
-      if (ind) {
-        ind.style.left = desktopBtn.offsetLeft + 'px';
-        ind.style.width = desktopBtn.offsetWidth + 'px';
-      }
-    }
-    
-    this.loadData();
-  },
-  loadData: function() {
-    var win = this.timeWindow;
     var row = document.getElementById('row-trending');
     if (row) {
       Render.skeletons('row-trending', 8);
@@ -823,7 +798,6 @@ var TrendingSection = {
         ind.style.width = activeBtn.offsetWidth + 'px';
       }, 50);
     }
-    CustomSelect.update('home-trending-time', this.timeWindow);
   }
 };
 
