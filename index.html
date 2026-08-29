@@ -79,7 +79,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=166" rel="stylesheet">
+  <link href="style.css?v=167" rel="stylesheet">
 </head>
 <body>
 
@@ -133,12 +133,11 @@
       <div class="nav-item" id="nav-history" onclick="App.showHistory()">
         <span class="nav-item-icon"><i class="fas fa-history"></i></span><span class="nav-item-text">History</span>
       </div>
-      <div class="nav-section-label" style="margin-top: 15px;">Apps</div>
-      <div style="padding: 0 15px; margin-top: 10px; margin-bottom: 20px;">
-        <button class="sf-download-btn" onclick="openAppsModal()" title="Get StreamHeaven">
-          <i class="fas fa-download sf-download-icon"></i>
-          <span class="sf-download-text">Get StreamHeaven</span>
-        </button>
+      <div class="nav-section-label">Apps</div>
+      <div class="nav-item" id="nav-download" onclick="openAppsModal()" title="Get StreamHeaven">
+        <span class="nav-item-icon" style="color:var(--cv-purple-light);"><i class="fas fa-download"></i></span>
+        <span class="nav-item-text" style="color:var(--cv-purple-light);font-weight:700;">Get StreamHeaven</span>
+        <span class="nav-badge" style="background:var(--grad-primary);color:#fff;box-shadow:var(--cv-purple-glow);">APP</span>
       </div>
     </nav>
       <div class="cv-sidebar-bottom">
@@ -786,7 +785,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=32"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=166"></script>
+  <script src="script.js?v=167"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
