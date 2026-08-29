@@ -1123,114 +1123,190 @@ var Modal = {
       this.isOpening = false; 
       if(!data){ Toast.show('Error loading details.'); Prog.done(); return; }
       State.activeData = data;
-      document.getElementById('fv-backdrop').src = type==='person' ? (data.profile_path?CFG.ORIG+data.profile_path:Utils.placeholder()) : CFG.ORIG+(data.backdrop_path||data.poster_path);
-      document.getElementById('fv-poster').src = type==='person' ? (data.profile_path?CFG.IMG342+data.profile_path:Utils.placeholder()) : CFG.IMG342+data.poster_path;
-      document.getElementById('fv-title').textContent = data.title||data.name;
-      document.title = (type==='person' ? "Profile: " : "Watching ") + (data.title||data.name) + " \u2014 StreamHeaven";
-      document.getElementById('fv-year').textContent = type==='person' ? (data.known_for_department||'') : Utils.year(data.release_date||data.first_air_date);
-      document.getElementById('fv-rating').textContent = type==='person' ? (data.popularity?data.popularity.toFixed(1):'N/A') : (data.vote_average ? data.vote_average.toFixed(1) : 'N/A');
-      document.getElementById('fv-desc').innerHTML = type==='person' ? (data.biography?data.biography.replace(/\n/g,'<br>'):'No biography.') : (data.overview||'No overview available.');
-      document.getElementById('fv-genre').textContent = type==='person' ? (data.place_of_birth||'') : (data.genres||[]).map(x=>x.name).join(', ');
-      document.getElementById('fv-runtime').textContent = type==='person' ? (data.birthday?('Born: '+data.birthday):'') : (type==='movie'?Utils.runtime(data.runtime):((data.number_of_seasons||1)+' Season(s)'));
       
-      var cast = type==='person' ? ((data.combined_credits&&data.combined_credits.cast)||[]).filter(x=>x.poster_path).sort((a,b)=>b.popularity-a.popularity).slice(0,20) : ((data.credits&&data.credits.cast)||[]).slice(0,10);
-      
-      if(type==='person') {
-         document.getElementById('fv-cast').innerHTML = '<div style="font-size:16px; font-weight:600; margin-bottom:10px; width:100%; color:var(--text-1);">Known For</div>' + cast.map(item => Render.posterCard(item, item.media_type || 'movie')).join('');
+      if (type === 'person') {
+        var credits = (data.combined_credits && data.combined_credits.cast) || [];
+        var popularWithBackdrop = credits.find(x => x.backdrop_path && (x.popularity > 10 || x.vote_count > 50)) || credits.find(x => x.backdrop_path);
+        document.getElementById('fv-backdrop').src = popularWithBackdrop ? (CFG.ORIG + popularWithBackdrop.backdrop_path) : (data.profile_path ? CFG.ORIG + data.profile_path : Utils.placeholder());
+        document.getElementById('fv-poster').src = data.profile_path ? CFG.IMG342 + data.profile_path : Utils.placeholder();
+        document.getElementById('fv-title').textContent = data.name || data.title;
+        document.title = (data.name || data.title) + " \u2014 StreamHeaven";
+
+        var ratingBadge = document.getElementById('fv-meta-rating');
+        if (ratingBadge) ratingBadge.style.display = 'none';
+        var qualityBadge = document.getElementById('fv-meta-quality');
+        if (qualityBadge) qualityBadge.style.display = 'none';
+        var yearBadge = document.getElementById('fv-year');
+        if (yearBadge) {
+          yearBadge.textContent = data.known_for_department || 'Actor';
+          yearBadge.style.display = 'inline-flex';
+        }
+
+        var bio = (data.biography || '').replace(/Description above from the Wikipedia article[^\n<]+/gi, '').trim();
+        document.getElementById('fv-desc').innerHTML = bio ? bio.replace(/\n\s*\n/g, '<br><br>').replace(/\n/g, '<br>') : '<span style="color:var(--text-3);">No biography available.</span>';
+
+        var key1 = document.getElementById('fv-info-key-1');
+        if (key1) key1.textContent = 'Place of Birth';
+        document.getElementById('fv-genre').textContent = data.place_of_birth || 'N/A';
+
+        var key2 = document.getElementById('fv-info-key-2');
+        if (key2) key2.textContent = 'Birthday';
+        var bdayText = data.birthday || '';
+        if (data.birthday && data.deathday) bdayText += ' (Died: ' + data.deathday + ')';
+        document.getElementById('fv-runtime').textContent = bdayText || 'N/A';
+
+        var playBtn = document.querySelector('.btn-fv-play');
+        if (playBtn) playBtn.style.display = 'none';
+        var fvWl = document.getElementById('fv-wl-btn');
+        if (fvWl) fvWl.style.display = 'none';
+        var shareBtn = document.getElementById('fv-share-btn');
+        if (shareBtn) shareBtn.style.display = 'inline-flex';
+
+        var fvTabs = document.getElementById('fv-tabs-bar') || document.querySelector('.fv-tabs');
+        if (fvTabs) fvTabs.style.display = 'none';
+
+        var castHeader = document.getElementById('fv-cast-header');
+        if (castHeader) castHeader.textContent = 'KNOWN FOR';
+        var filmography = credits.filter(x => x.poster_path).sort((a, b) => (b.popularity || 0) - (a.popularity || 0)).slice(0, 30);
+        if (filmography.length) {
+          document.getElementById('fv-cast').innerHTML = filmography.map(item => Render.posterCard(item, item.media_type || (item.title ? 'movie' : 'tv'))).join('');
+        } else {
+          document.getElementById('fv-cast').innerHTML = '<div style="color:var(--text-3); font-size:14px; padding:20px; width:100%;">No titles found.</div>';
+        }
+
+        var trailerContainer = document.getElementById('trailer-container');
+        if (trailerContainer) trailerContainer.style.display = 'none';
+        var similarSection = document.getElementById('fv-similar-section');
+        if (similarSection) similarSection.style.display = 'none';
+
       } else {
-         document.getElementById('fv-cast').innerHTML = cast.map(c => {
-            var safeName = Utils.escape(c.name).replace(/'/g, "\\'");
-            return '<div class="cast-card" onclick="Modal.openFull('+c.id+', \'person\')" style="cursor:pointer;"><img alt="'+Utils.escape(c.name)+'" class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'" loading="lazy" decoding="async" onerror="this.src=Utils.placeholder()"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>';
-         }).join('');
-      }
-      
-      var similar = ((data.similar&&data.similar.results)||[]).filter(x => x.poster_path);
-      if(type !== 'person') {
-          if(similar.length) {
-            document.getElementById('fv-similar').innerHTML = similar.map(item => Render.posterCard(item, item.media_type || type)).join('');
-          } else {
-            document.getElementById('fv-similar').innerHTML = '<div style="color:var(--text-3); font-size:14px; text-align:center; padding: 20px; width:100%;">No similar titles found.</div>';
+        document.getElementById('fv-backdrop').src = CFG.ORIG + (data.backdrop_path || data.poster_path);
+        document.getElementById('fv-poster').src = data.poster_path ? CFG.IMG342 + data.poster_path : Utils.placeholder();
+        document.getElementById('fv-title').textContent = data.title || data.name;
+        document.title = (data.title || data.name) + " \u2014 StreamHeaven";
+
+        var ratingBadge = document.getElementById('fv-meta-rating');
+        if (ratingBadge) ratingBadge.style.display = 'inline-flex';
+        document.getElementById('fv-rating').textContent = data.vote_average ? data.vote_average.toFixed(1) : 'N/A';
+        var qualityBadge = document.getElementById('fv-meta-quality');
+        if (qualityBadge) qualityBadge.style.display = 'inline-flex';
+        var yearBadge = document.getElementById('fv-year');
+        if (yearBadge) {
+          yearBadge.textContent = Utils.year(data.release_date || data.first_air_date);
+          yearBadge.style.display = 'inline-flex';
+        }
+
+        document.getElementById('fv-desc').innerHTML = data.overview ? Utils.escape(data.overview) : '<span style="color:var(--text-3);">No overview available.</span>';
+
+        var key1 = document.getElementById('fv-info-key-1');
+        if (key1) key1.textContent = 'Genre';
+        document.getElementById('fv-genre').textContent = (data.genres || []).map(x => x.name).join(', ') || 'N/A';
+
+        var key2 = document.getElementById('fv-info-key-2');
+        if (key2) key2.textContent = 'Runtime';
+        document.getElementById('fv-runtime').textContent = type === 'movie' ? Utils.runtime(data.runtime) : ((data.number_of_seasons || 1) + ' Season(s)');
+
+        var playBtn = document.querySelector('.btn-fv-play');
+        if (playBtn) playBtn.style.display = 'inline-flex';
+        var fvWl = document.getElementById('fv-wl-btn');
+        if (fvWl) fvWl.style.display = 'inline-flex';
+        var shareBtn = document.getElementById('fv-share-btn');
+        if (shareBtn) shareBtn.style.display = 'inline-flex';
+
+        var fvTabs = document.getElementById('fv-tabs-bar') || document.querySelector('.fv-tabs');
+        if (fvTabs) fvTabs.style.display = 'flex';
+
+        var castHeader = document.getElementById('fv-cast-header');
+        if (castHeader) castHeader.textContent = 'CAST';
+        var cast = ((data.credits && data.credits.cast) || []).slice(0, 15);
+        if (cast.length) {
+          document.getElementById('fv-cast').innerHTML = cast.map(c => {
+            return '<div class="cast-card" onclick="Modal.openFull(' + c.id + ', \'person\')" style="cursor:pointer;"><img alt="' + Utils.escape(c.name) + '" class="cast-avatar" src="' + (c.profile_path ? CFG.IMG185 + c.profile_path : Utils.placeholder()) + '" loading="lazy" decoding="async" onerror="this.src=Utils.placeholder()"/><div class="cast-name">' + Utils.escape(c.name) + '</div><div class="cast-char">' + Utils.escape(c.character || '') + '</div></div>';
+          }).join('');
+        } else {
+          document.getElementById('fv-cast').innerHTML = '<div style="color:var(--text-3); font-size:14px; padding:20px; width:100%;">No cast information available.</div>';
+        }
+
+        var similarSection = document.getElementById('fv-similar-section');
+        if (similarSection) similarSection.style.display = 'block';
+        var similar = ((data.similar && data.similar.results) || []).filter(x => x.poster_path);
+        if (similar.length) {
+          document.getElementById('fv-similar').innerHTML = similar.map(item => Render.posterCard(item, item.media_type || type)).join('');
+        } else {
+          document.getElementById('fv-similar').innerHTML = '<div style="color:var(--text-3); font-size:14px; text-align:center; padding: 20px; width:100%;">No similar titles found.</div>';
+        }
+
+        var epNav = document.getElementById('ep-nav-controls');
+        var epNavAdFree = document.getElementById('ep-nav-controls-adfree');
+        if(type==='tv'){
+          if(epNav) epNav.style.display = 'flex';
+          if(epNavAdFree) epNavAdFree.style.display = 'flex';
+          var validSeasons = (data.seasons || []).filter(function(s) { return s.season_number >= 0; });
+          if (validSeasons.length === 0) {
+            var maxS = data.number_of_seasons || 1;
+            validSeasons = Array.from({length: maxS}, function(_,i) { return {season_number: i+1, episode_count: 24}; });
           }
-      } else {
-          document.getElementById('fv-similar').innerHTML = '';
-      }
-      
-      var fvTabs = document.querySelector('.fv-tabs');
-      if (fvTabs) fvTabs.style.display = type==='person' ? 'none' : 'flex';
-      var playBtn = document.querySelector('.btn-fv-play');
-      if (playBtn) playBtn.style.display = type==='person' ? 'none' : 'inline-flex';
-      
-      var epNav = document.getElementById('ep-nav-controls');
-      var epNavAdFree = document.getElementById('ep-nav-controls-adfree');
-      if(type==='tv'){
-        if(epNav) epNav.style.display = 'flex';
-        if(epNavAdFree) epNavAdFree.style.display = 'flex';
-        var validSeasons = (data.seasons || []).filter(function(s) { return s.season_number >= 0; });
-        if (validSeasons.length === 0) {
-          var maxS = data.number_of_seasons || 1;
-          validSeasons = Array.from({length: maxS}, function(_,i) { return {season_number: i+1, episode_count: 24}; });
+          
+          var seasonHtml = validSeasons.map(function(s) {
+             var label = s.season_number === 0 ? 'Specials' : 'Season ' + s.season_number;
+             return '<option value="'+s.season_number+'">'+label+'</option>';
+          }).join('');
+          document.getElementById('ep-season').innerHTML = seasonHtml;
+          if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').innerHTML = seasonHtml;
+          
+          var hasSeason1 = validSeasons.some(function(s) { return s.season_number === 1; });
+          var hist = State.history.find(function(h){return h.id===id && h.type==='tv';});
+          if(hist && hist.season !== null && hist.season !== undefined) {
+            document.getElementById('ep-season').value = hist.season;
+            if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').value = hist.season;
+          } else if (hasSeason1) {
+            document.getElementById('ep-season').value = "1";
+            if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').value = "1";
+          }
+          
+          Player.updateEpisodes();
+          if(typeof AdFreePlayer !== 'undefined') AdFreePlayer.updateEpisodes();
+          
+          if(hist && hist.episode !== null && hist.episode !== undefined) {
+            var maxEp = document.getElementById('ep-episode').options.length;
+            document.getElementById('ep-episode').value = Math.min(hist.episode, maxEp);
+            if(document.getElementById('ep-episode-adfree')) document.getElementById('ep-episode-adfree').value = Math.min(hist.episode, maxEp);
+          }
+          
+        } else { 
+          if(epNav) epNav.style.display = 'none';
+          if(epNavAdFree) epNavAdFree.style.display = 'none';
         }
-        
-        var seasonHtml = validSeasons.map(function(s) {
-           var label = s.season_number === 0 ? 'Specials' : 'Season ' + s.season_number;
-           return '<option value="'+s.season_number+'">'+label+'</option>';
-        }).join('');
-        document.getElementById('ep-season').innerHTML = seasonHtml;
-        if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').innerHTML = seasonHtml;
-        
-        var hasSeason1 = validSeasons.some(function(s) { return s.season_number === 1; });
-        var hist = State.history.find(function(h){return h.id===id && h.type==='tv';});
-        if(hist && hist.season !== null && hist.season !== undefined) {
-          document.getElementById('ep-season').value = hist.season;
-          if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').value = hist.season;
-        } else if (hasSeason1) {
-          document.getElementById('ep-season').value = "1";
-          if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').value = "1";
+
+        var serverHtml = '<div style="font-size:13px; color:var(--text-2); margin-bottom: 5px; font-weight: 500; margin-left: 2px;">Select server</div>';
+        serverHtml += '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
+        serverHtml += '<select id="regular-server-select" onchange="Player.switchServer(this.value)">';
+        serverHtml += CFG.SERVERS.map((s,i) => '<option value="'+i+'">' + s.name + '</option>').join('');
+        serverHtml += '</select></div></div></div>';
+        var sTabs = document.getElementById('server-tabs');
+        sTabs.className = '';
+        sTabs.innerHTML = serverHtml;
+        State.activeServer = 0;
+
+        var trailerContainer = document.getElementById('trailer-container');
+        State.activeTrailer = null;
+        if (data.videos && data.videos.results) {
+          var trailer = data.videos.results.find(function(v){return v.site==='YouTube' && v.type==='Trailer';});
+          if (!trailer) trailer = data.videos.results.find(function(v){return v.site==='YouTube';});
+          if (trailer) State.activeTrailer = trailer.key;
         }
-        
-        Player.updateEpisodes();
-        if(typeof AdFreePlayer !== 'undefined') AdFreePlayer.updateEpisodes();
-        
-        if(hist && hist.episode !== null && hist.episode !== undefined) {
-          var maxEp = document.getElementById('ep-episode').options.length;
-          document.getElementById('ep-episode').value = Math.min(hist.episode, maxEp);
-          if(document.getElementById('ep-episode-adfree')) document.getElementById('ep-episode-adfree').value = Math.min(hist.episode, maxEp);
+        if (trailerContainer) {
+          if (State.activeTrailer) trailerContainer.style.display = 'block';
+          else trailerContainer.style.display = 'none';
         }
-        
-      } else { 
-        if(epNav) epNav.style.display = 'none';
-        if(epNavAdFree) epNavAdFree.style.display = 'none';
-      }
 
-      var serverHtml = '<div style="font-size:13px; color:var(--text-2); margin-bottom: 5px; font-weight: 500; margin-left: 2px;">Select server</div>';
-      serverHtml += '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
-      serverHtml += '<select id="regular-server-select" onchange="Player.switchServer(this.value)">';
-      serverHtml += CFG.SERVERS.map((s,i) => '<option value="'+i+'">' + s.name + '</option>').join('');
-      serverHtml += '</select></div></div></div>';
-      var sTabs = document.getElementById('server-tabs');
-      sTabs.className = '';
-      sTabs.innerHTML = serverHtml;
-      State.activeServer = 0;
-
-      var trailerContainer = document.getElementById('trailer-container');
-      State.activeTrailer = null;
-      if (data.videos && data.videos.results) {
-        var trailer = data.videos.results.find(function(v){return v.site==='YouTube' && v.type==='Trailer';});
-        if (!trailer) trailer = data.videos.results.find(function(v){return v.site==='YouTube';});
-        if (trailer) State.activeTrailer = trailer.key;
-      }
-      if (trailerContainer) {
-        if (State.activeTrailer) trailerContainer.style.display = 'block';
-        else trailerContainer.style.display = 'none';
-      }
-
-      var fvWl = document.getElementById('fv-wl-btn');
-      var fvIcon = fvWl ? fvWl.querySelector('i') : null;
-      var alreadyInWl = State.watchlist.some(function(w){return w.id===id;});
-      if(fvWl) fvWl.classList.toggle('active-wl', alreadyInWl);
-      if(fvIcon){
-        fvIcon.classList.toggle('fa-check', alreadyInWl);
-        fvIcon.classList.toggle('fa-heart', !alreadyInWl);
+        var fvIcon = fvWl ? fvWl.querySelector('i') : null;
+        var alreadyInWl = State.watchlist.some(function(w){return w.id===id;});
+        if(fvWl) fvWl.classList.toggle('active-wl', alreadyInWl);
+        if(fvIcon){
+          fvIcon.classList.toggle('fa-check', alreadyInWl);
+          fvIcon.classList.toggle('fa-heart', !alreadyInWl);
+        }
       }
 
       FVTabs.showTab('overview');

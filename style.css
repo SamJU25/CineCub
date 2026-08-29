@@ -515,7 +515,7 @@ iframe {border:none}
 .fv-overview-grid {display:grid;grid-template-columns:2fr 1fr;gap:28px}
 .fv-desc {font-size:14px;color:var(--text-2);line-height:1.8}
 .fv-info-item {display:flex;gap:12px;margin-bottom:8px}
-.fv-info-key {font-size:13px;font-weight:800;color:var(--text-4);min-width:80px}
+.fv-info-key {font-size:13px;font-weight:800;color:var(--text-4);min-width:105px}
 .fv-info-val {font-size:13px;color:var(--text-2)}
 
 .server-tabs {display:flex;flex-wrap:nowrap;overflow-x:auto;gap:10px;margin-bottom:14px;width:100%;padding-bottom:8px;scrollbar-width:thin;scrollbar-color:var(--cv-purple-dim) var(--cv-dark-4);}

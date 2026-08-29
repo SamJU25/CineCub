@@ -79,7 +79,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=177" rel="stylesheet">
+  <link href="style.css?v=178" rel="stylesheet">
 </head>
 <body>
 
@@ -505,18 +505,18 @@
           <div class="fv-title-main">
             <div class="fv-title" id="fv-title"></div>
             <div class="fv-meta-row">
-              <span class="fv-meta-badge fv-mb-rating"><i class="fas fa-star"></i> <span id="fv-rating"></span></span>
+              <span class="fv-meta-badge fv-mb-rating" id="fv-meta-rating"><i class="fas fa-star"></i> <span id="fv-rating"></span></span>
               <span class="fv-meta-badge fv-mb-year" id="fv-year"></span>
-              <span class="fv-meta-badge fv-mb-quality">4K HD</span>
+              <span class="fv-meta-badge fv-mb-quality" id="fv-meta-quality">4K HD</span>
             </div>
           </div>
         </div>
-        <div class="fv-actions-row">
+        <div class="fv-actions-row" id="fv-actions-row">
           <button class="btn-fv-play" onclick="FVTabs.showTab('watch')"><i class="fas fa-play"></i> Watch Now</button>
           <button class="btn-fv-icon" id="fv-wl-btn" onclick="Watchlist.toggleCurrent(event)" title="Add to watchlist"><i class="fas fa-heart"></i></button>
           <button class="btn-fv-icon" id="fv-share-btn" onclick="App.shareCurrent()" title="Share Link"><i class="fas fa-share-alt"></i></button>
         </div>
-        <div class="fv-tabs cv-hscroll">
+        <div class="fv-tabs cv-hscroll" id="fv-tabs-bar">
           <div class="fv-tab active" onclick="FVTabs.showTab('overview', this)">Overview</div>
           <div class="fv-tab" onclick="FVTabs.showTab('watch', this)">Watch</div>
           <div class="fv-tab" onclick="FVTabs.showTab('watch_adfree', this)">Ad-Free Watch</div>
@@ -527,8 +527,8 @@
           <div class="fv-overview-grid">
             <p class="fv-desc" id="fv-desc"></p>
             <div>
-              <div class="fv-info-item"><span class="fv-info-key">Genre</span><span class="fv-info-val" id="fv-genre"></span></div>
-              <div class="fv-info-item"><span class="fv-info-key">Runtime</span><span class="fv-info-val" id="fv-runtime"></span></div>
+              <div class="fv-info-item" id="fv-info-item-1"><span class="fv-info-key" id="fv-info-key-1">Genre</span><span class="fv-info-val" id="fv-genre"></span></div>
+              <div class="fv-info-item" id="fv-info-item-2"><span class="fv-info-key" id="fv-info-key-2">Runtime</span><span class="fv-info-val" id="fv-runtime"></span></div>
             </div>
           </div>
           
@@ -540,8 +540,8 @@
             </div>
           </div>
 
-          <div class="fv-cast-section" style="border-top: 1px solid var(--b-2); padding-top: 24px;">
-            <div class="fv-cast-header">CAST</div>
+          <div class="fv-cast-section" id="fv-cast-section" style="border-top: 1px solid var(--b-2); padding-top: 24px;">
+            <div class="fv-cast-header" id="fv-cast-header">CAST</div>
             <div class="fv-cast-scroll cv-hscroll" id="fv-cast"></div>
           </div>
 
@@ -550,7 +550,7 @@
             <div class="fv-cast-scroll cv-hscroll" id="fv-actor-movies"></div>
           </div>
 
-          <div class="fv-cast-section" style="border-top: 1px solid var(--b-2); padding-top: 24px;">
+          <div class="fv-cast-section" id="fv-similar-section" style="border-top: 1px solid var(--b-2); padding-top: 24px;">
             <div class="fv-cast-header">SIMILAR</div>
             <div class="fv-cast-scroll cv-hscroll" id="fv-similar"></div>
           </div>
@@ -797,7 +797,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=177"></script>
+  <script src="script.js?v=178"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
