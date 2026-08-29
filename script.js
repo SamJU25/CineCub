@@ -1064,8 +1064,12 @@ var Browse = {
 ================================================================ */
 var Modal = {
   isOpening: false, 
+  navHistory: [],
   overlayClick: function(e){ if(e.target === document.getElementById('modal-overlay')) this.closeAll(); },
   closeAll: function(skipHistory){
+    this.navHistory = [];
+    var backBtn = document.getElementById('fv-hero-back');
+    if (backBtn) backBtn.style.display = 'none';
     document.getElementById('modal-overlay').classList.remove('open');
     
     var tp = document.getElementById('trailer-player');
@@ -1106,10 +1110,27 @@ var Modal = {
       window.history.back();
     }
   },
-  openFull: function(id, type){
+  goBack: function() {
+    if (this.navHistory && this.navHistory.length > 0) {
+      var prev = this.navHistory.pop();
+      this.openFull(prev.id, prev.type, true);
+    }
+  },
+  openFull: function(id, type, isBackNav){
     if (this.isOpening) return; 
     this.isOpening = true;
     Search.closeDropdown();
+
+    if (!isBackNav && State.activeId && document.getElementById('modal-overlay').classList.contains('open') && (State.activeId !== id || State.activeType !== type)) {
+      this.navHistory.push({ id: State.activeId, type: State.activeType });
+    } else if (!isBackNav && !document.getElementById('modal-overlay').classList.contains('open')) {
+      this.navHistory = [];
+    }
+
+    var backBtn = document.getElementById('fv-hero-back');
+    if (backBtn) {
+      backBtn.style.display = this.navHistory.length > 0 ? 'flex' : 'none';
+    }
     
     if (window.location.hash !== '#media') {
       window.history.pushState({modal: true}, '', '#media');
@@ -1124,7 +1145,13 @@ var Modal = {
       if(!data){ Toast.show('Error loading details.'); Prog.done(); return; }
       State.activeData = data;
       
+      var overviewGrid = document.getElementById('fv-overview-grid');
+      var actionsRow = document.getElementById('fv-actions-row');
+
       if (type === 'person') {
+        if (overviewGrid) overviewGrid.classList.add('is-person');
+        if (actionsRow) actionsRow.style.display = 'none';
+
         var credits = (data.combined_credits && data.combined_credits.cast) || [];
         var popularWithBackdrop = credits.find(x => x.backdrop_path && (x.popularity > 10 || x.vote_count > 50)) || credits.find(x => x.backdrop_path);
         document.getElementById('fv-backdrop').src = popularWithBackdrop ? (CFG.ORIG + popularWithBackdrop.backdrop_path) : (data.profile_path ? CFG.ORIG + data.profile_path : Utils.placeholder());
@@ -1150,17 +1177,10 @@ var Modal = {
         document.getElementById('fv-genre').textContent = data.place_of_birth || 'N/A';
 
         var key2 = document.getElementById('fv-info-key-2');
-        if (key2) key2.textContent = 'Birthday';
+        if (key2) key2.textContent = 'Date of Birth';
         var bdayText = data.birthday || '';
         if (data.birthday && data.deathday) bdayText += ' (Died: ' + data.deathday + ')';
         document.getElementById('fv-runtime').textContent = bdayText || 'N/A';
-
-        var playBtn = document.querySelector('.btn-fv-play');
-        if (playBtn) playBtn.style.display = 'none';
-        var fvWl = document.getElementById('fv-wl-btn');
-        if (fvWl) fvWl.style.display = 'none';
-        var shareBtn = document.getElementById('fv-share-btn');
-        if (shareBtn) shareBtn.style.display = 'inline-flex';
 
         var fvTabs = document.getElementById('fv-tabs-bar') || document.querySelector('.fv-tabs');
         if (fvTabs) fvTabs.style.display = 'none';
@@ -1180,6 +1200,8 @@ var Modal = {
         if (similarSection) similarSection.style.display = 'none';
 
       } else {
+        if (overviewGrid) overviewGrid.classList.remove('is-person');
+        if (actionsRow) actionsRow.style.display = 'flex';
         document.getElementById('fv-backdrop').src = CFG.ORIG + (data.backdrop_path || data.poster_path);
         document.getElementById('fv-poster').src = data.poster_path ? CFG.IMG342 + data.poster_path : Utils.placeholder();
         document.getElementById('fv-title').textContent = data.title || data.name;

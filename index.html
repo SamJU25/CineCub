@@ -79,7 +79,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=178" rel="stylesheet">
+  <link href="style.css?v=179" rel="stylesheet">
 </head>
 <body>
 
@@ -498,7 +498,10 @@
         <img alt="backdrop" class="fv-backdrop" id="fv-backdrop" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
         <div class="fv-hero-grad"></div>
         <img alt="poster" class="fv-hero-poster" id="fv-poster" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
-        <button aria-label="Close modal" class="fv-hero-close" onclick="Modal.closeAll()"><i class="fas fa-times"></i></button>
+        <div class="fv-hero-controls">
+          <button aria-label="Go back" class="fv-hero-back" id="fv-hero-back" onclick="Modal.goBack()" style="display:none;" title="Back"><i class="fas fa-arrow-left"></i></button>
+          <button aria-label="Close modal" class="fv-hero-close" onclick="Modal.closeAll()" title="Close"><i class="fas fa-times"></i></button>
+        </div>
       </div>
       <div class="fv-body">
         <div class="fv-title-row">
@@ -524,12 +527,12 @@
         
         <!-- Overview Pane -->
         <div class="fv-tab-pane active" id="tab-overview">
-          <div class="fv-overview-grid">
-            <p class="fv-desc" id="fv-desc"></p>
-            <div>
+          <div class="fv-overview-grid" id="fv-overview-grid">
+            <div class="fv-info-col" id="fv-info-col">
               <div class="fv-info-item" id="fv-info-item-1"><span class="fv-info-key" id="fv-info-key-1">Genre</span><span class="fv-info-val" id="fv-genre"></span></div>
               <div class="fv-info-item" id="fv-info-item-2"><span class="fv-info-key" id="fv-info-key-2">Runtime</span><span class="fv-info-val" id="fv-runtime"></span></div>
             </div>
+            <p class="fv-desc" id="fv-desc"></p>
           </div>
           
           <!-- Trailer Container -->
@@ -797,7 +800,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=178"></script>
+  <script src="script.js?v=179"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
