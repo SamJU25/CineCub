@@ -19,8 +19,8 @@
   --cv-gold-dim: rgba(255, 183, 3, 0.15);
   --cv-green: #06d6a0;
   --cv-red: #e63946;
-  --grad-primary: linear-gradient(135deg, #c77dff 0%, #9d4edd 50%, #5a189a 100%);
-  --grad-btn: linear-gradient(135deg, #c77dff 0%, #9d4edd 50%, #5a189a 100%);
+  --grad-primary: linear-gradient(135deg, #9d4edd 0%, #7b2cbf 50%, #5a189a 100%);
+  --grad-btn: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%);
   --grad-card: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.98) 100%);
   --grad-sidebar: linear-gradient(180deg, #07070d 0%, #000000 100%);
   --text-1: #ffffff;
@@ -239,9 +239,9 @@ iframe {border:none}
 .spotlight-quality {padding:2px 8px;background:var(--cv-purple-dim);border:1px solid rgba(157,78,221,0.3);border-radius:var(--r-xs);color:var(--cv-purple-light);font-size:11px;font-weight:800}
 .spotlight-desc {font-size:14px;color:var(--text-2);line-height:1.7;margin-bottom:26px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-width:580px}
 .spotlight-actions {display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.btn-spotlight-play {padding:14px 30px;background:var(--grad-btn);border-radius:var(--r-pill);color:white;font-size:14px;font-weight:800;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,0.4);transition:transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard)}
+.btn-spotlight-play {padding:14px 30px;background:var(--grad-btn);border-radius:var(--r-pill);color:white;font-size:14px;font-weight:800;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,0.4);transition:transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard)}
 .btn-spotlight-play i {transition:transform var(--motion-fast) var(--ease-standard)}
-.btn-spotlight-play:hover {transform:translateY(-2px) scale(var(--hover-scale));box-shadow:0 6px 18px rgba(90,24,154,0.45)}
+.btn-spotlight-play:hover {transform:translateY(-2px) scale(var(--hover-scale));box-shadow:0 6px 16px rgba(0,0,0,0.5)}
 .btn-spotlight-play:hover i {transform:translateX(2px)}
 .btn-spotlight-play:active {transform:scale(var(--press-scale))}
 
@@ -470,9 +470,9 @@ iframe {border:none}
 .fv-mb-year {background:var(--cv-dark-4);color:var(--text-3)}
 .fv-mb-quality {background:var(--cv-purple-dim);color:var(--cv-purple-light)}
 .fv-actions-row {display:flex;gap:12px;margin:20px 0;padding-left:0}
-.btn-fv-play {padding:13px 28px;background:var(--grad-btn);border-radius:var(--r-pill);color:white;font-weight:800;display:flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(0,0,0,0.4);transition:transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);cursor:pointer}
+.btn-fv-play {padding:13px 28px;background:var(--grad-btn);border-radius:var(--r-pill);color:white;font-weight:800;display:flex;align-items:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,0.4);transition:transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);cursor:pointer}
 .btn-fv-play i {transition:transform var(--motion-fast) var(--ease-standard)}
-.btn-fv-play:hover {transform:translateY(-2px) scale(var(--hover-scale));box-shadow:0 6px 18px rgba(90,24,154,0.45)}
+.btn-fv-play:hover {transform:translateY(-2px) scale(var(--hover-scale));box-shadow:0 6px 16px rgba(0,0,0,0.5)}
 .btn-fv-play:hover i {transform:translateX(2px)}
 .btn-fv-play:active {transform:scale(var(--press-scale))}
 .btn-fv-icon {width:44px;height:44px;border-radius:50%;background:var(--cv-dark-4);border:1px solid var(--b-2);color:var(--text-2);display:flex;align-items:center;justify-content:center;transition:background var(--motion-fast) var(--ease-standard),border-color var(--motion-fast) var(--ease-standard),color var(--motion-fast) var(--ease-standard);cursor:pointer}
@@ -1423,7 +1423,7 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   background: var(--cv-dark-1);
   border: 1px solid rgba(157, 78, 221, 0.25);
   border-radius: var(--r-xl);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(157, 78, 221, 0.15);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
   padding: 28px;
   max-width: 440px;
   width: 90%;
@@ -1484,11 +1484,11 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   transform: scale(1.1);
 }
 
-/* Android APK button with purple theme gradient */
+/* Android APK button with clean dark theme */
 .app-btn-primary {
-  background: var(--grad-primary);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 6px 20px rgba(157, 78, 221, 0.35);
+  background: var(--cv-dark-3);
+  border: 1px solid rgba(157, 78, 221, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 .app-btn-primary .app-btn-icon {
   color: #ffffff;
@@ -1497,22 +1497,24 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   color: #ffffff;
 }
 .app-btn-primary .app-btn-text span {
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-3);
 }
 .app-btn-primary .app-btn-action {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.22);
+  color: var(--cv-purple-light);
+  background: rgba(157, 78, 221, 0.15);
 }
 .app-btn-primary:hover {
+  background: var(--cv-dark-4);
+  border-color: var(--cv-purple-light);
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(157, 78, 221, 0.55);
-  filter: brightness(1.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
 
 /* Apple iOS button */
 .app-btn-secondary {
   background: var(--cv-dark-3);
-  border: 1px solid rgba(157, 78, 221, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 .app-btn-secondary .app-btn-icon {
   color: #ffffff;
@@ -1524,14 +1526,14 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   color: var(--text-3);
 }
 .app-btn-secondary .app-btn-action {
-  color: var(--cv-purple-light);
-  background: rgba(157, 78, 221, 0.15);
+  color: var(--text-3);
+  background: rgba(255, 255, 255, 0.06);
 }
 .app-btn-secondary:hover {
   background: var(--cv-dark-4);
-  border-color: var(--cv-purple-light);
+  border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
 
 .app-back-btn {
