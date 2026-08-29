@@ -1109,22 +1109,35 @@ function initDragScroll(){
     el.addEventListener('mousedown', function(e){
       isDown = true;
       isDragging = false;
-      el.classList.add('dragging');
       startX = e.pageX - el.offsetLeft;
       scrollLeft = el.scrollLeft;
     });
-    el.addEventListener('mouseleave', function(){ isDown = false; el.classList.remove('dragging'); });
-    el.addEventListener('mouseup', function(){ isDown = false; el.classList.remove('dragging'); });
+    el.addEventListener('mouseleave', function(){ 
+      isDown = false; 
+      el.classList.remove('dragging'); 
+      isDragging = false; 
+    });
+    el.addEventListener('mouseup', function(){ 
+      isDown = false; 
+      el.classList.remove('dragging'); 
+      setTimeout(function(){ isDragging = false; }, 60);
+    });
     el.addEventListener('mousemove', function(e){
       if(!isDown) return;
-      e.preventDefault();
       var x = e.pageX - el.offsetLeft;
       var walk = (x - startX) * 2;
-      if (Math.abs(walk) > 5) isDragging = true;
-      el.scrollLeft = scrollLeft - walk;
+      if (Math.abs(walk) > 10) {
+        isDragging = true;
+        el.classList.add('dragging');
+        el.scrollLeft = scrollLeft - walk;
+      }
     });
     el.addEventListener('click', function(e){
-      if(isDragging) { e.preventDefault(); e.stopPropagation(); }
+      if(isDragging) { 
+        e.preventDefault(); 
+        e.stopPropagation(); 
+        isDragging = false;
+      }
     }, true);
   });
 }
@@ -1577,13 +1590,13 @@ var Modal = {
     }
   },
   openFull: function(id, type, isBackNav){
-    if (this.isOpening) return; 
-    this.isOpening = true;
+    if (!id) return;
+    type = type || 'movie';
     Search.closeDropdown();
 
-    if (!isBackNav && State.activeId && document.getElementById('modal-overlay').classList.contains('open') && (State.activeId !== id || State.activeType !== type)) {
+    if (!isBackNav && State.activeId && document.getElementById('modal-overlay') && document.getElementById('modal-overlay').classList.contains('open') && (State.activeId !== id || State.activeType !== type)) {
       this.navHistory.push({ id: State.activeId, type: State.activeType });
-    } else if (!isBackNav && !document.getElementById('modal-overlay').classList.contains('open')) {
+    } else if (!isBackNav && document.getElementById('modal-overlay') && !document.getElementById('modal-overlay').classList.contains('open')) {
       this.navHistory = [];
     }
 
@@ -1596,7 +1609,8 @@ var Modal = {
       window.history.pushState({modal: true}, '', '#media');
     }
     
-    State.activeId = id; State.activeType = type;
+    State.activeId = id; 
+    State.activeType = type;
     State.activeTrailer = null;
     var currentTp = document.getElementById('trailer-player');
     if (currentTp) {
@@ -1613,12 +1627,18 @@ var Modal = {
       cloneTp.src = 'about:blank';
       if (currentTp.parentNode) currentTp.parentNode.replaceChild(cloneTp, currentTp);
     }
-    document.getElementById('fv-actor-section').style.display = 'none';
-    document.getElementById('fv-actor-movies').innerHTML = '';
+    var actorSec = document.getElementById('fv-actor-section');
+    if (actorSec) actorSec.style.display = 'none';
+    var actorMov = document.getElementById('fv-actor-movies');
+    if (actorMov) actorMov.innerHTML = '';
+    
     Prog.start();
     API.detail(id, type).then(data => {
-      this.isOpening = false; 
-      if(!data){ Toast.show('Error loading details.'); Prog.done(); return; }
+      if(!data){ 
+        Toast.show('Error loading details.', 'error'); 
+        Prog.done(); 
+        return; 
+      }
       State.activeData = data;
       
       var fvHero = document.getElementById('fv-hero');
@@ -1630,11 +1650,13 @@ var Modal = {
         if (fvBody) fvBody.style.display = 'none';
         if (fvPersonView) fvPersonView.style.display = 'block';
 
-        document.getElementById('fv-person-img').src = data.profile_path ? CFG.IMG342 + data.profile_path : Utils.placeholder();
-        document.getElementById('fv-person-name').textContent = data.name || data.title;
+        var pImg = document.getElementById('fv-person-img');
+        if (pImg) pImg.src = data.profile_path ? CFG.IMG342 + data.profile_path : Utils.placeholder();
+        var pName = document.getElementById('fv-person-name');
+        if (pName) pName.textContent = data.name || data.title;
         document.title = (data.name || data.title) + " \u2014 StreamHeaven";
 
-        // Social Links (Twitter / X, Instagram only)
+        // Social Links
         var ext = data.external_ids || {};
         var sHtml = '';
         if (ext.twitter_id) sHtml += '<a href="https://twitter.com/' + encodeURIComponent(ext.twitter_id) + '" target="_blank" rel="noopener" class="fv-social-link" title="Twitter / X"><i class="fab fa-x-twitter"></i></a>';
@@ -1716,17 +1738,25 @@ var Modal = {
         if (fvHero) fvHero.style.display = 'block';
         if (fvBody) fvBody.style.display = 'block';
         if (fvPersonView) fvPersonView.style.display = 'none';
-        document.getElementById('fv-backdrop').src = CFG.ORIG + (data.backdrop_path || data.poster_path);
-        document.getElementById('fv-poster').src = data.poster_path ? CFG.IMG342 + data.poster_path : Utils.placeholder();
-        document.getElementById('fv-title').textContent = data.title || data.name;
+        
+        var bd = document.getElementById('fv-backdrop');
+        if (bd) bd.src = CFG.ORIG + (data.backdrop_path || data.poster_path);
+        var postEl = document.getElementById('fv-poster');
+        if (postEl) postEl.src = data.poster_path ? CFG.IMG342 + data.poster_path : Utils.placeholder();
+        var tEl = document.getElementById('fv-title');
+        if (tEl) tEl.textContent = data.title || data.name;
         document.title = (data.title || data.name) + " \u2014 StreamHeaven";
+        
         if(type==='movie' || type==='tv') {
-          History.add(id, type, data.title||data.name, data.poster_path, null, null, data.vote_average, data.release_date||data.first_air_date);
+          try {
+            History.add(id, type, data.title||data.name, data.poster_path, null, null, data.vote_average, data.release_date||data.first_air_date);
+          } catch(e){}
         }
 
         var ratingBadge = document.getElementById('fv-meta-rating');
         if (ratingBadge) ratingBadge.style.display = 'inline-flex';
-        document.getElementById('fv-rating').textContent = data.vote_average ? data.vote_average.toFixed(1) : 'N/A';
+        var ratVal = document.getElementById('fv-rating');
+        if (ratVal) ratVal.textContent = data.vote_average ? data.vote_average.toFixed(1) : 'N/A';
         var qualityBadge = document.getElementById('fv-meta-quality');
         if (qualityBadge) qualityBadge.style.display = 'inline-flex';
         var yearBadge = document.getElementById('fv-year');
@@ -1735,15 +1765,18 @@ var Modal = {
           yearBadge.style.display = 'inline-flex';
         }
 
-        document.getElementById('fv-desc').innerHTML = data.overview ? Utils.escape(data.overview) : '<span style="color:var(--text-3);">No overview available.</span>';
+        var descEl = document.getElementById('fv-desc');
+        if (descEl) descEl.innerHTML = data.overview ? Utils.escape(data.overview) : '<span style="color:var(--text-3);">No overview available.</span>';
 
         var key1 = document.getElementById('fv-info-key-1');
         if (key1) key1.textContent = 'Genre';
-        document.getElementById('fv-genre').textContent = (data.genres || []).map(x => x.name).join(', ') || 'N/A';
+        var gEl = document.getElementById('fv-genre');
+        if (gEl) gEl.textContent = (data.genres || []).map(x => x.name).join(', ') || 'N/A';
 
         var key2 = document.getElementById('fv-info-key-2');
         if (key2) key2.textContent = 'Runtime';
-        document.getElementById('fv-runtime').textContent = type === 'movie' ? Utils.runtime(data.runtime) : ((data.number_of_seasons || 1) + ' Season(s)');
+        var rtEl = document.getElementById('fv-runtime');
+        if (rtEl) rtEl.textContent = type === 'movie' ? Utils.runtime(data.runtime) : ((data.number_of_seasons || 1) + ' Season(s)');
 
         var playBtn = document.querySelector('.btn-fv-play');
         if (playBtn) playBtn.style.display = 'inline-flex';
@@ -1758,21 +1791,27 @@ var Modal = {
         var castHeader = document.getElementById('fv-cast-header');
         if (castHeader) castHeader.textContent = 'CAST';
         var cast = ((data.credits && data.credits.cast) || []).slice(0, 15);
-        if (cast.length) {
-          document.getElementById('fv-cast').innerHTML = cast.map(c => {
-            return '<div class="cast-card" onclick="Modal.openFull(' + c.id + ', \'person\')" style="cursor:pointer;"><img alt="' + Utils.escape(c.name) + '" class="cast-avatar" src="' + (c.profile_path ? CFG.IMG185 + c.profile_path : Utils.placeholder()) + '" loading="lazy" decoding="async" onerror="this.src=Utils.placeholder()"/><div class="cast-name">' + Utils.escape(c.name) + '</div><div class="cast-char">' + Utils.escape(c.character || '') + '</div></div>';
-          }).join('');
-        } else {
-          document.getElementById('fv-cast').innerHTML = '<div style="color:var(--text-3); font-size:14px; padding:20px; width:100%;">No cast information available.</div>';
+        var castEl = document.getElementById('fv-cast');
+        if (castEl) {
+          if (cast.length) {
+            castEl.innerHTML = cast.map(c => {
+              return '<div class="cast-card" onclick="Modal.openFull(' + c.id + ', \'person\')" style="cursor:pointer;"><img alt="' + Utils.escape(c.name) + '" class="cast-avatar" src="' + (c.profile_path ? CFG.IMG185 + c.profile_path : Utils.placeholder()) + '" loading="lazy" decoding="async" onerror="this.src=Utils.placeholder()"/><div class="cast-name">' + Utils.escape(c.name) + '</div><div class="cast-char">' + Utils.escape(c.character || '') + '</div></div>';
+            }).join('');
+          } else {
+            castEl.innerHTML = '<div style="color:var(--text-3); font-size:14px; padding:20px; width:100%;">No cast information available.</div>';
+          }
         }
 
         var similarSection = document.getElementById('fv-similar-section');
         if (similarSection) similarSection.style.display = 'block';
         var similar = ((data.similar && data.similar.results) || []).filter(x => x.poster_path);
-        if (similar.length) {
-          document.getElementById('fv-similar').innerHTML = similar.map(item => Render.posterCard(item, item.media_type || type)).join('');
-        } else {
-          document.getElementById('fv-similar').innerHTML = '<div style="color:var(--text-3); font-size:14px; text-align:center; padding: 20px; width:100%;">No similar titles found.</div>';
+        var simEl = document.getElementById('fv-similar');
+        if (simEl) {
+          if (similar.length) {
+            simEl.innerHTML = similar.map(item => Render.posterCard(item, item.media_type || type)).join('');
+          } else {
+            simEl.innerHTML = '<div style="color:var(--text-3); font-size:14px; text-align:center; padding: 20px; width:100%;">No similar titles found.</div>';
+          }
         }
 
         var epNav = document.getElementById('ep-nav-controls');
@@ -1790,26 +1829,35 @@ var Modal = {
              var label = s.season_number === 0 ? 'Specials' : 'Season ' + s.season_number;
              return '<option value="'+s.season_number+'">'+label+'</option>';
           }).join('');
-          document.getElementById('ep-season').innerHTML = seasonHtml;
-          if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').innerHTML = seasonHtml;
+          var sEl = document.getElementById('ep-season');
+          if (sEl) sEl.innerHTML = seasonHtml;
+          var sAdEl = document.getElementById('ep-season-adfree');
+          if (sAdEl) sAdEl.innerHTML = seasonHtml;
           
           var hasSeason1 = validSeasons.some(function(s) { return s.season_number === 1; });
           var hist = State.history.find(function(h){return h.id===id && h.type==='tv';});
           if(hist && hist.season !== null && hist.season !== undefined) {
-            document.getElementById('ep-season').value = hist.season;
-            if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').value = hist.season;
+            if (sEl) sEl.value = hist.season;
+            if (sAdEl) sAdEl.value = hist.season;
           } else if (hasSeason1) {
-            document.getElementById('ep-season').value = "1";
-            if(document.getElementById('ep-season-adfree')) document.getElementById('ep-season-adfree').value = "1";
+            if (sEl) sEl.value = "1";
+            if (sAdEl) sAdEl.value = "1";
           }
           
           Player.updateEpisodes();
           if(typeof AdFreePlayer !== 'undefined') AdFreePlayer.updateEpisodes();
           
           if(hist && hist.episode !== null && hist.episode !== undefined) {
-            var maxEp = document.getElementById('ep-episode').options.length;
-            document.getElementById('ep-episode').value = Math.min(hist.episode, maxEp);
-            if(document.getElementById('ep-episode-adfree')) document.getElementById('ep-episode-adfree').value = Math.min(hist.episode, maxEp);
+            var epSelect = document.getElementById('ep-episode');
+            if (epSelect && epSelect.options.length) {
+              var maxEp = epSelect.options.length;
+              epSelect.value = Math.min(hist.episode, maxEp);
+            }
+            var epAdSelect = document.getElementById('ep-episode-adfree');
+            if (epAdSelect && epAdSelect.options.length) {
+              var maxAdEp = epAdSelect.options.length;
+              epAdSelect.value = Math.min(hist.episode, maxAdEp);
+            }
           }
           
         } else { 
@@ -1823,8 +1871,10 @@ var Modal = {
         serverHtml += CFG.SERVERS.map((s,i) => '<option value="'+i+'">' + s.name + '</option>').join('');
         serverHtml += '</select></div></div></div>';
         var sTabs = document.getElementById('server-tabs');
-        sTabs.className = '';
-        sTabs.innerHTML = serverHtml;
+        if (sTabs) {
+          sTabs.className = '';
+          sTabs.innerHTML = serverHtml;
+        }
         State.activeServer = 0;
 
         var trailerContainer = document.getElementById('trailer-container');
@@ -1835,8 +1885,7 @@ var Modal = {
           if (trailer) State.activeTrailer = trailer.key;
         }
         if (trailerContainer) {
-          if (State.activeTrailer) trailerContainer.style.display = 'block';
-          else trailerContainer.style.display = 'none';
+          trailerContainer.style.display = State.activeTrailer ? 'block' : 'none';
         }
 
         var fvIcon = fvWl ? fvWl.querySelector('i') : null;
@@ -1848,21 +1897,21 @@ var Modal = {
         }
 
         FVTabs.showTab('overview');
-        CustomSelect.init(); // Initialize combobox synchronously for 'watch' tab
+        try { CustomSelect.init(); } catch(e){}
       }
 
       UIHelper.lockScroll();
-      document.getElementById('modal-overlay').classList.add('open');
-      var modalOverlay = document.getElementById('modal-overlay');
+      var overlay = document.getElementById('modal-overlay');
+      if (overlay) overlay.classList.add('open');
       var modalEl = document.getElementById('fv-modal');
-      if (modalOverlay) modalOverlay.scrollTop = 0;
+      if (overlay) overlay.scrollTop = 0;
       if (modalEl) modalEl.scrollTop = 0;
-      initDragScroll();
-      initScrollButtons();
+      try { initDragScroll(); } catch(e){}
+      try { initScrollButtons(); } catch(e){}
       Prog.done();
     }).catch(err => {
-      this.isOpening = false; 
-      Toast.show('Error loading details.');
+      console.error("Modal detail error:", err);
+      Toast.show('Error loading details.', 'error');
       Prog.done();
     });
   },

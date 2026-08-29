@@ -1,5 +1,3 @@
-// firebase-auth.js
-
 document.addEventListener('DOMContentLoaded', () => {
     const cachedAvatar = localStorage.getItem('cachedAvatar');
     const cachedName = localStorage.getItem('cachedName');
@@ -316,13 +314,15 @@ async function handleSignup(e) {
       auth.createUserWithEmailAndPassword(email, pass),
       timeoutPromise
     ]);
-    // Save display name (non-blocking)
-    cred.user.updateProfile({ displayName: name }).catch(err => console.warn("Profile update failed:", err));
+    const defaultAvatar = '/assets/avatars/av_1.png?v=3';
+    // Save display name and default avatar (non-blocking)
+    cred.user.updateProfile({ displayName: name, photoURL: defaultAvatar }).catch(err => console.warn("Profile update failed:", err));
     // Save user doc in Firestore (non-blocking)
     db.collection("users").doc(cred.user.uid).set({
       name: name,
       username: username,
       email: email,
+      avatar: defaultAvatar,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).catch(fsErr => {
       console.warn("Firestore write failed (non-critical):", fsErr);
@@ -332,6 +332,10 @@ async function handleSignup(e) {
       uid: cred.user.uid,
       email: email
     }).catch(err => console.warn("Failed to save username mapping:", err));
+    
+    localStorage.setItem('cachedAvatar', defaultAvatar);
+    localStorage.setItem('cachedName', name);
+    localStorage.setItem('cachedUsername', username);
     
     AuthUI.close();
     if(typeof Toast !== 'undefined') Toast.show("Account created successfully! Welcome, " + username + "!");
@@ -571,7 +575,7 @@ if (auth) {
           topProfileBtn.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Profile">`;
           topProfileBtn.onclick = (e) => { 
             e.preventDefault(); 
-            window.location.href = 'profile.html';
+            window.location.href = 'profile.html'; 
           };
         }
         localStorage.setItem('cachedAvatar', url);
@@ -594,35 +598,16 @@ if (auth) {
           const match = photoURL.match(/av_(\d+)\.png/);
           if (match && parseInt(match[1]) > 21) {
               photoURL = '/assets/avatars/av_1.png?v=3';
-          } else if (!photoURL.startsWith('/')) {
+          } else if (!photoURL.startsWith('/') && !photoURL.startsWith('http')) {
               photoURL = '/' + photoURL;
           }
       }
       
-      if (photoURL) {
-        updateUIWithPhoto(photoURL, displayName);
-      } else {
-          const topProfileBtn = document.getElementById('header-profile-btn');
-          const topProfileName = document.getElementById('header-profile-name');
-          
-          if (topProfileName) {
-            if (displayName) {
-              topProfileName.textContent = displayName;
-              topProfileName.style.display = 'block';
-            } else {
-              topProfileName.style.display = 'none';
-            }
-          }
-          
-          if (topProfileBtn) {
-            topProfileBtn.innerHTML = `<div class="header-profile-avatar" style="background: var(--cv-gray); width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px;">${initial}</div>`;
-            topProfileBtn.onclick = (e) => { 
-              e.preventDefault(); 
-              window.location.href = 'profile.html';
-            };
-            localStorage.setItem('cachedName', displayName);
-          }
+      if (!photoURL) {
+        photoURL = '/assets/avatars/av_1.png?v=3';
       }
+      
+      updateUIWithPhoto(photoURL, displayName);
 
       // Sync from Firestore in case Firebase Auth dropped the relative URL
       db.collection("users").doc(user.uid).get().then(doc => {
@@ -684,6 +669,10 @@ if (auth) {
     }
 
     // Logged Out State
+    localStorage.removeItem('cachedAvatar');
+    localStorage.removeItem('cachedName');
+    localStorage.removeItem('cachedUsername');
+    
     if(sidebarFooter) {
       sidebarFooter.innerHTML = `
         <div class="sf-profile guest" onclick="AuthUI.openLogin()">
@@ -706,7 +695,7 @@ if (auth) {
 // User Data Cloud Sync
 // User Data Cloud Sync - Real Time Listener
 function subscribeToUserData() {
-  if(!currentUser || typeof State === 'undefined') return;
+  if(!currentUser || !db) return;
   
   if (typeof userDataUnsubscribe === 'function') {
     userDataUnsubscribe();
@@ -718,27 +707,92 @@ function subscribeToUserData() {
         const data = docSnap.data();
         let changed = false;
         
-        if(data.watchlist) {
-          State.watchlist = data.watchlist;
-          localStorage.setItem('sh_watchlist', JSON.stringify(data.watchlist));
-          changed = true;
+        // 1. Live Real-time Avatar Sync across devices
+        if(data.avatar) {
+          let avUrl = data.avatar;
+          if (avUrl && avUrl.includes('assets/avatars/av_')) {
+            avUrl = avUrl.replace('.jpg', '.png');
+            if (!avUrl.startsWith('/') && !avUrl.startsWith('http')) {
+              avUrl = '/' + avUrl;
+            }
+          }
+          const currentCached = localStorage.getItem('cachedAvatar');
+          if (avUrl !== currentCached || (currentUser && currentUser.photoURL !== avUrl)) {
+            localStorage.setItem('cachedAvatar', avUrl);
+            if (currentUser && currentUser.photoURL !== avUrl) {
+              currentUser.updateProfile({ photoURL: avUrl }).catch(() => {});
+            }
+            // Update Header Profile Button
+            const topProfileBtn = document.getElementById('header-profile-btn');
+            if (topProfileBtn) {
+              topProfileBtn.innerHTML = `<img src="${avUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="Profile">`;
+            }
+            // Update Sidebar Avatar
+            const sfAvatar = document.querySelector('.cv-sidebar-bottom .sf-avatar');
+            if (sfAvatar) {
+              sfAvatar.classList.add('active');
+              sfAvatar.innerHTML = `<img src="${avUrl}" alt="User Avatar">`;
+            }
+            // Update Profile Page Avatar if open
+            const pfAvatar = document.getElementById('pf-avatar');
+            if (pfAvatar) {
+              pfAvatar.innerHTML = `<img src="${avUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="User Avatar"><div class="pf-avatar-badge"></div>`;
+              pfAvatar.style.border = 'none';
+            }
+          }
         }
-        if(data.history) {
-          State.history = data.history;
-          localStorage.setItem('sh_history', JSON.stringify(data.history));
-          changed = true;
+
+        // 2. Live Real-time Display Name & Username Sync
+        if(data.displayName || data.name) {
+          const nameToShow = data.displayName || data.name;
+          localStorage.setItem('cachedName', nameToShow);
+          const topProfileName = document.getElementById('header-profile-name');
+          if (topProfileName) {
+            topProfileName.textContent = nameToShow;
+            topProfileName.style.display = 'block';
+          }
+          const sfName = document.getElementById('sf-display-name');
+          if (sfName) sfName.innerText = nameToShow;
+          const pfName = document.getElementById('pf-name');
+          if (pfName) pfName.textContent = nameToShow;
+          const sn = document.getElementById('settings-name-sub');
+          if (sn) sn.textContent = nameToShow;
+        }
+
+        if(data.username) {
+          localStorage.setItem('cachedUsername', data.username);
+          const pfUsername = document.getElementById('pf-username');
+          if (pfUsername) pfUsername.textContent = data.username;
+          const su = document.getElementById('settings-username-sub');
+          if (su) su.textContent = data.username;
         }
         
-        if(changed) {
-          // Re-render active UI dynamically
-          if(State.activePage === 'page-watchlist') {
-            if(typeof Watchlist !== 'undefined' && Watchlist.render) Watchlist.render();
-          } else if(State.activePage === 'page-history') {
-            if(typeof History !== 'undefined' && History.render) History.render();
+        // 3. Live Watchlist & History Sync
+        if(typeof State !== 'undefined') {
+          if(data.watchlist) {
+            State.watchlist = data.watchlist;
+            localStorage.setItem('sh_watchlist', JSON.stringify(data.watchlist));
+            changed = true;
+          }
+          if(data.history) {
+            State.history = data.history;
+            localStorage.setItem('sh_history', JSON.stringify(data.history));
+            changed = true;
           }
           
-          if(typeof App !== 'undefined' && App.updateWatchlistButtons) {
-            App.updateWatchlistButtons();
+          if(changed) {
+            // Re-render active UI dynamically
+            if(State.activePage === 'page-watchlist') {
+              if(typeof Watchlist !== 'undefined' && Watchlist.render) Watchlist.render();
+            } else if(State.activePage === 'page-history') {
+              if(typeof History !== 'undefined' && History.render) History.render();
+            }
+            if(typeof ContinueWatching !== 'undefined' && ContinueWatching.render) {
+              ContinueWatching.render();
+            }
+            if(typeof App !== 'undefined' && App.updateWatchlistButtons) {
+              App.updateWatchlistButtons();
+            }
           }
         }
       }

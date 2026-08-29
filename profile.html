@@ -19,7 +19,8 @@
   <link rel="manifest" href="/manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link href="style.css?v=217" rel="stylesheet">
+  <link href="style.css?v=228" rel="stylesheet">
+  <link rel="prefetch" href="index.html">
   <style>
     :root { --profile-gutter: 28px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -773,7 +774,7 @@
   <script src="lib/firebase-app-compat.js"></script>
   <script src="lib/firebase-auth-compat.js"></script>
   <script src="lib/firebase-firestore-compat.js"></script>
-  <script src="firebase-auth.js?v=34"></script>
+  <script src="firebase-auth.js?v=37"></script>
 
   <script>
     var Toast = {
@@ -813,8 +814,14 @@
       items.forEach(item => {
         const card = document.createElement('div');
         card.className = 'pf-media-card';
-        card.onclick = () => { window.location.href = 'index.html'; };
         const type = item.media_type || item.type || 'movie';
+        const itemId = item.id || (item.mediaId ? item.mediaId : null);
+        if (itemId) {
+          const targetUrl = 'index.html?id=' + encodeURIComponent(itemId) + '&type=' + encodeURIComponent(type);
+          card.onclick = () => { window.location.href = targetUrl; };
+        } else {
+          card.onclick = () => { window.location.href = 'index.html'; };
+        }
         const year = item.release_date || item.first_air_date || item.year || '';
         const yearStr = year ? String(year).substring(0, 4) : '';
         const label = type === 'tv' ? 'TV Show' : 'Movie';
@@ -841,16 +848,36 @@
     
     function togglePassword(inputId) {
       const input = document.getElementById(inputId);
-      const icon = input.nextElementSibling.querySelector('i');
+      if (!input) return;
+      const btn = input.parentElement ? input.parentElement.querySelector('.auth-password-toggle') : null;
+      const icon = btn ? btn.querySelector('i') : (input.nextElementSibling ? input.nextElementSibling.querySelector('i') : null);
       if (input.type === 'password') {
         input.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
+        if (icon) {
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        }
       } else {
         input.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
+        if (icon) {
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        }
       }
+    }
+
+    function formatAuthError(error, defaultMsg) {
+      if (!error) return defaultMsg;
+      const code = error.code || '';
+      if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') return "Incorrect current password.";
+      if (code === 'auth/email-already-in-use') return "This email is already in use by another account.";
+      if (code === 'auth/invalid-email') return "Please enter a valid email address.";
+      if (code === 'auth/weak-password') return "Password is too weak. Please use at least 6 characters.";
+      if (code === 'auth/requires-recent-login') return "Security check: Please log out and log back in before making this change.";
+      if (code === 'auth/too-many-requests') return "Too many attempts. Please try again in a few moments.";
+      if (code === 'auth/network-request-failed') return "Network error. Please check your internet connection.";
+      if (code === 'auth/user-not-found') return "Account not found.";
+      return error.message || defaultMsg;
     }
 
     function openConfirmModal(title, text, actionFn) {
@@ -860,116 +887,190 @@
       document.getElementById('modal-confirm').classList.add('open');
     }
 
-    document.getElementById('confirm-modal-btn').addEventListener('click', function() {
+    document.getElementById('confirm-modal-btn').addEventListener('click', async function() {
       if (pendingConfirmAction) {
-        pendingConfirmAction();
+        const action = pendingConfirmAction;
         pendingConfirmAction = null;
+        await action();
       }
       closeModals();
     });
 
     function clearHistory() {
-      openConfirmModal('Clear Watch History', 'Permanently remove all watched titles? This cannot be undone.', function() {
-        if (firebase.auth().currentUser) {
-          const uid = firebase.auth().currentUser.uid;
-          db.collection('users').doc(uid).set({ history: [] }, { merge: true }).then(() => {
-            renderGrid([], 'pf-hist-grid', 'pf-hist-empty');
-            document.getElementById('stat-hist').textContent = '0';
-          });
-        } else {
-          localStorage.removeItem(HISTORY_KEY);
+      openConfirmModal('Clear Watch History', 'Permanently remove all watched titles? This cannot be undone.', async function() {
+        try {
+          if (auth && auth.currentUser && typeof db !== 'undefined') {
+            const uid = auth.currentUser.uid;
+            await db.collection('users').doc(uid).set({ history: [] }, { merge: true });
+          }
+          localStorage.setItem(HISTORY_KEY, '[]');
           renderGrid([], 'pf-hist-grid', 'pf-hist-empty');
-          document.getElementById('stat-hist').textContent = '0';
+          const statHist = document.getElementById('stat-hist');
+          if (statHist) statHist.textContent = '0';
+          Toast.show("Watch history cleared successfully", "success");
+        } catch (e) {
+          console.error("Error clearing history:", e);
+          Toast.show("Failed to clear watch history. Please try again.", "error");
         }
       });
     }
 
     function clearWatchlist() {
-      openConfirmModal('Clear Watchlist', 'Remove all saved titles from your watchlist? This cannot be undone.', function() {
-        if (firebase.auth().currentUser) {
-          const uid = firebase.auth().currentUser.uid;
-          db.collection('users').doc(uid).set({ watchlist: [] }, { merge: true }).then(() => {
-            renderGrid([], 'pf-wl-grid', 'pf-wl-empty');
-            document.getElementById('stat-wl').textContent = '0';
-          });
-        } else {
-          localStorage.removeItem(WATCH_KEY);
+      openConfirmModal('Clear Watchlist', 'Remove all saved titles from your watchlist? This cannot be undone.', async function() {
+        try {
+          if (auth && auth.currentUser && typeof db !== 'undefined') {
+            const uid = auth.currentUser.uid;
+            await db.collection('users').doc(uid).set({ watchlist: [] }, { merge: true });
+          }
+          localStorage.setItem(WATCH_KEY, '[]');
           renderGrid([], 'pf-wl-grid', 'pf-wl-empty');
-          document.getElementById('stat-wl').textContent = '0';
+          const statWl = document.getElementById('stat-wl');
+          if (statWl) statWl.textContent = '0';
+          Toast.show("Watchlist cleared successfully", "success");
+        } catch (e) {
+          console.error("Error clearing watchlist:", e);
+          Toast.show("Failed to clear watchlist. Please try again.", "error");
         }
       });
     }
 
     function deleteAccount() {
       openConfirmModal('Delete Account', 'Do you want to delete your profile? This action is permanent and will delete all your data from the server.', async function() {
-        if (!auth.currentUser) return;
+        if (!auth || !auth.currentUser) return;
+        const user = auth.currentUser;
         const btn = document.getElementById('confirm-modal-btn');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; 
-        btn.disabled = true;
+        const originalText = btn ? btn.innerHTML : 'Confirm';
+        if (btn) {
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...'; 
+          btn.disabled = true;
+        }
         try {
-          const uid = auth.currentUser.uid;
+          const uid = user.uid;
+          
+          // 1. Clean up username mapping doc
           if (typeof db !== 'undefined') {
+            const userDoc = await db.collection("users").doc(uid).get().catch(() => null);
+            if (userDoc && userDoc.exists) {
+              const uData = userDoc.data();
+              if (uData && uData.username) {
+                const lowerUsername = uData.username.toLowerCase();
+                await db.collection("usernames").doc(lowerUsername).delete().catch(e => console.warn(e));
+              }
+            }
+            // 2. Delete user doc from Firestore
             await db.collection("users").doc(uid).delete().catch(e => console.warn(e));
           }
-          await auth.currentUser.delete();
-          if (typeof Toast !== 'undefined') Toast.show("Profile deleted successfully", "success");
+
+          // 3. Clear local storage cache
+          localStorage.removeItem('cachedAvatar');
+          localStorage.removeItem('cachedName');
+          localStorage.removeItem('cachedUsername');
+          localStorage.removeItem(WATCH_KEY);
+          localStorage.removeItem(HISTORY_KEY);
+
+          // 4. Delete Firebase Auth User
+          await user.delete();
+          Toast.show("Profile deleted successfully", "success");
           closeModals();
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 500);
         } catch (error) {
-          btn.innerHTML = originalText;
-          btn.disabled = false;
-          console.error(error);
-          if (error.code === 'auth/requires-recent-login') {
-            const msg = "Security Check: Please log out and log back in before deleting your account.";
-            if (typeof Toast !== 'undefined') Toast.show(msg, "error");
-            else alert(msg);
-          } else {
-            const msg = error.message || "Failed to delete account.";
-            if (typeof Toast !== 'undefined') Toast.show(msg, "error");
-            else alert(msg);
+          if (btn) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
           }
+          console.error("Account deletion error:", error);
+          const msg = formatAuthError(error, "Failed to delete account.");
+          Toast.show(msg, "error");
           closeModals();
         }
       });
     }
 
-    function openAvatarModal() { document.getElementById('modal-avatar').classList.add('open'); }
+    function openAvatarModal() {
+      const currentAvatar = localStorage.getItem('cachedAvatar') || (auth.currentUser ? auth.currentUser.photoURL : '') || '/assets/avatars/av_1.png?v=3';
+      selectedAvatarUrl = currentAvatar;
+      document.querySelectorAll('.pf-avatar-option').forEach(opt => {
+        const img = opt.querySelector('img');
+        if (img) {
+          const src = img.getAttribute('src');
+          if (currentAvatar.includes(src) || src.includes(currentAvatar.replace(/^\//, ''))) {
+            opt.classList.add('selected');
+          } else {
+            opt.classList.remove('selected');
+          }
+        }
+      });
+      document.getElementById('modal-avatar').classList.add('open');
+    }
+
     function openNameModal() {
-        var currentName = document.getElementById('settings-name-sub').textContent;
-        document.getElementById('new-display-name').value = currentName === '...' ? '' : currentName;
-        document.getElementById('modal-name').classList.add('open');
+      var currentName = document.getElementById('settings-name-sub').textContent;
+      document.getElementById('new-display-name').value = (currentName === '...' || currentName === '—') ? '' : currentName;
+      document.getElementById('modal-name').classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    async function updateDisplayName(e) {
+      if (e) e.preventDefault();
+      const user = auth.currentUser;
+      if (!user) {
+        Toast.show("Please log in to update your name.", "error");
+        return;
+      }
+      const inputEl = document.getElementById('new-display-name');
+      const newName = inputEl ? inputEl.value.trim() : '';
+      
+      if (!newName) {
+        Toast.show("Please enter a display name.", "error");
+        return;
+      }
+      if (newName.length < 2) {
+        Toast.show("Display name must be at least 2 characters.", "error");
+        return;
+      }
+      if (newName.length > 50) {
+        Toast.show("Display name cannot exceed 50 characters.", "error");
+        return;
       }
 
-      function closeModal(id) {
-        document.getElementById(id).classList.remove('open');
+      const btn = document.getElementById('btn-update-name');
+      const originalText = btn ? btn.innerHTML : 'Save Changes';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
       }
 
-      function updateDisplayName(e) {
-        e.preventDefault();
-        const newName = document.getElementById('new-display-name').value.trim();
-        if(!newName) return;
+      // Optimistic UI update for instant feel
+      const nameEl = document.getElementById('pf-name');
+      const subNameEl = document.getElementById('settings-name-sub');
+      if (nameEl) nameEl.textContent = newName;
+      if (subNameEl) subNameEl.textContent = newName;
+      localStorage.setItem('cachedName', newName);
+      closeModal('modal-name');
 
-        // Optimistic UI update for instant feel
-        document.getElementById('pf-name').textContent = newName;
-        document.getElementById('settings-name-sub').textContent = newName;
-        localStorage.setItem('cachedName', newName);
-        closeModal('modal-name');
-
-        const user = firebase.auth().currentUser;
-        if(user) {
-          // Update Auth Profile to fix flicker issue where username resets
-          user.updateProfile({ displayName: newName }).catch(console.warn);
-          
-          db.collection('users').doc(user.uid).set({ displayName: newName }, { merge: true }).then(() => {
-              if(typeof Toast !== 'undefined') Toast.show("Display name updated successfully", "success");
-          }).catch(err => {
-            console.error(err);
-            if(typeof Toast !== 'undefined') Toast.show("Error updating display name.", "error");
-          });
+      try {
+        await user.updateProfile({ displayName: newName }).catch(e => console.warn(e));
+        if (typeof db !== 'undefined') {
+          await db.collection('users').doc(user.uid).set({ displayName: newName, name: newName }, { merge: true });
+        }
+        Toast.show("Display name updated successfully", "success");
+      } catch (err) {
+        console.error(err);
+        Toast.show(formatAuthError(err, "Error updating display name."), "error");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
         }
       }
+    }
 
-      function openEmailModal() { document.getElementById('modal-email').classList.add('open'); }
+    function openEmailModal() { document.getElementById('modal-email').classList.add('open'); }
     function openPasswordModal() { document.getElementById('modal-password').classList.add('open'); }
     function closeModals(e) {
       if (e && e.target !== e.currentTarget) return;
@@ -984,30 +1085,50 @@
     }
 
     async function saveAvatar() {
-      if (!selectedAvatarUrl || !auth.currentUser) return;
+      const user = auth.currentUser;
+      if (!user) {
+        Toast.show("Please log in to change your avatar.", "error");
+        return;
+      }
+      if (!selectedAvatarUrl) {
+        selectedAvatarUrl = '/assets/avatars/av_1.png?v=3';
+      }
       
+      const avatarUrl = selectedAvatarUrl.startsWith('/') ? selectedAvatarUrl : '/' + selectedAvatarUrl;
+      const btn = document.querySelector('#modal-avatar .pf-btn-login');
+      const originalText = btn ? btn.innerHTML : 'Save';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+      }
+
       // Optimistic UI update for instant feel
       const avatarEl = document.getElementById('pf-avatar');
       if (avatarEl) {
-        avatarEl.innerHTML = '<img src="' + selectedAvatarUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="User Avatar"><div class="pf-avatar-badge"></div>';
+        avatarEl.innerHTML = '<img src="' + avatarUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="User Avatar"><div class="pf-avatar-badge"></div>';
         avatarEl.style.border = 'none';
       }
       const topProfileBtn = document.getElementById('header-profile-btn');
-      if(topProfileBtn) {
-        topProfileBtn.innerHTML = `<img src="${selectedAvatarUrl}" alt="User Avatar" class="header-profile-avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      if (topProfileBtn) {
+        topProfileBtn.innerHTML = `<img src="${avatarUrl}" alt="User Avatar" class="header-profile-avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
       }
-      localStorage.setItem('cachedAvatar', selectedAvatarUrl);
+      localStorage.setItem('cachedAvatar', avatarUrl);
       closeModals();
       
       try {
-        await auth.currentUser.updateProfile({ photoURL: selectedAvatarUrl }).catch(e=>console.warn(e));
+        await user.updateProfile({ photoURL: avatarUrl }).catch(e => console.warn(e));
         if (typeof db !== 'undefined') {
-          await db.collection("users").doc(auth.currentUser.uid).set({ avatar: selectedAvatarUrl }, { merge: true });
+          await db.collection("users").doc(user.uid).set({ avatar: avatarUrl }, { merge: true });
         }
-        if(typeof Toast !== 'undefined') Toast.show("Avatar updated successfully", "success");
+        Toast.show("Avatar updated successfully", "success");
       } catch (e) {
         console.error("Error saving avatar:", e);
-        if(typeof Toast !== 'undefined') Toast.show("Error saving avatar.", "error");
+        Toast.show(formatAuthError(e, "Error saving avatar."), "error");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
       }
     }
 
@@ -1019,209 +1140,289 @@
 
     async function saveEmail() {
       const user = auth.currentUser;
-      if (!user) return;
+      if (!user) {
+        Toast.show("Please log in to update your email.", "error");
+        return;
+      }
       const currEmail = document.getElementById('pf-curr-email').value.trim();
       const newEmail = document.getElementById('pf-new-email').value.trim();
       const passField = document.getElementById('pf-email-pass');
-      const pass = passField.value;
+      const pass = passField ? passField.value : '';
       
       if (!currEmail || !newEmail || !pass) {
-        if(typeof Toast !== 'undefined') Toast.show("Please fill all fields", "error");
+        Toast.show("Please fill all fields.", "error");
         return;
       }
       
-      if (currEmail === newEmail) {
-        if(typeof Toast !== 'undefined') Toast.show("New email must be different from current email.", "error");
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(currEmail) || !emailRegex.test(newEmail)) {
+        Toast.show("Please enter a valid email address.", "error");
+        return;
+      }
+
+      if (currEmail.toLowerCase() === newEmail.toLowerCase()) {
+        Toast.show("New email must be different from current email.", "error");
         return;
       }
       
-      if (currEmail.toLowerCase() !== user.email.toLowerCase()) {
-        if(typeof Toast !== 'undefined') Toast.show("The current email you entered is incorrect.", "error");
+      if (user.email && currEmail.toLowerCase() !== user.email.toLowerCase()) {
+        Toast.show("The current email you entered is incorrect.", "error");
         return;
       }
       
-      try {
-        const btn = document.querySelector('#modal-email .pf-btn-login');
+      const btn = document.querySelector('#modal-email .pf-btn-login');
+      const originalText = btn ? btn.innerHTML : 'Update';
+      if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+      }
+
+      try {
         await reauthenticate(pass);
         
-        // Instantly update the email instead of sending a verification link
+        // Instantly update the email
         await user.updateEmail(newEmail);
         
         // Update the users collection
-        const userRef = db.collection("users").doc(user.uid);
-        const userDoc = await userRef.get();
-        await userRef.update({ email: newEmail });
-        
-        // Update the usernames collection so login works with the new email
-        if (userDoc.exists && userDoc.data().username) {
+        if (typeof db !== 'undefined') {
+          const userRef = db.collection("users").doc(user.uid);
+          const userDoc = await userRef.get().catch(() => null);
+          await userRef.set({ email: newEmail }, { merge: true });
+          
+          // Update the usernames collection so login works with the new email
+          if (userDoc && userDoc.exists && userDoc.data().username) {
             const lowerUsername = userDoc.data().username.toLowerCase();
-            await db.collection("usernames").doc(lowerUsername).update({
-                email: newEmail
-            }).catch(e => console.warn("Could not update username mapping", e));
+            await db.collection("usernames").doc(lowerUsername).set({
+              email: newEmail
+            }, { merge: true }).catch(e => console.warn("Could not update username mapping", e));
+          }
         }
         
         document.getElementById('pf-curr-email').value = '';
         document.getElementById('pf-new-email').value = '';
-        passField.value = '';
-        
-        if(typeof Toast !== 'undefined') Toast.show("Email updated successfully!", "success");
-        else alert("Email updated successfully!");
+        if (passField) passField.value = '';
         
         // Update the UI
-        document.getElementById('settings-email-sub').textContent = newEmail;
+        const subEmailEl = document.getElementById('settings-email-sub');
+        if (subEmailEl) subEmailEl.textContent = newEmail;
         
+        Toast.show("Email updated successfully!", "success");
         closeModals();
       } catch (e) {
-        if(typeof Toast !== 'undefined') Toast.show(e.message, "error");
-        passField.value = ''; // Clear on error
+        console.error("Save email error:", e);
+        const friendlyMsg = formatAuthError(e, "Failed to update email.");
+        Toast.show(friendlyMsg, "error");
+        if (passField) passField.value = ''; // Clear password on error
       } finally {
-        const btn = document.querySelector('#modal-email .pf-btn-login');
         if (btn) {
           btn.disabled = false;
-          btn.innerHTML = 'Update';
+          btn.innerHTML = originalText;
         }
       }
     }
 
     async function savePassword() {
       const user = auth.currentUser;
-      if (!user) return;
-      const currPassField = document.getElementById('pf-curr-pass');
-      const newPassField = document.getElementById('pf-new-pass');
-      const currPass = currPassField.value;
-      const newPass = newPassField.value;
-      if (!currPass || !newPass) {
-        if(typeof Toast !== 'undefined') Toast.show("Please fill all fields", "error");
-        
+      if (!user) {
+        Toast.show("Please log in to update your password.", "error");
         return;
       }
-      try {
-        const btn = document.querySelector('#modal-password .pf-btn-login');
+      const currPassField = document.getElementById('pf-curr-pass');
+      const newPassField = document.getElementById('pf-new-pass');
+      const currPass = currPassField ? currPassField.value : '';
+      const newPass = newPassField ? newPassField.value : '';
+
+      if (!currPass || !newPass) {
+        Toast.show("Please fill all fields.", "error");
+        return;
+      }
+      if (newPass.length < 6) {
+        Toast.show("New password must be at least 6 characters.", "error");
+        return;
+      }
+      if (currPass === newPass) {
+        Toast.show("New password must be different from current password.", "error");
+        return;
+      }
+
+      const btn = document.querySelector('#modal-password .pf-btn-login');
+      const originalText = btn ? btn.innerHTML : 'Update';
+      if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+      }
+
+      try {
         await reauthenticate(currPass);
         await user.updatePassword(newPass);
-        if(typeof Toast !== 'undefined') Toast.show("Password updated successfully!", "success");
+        Toast.show("Password updated successfully!", "success");
         
-        
-        currPassField.value = '';
-        newPassField.value = '';
+        if (currPassField) currPassField.value = '';
+        if (newPassField) newPassField.value = '';
         closeModals();
       } catch (e) {
-        if(typeof Toast !== 'undefined') Toast.show(e.message, "error");
-        
-        currPassField.value = ''; // Clear on error
+        console.error("Save password error:", e);
+        const friendlyMsg = formatAuthError(e, "Failed to update password.");
+        Toast.show(friendlyMsg, "error");
+        if (currPassField) currPassField.value = ''; // Clear on error
       } finally {
-        const btn = document.querySelector('#modal-password .pf-btn-login');
-        btn.disabled = false;
-        btn.innerHTML = 'Update';
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
       }
     }
 
-    // Auth state
-    document.addEventListener('DOMContentLoaded', function() {
-      function initProfile() {
-        if (typeof auth === 'undefined' || !auth) {
+    // Immediate Optimistic Cache Render (0ms Instant Display)
+    (function renderInstantProfile() {
+      const cachedAvatar = localStorage.getItem('cachedAvatar') || '/assets/avatars/av_1.png?v=3';
+      const cachedName = localStorage.getItem('cachedName');
+      const cachedUser = localStorage.getItem('cachedUsername');
+      
+      if (cachedName || cachedUser || cachedAvatar) {
+        document.getElementById('pf-logged-in').style.display = 'flex';
+        document.getElementById('pf-guest').style.display = 'none';
+        
+        if (cachedAvatar) {
+          const pfAvatar = document.getElementById('pf-avatar');
+          if (pfAvatar) {
+            pfAvatar.innerHTML = '<img src="' + cachedAvatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="User Avatar"><div class="pf-avatar-badge"></div>';
+            pfAvatar.style.border = 'none';
+          }
+          const topBtn = document.getElementById('header-profile-btn');
+          if (topBtn) {
+            topBtn.innerHTML = `<img src="${cachedAvatar}" alt="User Avatar" class="header-profile-avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+          }
+        }
+        if (cachedUser) {
+          const uEl = document.getElementById('pf-username');
+          if (uEl) uEl.textContent = cachedUser;
+          const su = document.getElementById('settings-username-sub');
+          if (su) su.textContent = cachedUser;
+        }
+        if (cachedName) {
+          const nEl = document.getElementById('pf-name');
+          if (nEl) nEl.textContent = cachedName;
+          const sn = document.getElementById('settings-name-sub');
+          if (sn) sn.textContent = cachedName;
+        }
+        const data = loadLocalData();
+        const statWl = document.getElementById('stat-wl');
+        const statHist = document.getElementById('stat-hist');
+        if (statWl) statWl.textContent = data.watchlist.length;
+        if (statHist) statHist.textContent = data.history.length;
+        renderGrid(data.watchlist, 'pf-wl-grid', 'pf-wl-empty');
+        renderGrid(data.history, 'pf-hist-grid', 'pf-hist-empty');
+      }
+    })();
+
+    // Auth state hook
+    function initProfile() {
+      if (typeof auth === 'undefined' || !auth) {
+        if (!localStorage.getItem('cachedName') && !localStorage.getItem('cachedUsername')) {
           document.getElementById('pf-logged-in').style.display = 'none';
           document.getElementById('pf-guest').style.display = 'flex';
-          return;
         }
-        auth.onAuthStateChanged(function(user) {
-          if (user) {
-            document.getElementById('pf-logged-in').style.display = 'flex';
-            document.getElementById('pf-guest').style.display = 'none';
+        return;
+      }
+      auth.onAuthStateChanged(function(user) {
+        if (user) {
+          document.getElementById('pf-logged-in').style.display = 'flex';
+          document.getElementById('pf-guest').style.display = 'none';
 
-            var displayName = user.displayName || user.email.split('@')[0];
-            var initial = displayName.charAt(0).toUpperCase();
-            var photoURL = user.photoURL;
+          var displayName = user.displayName || user.email.split('@')[0];
+          var photoURL = user.photoURL || '/assets/avatars/av_1.png?v=3';
 
-            if (photoURL && photoURL.includes('assets/avatars/av_')) {
-                photoURL = photoURL.replace('.jpg', '.png');
-                const match = photoURL.match(/av_(\d+)\.png/);
-                if (match && parseInt(match[1]) > 21) {
-                    photoURL = 'assets/avatars/av_1.png?v=3';
+          if (photoURL && photoURL.includes('assets/avatars/av_')) {
+              photoURL = photoURL.replace('.jpg', '.png');
+              const match = photoURL.match(/av_(\d+)\.png/);
+              if (match && parseInt(match[1]) > 21) {
+                  photoURL = '/assets/avatars/av_1.png?v=3';
+              } else if (!photoURL.startsWith('/') && !photoURL.startsWith('http')) {
+                  photoURL = '/' + photoURL;
+              }
+          }
+
+          const updateProfileAvatar = (url) => {
+            document.getElementById('pf-avatar').innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="User Avatar"><div class="pf-avatar-badge"></div>';
+            document.getElementById('pf-avatar').style.border = 'none';
+            localStorage.setItem('cachedAvatar', url);
+          };
+
+          updateProfileAvatar(photoURL);
+          
+          var displayName = user.displayName || user.email.split('@')[0];
+          var username = localStorage.getItem('cachedUsername') || displayName;
+          var display = localStorage.getItem('cachedName') || displayName;
+          
+          document.getElementById('pf-username').textContent = username;
+          var su = document.getElementById('settings-username-sub');
+          if (su) su.textContent = username;
+          document.getElementById('pf-name').textContent  = display;
+          var sn = document.getElementById('settings-name-sub');
+          if (sn) sn.textContent = display;
+          var se = document.getElementById('settings-email-sub');
+          if (se) se.textContent = user.email;
+
+          db.collection("users").doc(user.uid).get().then(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.avatar) {
+                    let fsAvatar = data.avatar;
+                    if (fsAvatar.includes('assets/avatars/av_')) {
+                      fsAvatar = fsAvatar.replace('.jpg', '.png');
+                      if (!fsAvatar.startsWith('/') && !fsAvatar.startsWith('http')) {
+                        fsAvatar = '/' + fsAvatar;
+                      }
+                    }
+                    if (fsAvatar !== photoURL) {
+                        user.updateProfile({ photoURL: fsAvatar }).catch(()=>{});
+                        updateProfileAvatar(fsAvatar);
+                    }
+                }
+                if (data.username) {
+                    username = data.username;
+                    localStorage.setItem('cachedUsername', username);
+                    document.getElementById('pf-username').textContent = username;
+                    if (su) su.textContent = username;
+                }
+                if (data.displayName) {
+                    display = data.displayName;
+                    localStorage.setItem('cachedName', display);
+                    document.getElementById('pf-name').textContent = display;
+                    if (sn) sn.textContent = display;
+                } else if (data.name) {
+                    display = data.name;
+                    localStorage.setItem('cachedName', display);
+                    document.getElementById('pf-name').textContent = display;
+                    if (sn) sn.textContent = display;
                 }
             }
+          }).catch(e => console.warn("Firestore fetch error:", e));
 
-            const updateProfileAvatar = (url) => {
-              document.getElementById('pf-avatar').innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="User Avatar"><div class="pf-avatar-badge"></div>';
-              document.getElementById('pf-avatar').style.border = 'none';
-              localStorage.setItem('cachedAvatar', url);
-            };
-
-            if (photoURL) {
-              updateProfileAvatar(photoURL);
-            } else {
-              document.getElementById('pf-avatar').innerHTML = initial + '<div class="pf-avatar-badge"></div>';
-            }
-            
-            var displayName = user.displayName || user.email.split('@')[0];
-            var username = localStorage.getItem('cachedUsername') || displayName;
-            var display = localStorage.getItem('cachedName') || displayName;
-            
-            document.getElementById('pf-username').textContent = username;
-            var su = document.getElementById('settings-username-sub');
-            if (su) su.textContent = username;
-            document.getElementById('pf-name').textContent  = display;
-            var sn = document.getElementById('settings-name-sub');
-            if (sn) sn.textContent = display;
-            var se = document.getElementById('settings-email-sub');
-            if (se) se.textContent = user.email;
-
-            db.collection("users").doc(user.uid).get().then(doc => {
-              if (doc.exists) {
-                  const data = doc.data();
-                  if (data.avatar) {
-                      const fsAvatar = data.avatar;
-                      if (fsAvatar !== photoURL) {
-                          user.updateProfile({ photoURL: fsAvatar }).catch(()=>{});
-                          updateProfileAvatar(fsAvatar);
-                      }
-                  }
-                  if (data.username) {
-                      username = data.username;
-                      localStorage.setItem('cachedUsername', username);
-                      document.getElementById('pf-username').textContent = username;
-                      if (su) su.textContent = username;
-                  }
-                  if (data.displayName) {
-                      display = data.displayName;
-                      localStorage.setItem('cachedName', display);
-                      document.getElementById('pf-name').textContent = display;
-                      if (sn) sn.textContent = display;
-                  } else if (data.username) {
-                      display = data.username;
-                      localStorage.setItem('cachedName', display);
-                      document.getElementById('pf-name').textContent = display;
-                      if (sn) sn.textContent = display;
-                  }
-              }
-            }).catch(e => console.warn("Firestore fetch error:", e));
-
-            if (user.metadata && user.metadata.creationTime) {
-              var d = new Date(user.metadata.creationTime);
-              document.getElementById('stat-days').textContent = d.toLocaleDateString('en-US', { month:'short', year:'numeric' });
-            }
-
-            var data = loadLocalData();
-            document.getElementById('stat-wl').textContent   = data.watchlist.length;
-            document.getElementById('stat-hist').textContent = data.history.length;
-            renderGrid(data.watchlist, 'pf-wl-grid',  'pf-wl-empty');
-            renderGrid(data.history,   'pf-hist-grid', 'pf-hist-empty');
-
-          } else {
-            document.getElementById('pf-logged-in').style.display = 'none';
-            document.getElementById('pf-guest').style.display = 'flex';
+          if (user.metadata && user.metadata.creationTime) {
+            var d = new Date(user.metadata.creationTime);
+            document.getElementById('stat-days').textContent = d.toLocaleDateString('en-US', { month:'short', year:'numeric' });
           }
-        });
-      }
 
-      // firebase-auth.js may init async; wait a tick
-      setTimeout(initProfile, 200);
-    });
+          var data = loadLocalData();
+          document.getElementById('stat-wl').textContent   = data.watchlist.length;
+          document.getElementById('stat-hist').textContent = data.history.length;
+          renderGrid(data.watchlist, 'pf-wl-grid',  'pf-wl-empty');
+          renderGrid(data.history,   'pf-hist-grid', 'pf-hist-empty');
+
+        } else {
+          document.getElementById('pf-logged-in').style.display = 'none';
+          document.getElementById('pf-guest').style.display = 'flex';
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initProfile);
+    } else {
+      initProfile();
+    }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
