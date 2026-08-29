@@ -43,7 +43,6 @@ export async function onRequest(context) {
   const tmdbPath = '/' + (params.path || []).join('/');
 
   // Get the query string from the original request and add the API key
-  const url = new URL(request.url);
   const queryParams = new URLSearchParams(url.search);
   
   // Inject the secret API key server-side
