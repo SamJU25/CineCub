@@ -128,7 +128,10 @@ var API = {
   upcoming: function(page){ return API.fetch(API.url('/movie/upcoming',{page:page||1})); },
   anime:    function(page){ return API.fetch(API.url('/discover/tv',{page:page||1, with_genres:16, with_original_language:'ja'})); },
   search:   function(q, page){ return API.fetch(API.url('/search/multi',{query:q,page:page||1,include_adult:false})); },
-  detail:   function(id,type){ return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos,similar'})); },
+  detail:   function(id,type){ 
+    if(type==='person') return API.fetch(API.url('/person/'+id,{append_to_response:'combined_credits'}));
+    return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos,similar'})); 
+  },
   discover: function(type,params){ 
     if(type === 'tv' && params && params.with_genres) {
       var genreMap = {28:10759, 12:10759, 878:10765, 14:10765, 27:9648, 10749:18, 53:9648};
@@ -1083,28 +1086,42 @@ var Modal = {
       this.isOpening = false; 
       if(!data){ Toast.show('Error loading details.'); Prog.done(); return; }
       State.activeData = data;
-      document.getElementById('fv-backdrop').src = CFG.ORIG+(data.backdrop_path||data.poster_path);
-      document.getElementById('fv-poster').src = CFG.IMG342+data.poster_path;
+      document.getElementById('fv-backdrop').src = type==='person' ? (data.profile_path?CFG.ORIG+data.profile_path:Utils.placeholder()) : CFG.ORIG+(data.backdrop_path||data.poster_path);
+      document.getElementById('fv-poster').src = type==='person' ? (data.profile_path?CFG.IMG342+data.profile_path:Utils.placeholder()) : CFG.IMG342+data.poster_path;
       document.getElementById('fv-title').textContent = data.title||data.name;
-      document.title = "Watching " + (data.title||data.name) + " \u2014 StreamHeaven";
-      document.getElementById('fv-year').textContent = Utils.year(data.release_date||data.first_air_date);
-      document.getElementById('fv-rating').textContent = data.vote_average ? data.vote_average.toFixed(1) : 'N/A';
-      document.getElementById('fv-desc').textContent = data.overview;
-      document.getElementById('fv-genre').textContent = (data.genres||[]).map(x=>x.name).join(', ');
-      document.getElementById('fv-runtime').textContent = type==='movie'?Utils.runtime(data.runtime):((data.number_of_seasons||1)+' Season(s)');
+      document.title = (type==='person' ? "Profile: " : "Watching ") + (data.title||data.name) + " \u2014 StreamHeaven";
+      document.getElementById('fv-year').textContent = type==='person' ? (data.known_for_department||'') : Utils.year(data.release_date||data.first_air_date);
+      document.getElementById('fv-rating').textContent = type==='person' ? (data.popularity?data.popularity.toFixed(1):'N/A') : (data.vote_average ? data.vote_average.toFixed(1) : 'N/A');
+      document.getElementById('fv-desc').innerHTML = type==='person' ? (data.biography?data.biography.replace(/\n/g,'<br>'):'No biography.') : (data.overview||'No overview available.');
+      document.getElementById('fv-genre').textContent = type==='person' ? (data.place_of_birth||'') : (data.genres||[]).map(x=>x.name).join(', ');
+      document.getElementById('fv-runtime').textContent = type==='person' ? (data.birthday?('Born: '+data.birthday):'') : (type==='movie'?Utils.runtime(data.runtime):((data.number_of_seasons||1)+' Season(s)'));
       
-      var cast = ((data.credits&&data.credits.cast)||[]).slice(0,10);
-      document.getElementById('fv-cast').innerHTML = cast.map(c => {
-         var safeName = Utils.escape(c.name).replace(/'/g, "\\'");
-         return '<div class="cast-card" onclick="Modal.loadActorMovies('+c.id+', \''+safeName+'\')" style="cursor:pointer;"><img alt="'+Utils.escape(c.name)+'" class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'" loading="lazy" decoding="async" onerror="this.src=Utils.placeholder()"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>';
-      }).join('');
+      var cast = type==='person' ? ((data.combined_credits&&data.combined_credits.cast)||[]).filter(x=>x.poster_path).sort((a,b)=>b.popularity-a.popularity).slice(0,20) : ((data.credits&&data.credits.cast)||[]).slice(0,10);
+      
+      if(type==='person') {
+         document.getElementById('fv-cast').innerHTML = '<div style="font-size:16px; font-weight:600; margin-bottom:10px; width:100%; color:var(--text-1);">Known For</div>' + cast.map(item => Render.posterCard(item, item.media_type || 'movie')).join('');
+      } else {
+         document.getElementById('fv-cast').innerHTML = cast.map(c => {
+            var safeName = Utils.escape(c.name).replace(/'/g, "\\'");
+            return '<div class="cast-card" onclick="Modal.openFull('+c.id+', \'person\')" style="cursor:pointer;"><img alt="'+Utils.escape(c.name)+'" class="cast-avatar" src="'+(c.profile_path?CFG.IMG185+c.profile_path:Utils.placeholder())+'" loading="lazy" decoding="async" onerror="this.src=Utils.placeholder()"/><div class="cast-name">'+Utils.escape(c.name)+'</div><div class="cast-char">'+Utils.escape(c.character||'')+'</div></div>';
+         }).join('');
+      }
       
       var similar = ((data.similar&&data.similar.results)||[]).filter(x => x.poster_path);
-      if(similar.length) {
-        document.getElementById('fv-similar').innerHTML = similar.map(item => Render.posterCard(item, item.media_type || type)).join('');
+      if(type !== 'person') {
+          if(similar.length) {
+            document.getElementById('fv-similar').innerHTML = similar.map(item => Render.posterCard(item, item.media_type || type)).join('');
+          } else {
+            document.getElementById('fv-similar').innerHTML = '<div style="color:var(--text-3); font-size:14px; text-align:center; padding: 20px; width:100%;">No similar titles found.</div>';
+          }
       } else {
-        document.getElementById('fv-similar').innerHTML = '<div style="color:var(--text-3); font-size:14px; text-align:center; padding: 20px; width:100%;">No similar titles found.</div>';
+          document.getElementById('fv-similar').innerHTML = '';
       }
+      
+      var fvTabs = document.querySelector('.fv-tabs');
+      if (fvTabs) fvTabs.style.display = type==='person' ? 'none' : 'flex';
+      var playBtn = document.querySelector('.btn-fv-play');
+      if (playBtn) playBtn.style.display = type==='person' ? 'none' : 'inline-flex';
       
       var epNav = document.getElementById('ep-nav-controls');
       var epNavAdFree = document.getElementById('ep-nav-controls-adfree');

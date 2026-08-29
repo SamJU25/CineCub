@@ -371,7 +371,9 @@ window.handleLogout = function() {
           photoURL = photoURL.replace('.jpg', '.png');
           const match = photoURL.match(/av_(\d+)\.png/);
           if (match && parseInt(match[1]) > 21) {
-              photoURL = 'assets/avatars/av_1.png?v=3';
+              photoURL = '/assets/avatars/av_1.png?v=3';
+          } else if (!photoURL.startsWith('/')) {
+              photoURL = '/' + photoURL;
           }
       }
       const displayName = user.displayName || user.email.split('@')[0];
@@ -488,7 +490,9 @@ if (auth) {
           photoURL = photoURL.replace('.jpg', '.png');
           const match = photoURL.match(/av_(\d+)\.png/);
           if (match && parseInt(match[1]) > 21) {
-              photoURL = 'assets/avatars/av_1.png?v=3';
+              photoURL = '/assets/avatars/av_1.png?v=3';
+          } else if (!photoURL.startsWith('/')) {
+              photoURL = '/' + photoURL;
           }
       }
       
