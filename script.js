@@ -2321,10 +2321,16 @@ document.addEventListener('DOMContentLoaded', function(){
   // Global Keyboard Shortcuts
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-      if (document.getElementById('modal-overlay').classList.contains('open')) {
+      if (document.getElementById('modal-overlay') && document.getElementById('modal-overlay').classList.contains('open')) {
         Modal.closeAll();
-      } else if (document.getElementById('profile-popup') && document.getElementById('profile-popup').classList.contains('open')) {
-        Library.closeProfile();
+      } else if (document.getElementById('auth-modal-overlay') && document.getElementById('auth-modal-overlay').classList.contains('open')) {
+        if (typeof AuthUI !== 'undefined') AuthUI.close();
+      } else if (document.getElementById('apps-modal') && document.getElementById('apps-modal').style.display === 'flex') {
+        if (typeof closeAppsModal === 'function') closeAppsModal();
+      } else if (document.getElementById('legal-modal') && document.getElementById('legal-modal').classList.contains('open')) {
+        if (typeof Legal !== 'undefined') Legal.close();
+      } else if (document.getElementById('confirm-modal') && document.getElementById('confirm-modal').classList.contains('open')) {
+        if (typeof Confirm !== 'undefined') Confirm.close();
       }
     }
   });
