@@ -652,6 +652,17 @@ var HScrollLoad = {
     'row-newreleases': {
       page: 2, fetching: false, hasMore: true,
       fetch: function(page) { return API.upcoming(page); }
+    },
+    'row-popular': {
+      page: 2, fetching: false, hasMore: true,
+      fetch: function(page) {
+        var f = (typeof PopularSection !== 'undefined' && PopularSection.filter) ? PopularSection.filter : 'popular';
+        if (f === 'now_playing') return API.fetch(API.url('/movie/now_playing', {page: page}));
+        if (f === 'action') return API.discover('movie', {page: page, with_genres: 28, sort_by: 'popularity.desc'});
+        if (f === 'comedy') return API.discover('movie', {page: page, with_genres: 35, sort_by: 'popularity.desc'});
+        if (f === 'scifi') return API.discover('movie', {page: page, with_genres: 878, sort_by: 'popularity.desc'});
+        return API.popular('movie', page);
+      }
     }
   },
   reset: function(id) {
@@ -662,7 +673,7 @@ var HScrollLoad = {
     }
   },
   init: function() {
-    ['row-home-genre', 'row-trending', 'row-tvshows', 'row-newreleases'].forEach(function(id) {
+    ['row-home-genre', 'row-trending', 'row-popular', 'row-tvshows', 'row-newreleases'].forEach(function(id) {
       var container = document.getElementById(id);
       if(!container) return;
       var isScrolling = false;
@@ -694,6 +705,7 @@ var HScrollLoad = {
         var type = 'movie'; 
         if (id === 'row-tvshows') type = 'tv';
         else if (id === 'row-home-genre') type = HomeGenre.type === 'anime' ? 'tv' : HomeGenre.type;
+        else if (id === 'row-popular') type = 'movie';
         
         var html = data.results.map(function(x) {
           return Render.posterCard(x, id === 'row-trending' ? null : type);
@@ -853,6 +865,80 @@ var TrendingSection = {
         ind.style.width = activeBtn.offsetWidth + 'px';
       }, 50);
     }
+  }
+};
+
+var PopularSection = {
+  filter: 'popular',
+  setFilter: function(filterType, el) {
+    if (this.filter === filterType && el && el.classList.contains('active')) return;
+    this.filter = filterType;
+    
+    if (el) {
+      var container = el.parentElement;
+      if (container) {
+        container.querySelectorAll('.bgt-btn').forEach(btn => btn.classList.remove('active'));
+      }
+      el.classList.add('active');
+      
+      var ind = document.getElementById('popular-indicator');
+      if (ind) {
+        ind.style.left = el.offsetLeft + 'px';
+        ind.style.width = el.offsetWidth + 'px';
+      }
+    }
+    
+    this.load();
+  },
+  load: function() {
+    var row = document.getElementById('row-popular');
+    if (!row) return;
+    Render.skeletons('row-popular', 8);
+    HScrollLoad.reset('row-popular');
+    
+    var f = this.filter;
+    var p1, p2;
+    if (f === 'now_playing') {
+      p1 = API.fetch(API.url('/movie/now_playing', {page: 1}));
+      p2 = API.fetch(API.url('/movie/now_playing', {page: 2}));
+    } else if (f === 'action') {
+      p1 = API.discover('movie', {page: 1, with_genres: 28, sort_by: 'popularity.desc'});
+      p2 = API.discover('movie', {page: 2, with_genres: 28, sort_by: 'popularity.desc'});
+    } else if (f === 'comedy') {
+      p1 = API.discover('movie', {page: 1, with_genres: 35, sort_by: 'popularity.desc'});
+      p2 = API.discover('movie', {page: 2, with_genres: 35, sort_by: 'popularity.desc'});
+    } else if (f === 'scifi') {
+      p1 = API.discover('movie', {page: 1, with_genres: 878, sort_by: 'popularity.desc'});
+      p2 = API.discover('movie', {page: 2, with_genres: 878, sort_by: 'popularity.desc'});
+    } else {
+      p1 = API.popular('movie', 1);
+      p2 = API.popular('movie', 2);
+    }
+    
+    Promise.all([p1, p2]).then(res => {
+      var data = res[0] || {};
+      if (res[1] && res[1].results) data.results = (data.results || []).concat(res[1].results);
+      if (row && data && data.results && data.results.length) {
+        row.innerHTML = data.results.slice(0, 35).map(x => Render.posterCard(x, 'movie')).join('');
+        initDragScroll();
+        initScrollButtons();
+      } else if (row) {
+        row.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%;">No movies found in this category.</div>';
+      }
+    }).catch(err => {
+      if (row) row.innerHTML = '<div style="padding:40px;text-align:center;color:var(--cv-red);width:100%;">Unable to load popular movies right now.</div>';
+    });
+  },
+  init: function() {
+    var activeBtn = document.querySelector('.popular-toggle .bgt-btn.active');
+    var ind = document.getElementById('popular-indicator');
+    if (activeBtn && ind) {
+      setTimeout(function() {
+        ind.style.left = activeBtn.offsetLeft + 'px';
+        ind.style.width = activeBtn.offsetWidth + 'px';
+      }, 50);
+    }
+    this.load();
   }
 };
 
@@ -2311,9 +2397,10 @@ document.addEventListener('DOMContentLoaded', function(){
   initScrollButtons();
   HScrollLoad.init();
 
-  /* Init By Genre Section & Trending Section */
+  /* Init By Genre, Trending & Popular Sections */
   HomeGenre.init();
   TrendingSection.init();
+  PopularSection.init();
 
   /* Populate Genre Select */
   var genreSelect = document.getElementById('browse-genre');

@@ -362,7 +362,8 @@ iframe {border:none}
 .browse-filters-wrap {display:flex; gap:12px; align-items:center;}
 
 @media (max-width: 600px) {
-  .section-header.trending-header {
+  .section-header.trending-header,
+  .section-header.popular-header {
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 12px;
