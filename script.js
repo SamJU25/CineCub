@@ -690,9 +690,9 @@ var HScrollLoad = {
       page: 2, fetching: false, hasMore: true,
       fetch: function(page) {
         var f = (typeof PopularSection !== 'undefined' && PopularSection.filter) ? PopularSection.filter : 'movies';
-        if (f === 'tv') return API.popular('tv', page);
         if (f === 'now_playing') return API.fetch(API.url('/movie/now_playing', {page: page}));
         if (f === 'action') return API.discover('movie', {page: page, with_genres: 28, sort_by: 'popularity.desc'});
+        if (f === 'comedy') return API.discover('movie', {page: page, with_genres: 35, sort_by: 'popularity.desc'});
         if (f === 'scifi') return API.discover('movie', {page: page, with_genres: 878, sort_by: 'popularity.desc'});
         return API.popular('movie', page);
       }
@@ -932,16 +932,15 @@ var PopularSection = {
     var f = this.filter;
     var p1, p2;
     var mediaType = 'movie';
-    if (f === 'tv') {
-      mediaType = 'tv';
-      p1 = API.popular('tv', 1);
-      p2 = API.popular('tv', 2);
-    } else if (f === 'now_playing') {
+    if (f === 'now_playing') {
       p1 = API.fetch(API.url('/movie/now_playing', {page: 1}));
       p2 = API.fetch(API.url('/movie/now_playing', {page: 2}));
     } else if (f === 'action') {
       p1 = API.discover('movie', {page: 1, with_genres: 28, sort_by: 'popularity.desc'});
       p2 = API.discover('movie', {page: 2, with_genres: 28, sort_by: 'popularity.desc'});
+    } else if (f === 'comedy') {
+      p1 = API.discover('movie', {page: 1, with_genres: 35, sort_by: 'popularity.desc'});
+      p2 = API.discover('movie', {page: 2, with_genres: 35, sort_by: 'popularity.desc'});
     } else if (f === 'scifi') {
       p1 = API.discover('movie', {page: 1, with_genres: 878, sort_by: 'popularity.desc'});
       p2 = API.discover('movie', {page: 2, with_genres: 878, sort_by: 'popularity.desc'});

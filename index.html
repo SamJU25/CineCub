@@ -171,7 +171,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=208" rel="stylesheet">
+  <link href="style.css?v=209" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -372,20 +372,20 @@
           <div class="cv-hscroll" id="row-trending"></div> 
         </section>
 
-        <!-- POPULAR SECTION -->
+        <!-- POPULAR MOVIES SECTION -->
         <section class="section-wrapper" id="section-popular">
           <div class="section-header popular-header">
             <div class="section-title-group">
               <div class="section-icon" style="background:rgba(199,125,255,0.12); color:var(--cv-purple-light);"><i class="fas fa-chart-line"></i></div>
-              <div><h2 class="section-title">Popular</h2><div class="section-subtitle">Most streamed movies &amp; series</div></div>
+              <div><h2 class="section-title">Popular Movies</h2><div class="section-subtitle">Most streamed blockbusters &amp; hits</div></div>
             </div>
             <!-- Dynamic Filter Pill Tabs -->
             <div class="by-genre-toggle popular-toggle" style="position:relative">
               <div class="bgt-indicator" id="popular-indicator"></div>
-              <div class="bgt-btn active" onclick="PopularSection.setFilter('movies', this)">MOVIES</div>
-              <div class="bgt-btn" onclick="PopularSection.setFilter('tv', this)">TV SERIES</div>
+              <div class="bgt-btn active" onclick="PopularSection.setFilter('movies', this)">ALL MOVIES</div>
               <div class="bgt-btn" onclick="PopularSection.setFilter('now_playing', this)">IN THEATRES</div>
               <div class="bgt-btn" onclick="PopularSection.setFilter('action', this)">ACTION</div>
+              <div class="bgt-btn" onclick="PopularSection.setFilter('comedy', this)">COMEDY</div>
               <div class="bgt-btn" onclick="PopularSection.setFilter('scifi', this)">SCI-FI</div>
             </div>
           </div>
@@ -1071,7 +1071,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=208"></script>
+  <script src="script.js?v=209"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
