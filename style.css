@@ -524,17 +524,19 @@ iframe {border:none}
 .fv-info-val {font-size:13px;color:var(--text-2)}
 
 /* PERSON / ACTOR DEDICATED PROFILE VIEW */
-.fv-person-view {padding:56px 36px 36px 36px}
-.fv-person-header {margin-bottom:20px}
+.fv-person-view {padding:74px 36px 36px 36px}
+.fv-person-header {margin-bottom:22px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
 .fv-person-name {font-size:30px;font-weight:900;color:var(--text-1);line-height:1.2}
-.fv-person-top {display:flex;gap:28px;align-items:stretch;margin-bottom:28px}
-.fv-person-left-col {flex:0 0 240px;width:240px;display:flex;flex-direction:column;gap:12px}
-.fv-person-img-wrap {width:100%;border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-xl);border:1px solid var(--b-3);background:var(--cv-dark-4);flex:1;min-height:330px;display:flex}
-.fv-person-img {width:100%;height:100%;object-fit:cover;display:block}
-.fv-person-socials {display:flex;gap:10px;justify-content:center;align-items:center}
+.fv-person-socials {display:flex;gap:10px;align-items:center}
 .fv-social-link {width:38px;height:38px;border-radius:50%;background:var(--cv-dark-4);border:1px solid var(--b-2);color:var(--text-2);display:flex;align-items:center;justify-content:center;font-size:15px;text-decoration:none;transition:background var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard), transform var(--motion-fast) var(--ease-standard)}
 .fv-social-link:hover {background:var(--cv-purple);color:#fff;border-color:var(--cv-purple);transform:translateY(-2px)}
 .fv-social-link:active {transform:scale(var(--press-scale))}
+
+.fv-person-top {display:flex;gap:28px;align-items:stretch;margin-bottom:28px}
+.fv-person-left-col {flex:0 0 240px;width:240px;display:flex;flex-direction:column}
+.fv-person-img-wrap {width:100%;border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-xl);border:1px solid var(--b-3);background:var(--cv-dark-4);flex:1;min-height:330px;display:flex}
+.fv-person-img {width:100%;height:100%;object-fit:cover;display:block}
+
 .fv-person-right-col {flex:1;min-width:0;display:flex;flex-direction:column}
 .fv-pinfo-box {background:rgba(255,255,255,0.02);border:1px solid var(--b-1);border-radius:var(--r-md);padding:18px 22px;height:100%;display:flex;flex-direction:column;box-sizing:border-box}
 .fv-pinfo-title {font-size:16px;font-weight:800;color:var(--text-1);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--b-1)}
@@ -542,12 +544,15 @@ iframe {border:none}
 .fv-pinfo-item {display:flex;flex-direction:column;gap:2px}
 .fv-pinfo-label {font-size:12px;font-weight:800;color:var(--text-4);text-transform:uppercase;letter-spacing:0.5px}
 .fv-pinfo-val {font-size:13.5px;color:var(--text-2);line-height:1.5}
+
 .fv-person-bio-wrap {margin-top:20px;border-top:1px solid var(--b-2);padding-top:20px}
 .fv-person-bio {font-size:14px;color:var(--text-2);line-height:1.8;text-align:justify}
 
 @media (max-width:768px) {
-  .fv-person-view {padding:56px 18px 24px 18px}
+  .fv-person-view {padding:70px 18px 24px 18px}
+  .fv-person-header {align-items:center;text-align:center}
   .fv-person-name {text-align:center;font-size:24px}
+  .fv-person-socials {justify-content:center}
   .fv-person-top {flex-direction:column;align-items:center;gap:20px}
   .fv-person-left-col {width:100%;max-width:220px}
   .fv-person-img-wrap {min-height:280px}
