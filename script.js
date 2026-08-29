@@ -1299,7 +1299,22 @@ var Browse = {
       else if(State.browseMode === 'newest') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'first_air_date.desc'});
       else p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'popularity.desc'});
     } else if(State.browseCategory === 'trending' || State.browseMode === 'trending') {
-      if (State.genreId) {
+      if (State.browseType === 'all' && State.genreId) {
+        p = Promise.all([
+          API.discover('movie', {page:State.browsePage, sort_by:'popularity.desc', with_genres:State.genreId}),
+          API.discover('tv', {page:State.browsePage, sort_by:'popularity.desc', with_genres:State.genreId})
+        ]).then(function(res){
+          var m = (res[0] && res[0].results) ? res[0].results : [];
+          var t = (res[1] && res[1].results) ? res[1].results : [];
+          var interleaved = [];
+          var max = Math.max(m.length, t.length);
+          for(var i=0; i<max; i++) {
+            if(m[i]) { m[i].media_type = 'movie'; interleaved.push(m[i]); }
+            if(t[i]) { t[i].media_type = 'tv'; interleaved.push(t[i]); }
+          }
+          return { page: State.browsePage, total_pages: Math.max((res[0] && res[0].total_pages) || 1, (res[1] && res[1].total_pages) || 1), results: interleaved };
+        });
+      } else if (State.genreId) {
         p = API.discover(currentType, {page:State.browsePage, sort_by:'popularity.desc', with_genres:State.genreId});
       } else {
         p = API.trending(State.browseType==='all'?'all':State.browseType, State.browsePage, State.trendingTimeWindow || 'day');
