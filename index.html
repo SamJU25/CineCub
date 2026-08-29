@@ -171,7 +171,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=215" rel="stylesheet">
+  <link href="style.css?v=216" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -577,7 +577,12 @@
     <div class="cv-page" id="page-watchlist">
       <div class="page-inner">
         <div class="cv-container">
-          <h2 class="section-title" style="margin-bottom:20px;">My Watchlist</h2>
+          <div class="browse-header" style="margin-bottom:20px;">
+            <div class="browse-title-group">
+              <div class="browse-breadcrumbs">StreamHeaven &rsaquo; <span>My Watchlist</span></div>
+              <h2 class="section-title" style="margin:0; font-size:26px; font-weight:900;">My Watchlist</h2>
+            </div>
+          </div>
           <div class="poster-grid" id="wl-grid"></div>
         </div>
       </div>
@@ -608,9 +613,11 @@
     <div class="cv-page" id="page-history">
       <div class="page-inner">
         <div class="cv-container">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h2 class="section-title">Watch History</h2>
-            <button onclick="History.clearAll()" style="background:transparent; color:var(--cv-red); border:1px solid rgba(230,57,70,0.2); padding:6px 16px; border-radius:var(--r-pill); font-size:12px;"><i class="fas fa-trash"></i> Clear All</button>
+          <div class="browse-header" style="margin-bottom:20px;">
+            <div class="browse-title-group">
+              <div class="browse-breadcrumbs">StreamHeaven &rsaquo; <span>Watch History</span></div>
+              <h2 class="section-title" style="margin:0; font-size:26px; font-weight:900;">Watch History</h2>
+            </div>
           </div>
           <div class="poster-grid" id="history-grid"></div>
         </div>
@@ -1072,7 +1079,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=215"></script>
+  <script src="script.js?v=216"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
