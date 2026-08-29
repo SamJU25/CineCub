@@ -120,7 +120,7 @@ iframe {border:none}
 .nav-item-icon {flex-shrink:0;width:24px;display:flex;align-items:center;justify-content:center;font-size:15px;transition:transform var(--motion-fast) var(--ease-standard)}
 .nav-item-text {flex:1;transition:opacity var(--motion-fast) var(--ease-standard) 160ms, transform var(--motion-fast) var(--ease-standard) 160ms;overflow:hidden}
 .cv-sidebar.collapsed .nav-item-text {opacity:0;transform:translateX(-8px);transition-delay:0ms;}
-.nav-badge {background:var(--cv-purple);color:#000;font-size:10px;font-weight:900;padding:2px 7px;border-radius:var(--r-pill);margin-left:auto;transition:opacity var(--motion-fast) var(--ease-standard) 160ms, transform var(--motion-fast) var(--ease-standard) 160ms;}
+.nav-badge {background:var(--cv-purple);color:#000;font-size:10px;font-weight:900;padding:2px 7px;border-radius:var(--r-pill);margin-left:auto;flex-shrink:0;transition:opacity var(--motion-fast) var(--ease-standard) 160ms, transform var(--motion-fast) var(--ease-standard) 160ms;}
 .cv-sidebar.collapsed .nav-badge {opacity:0;transform:translateX(-8px);transition-delay:0ms;}
 
 .sidebar-user {display:flex;align-items:center;gap:12px;cursor:pointer}
