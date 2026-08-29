@@ -1345,8 +1345,8 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 .pf-modal-actions .pf-btn-secondary { background: var(--cv-dark-4); color: var(--text-1); border: 1px solid var(--b-2); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast); }
 .pf-modal-actions .pf-btn-secondary:hover { background: var(--cv-dark-3); }
 .pf-modal-actions .pf-btn-secondary:active { transform: scale(var(--press-scale)); }
-.pf-modal-actions .pf-btn-danger { background: rgba(255, 75, 75, 0.1); color: #ff4b4b; border: 1px solid rgba(255, 75, 75, 0.2); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast); }
-.pf-modal-actions .pf-btn-danger:hover { background: rgba(255, 75, 75, 0.2); }
+.pf-modal-actions .pf-btn-danger { background: #220f12; color: #ff6b6b; border: 1px solid rgba(230, 57, 70, 0.25); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast); }
+.pf-modal-actions .pf-btn-danger:hover { background: #2c1317; color: #ff8585; border-color: rgba(230, 57, 70, 0.38); }
 .pf-modal-actions .pf-btn-danger:active { transform: scale(var(--press-scale)); }
 .pf-modal-actions .pf-btn-login { border: 1px solid transparent; padding: 14px; font-weight: 700; border-radius: 12px; transition: background var(--t-fast), transform var(--t-fast), box-shadow var(--t-fast); }
 .pf-modal-actions .pf-btn-login:hover { transform: translateY(-1px) scale(var(--hover-scale)); box-shadow: 0 4px 15px rgba(157,78,221,0.25); }

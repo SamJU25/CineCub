@@ -34,9 +34,10 @@
       --pf-purple: #c77dff;
       --pf-purple-dim: rgba(157, 78, 221, 0.12);
       --pf-purple-border: rgba(157, 78, 221, 0.25);
-      --pf-danger: #ff4b4b;
-      --pf-danger-dim: rgba(230, 57, 70, 0.10);
+      --pf-danger-bg: #220f12;
       --pf-danger-border: rgba(230, 57, 70, 0.22);
+      --pf-danger-text: #ff6b6b;
+      --pf-danger-hover: #2c1317;
     }
 
     /* Global Layout */
@@ -189,13 +190,14 @@
       color: #fff;
     }
     .pf-sidebar-btn.btn-logout {
-      background: var(--pf-danger-dim);
+      background: #220f12;
       color: #ff6b6b;
-      border: 1px solid var(--pf-danger-border);
+      border: 1px solid rgba(230, 57, 70, 0.22);
     }
     .pf-sidebar-btn.btn-logout:hover {
-      background: rgba(230, 57, 70, 0.18);
-      color: #ff4b4b;
+      background: #2c1317;
+      color: #ff8585;
+      border-color: rgba(230, 57, 70, 0.35);
     }
 
     /* Main Content */
@@ -395,8 +397,8 @@
     
     /* Danger Actions List */
     .pf-settings-danger-list {
-      background: var(--pf-danger-dim);
-      border: 1px solid var(--pf-danger-border);
+      background: var(--pf-card-bg);
+      border: 1px solid var(--pf-border);
       border-radius: 16px;
       overflow: hidden;
     }
@@ -405,13 +407,18 @@
       align-items: center;
       gap: 16px;
       padding: 16px 20px;
-      border-bottom: 1px solid rgba(230, 57, 70, 0.15);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       cursor: pointer;
     }
     .pf-settings-danger-row:last-child { border-bottom: none; }
-    .pf-settings-danger-row:hover { background: rgba(230, 57, 70, 0.16); }
-    .pf-settings-danger-row.delete-row { background: rgba(230, 57, 70, 0.12); }
-    .pf-settings-danger-row.delete-row:hover { background: rgba(230, 57, 70, 0.22); }
+    .pf-settings-danger-row:hover { background: rgba(255, 255, 255, 0.03); }
+    .pf-settings-danger-row.delete-row {
+      background: #190a0d;
+      border-bottom: none;
+    }
+    .pf-settings-danger-row.delete-row:hover {
+      background: #230e12;
+    }
     
     .pf-settings-danger-icon {
       width: 36px;
@@ -422,34 +429,46 @@
       justify-content: center;
       font-size: 13px;
       flex-shrink: 0;
-      background: rgba(230, 57, 70, 0.15);
+      background: #220f12;
       color: #ff6b6b;
-      border: 1px solid rgba(230, 57, 70, 0.25);
+      border: 1px solid rgba(230, 57, 70, 0.22);
+    }
+    .pf-settings-danger-row.delete-row .pf-settings-danger-icon {
+      background: #2b0f14;
+      color: #ff5252;
+      border: 1px solid rgba(230, 57, 70, 0.32);
     }
     .pf-settings-danger-text {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 2px;
+      overflow: hidden;
     }
     .pf-settings-danger-title {
-      font-size: 13.5px;
+      font-size: 13px;
       font-weight: 700;
-      color: #ff6b6b;
+      color: #ffffff;
     }
     .pf-settings-danger-row.delete-row .pf-settings-danger-title {
-      color: #ff4b4b;
+      color: #ff5252;
       font-weight: 800;
     }
     .pf-settings-danger-desc {
-      font-size: 12px;
-      color: rgba(232, 232, 240, 0.5);
+      font-size: 13px;
+      color: rgba(232, 232, 240, 0.55);
       font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .pf-settings-danger-arrow {
-      color: rgba(230, 57, 70, 0.4);
+      color: rgba(232, 232, 240, 0.3);
       font-size: 12px;
       margin-left: 8px;
+    }
+    .pf-settings-danger-row.delete-row .pf-settings-danger-arrow {
+      color: rgba(230, 57, 70, 0.45);
     }
     
     /* Guest Wall */
