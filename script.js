@@ -2589,13 +2589,15 @@ document.addEventListener('DOMContentLoaded', function(){
   Promise.all([
     API.trending('all', 1), API.trending('all', 2),
     API.topRated('movie', 1),
+    API.topRated('tv', 1),
     API.popular('tv', 1), API.popular('tv', 2),
     API.upcoming(1), API.upcoming(2)
   ]).then(function(res){
     var tr=res[0]; if(res[1] && res[1].results) tr.results = tr.results.concat(res[1].results);
-    var rtd=res[2];
-    var tv=res[3]; if(res[4] && res[4].results) tv.results = tv.results.concat(res[4].results);
-    var up=res[5]; if(res[6] && res[6].results) up.results = up.results.concat(res[6].results);
+    var rtdM=res[2];
+    var rtdT=res[3];
+    var tv=res[4]; if(res[5] && res[5].results) tv.results = tv.results.concat(res[5].results);
+    var up=res[6]; if(res[7] && res[7].results) up.results = up.results.concat(res[7].results);
     
     /* 1. Hero Spotlight */
     if(tr && tr.results){
@@ -2619,10 +2621,18 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('list-top10').innerHTML = tr.results.slice(0,10).map((x,i) => Render.compactCard(x, i+1)).join('');
     }
 
-    /* 5. Top Rated Films */
-    if(rtd && rtd.results){
-      var rtdFiltered = rtd.results.filter(function(x){ return x.backdrop_path; });
-      document.getElementById('grid-toprated').innerHTML = rtdFiltered.slice(0,8).map(x => Render.landscapeCard(x,'movie')).join('');
+    /* 5. Top Rated Masterpieces (Mixed Movies & TV Series) */
+    var mList = (rtdM && rtdM.results) ? rtdM.results.filter(function(x){ return x.backdrop_path; }) : [];
+    var tList = (rtdT && rtdT.results) ? rtdT.results.filter(function(x){ return x.backdrop_path; }) : [];
+    var mixedTopRated = [];
+    for(var mi = 0; mi < 4; mi++) {
+      if (mList[mi]) { mList[mi].media_type = 'movie'; mixedTopRated.push(mList[mi]); }
+      if (tList[mi]) { tList[mi].media_type = 'tv'; mixedTopRated.push(tList[mi]); }
+    }
+    if (mixedTopRated.length > 0) {
+      document.getElementById('grid-toprated').innerHTML = mixedTopRated.map(function(x){
+        return Render.landscapeCard(x, x.media_type || (x.title ? 'movie' : 'tv'));
+      }).join('');
     }
 
     /* 6. TV Series */
