@@ -1150,7 +1150,7 @@ var Modal = {
       State.activeData = data;
       
       var fvHero = document.getElementById('fv-hero');
-      var fvBody = document.getElementById('fv-body');
+      var fvBody = document.getElementById('fv-body') || document.querySelector('.fv-body');
       var fvPersonView = document.getElementById('fv-person-view');
 
       if (type === 'person') {
