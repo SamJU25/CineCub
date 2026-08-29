@@ -335,7 +335,7 @@ var App = {
     document.getElementById('browse-title').innerText = title;
     var breadcrumbTitle = document.getElementById('browse-breadcrumb-title');
     if (breadcrumbTitle) breadcrumbTitle.innerText = title;
-    document.getElementById('browse-header').style.display = 'flex';
+    document.getElementById('browse-header').style.display = '';
     
     var sortWrap = document.getElementById('wrap-browse-sort');
     var genreWrap = document.getElementById('wrap-browse-genre');

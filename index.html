@@ -79,7 +79,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=192" rel="stylesheet">
+  <link href="style.css?v=193" rel="stylesheet">
 </head>
 <body>
 
@@ -358,12 +358,12 @@
     <div class="cv-page" id="page-browse">
       <div class="page-inner">
         <div class="cv-container">
-          <div class="browse-header" id="browse-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:24px;">
+          <div class="browse-header" id="browse-header">
             <div class="browse-title-group">
-              <div class="browse-breadcrumbs" style="font-size:12px; color:var(--text-3); margin-bottom:4px; font-weight:600;">StreamHeaven &rsaquo; <span id="browse-breadcrumb-title" style="color:var(--text-2);">Discover</span></div>
-              <h2 class="section-title" id="browse-title" style="margin:0; font-size:26px; font-weight:900;">Discover</h2>
+              <div class="browse-breadcrumbs">StreamHeaven &rsaquo; <span id="browse-breadcrumb-title">Discover</span></div>
+              <h2 class="section-title" id="browse-title">Discover</h2>
             </div>
-            <div class="browse-filters-wrap" style="display:flex; gap:12px; align-items:center;">
+            <div class="browse-filters-wrap">
               <div class="custom-select" id="wrap-browse-genre" style="width:160px;">
                 <select id="browse-genre" onchange="App.changeGenre(this.value)">
                   <option value="">All Genres</option>
@@ -875,7 +875,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=192"></script>
+  <script src="script.js?v=193"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
