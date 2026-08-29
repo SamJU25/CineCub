@@ -448,6 +448,17 @@ var App = {
     this.setBrowseHeader('Trending', 'trending'); 
     Browse.load(); 
   },
+  browsePopular: function(){ 
+    State.browseCategory='movie'; 
+    State.browseType='movie'; 
+    State.browseMode='popular'; 
+    State.browsePage=1; 
+    State.genreId=null; 
+    this.showPage('page-browse'); 
+    this.setNav('nav-popular','Popular'); 
+    this.setBrowseHeader('Popular Movies', true); 
+    Browse.load(); 
+  },
   browseTopRated: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='toprated'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-toprated','Top Rated'); this.setBrowseHeader('Top Rated', false); Browse.load(); },
   browseUpcoming: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='upcoming'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-upcoming','Upcoming'); this.setBrowseHeader('Upcoming', false); Browse.load(); },
   updateWatchlistButtons: function() {

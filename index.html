@@ -171,7 +171,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=206" rel="stylesheet">
+  <link href="style.css?v=207" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -210,6 +210,9 @@
       <div class="nav-item" id="nav-trending" onclick="App.browseTrending()">
         <span class="nav-item-icon"><i class="fas fa-fire"></i></span><span class="nav-item-text">Trending</span>
         <span class="nav-badge">HOT</span>
+      </div>
+      <div class="nav-item" id="nav-popular" onclick="App.browsePopular()">
+        <span class="nav-item-icon"><i class="fas fa-chart-line"></i></span><span class="nav-item-text">Popular</span>
       </div>
       <div class="nav-item" id="nav-toprated" onclick="App.browseTopRated()">
         <span class="nav-item-icon"><i class="fas fa-star"></i></span><span class="nav-item-text">Top Rated</span>
@@ -1062,7 +1065,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=206"></script>
+  <script src="script.js?v=207"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
