@@ -484,6 +484,11 @@ if (auth) {
                 sfName.innerText = nameToShow;
             }
         }
+        const sfAvatar = document.querySelector('.cv-sidebar-bottom .sf-avatar');
+        if (sfAvatar) {
+            sfAvatar.classList.add('active');
+            sfAvatar.innerHTML = `<img src="${url}" alt="User Avatar">`;
+        }
       };
 
       if (photoURL && photoURL.includes('assets/avatars/av_')) {
@@ -542,7 +547,7 @@ if (auth) {
       if(sidebarFooter) {
         let avatarHtml = `<div class="sf-avatar active">${initial}</div>`;
         if (photoURL) {
-          avatarHtml = `<div class="sf-avatar active" style="padding:0;overflow:hidden;"><img src="${photoURL}" alt="User Avatar" style="width:100%;height:100%;object-fit:cover;"></div>`;
+          avatarHtml = `<div class="sf-avatar active"><img src="${photoURL}" alt="User Avatar"></div>`;
         }
         sidebarFooter.innerHTML = `
           <div class="sf-profile">
