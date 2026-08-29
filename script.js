@@ -1076,14 +1076,26 @@ var Modal = {
     if (backBtn) backBtn.style.display = 'none';
     document.getElementById('modal-overlay').classList.remove('open');
     
+    State.activeTrailer = null;
     var tp = document.getElementById('trailer-player');
     if (tp) {
+      try {
+        tp.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+        tp.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      } catch(e){}
       tp.src = 'about:blank';
-      var cloneTp = tp.cloneNode(true);
-      cloneTp.removeAttribute('src');
-      tp.parentNode.replaceChild(cloneTp, tp);
+      var cloneTp = document.createElement('iframe');
+      cloneTp.id = 'trailer-player';
+      cloneTp.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; clipboard-write');
+      cloneTp.setAttribute('allowfullscreen', '');
+      cloneTp.setAttribute('scrolling', 'no');
+      cloneTp.src = 'about:blank';
+      if (tp.parentNode) tp.parentNode.replaceChild(cloneTp, tp);
     }
     
+    var trailerContainer = document.getElementById('trailer-container');
+    if (trailerContainer) trailerContainer.style.display = 'none';
+
     var toast = document.getElementById('up-next-toast');
     if (toast) toast.classList.add('hidden');
     
@@ -1093,10 +1105,13 @@ var Modal = {
     var iframe = document.getElementById('main-player');
     if (iframe) {
       iframe.src = 'about:blank';
-      var cloneMain = iframe.cloneNode(true);
-      cloneMain.removeAttribute('src');
-      cloneMain.classList.remove('loaded');
-      iframe.parentNode.replaceChild(cloneMain, iframe);
+      var cloneMain = document.createElement('iframe');
+      cloneMain.id = 'main-player';
+      cloneMain.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write');
+      cloneMain.setAttribute('allowfullscreen', '');
+      cloneMain.setAttribute('scrolling', 'no');
+      cloneMain.src = 'about:blank';
+      if (iframe.parentNode) iframe.parentNode.replaceChild(cloneMain, iframe);
     }
     
     var adFreeVideo = document.getElementById('native-player-adfree');
@@ -1110,6 +1125,10 @@ var Modal = {
       AdFreePlayer.hls = null;
     }
     
+    State.activeId = null;
+    State.activeType = null;
+    State.activeData = null;
+
     if (!skipHistory && window.location.hash === '#media') {
       window.history.back();
     }
@@ -1141,6 +1160,22 @@ var Modal = {
     }
     
     State.activeId = id; State.activeType = type;
+    State.activeTrailer = null;
+    var currentTp = document.getElementById('trailer-player');
+    if (currentTp) {
+      try {
+        currentTp.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+        currentTp.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      } catch(e){}
+      currentTp.src = 'about:blank';
+      var cloneTp = document.createElement('iframe');
+      cloneTp.id = 'trailer-player';
+      cloneTp.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; clipboard-write');
+      cloneTp.setAttribute('allowfullscreen', '');
+      cloneTp.setAttribute('scrolling', 'no');
+      cloneTp.src = 'about:blank';
+      if (currentTp.parentNode) currentTp.parentNode.replaceChild(cloneTp, currentTp);
+    }
     document.getElementById('fv-actor-section').style.display = 'none';
     document.getElementById('fv-actor-movies').innerHTML = '';
     Prog.start();
@@ -1868,13 +1903,22 @@ var FVTabs = {
     }
     
     if(t==='overview' && State.activeTrailer) {
-       document.getElementById('trailer-player').src = 'https://www.youtube.com/embed/' + State.activeTrailer + '?autoplay=1&mute=1';
+       document.getElementById('trailer-player').src = 'https://www.youtube.com/embed/' + State.activeTrailer + '?enablejsapi=1&autoplay=1&mute=1';
     } else {
        var tp = document.getElementById('trailer-player');
-       if (tp && tp.src && tp.src !== 'about:blank') {
-         var tpClone = tp.cloneNode(true);
-         tpClone.setAttribute('src', 'about:blank');
-         tp.parentNode.replaceChild(tpClone, tp);
+       if (tp) {
+         try {
+           tp.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
+           tp.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+         } catch(e){}
+         tp.src = 'about:blank';
+         var cloneTp = document.createElement('iframe');
+         cloneTp.id = 'trailer-player';
+         cloneTp.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; clipboard-write');
+         cloneTp.setAttribute('allowfullscreen', '');
+         cloneTp.setAttribute('scrolling', 'no');
+         cloneTp.src = 'about:blank';
+         if (tp.parentNode) tp.parentNode.replaceChild(cloneTp, tp);
        }
     }
   }
@@ -2178,6 +2222,18 @@ document.addEventListener('DOMContentLoaded', function(){
         Modal.closeAll();
       } else if (document.getElementById('profile-popup') && document.getElementById('profile-popup').classList.contains('open')) {
         Library.closeProfile();
+      }
+    }
+  });
+
+  // Pause trailer on tab blur
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      var tp = document.getElementById('trailer-player');
+      if (tp && tp.contentWindow) {
+        try {
+          tp.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+        } catch(e){}
       }
     }
   });
