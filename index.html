@@ -79,7 +79,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=188" rel="stylesheet">
+  <link href="style.css?v=189" rel="stylesheet">
 </head>
 <body>
 
@@ -253,23 +253,23 @@
 
         <!-- TRENDING NOW ROW -->
         <section class="section-wrapper" id="section-trending">
-          <div class="section-header">
+          <div class="section-header" style="margin-bottom: 12px;">
             <div class="section-title-group">
               <div class="section-icon"><i class="fas fa-fire-alt"></i></div>
               <div><h2 class="section-title">Trending Now</h2><div class="section-subtitle">What everyone is watching</div></div>
             </div>
-            <!-- TODAY / THIS WEEK Segmented Toggle -->
+          </div>
+          <div class="section-controls-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <!-- TODAY / THIS WEEK Segmented Toggle on left -->
             <div class="by-genre-toggle trending-toggle" style="position:relative">
               <div class="bgt-indicator" id="trending-indicator"></div>
               <div class="bgt-btn active" id="btn-trending-today" onclick="TrendingSection.setTimeWindow('day', this)">TODAY</div>
               <div class="bgt-btn" id="btn-trending-week" onclick="TrendingSection.setTimeWindow('week', this)">THIS WEEK</div>
             </div>
-          </div>
-          <div class="cv-hscroll" id="row-trending"></div> 
-          <!-- View All Button below cards on the right side -->
-          <div class="section-footer-row" style="display:flex; justify-content:flex-end; margin-top:8px;">
+            <!-- View All Button horizontally aligned on right -->
             <div class="section-view-all" onclick="App.browseTrending()">View All <i class="fas fa-arrow-right"></i></div>
           </div>
+          <div class="cv-hscroll" id="row-trending"></div> 
         </section>
 
         <!-- TOP 10 TODAY RANKING -->
@@ -379,6 +379,12 @@
                   <option value="trending">Trending</option>
                   <option value="toprated">Top Rated</option>
                   <option value="newest">Newest</option>
+                </select>
+              </div>
+              <div class="custom-select" id="wrap-browse-trending-time" style="width:150px; display:none;">
+                <select id="browse-trending-time" onchange="App.changeTrendingTime(this.value)">
+                  <option value="day">Today</option>
+                  <option value="week">This Week</option>
                 </select>
               </div>
             </div>
@@ -873,7 +879,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=188"></script>
+  <script src="script.js?v=189"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

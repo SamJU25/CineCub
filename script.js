@@ -60,7 +60,7 @@ const CFG = {
 /* ================================================================
    02. STATE & UTILS
 ================================================================ */
-var State = { activePage:'page-home', browseType:'movie', browseCategory:'movie', browseMode:'popular', browsePage:1, isFetching:false, genreId:null, activeId:null, activeType:'movie', activeData:null, activeServer:0, watchlist:[], history:[] };
+var State = { activePage:'page-home', browseType:'movie', browseCategory:'movie', browseMode:'popular', browsePage:1, isFetching:false, genreId:null, trendingTimeWindow:'day', activeId:null, activeType:'movie', activeData:null, activeServer:0, watchlist:[], history:[] };
 
 /* ================================================================
    AD-PASS MONETIZATION SYSTEM
@@ -331,18 +331,37 @@ var App = {
     document.getElementById('breadcrumb-current').textContent = title;
   },
   goHome: function(){ this.showPage('page-home'); this.setNav('nav-home','Discover'); },
-  setBrowseHeader: function(title, showSort) {
+  setBrowseHeader: function(title, mode) {
     document.getElementById('browse-title').innerText = title;
     var breadcrumbTitle = document.getElementById('browse-breadcrumb-title');
     if (breadcrumbTitle) breadcrumbTitle.innerText = title;
     document.getElementById('browse-header').style.display = 'flex';
+    
     var sortWrap = document.getElementById('wrap-browse-sort');
     var genreWrap = document.getElementById('wrap-browse-genre');
-    if (sortWrap) sortWrap.style.display = showSort ? 'block' : 'none';
-    if (genreWrap) genreWrap.style.display = showSort ? 'block' : 'none';
-    if(showSort) {
-      CustomSelect.update('browse-genre', State.genreId || '');
-      CustomSelect.update('browse-sort', State.browseMode || 'popular');
+    var timeWrap = document.getElementById('wrap-browse-trending-time');
+    
+    if (mode === 'trending') {
+      if (sortWrap) sortWrap.style.display = 'none';
+      if (genreWrap) genreWrap.style.display = 'none';
+      if (timeWrap) {
+        timeWrap.style.display = 'block';
+        CustomSelect.update('browse-trending-time', State.trendingTimeWindow || 'day');
+      }
+    } else if (mode === true || mode === 'standard') {
+      if (sortWrap) {
+        sortWrap.style.display = 'block';
+        CustomSelect.update('browse-sort', State.browseMode || 'popular');
+      }
+      if (genreWrap) {
+        genreWrap.style.display = 'block';
+        CustomSelect.update('browse-genre', State.genreId || '');
+      }
+      if (timeWrap) timeWrap.style.display = 'none';
+    } else {
+      if (sortWrap) sortWrap.style.display = 'none';
+      if (genreWrap) genreWrap.style.display = 'none';
+      if (timeWrap) timeWrap.style.display = 'none';
     }
   },
   changeSort: function(val) {
@@ -354,12 +373,28 @@ var App = {
     State.browsePage = 1;
     Browse.load();
   },
+  changeTrendingTime: function(val) {
+    State.trendingTimeWindow = val || 'day';
+    State.browsePage = 1;
+    Browse.load();
+  },
   browseMovies: function(){ State.browseCategory='movie'; State.browseType='movie'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-movies','Movies'); this.setBrowseHeader('Movies', true); Browse.load(); },
   browseTVShows: function(){ State.browseCategory='tv'; State.browseType='tv'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-tv','TV Series'); this.setBrowseHeader('TV Series', true); Browse.load(); },
   browseAnime: function(){ State.browseCategory='anime'; State.browseType='tv'; State.browseMode='popular'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-anime','Anime'); this.setBrowseHeader('Anime', true); Browse.load(); },
-  browseTrending: function(){ State.browseCategory='all'; State.browseType='all'; State.browseMode='trending'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-trending','Trending'); this.setBrowseHeader('Trending', true); Browse.load(); },
-  browseTopRated: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='toprated'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-toprated','Top Rated'); this.setBrowseHeader('Top Rated', true); Browse.load(); },
-  browseUpcoming: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='upcoming'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-upcoming','Upcoming'); this.setBrowseHeader('Upcoming', true); Browse.load(); },
+  browseTrending: function(timeWin){ 
+    State.browseCategory='trending'; 
+    State.browseType='all'; 
+    State.browseMode='trending'; 
+    State.trendingTimeWindow = timeWin || (typeof TrendingSection !== 'undefined' ? TrendingSection.timeWindow : 'day') || 'day';
+    State.browsePage=1; 
+    State.genreId=null; 
+    this.showPage('page-browse'); 
+    this.setNav('nav-trending','Trending'); 
+    this.setBrowseHeader('Trending', 'trending'); 
+    Browse.load(); 
+  },
+  browseTopRated: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='toprated'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-toprated','Top Rated'); this.setBrowseHeader('Top Rated', false); Browse.load(); },
+  browseUpcoming: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='upcoming'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-upcoming','Upcoming'); this.setBrowseHeader('Upcoming', false); Browse.load(); },
   updateWatchlistButtons: function() {
     document.querySelectorAll('[class*="wl-btn-"]').forEach(function(btn) {
       var match = btn.className.match(/wl-btn-(\d+)/);
@@ -1027,10 +1062,11 @@ var Browse = {
         if(State.browseMode === 'popular' || State.browseMode === 'trending') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'popularity.desc'});
         else if(State.browseMode === 'toprated') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'vote_average.desc', 'vote_count.gte':200});
         else if(State.browseMode === 'newest') p = API.discover('tv', {page:State.browsePage, with_genres:genreParam, with_original_language:'ja', sort_by:'first_air_date.desc'});
+    } else if(State.browseCategory === 'trending' || State.browseMode === 'trending') {
+        p = API.trending(State.browseType==='all'?'all':State.browseType, State.browsePage, State.trendingTimeWindow || 'day');
     } else if(State.browseCategory === 'movie' || State.browseCategory === 'tv') {
         var sortParam = 'popularity.desc';
-        if(State.browseMode === 'trending') sortParam = 'popularity.desc';
-        else if(State.browseMode === 'toprated') sortParam = 'vote_average.desc';
+        if(State.browseMode === 'toprated') sortParam = 'vote_average.desc';
         else if(State.browseMode === 'newest') sortParam = State.browseType==='movie' ? 'primary_release_date.desc' : 'first_air_date.desc';
         
         if(State.genreId) {
@@ -1039,13 +1075,12 @@ var Browse = {
             p = API.discover(State.browseType, params);
         } else {
             if(State.browseMode === 'popular') p = API.popular(State.browseType, State.browsePage);
-            else if(State.browseMode === 'trending') p = API.trending(State.browseType, State.browsePage);
             else if(State.browseMode === 'toprated') p = API.topRated(State.browseType, State.browsePage);
             else if(State.browseMode === 'newest') p = API.discover(State.browseType, {page:State.browsePage, sort_by: sortParam});
         }
     } else {
         // Fallback for global buttons (Trending, Top Rated, Upcoming)
-        if(State.browseMode==='trending') p = API.trending(State.browseType, State.browsePage);
+        if(State.browseMode==='trending') p = API.trending(State.browseType, State.browsePage, State.trendingTimeWindow || 'day');
         else if(State.browseMode==='toprated') p = API.topRated(State.browseType==='all'?'movie':State.browseType, State.browsePage);
         else if(State.browseMode==='upcoming') p = API.upcoming(State.browsePage);
         else p = API.popular(State.browseType==='all'?'movie':State.browseType, State.browsePage);
