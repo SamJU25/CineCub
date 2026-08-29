@@ -2777,14 +2777,22 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   });
 
-  // Pause trailer on tab blur
+  // Pause trailer and spotlight timer on tab blur
   document.addEventListener('visibilitychange', function() {
     if (document.hidden) {
+      if (typeof Spotlight !== 'undefined' && Spotlight.timer) {
+        clearInterval(Spotlight.timer);
+        Spotlight.timer = null;
+      }
       var tp = document.getElementById('trailer-player');
       if (tp && tp.contentWindow) {
         try {
           tp.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
         } catch(e){}
+      }
+    } else {
+      if (typeof Spotlight !== 'undefined' && State.activePage === 'page-home' && !Spotlight.timer && Spotlight.items && Spotlight.items.length) {
+        Spotlight.startAuto();
       }
     }
   });
