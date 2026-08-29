@@ -716,7 +716,7 @@ iframe {border:none}
   .stat-card {padding:14px}
   .stat-value {font-size:20px}
   
-  .modal-overlay {padding:0; align-items:flex-start} 
+  #modal-overlay {padding:0; align-items:flex-start} 
   .fv-modal {max-height:100dvh;height:100dvh;border-radius:0;border:none;overflow-y:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%}
   .fv-body {padding:20px 16px 80px 16px} 
   .fv-title-row {padding-left:0;margin-bottom:16px}
