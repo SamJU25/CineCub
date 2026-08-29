@@ -151,15 +151,15 @@ iframe {border:none}
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #220f12 !important;
-    color: #ff6b6b !important;
-    border: 1px solid rgba(230, 57, 70, 0.22) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #ff5c5c !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     box-shadow: none !important;
   }
   .cv-sidebar.collapsed .sf-logout-btn:hover {
-    background: #2c1317 !important;
-    color: #ff8585 !important;
-    border-color: rgba(230, 57, 70, 0.35) !important;
+    background: rgba(255, 75, 75, 0.12) !important;
+    color: #ff6b6b !important;
+    border-color: rgba(255, 75, 75, 0.25) !important;
     box-shadow: none !important;
   }
   .cv-sidebar.collapsed .sf-logout-icon {
@@ -1265,9 +1265,9 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   width: 100%;
   padding: 11px 14px;
   margin-top: 8px;
-  background: #220f12 !important;
-  color: #ff6b6b !important;
-  border: 1px solid rgba(230, 57, 70, 0.22) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ff5c5c !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 12px;
   font-size: 13px;
   font-weight: 700;
@@ -1282,9 +1282,9 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
   transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
 }
 .sf-logout-btn:hover {
-  background: #2c1317 !important;
-  color: #ff8585 !important;
-  border-color: rgba(230, 57, 70, 0.35) !important;
+  background: rgba(255, 75, 75, 0.12) !important;
+  color: #ff6b6b !important;
+  border-color: rgba(255, 75, 75, 0.25) !important;
   box-shadow: none !important;
 }
 .sf-logout-icon {
@@ -1355,8 +1355,8 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 .pf-modal-actions .pf-btn-secondary { background: var(--cv-dark-4); color: var(--text-1); border: 1px solid var(--b-2); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background var(--t-fast), border-color var(--t-fast); }
 .pf-modal-actions .pf-btn-secondary:hover { background: var(--cv-dark-3); }
 .pf-modal-actions .pf-btn-secondary:active { transform: none; }
-.pf-modal-actions .pf-btn-danger { background: #220f12; color: #ff6b6b; border: 1px solid rgba(230, 57, 70, 0.25); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background var(--t-fast), border-color var(--t-fast); box-shadow: none; }
-.pf-modal-actions .pf-btn-danger:hover { background: #2c1317; color: #ff8585; border-color: rgba(230, 57, 70, 0.38); box-shadow: none; transform: none; }
+.pf-modal-actions .pf-btn-danger { background: rgba(255, 75, 75, 0.12); color: #ff5c5c; border: 1px solid rgba(255, 75, 75, 0.25); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast); box-shadow: none; }
+.pf-modal-actions .pf-btn-danger:hover { background: rgba(255, 75, 75, 0.20); color: #ff6b6b; border-color: rgba(255, 75, 75, 0.35); box-shadow: none; transform: none; }
 .pf-modal-actions .pf-btn-danger:active { transform: none; }
 .pf-modal-actions .pf-btn-login { background: #9d4edd; color: #ffffff; border: 1px solid rgba(157, 78, 221, 0.4); padding: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; box-shadow: none; transition: background var(--t-fast), border-color var(--t-fast); }
 .pf-modal-actions .pf-btn-login:hover { background: #ab5df0; border-color: rgba(171, 93, 240, 0.6); box-shadow: none; transform: none; }

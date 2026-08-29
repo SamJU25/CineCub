@@ -19,7 +19,7 @@
   <link rel="manifest" href="/manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link href="style.css?v=173" rel="stylesheet">
+  <link href="style.css?v=174" rel="stylesheet">
   <style>
     :root { --profile-gutter: 28px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -190,14 +190,14 @@
       color: #fff;
     }
     .pf-sidebar-btn.btn-logout {
-      background: #220f12;
-      color: #ff6b6b;
-      border: 1px solid rgba(230, 57, 70, 0.22);
+      background: rgba(255, 255, 255, 0.05);
+      color: #ff5c5c;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .pf-sidebar-btn.btn-logout:hover {
-      background: #2c1317;
-      color: #ff8585;
-      border-color: rgba(230, 57, 70, 0.35);
+      background: rgba(255, 75, 75, 0.12);
+      color: #ff6b6b;
+      border-color: rgba(255, 75, 75, 0.25);
     }
 
     /* Main Content */
@@ -397,8 +397,8 @@
     
     /* Danger Actions List */
     .pf-settings-danger-list {
-      background: #180a0d;
-      border: 1px solid rgba(230, 57, 70, 0.20);
+      background: var(--pf-card-bg);
+      border: 1px solid var(--pf-border);
       border-radius: 16px;
       overflow: hidden;
     }
@@ -407,18 +407,17 @@
       align-items: center;
       gap: 16px;
       padding: 16px 20px;
-      border-bottom: 1px solid rgba(230, 57, 70, 0.12);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       cursor: pointer;
       background: transparent;
     }
     .pf-settings-danger-row:last-child { border-bottom: none; }
-    .pf-settings-danger-row:hover { background: rgba(230, 57, 70, 0.10); }
+    .pf-settings-danger-row:hover { background: rgba(255, 255, 255, 0.03); }
     .pf-settings-danger-row.delete-row {
-      background: #200c10;
       border-bottom: none;
     }
     .pf-settings-danger-row.delete-row:hover {
-      background: #2a1016;
+      background: rgba(255, 255, 255, 0.03);
     }
     
     .pf-settings-danger-icon {
@@ -430,14 +429,14 @@
       justify-content: center;
       font-size: 13px;
       flex-shrink: 0;
-      background: #260f13;
-      color: #ff6b6b;
-      border: 1px solid rgba(230, 57, 70, 0.25);
+      background: rgba(255, 75, 75, 0.10);
+      color: #ff5c5c;
+      border: 1px solid rgba(255, 75, 75, 0.20);
     }
     .pf-settings-danger-row.delete-row .pf-settings-danger-icon {
-      background: #331116;
+      background: rgba(255, 75, 75, 0.15);
       color: #ff4b4b;
-      border: 1px solid rgba(230, 57, 70, 0.35);
+      border: 1px solid rgba(255, 75, 75, 0.28);
     }
     .pf-settings-danger-text {
       flex: 1;
@@ -449,10 +448,10 @@
     .pf-settings-danger-title {
       font-size: 13px;
       font-weight: 700;
-      color: #ff7575;
+      color: #ffffff;
     }
     .pf-settings-danger-row.delete-row .pf-settings-danger-title {
-      color: #ff4b4b;
+      color: #ff5c5c;
       font-weight: 800;
     }
     .pf-settings-danger-desc {
@@ -464,12 +463,12 @@
       text-overflow: ellipsis;
     }
     .pf-settings-danger-arrow {
-      color: rgba(230, 57, 70, 0.35);
+      color: rgba(232, 232, 240, 0.3);
       font-size: 12px;
       margin-left: 8px;
     }
     .pf-settings-danger-row.delete-row .pf-settings-danger-arrow {
-      color: rgba(230, 57, 70, 0.55);
+      color: rgba(255, 75, 75, 0.4);
     }
     
     /* Guest Wall */
@@ -786,7 +785,7 @@
   <script src="lib/firebase-app-compat.js"></script>
   <script src="lib/firebase-auth-compat.js"></script>
   <script src="lib/firebase-firestore-compat.js"></script>
-  <script src="firebase-auth.js?v=33"></script>
+  <script src="firebase-auth.js?v=34"></script>
 
   <script>
     var Toast = {

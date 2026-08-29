@@ -362,7 +362,7 @@ async function handleSignup(e) {
 
 window.handleLogout = function() {
   const user = auth.currentUser;
-  let userImageHtml = `<div style="width: 56px; height: 56px; border-radius: 14px; background: #220f12; color: #ff6b6b; border: 1px solid rgba(230, 57, 70, 0.25); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px;"><i class="fas fa-sign-out-alt"></i></div>`;
+  let userImageHtml = `<div style="width: 56px; height: 56px; border-radius: 14px; background: rgba(255, 75, 75, 0.10); color: #ff5c5c; border: 1px solid rgba(255, 75, 75, 0.20); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px;"><i class="fas fa-sign-out-alt"></i></div>`;
   let userNameHtml = '';
 
   if (user) {
@@ -400,7 +400,7 @@ window.handleLogout = function() {
     <p style="color: var(--text-3); font-size: 14px; margin-bottom: 26px; line-height: 1.5;">Are you sure you want to log out of StreamHeaven?</p>
     <div style="display: flex; gap: 12px; justify-content: center;">
       <button id="btn-cancel-logout" style="background: var(--cv-dark-4); color: var(--text-2); border: 1px solid var(--b-2); padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s, color 0.2s; flex: 1; font-family: inherit;">Cancel</button>
-      <button id="btn-confirm-logout" style="background: #220f12; color: #ff6b6b; border: 1px solid rgba(230, 57, 70, 0.25); padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; flex: 1; font-family: inherit;">Logout</button>
+      <button id="btn-confirm-logout" style="background: rgba(255, 75, 75, 0.12); color: #ff5c5c; border: 1px solid rgba(255, 75, 75, 0.25); padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; flex: 1; font-family: inherit;">Logout</button>
     </div>
   `;
 
@@ -440,8 +440,8 @@ window.handleLogout = function() {
       });
     }
   });
-  document.getElementById('btn-confirm-logout').addEventListener('mouseover', function() { this.style.background = '#2c1317'; this.style.color = '#ff8585'; this.style.borderColor = 'rgba(230, 57, 70, 0.38)'; });
-  document.getElementById('btn-confirm-logout').addEventListener('mouseout', function() { this.style.background = '#220f12'; this.style.color = '#ff6b6b'; this.style.borderColor = 'rgba(230, 57, 70, 0.25)'; });
+  document.getElementById('btn-confirm-logout').addEventListener('mouseover', function() { this.style.background = 'rgba(255, 75, 75, 0.20)'; this.style.color = '#ff6b6b'; this.style.borderColor = 'rgba(255, 75, 75, 0.35)'; });
+  document.getElementById('btn-confirm-logout').addEventListener('mouseout', function() { this.style.background = 'rgba(255, 75, 75, 0.12)'; this.style.color = '#ff5c5c'; this.style.borderColor = 'rgba(255, 75, 75, 0.25)'; });
 }
 
 // Global Auth State Observer
