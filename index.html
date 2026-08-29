@@ -79,7 +79,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=180" rel="stylesheet">
+  <link href="style.css?v=181" rel="stylesheet">
 </head>
 <body>
 
@@ -494,12 +494,69 @@
   ============================================================ -->
   <div class="modal-overlay" id="modal-overlay" onclick="Modal.overlayClick(event)">
     <div class="fv-modal" id="fv-modal">
-      <div class="fv-hero">
+      <button aria-label="Go back" class="fv-hero-back" id="fv-hero-back" onclick="Modal.goBack()" style="display:none;" title="Back"><i class="fas fa-arrow-left"></i></button>
+      <button aria-label="Close modal" class="fv-hero-close" onclick="Modal.closeAll()" title="Close"><i class="fas fa-times"></i></button>
+
+      <!-- Movie / TV Hero Banner -->
+      <div class="fv-hero" id="fv-hero">
         <img alt="backdrop" class="fv-backdrop" id="fv-backdrop" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
         <div class="fv-hero-grad"></div>
         <img alt="poster" class="fv-hero-poster" id="fv-poster" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=">
-        <button aria-label="Go back" class="fv-hero-back" id="fv-hero-back" onclick="Modal.goBack()" style="display:none;" title="Back"><i class="fas fa-arrow-left"></i></button>
-        <button aria-label="Close modal" class="fv-hero-close" onclick="Modal.closeAll()" title="Close"><i class="fas fa-times"></i></button>
+      </div>
+
+      <!-- Person Dedicated Profile View -->
+      <div class="fv-person-view" id="fv-person-view" style="display:none;">
+        <div class="fv-person-top">
+          <div class="fv-person-img-wrap">
+            <img class="fv-person-img" id="fv-person-img" alt="Actor profile photo" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" />
+          </div>
+          <div class="fv-person-meta">
+            <h2 class="fv-person-name" id="fv-person-name"></h2>
+            <div class="fv-person-socials" id="fv-person-socials"></div>
+            
+            <div class="fv-pinfo-box">
+              <div class="fv-pinfo-title">Personal Info</div>
+              <div class="fv-pinfo-list">
+                <div class="fv-pinfo-item" id="fv-pinfo-known-for-row">
+                  <span class="fv-pinfo-label">Known For</span>
+                  <span class="fv-pinfo-val" id="fv-pinfo-known-for"></span>
+                </div>
+                <div class="fv-pinfo-item" id="fv-pinfo-credits-row">
+                  <span class="fv-pinfo-label">Known Credits</span>
+                  <span class="fv-pinfo-val" id="fv-pinfo-credits"></span>
+                </div>
+                <div class="fv-pinfo-item" id="fv-pinfo-gender-row">
+                  <span class="fv-pinfo-label">Gender</span>
+                  <span class="fv-pinfo-val" id="fv-pinfo-gender"></span>
+                </div>
+                <div class="fv-pinfo-item" id="fv-pinfo-birthday-row">
+                  <span class="fv-pinfo-label">Birthday</span>
+                  <span class="fv-pinfo-val" id="fv-pinfo-birthday"></span>
+                </div>
+                <div class="fv-pinfo-item" id="fv-pinfo-birthplace-row">
+                  <span class="fv-pinfo-label">Place of Birth</span>
+                  <span class="fv-pinfo-val" id="fv-pinfo-birthplace"></span>
+                </div>
+                <div class="fv-pinfo-item" id="fv-pinfo-aka-row">
+                  <span class="fv-pinfo-label">Also Known As</span>
+                  <span class="fv-pinfo-val" id="fv-pinfo-aka"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Person Biography -->
+        <div class="fv-person-bio-wrap" id="fv-person-bio-wrap">
+          <div class="fv-cast-header" style="margin-bottom:12px;">BIOGRAPHY</div>
+          <div class="fv-person-bio" id="fv-person-bio"></div>
+        </div>
+
+        <!-- Person Known For Filmography -->
+        <div class="fv-cast-section" style="border-top: 1px solid var(--b-2); padding-top: 24px; margin-top: 24px;">
+          <div class="fv-cast-header">KNOWN FOR</div>
+          <div class="fv-cast-scroll cv-hscroll" id="fv-person-cast"></div>
+        </div>
       </div>
       <div class="fv-body">
         <div class="fv-title-row">
@@ -798,7 +855,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=180"></script>
+  <script src="script.js?v=181"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

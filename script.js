@@ -129,7 +129,7 @@ var API = {
   anime:    function(page){ return API.fetch(API.url('/discover/tv',{page:page||1, with_genres:16, with_original_language:'ja'})); },
   search:   function(q, page){ return API.fetch(API.url('/search/multi',{query:q,page:page||1,include_adult:false})); },
   detail:   function(id,type){ 
-    if(type==='person') return API.fetch(API.url('/person/'+id,{append_to_response:'combined_credits'}));
+    if(type==='person') return API.fetch(API.url('/person/'+id,{append_to_response:'combined_credits,external_ids'}));
     return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos,similar'})); 
   },
   discover: function(type,params){ 
@@ -1145,63 +1145,102 @@ var Modal = {
       if(!data){ Toast.show('Error loading details.'); Prog.done(); return; }
       State.activeData = data;
       
-      var overviewGrid = document.getElementById('fv-overview-grid');
-      var actionsRow = document.getElementById('fv-actions-row');
+      var fvHero = document.getElementById('fv-hero');
+      var fvBody = document.getElementById('fv-body');
+      var fvPersonView = document.getElementById('fv-person-view');
 
       if (type === 'person') {
-        if (overviewGrid) overviewGrid.classList.add('is-person');
-        if (actionsRow) actionsRow.style.display = 'none';
+        if (fvHero) fvHero.style.display = 'none';
+        if (fvBody) fvBody.style.display = 'none';
+        if (fvPersonView) fvPersonView.style.display = 'block';
 
-        var credits = (data.combined_credits && data.combined_credits.cast) || [];
-        var popularWithBackdrop = credits.find(x => x.backdrop_path && (x.popularity > 10 || x.vote_count > 50)) || credits.find(x => x.backdrop_path);
-        document.getElementById('fv-backdrop').src = popularWithBackdrop ? (CFG.ORIG + popularWithBackdrop.backdrop_path) : (data.profile_path ? CFG.ORIG + data.profile_path : Utils.placeholder());
-        document.getElementById('fv-poster').src = data.profile_path ? CFG.IMG342 + data.profile_path : Utils.placeholder();
-        document.getElementById('fv-title').textContent = data.name || data.title;
+        document.getElementById('fv-person-img').src = data.profile_path ? CFG.IMG342 + data.profile_path : Utils.placeholder();
+        document.getElementById('fv-person-name').textContent = data.name || data.title;
         document.title = (data.name || data.title) + " \u2014 StreamHeaven";
 
-        var ratingBadge = document.getElementById('fv-meta-rating');
-        if (ratingBadge) ratingBadge.style.display = 'none';
-        var qualityBadge = document.getElementById('fv-meta-quality');
-        if (qualityBadge) qualityBadge.style.display = 'none';
-        var yearBadge = document.getElementById('fv-year');
-        if (yearBadge) {
-          yearBadge.textContent = data.known_for_department || 'Actor';
-          yearBadge.style.display = 'inline-flex';
+        // Social Links
+        var ext = data.external_ids || {};
+        var sHtml = '';
+        if (ext.twitter_id) sHtml += '<a href="https://twitter.com/' + encodeURIComponent(ext.twitter_id) + '" target="_blank" rel="noopener" class="fv-social-link" title="Twitter / X"><i class="fab fa-x-twitter"></i></a>';
+        if (ext.instagram_id) sHtml += '<a href="https://instagram.com/' + encodeURIComponent(ext.instagram_id) + '" target="_blank" rel="noopener" class="fv-social-link" title="Instagram"><i class="fab fa-instagram"></i></a>';
+        if (ext.imdb_id) sHtml += '<a href="https://www.imdb.com/name/' + encodeURIComponent(ext.imdb_id) + '" target="_blank" rel="noopener" class="fv-social-link" title="IMDb"><i class="fab fa-imdb"></i></a>';
+        var socContainer = document.getElementById('fv-person-socials');
+        if (socContainer) {
+          socContainer.innerHTML = sHtml;
+          socContainer.style.display = sHtml ? 'flex' : 'none';
         }
 
-        var bio = (data.biography || '').replace(/Description above from the Wikipedia article[^\n<]+/gi, '').trim();
-        document.getElementById('fv-desc').innerHTML = bio ? bio.replace(/\n\s*\n/g, '<br><br>').replace(/\n/g, '<br>') : '<span style="color:var(--text-3);">No biography available.</span>';
+        // Personal Info
+        var deptEl = document.getElementById('fv-pinfo-known-for');
+        if (deptEl) deptEl.textContent = data.known_for_department || 'Acting';
 
-        var key1 = document.getElementById('fv-info-key-1');
-        if (key1) key1.textContent = 'Place of Birth';
-        document.getElementById('fv-genre').textContent = data.place_of_birth || 'N/A';
+        var creds = (data.combined_credits && data.combined_credits.cast) || [];
+        var credsEl = document.getElementById('fv-pinfo-credits');
+        if (credsEl) credsEl.textContent = creds.length || '0';
 
-        var key2 = document.getElementById('fv-info-key-2');
-        if (key2) key2.textContent = 'Date of Birth';
-        var bdayText = data.birthday || '';
-        if (data.birthday && data.deathday) bdayText += ' (Died: ' + data.deathday + ')';
-        document.getElementById('fv-runtime').textContent = bdayText || 'N/A';
+        var genderStr = data.gender === 1 ? 'Female' : (data.gender === 2 ? 'Male' : (data.gender === 3 ? 'Non-binary' : 'Not specified'));
+        var genderEl = document.getElementById('fv-pinfo-gender');
+        if (genderEl) genderEl.textContent = genderStr;
 
-        var fvTabs = document.getElementById('fv-tabs-bar') || document.querySelector('.fv-tabs');
-        if (fvTabs) fvTabs.style.display = 'none';
+        var bdayText = 'N/A';
+        if (data.birthday) {
+          try {
+            var bDate = new Date(data.birthday);
+            var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            var formatted = monthNames[bDate.getUTCMonth()] + ' ' + bDate.getUTCDate() + ', ' + bDate.getUTCFullYear();
+            if (data.deathday) {
+              var dDate = new Date(data.deathday);
+              var ageAtDeath = dDate.getUTCFullYear() - bDate.getUTCFullYear();
+              var m = dDate.getUTCMonth() - bDate.getUTCMonth();
+              if (m < 0 || (m === 0 && dDate.getUTCDate() < bDate.getUTCDate())) ageAtDeath--;
+              bdayText = formatted + ' (Died: ' + data.deathday + ', aged ' + ageAtDeath + ')';
+            } else {
+              var today = new Date();
+              var age = today.getFullYear() - bDate.getUTCFullYear();
+              var m = today.getMonth() - bDate.getUTCMonth();
+              if (m < 0 || (m === 0 && today.getDate() < bDate.getUTCDate())) age--;
+              bdayText = formatted + ' (' + age + ' years old)';
+            }
+          } catch(e) {
+            bdayText = data.birthday;
+          }
+        }
+        var bdayEl = document.getElementById('fv-pinfo-birthday');
+        if (bdayEl) bdayEl.textContent = bdayText;
 
-        var castHeader = document.getElementById('fv-cast-header');
-        if (castHeader) castHeader.textContent = 'KNOWN FOR';
-        var filmography = credits.filter(x => x.poster_path).sort((a, b) => (b.popularity || 0) - (a.popularity || 0)).slice(0, 30);
-        if (filmography.length) {
-          document.getElementById('fv-cast').innerHTML = filmography.map(item => Render.posterCard(item, item.media_type || (item.title ? 'movie' : 'tv'))).join('');
+        var birthPlaceEl = document.getElementById('fv-pinfo-birthplace');
+        if (birthPlaceEl) birthPlaceEl.textContent = data.place_of_birth || 'N/A';
+
+        var akaList = (data.also_known_as || []).slice(0, 4);
+        var akaRow = document.getElementById('fv-pinfo-aka-row');
+        var akaEl = document.getElementById('fv-pinfo-aka');
+        if (akaList.length) {
+          if (akaRow) akaRow.style.display = 'flex';
+          if (akaEl) akaEl.innerHTML = akaList.map(x => Utils.escape(x)).join('<br>');
         } else {
-          document.getElementById('fv-cast').innerHTML = '<div style="color:var(--text-3); font-size:14px; padding:20px; width:100%;">No titles found.</div>';
+          if (akaRow) akaRow.style.display = 'none';
         }
 
-        var trailerContainer = document.getElementById('trailer-container');
-        if (trailerContainer) trailerContainer.style.display = 'none';
-        var similarSection = document.getElementById('fv-similar-section');
-        if (similarSection) similarSection.style.display = 'none';
+        // Biography
+        var bio = (data.biography || '').replace(/Description above from the Wikipedia article[^\n<]+/gi, '').trim();
+        var bioEl = document.getElementById('fv-person-bio');
+        if (bioEl) bioEl.innerHTML = bio ? bio.replace(/\n\s*\n/g, '<br><br>').replace(/\n/g, '<br>') : '<span style="color:var(--text-3);">No biography available.</span>';
+
+        // Known For
+        var filmography = creds.filter(x => x.poster_path).sort((a, b) => (b.popularity || 0) - (a.popularity || 0)).slice(0, 30);
+        var pCastEl = document.getElementById('fv-person-cast');
+        if (pCastEl) {
+          if (filmography.length) {
+            pCastEl.innerHTML = filmography.map(item => Render.posterCard(item, item.media_type || (item.title ? 'movie' : 'tv'))).join('');
+          } else {
+            pCastEl.innerHTML = '<div style="color:var(--text-3); font-size:14px; padding:20px; width:100%;">No titles found.</div>';
+          }
+        }
 
       } else {
-        if (overviewGrid) overviewGrid.classList.remove('is-person');
-        if (actionsRow) actionsRow.style.display = 'flex';
+        if (fvHero) fvHero.style.display = 'block';
+        if (fvBody) fvBody.style.display = 'block';
+        if (fvPersonView) fvPersonView.style.display = 'none';
         document.getElementById('fv-backdrop').src = CFG.ORIG + (data.backdrop_path || data.poster_path);
         document.getElementById('fv-poster').src = data.poster_path ? CFG.IMG342 + data.poster_path : Utils.placeholder();
         document.getElementById('fv-title').textContent = data.title || data.name;
