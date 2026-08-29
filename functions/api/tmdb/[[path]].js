@@ -15,6 +15,20 @@
 
 export async function onRequest(context) {
   const { request, env, params } = context;
+  const url = new URL(request.url);
+
+  // Handle CORS Preflight
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': url.origin,
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': '86400'
+      }
+    });
+  }
 
   // 1. Check Cloudflare Cache first to prevent API spam
   const cache = caches.default;

@@ -987,7 +987,11 @@
       if (!selectedAvatarUrl || !auth.currentUser) return;
       
       // Optimistic UI update for instant feel
-      document.getElementById('pf-avatar').src = selectedAvatarUrl;
+      const avatarEl = document.getElementById('pf-avatar');
+      if (avatarEl) {
+        avatarEl.innerHTML = '<img src="' + selectedAvatarUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="User Avatar"><div class="pf-avatar-badge"></div>';
+        avatarEl.style.border = 'none';
+      }
       const topProfileBtn = document.getElementById('header-profile-btn');
       if(topProfileBtn) {
         topProfileBtn.innerHTML = `<img src="${selectedAvatarUrl}" alt="User Avatar" class="header-profile-avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;

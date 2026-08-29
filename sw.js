@@ -1,4 +1,4 @@
-const CACHE_NAME = 'streamheaven-v194';
+const CACHE_NAME = 'streamheaven-v195';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -7,19 +7,20 @@ const urlsToCache = [
   '/script.js',
   '/firebase-auth.js',
   '/manifest.json',
-  '/assets/images/logo.png',
   '/assets/images/favicon-square.png',
   '/assets/images/icon-logo.png',
+  '/assets/images/logo-icon.png',
   '/assets/avatars/av_1.png'
 ];
 
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(async cache => {
+      await Promise.allSettled(
+        urlsToCache.map(url => cache.add(url).catch(err => console.warn('[SW] Failed to pre-cache:', url, err)))
+      );
+    })
   );
 });
 
