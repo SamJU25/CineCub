@@ -2369,6 +2369,34 @@ var AdFreePlayer = {
       PlaybackProgress.save(State.activeId, State.activeType, s, e, video.currentTime, video.duration);
     };
 
+    var savedSeconds = 0;
+    try {
+      var sNum = (State.activeType === 'tv') ? Number(document.getElementById('ep-season-adfree')?.value || 1) : null;
+      var eNum = (State.activeType === 'tv') ? Number(document.getElementById('ep-episode-adfree')?.value || 1) : null;
+      var vlData = JSON.parse(localStorage.getItem('vidLinkProgress') || '{}');
+      var itemData = vlData[State.activeId];
+      if (itemData) {
+        if (State.activeType === 'tv' && itemData.show_progress) {
+          var epKey = 's' + (sNum || 1) + 'e' + (eNum || 1);
+          if (itemData.show_progress[epKey] && itemData.show_progress[epKey].progress) {
+            savedSeconds = itemData.show_progress[epKey].progress.watched || 0;
+          }
+        } else if (itemData.progress) {
+          savedSeconds = itemData.progress.watched || 0;
+        }
+      }
+    } catch(err){}
+
+    var hasSeeked = false;
+    var applySavedTime = function() {
+      if (!hasSeeked && savedSeconds > 0 && video.duration && savedSeconds < video.duration - 30) {
+        hasSeeked = true;
+        try { video.currentTime = savedSeconds; } catch(e){}
+      }
+    };
+    video.addEventListener('loadedmetadata', applySavedTime, { once: true });
+    video.addEventListener('canplay', applySavedTime, { once: true });
+
     if (type === 'm3u8' && typeof Hls !== 'undefined' && Hls.isSupported()) {
       this.hls = new Hls({
         enableWorker: true,
@@ -2387,6 +2415,7 @@ var AdFreePlayer = {
       this.hls.attachMedia(video);
       this.hls.on(Hls.Events.MANIFEST_PARSED, function() {
         video.play().catch(e => console.log('Autoplay prevented', e));
+        applySavedTime();
       });
       this.hls.on(Hls.Events.ERROR, function(event, data) {
         if (data.fatal) {
@@ -2406,6 +2435,7 @@ var AdFreePlayer = {
     } else {
       video.src = url;
       video.play().catch(e => console.log('Autoplay prevented', e));
+      applySavedTime();
     }
   }
 };
