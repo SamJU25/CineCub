@@ -230,7 +230,7 @@ iframe {border:none}
 .spotlight-slide.active .spotlight-bg {transform:scale(1)}
 .spotlight-slide::before {content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(90deg, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.8) 40%, rgba(0,0,0,0.2) 75%, transparent 100%)}
 .spotlight-slide::after {content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(0deg, #000000 0%, rgba(0,0,0,0.35) 40%, transparent 100%)}
-.spotlight-content {position:absolute;bottom:40px;left:0;z-index:2;padding:0 48px;max-width:680px}
+.spotlight-content {position:absolute;bottom:40px;left:0;z-index:2;padding:0 48px 0 88px;max-width:720px}
 .spotlight-category {display:inline-flex;align-items:center;gap:8px;background:var(--cv-purple-dim);border:1px solid rgba(157,78,221,0.3);color:var(--cv-purple-light);font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:5px 14px;border-radius:var(--r-pill);margin-bottom:16px}
 .spotlight-category-dot {width:6px;height:6px;background:var(--cv-purple-light);border-radius:50%}
 .spotlight-title {font-size:clamp(36px, 5vw, 64px);font-weight:900;letter-spacing:-1.5px;line-height:1.08;margin-bottom:16px;text-shadow:0 4px 20px rgba(0,0,0,0.8)}
@@ -257,18 +257,18 @@ iframe {border:none}
 .btn-spotlight-wl.in-list {background:var(--cv-red);border-color:var(--cv-red);color:#fff;box-shadow:0 0 22px rgba(230,57,70,.35);animation:heartBurst 400ms var(--ease-standard)}
 @keyframes heartBurst {0%{transform:scale(1)}30%{transform:scale(1.25)}60%{transform:scale(.92)}100%{transform:scale(1)}}
 
-/* Side navigation arrows */
-.spotlight-nav-btn {position:absolute;top:36%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.15);color:#ffffff;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;z-index:5;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:background 0.2s ease,border-color 0.2s ease,transform 0.2s ease,opacity 0.2s ease;opacity:0.8}
-.spotlight-nav-btn.prev {left:24px}
-.spotlight-nav-btn.next {right:24px}
-.spotlight-nav-btn:hover {opacity:1;background:rgba(0,0,0,0.75);border-color:rgba(255,255,255,0.4);transform:translateY(-50%) scale(1.08)}
+/* Side navigation arrows with purple glassmorphism design */
+.spotlight-nav-btn {position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(11,11,20,0.75);border:1px solid rgba(157,78,221,0.35);color:var(--cv-purple-light);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;z-index:5;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,0.6),0 0 12px rgba(157,78,221,0.15);transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1)}
+.spotlight-nav-btn.prev {left:22px}
+.spotlight-nav-btn.next {right:22px}
+.spotlight-nav-btn:hover {background:var(--grad-primary);border-color:var(--cv-purple-light);color:#ffffff;box-shadow:0 8px 28px rgba(157,78,221,0.5),0 0 16px rgba(199,125,255,0.6);transform:translateY(-50%) scale(1.12)}
 .spotlight-nav-btn:active {transform:translateY(-50%) scale(0.95)}
 
-/* Bottom indicators matching screenshot */
-.spotlight-dots {position:absolute;bottom:28px;right:48px;z-index:5;display:flex;align-items:center;gap:7px}
-.spotlight-dot {width:6px;height:6px;background:rgba(255,255,255,0.35);border-radius:50%;cursor:pointer;transition:all 0.35s cubic-bezier(0.4, 0, 0.2, 1)}
-.spotlight-dot:hover {background:rgba(255,255,255,0.7);transform:scale(1.2)}
-.spotlight-dot.active {width:22px;height:6px;background:#ffffff;border-radius:3px;box-shadow:0 0 10px rgba(255,255,255,0.5)}
+/* Bottom indicators matching purple design vibe */
+.spotlight-dots {position:absolute;bottom:28px;right:48px;z-index:5;display:flex;align-items:center;gap:7px;padding:7px 14px;background:rgba(11,11,20,0.75);border:1px solid rgba(157,78,221,0.3);border-radius:var(--r-pill);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,0.6),0 0 12px rgba(157,78,221,0.15)}
+.spotlight-dot {width:6px;height:6px;background:rgba(199,125,255,0.35);border-radius:50%;cursor:pointer;transition:all 0.35s cubic-bezier(0.4, 0, 0.2, 1)}
+.spotlight-dot:hover {background:var(--cv-purple-light);transform:scale(1.25)}
+.spotlight-dot.active {width:24px;height:6px;background:var(--grad-primary);border-radius:3px;box-shadow:0 0 12px rgba(199,125,255,0.7)}
 
 .spotlight-progress {position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(255,255,255,0.06);z-index:4}
 .spotlight-progress-bar {height:100%;background:var(--grad-primary);width:0%}
@@ -723,9 +723,7 @@ iframe {border:none}
   .spotlight-title {font-size:28px;letter-spacing:-0.5px;margin-bottom:10px}
   .spotlight-meta {font-size:12px;gap:8px;margin-bottom:10px}
   .spotlight-desc {-webkit-line-clamp:2;font-size:12px;margin-bottom:14px;line-height:1.5}
-  .spotlight-nav-btn {top:32%;width:34px;height:34px;font-size:12px;opacity:0.65}
-  .spotlight-nav-btn.prev {left:8px}
-  .spotlight-nav-btn.next {right:8px}
+  .spotlight-nav-btn {display:none}
   .spotlight-dots {bottom:14px;right:18px;gap:5px}
   .spotlight-dot {width:5px;height:5px}
   .spotlight-dot.active {width:18px;height:5px}
