@@ -394,16 +394,31 @@ var App = {
     
     var sortWrap = document.getElementById('wrap-browse-sort');
     var genreWrap = document.getElementById('wrap-browse-genre');
+    var popularTypeWrap = document.getElementById('wrap-browse-popular-type');
     var timeWrap = document.getElementById('wrap-browse-trending-time');
     
     if (mode === 'trending') {
       if (sortWrap) sortWrap.style.display = 'none';
+      if (popularTypeWrap) popularTypeWrap.style.display = 'none';
       if (genreWrap) genreWrap.style.display = 'none';
       if (timeWrap) {
         timeWrap.style.display = 'block';
         CustomSelect.update('browse-trending-time', State.trendingTimeWindow || 'day');
       }
+    } else if (mode === 'popular') {
+      if (sortWrap) sortWrap.style.display = 'none';
+      if (timeWrap) timeWrap.style.display = 'none';
+      if (popularTypeWrap) {
+        popularTypeWrap.style.display = 'block';
+        CustomSelect.update('browse-popular-type', State.browseType || 'movie');
+      }
+      if (genreWrap) {
+        genreWrap.style.display = 'block';
+        CustomSelect.update('browse-genre', State.genreId || '');
+      }
     } else if (mode === true || mode === 'standard') {
+      if (popularTypeWrap) popularTypeWrap.style.display = 'none';
+      if (timeWrap) timeWrap.style.display = 'none';
       if (sortWrap) {
         sortWrap.style.display = 'block';
         CustomSelect.update('browse-sort', State.browseMode || 'popular');
@@ -412,15 +427,22 @@ var App = {
         genreWrap.style.display = 'block';
         CustomSelect.update('browse-genre', State.genreId || '');
       }
-      if (timeWrap) timeWrap.style.display = 'none';
     } else {
       if (sortWrap) sortWrap.style.display = 'none';
+      if (popularTypeWrap) popularTypeWrap.style.display = 'none';
       if (genreWrap) genreWrap.style.display = 'none';
       if (timeWrap) timeWrap.style.display = 'none';
     }
   },
   changeSort: function(val) {
     State.browseMode = val;
+    Browse.load();
+  },
+  changePopularType: function(val) {
+    State.browseType = val || 'movie';
+    State.browseCategory = 'popular';
+    State.browseMode = 'popular';
+    State.browsePage = 1;
     Browse.load();
   },
   changeGenre: function(val) {
@@ -449,14 +471,14 @@ var App = {
     Browse.load(); 
   },
   browsePopular: function(){ 
-    State.browseCategory='movie'; 
+    State.browseCategory='popular'; 
     State.browseType='movie'; 
     State.browseMode='popular'; 
     State.browsePage=1; 
     State.genreId=null; 
     this.showPage('page-browse'); 
     this.setNav('nav-popular','Popular'); 
-    this.setBrowseHeader('Popular Movies', true); 
+    this.setBrowseHeader('Popular', 'popular'); 
     Browse.load(); 
   },
   browseTopRated: function(){ State.browseCategory='all'; State.browseType='movie'; State.browseMode='toprated'; State.browsePage=1; State.genreId=null; this.showPage('page-browse'); this.setNav('nav-toprated','Top Rated'); this.setBrowseHeader('Top Rated', false); Browse.load(); },
@@ -667,10 +689,10 @@ var HScrollLoad = {
     'row-popular': {
       page: 2, fetching: false, hasMore: true,
       fetch: function(page) {
-        var f = (typeof PopularSection !== 'undefined' && PopularSection.filter) ? PopularSection.filter : 'popular';
+        var f = (typeof PopularSection !== 'undefined' && PopularSection.filter) ? PopularSection.filter : 'movies';
+        if (f === 'tv') return API.popular('tv', page);
         if (f === 'now_playing') return API.fetch(API.url('/movie/now_playing', {page: page}));
         if (f === 'action') return API.discover('movie', {page: page, with_genres: 28, sort_by: 'popularity.desc'});
-        if (f === 'comedy') return API.discover('movie', {page: page, with_genres: 35, sort_by: 'popularity.desc'});
         if (f === 'scifi') return API.discover('movie', {page: page, with_genres: 878, sort_by: 'popularity.desc'});
         return API.popular('movie', page);
       }
@@ -716,7 +738,7 @@ var HScrollLoad = {
         var type = 'movie'; 
         if (id === 'row-tvshows') type = 'tv';
         else if (id === 'row-home-genre') type = HomeGenre.type === 'anime' ? 'tv' : HomeGenre.type;
-        else if (id === 'row-popular') type = 'movie';
+        else if (id === 'row-popular') type = (typeof PopularSection !== 'undefined' && PopularSection.filter === 'tv') ? 'tv' : 'movie';
         
         var html = data.results.map(function(x) {
           return Render.posterCard(x, id === 'row-trending' ? null : type);
@@ -880,7 +902,7 @@ var TrendingSection = {
 };
 
 var PopularSection = {
-  filter: 'popular',
+  filter: 'movies',
   setFilter: function(filterType, el) {
     if (this.filter === filterType && el && el.classList.contains('active')) return;
     this.filter = filterType;
@@ -909,15 +931,17 @@ var PopularSection = {
     
     var f = this.filter;
     var p1, p2;
-    if (f === 'now_playing') {
+    var mediaType = 'movie';
+    if (f === 'tv') {
+      mediaType = 'tv';
+      p1 = API.popular('tv', 1);
+      p2 = API.popular('tv', 2);
+    } else if (f === 'now_playing') {
       p1 = API.fetch(API.url('/movie/now_playing', {page: 1}));
       p2 = API.fetch(API.url('/movie/now_playing', {page: 2}));
     } else if (f === 'action') {
       p1 = API.discover('movie', {page: 1, with_genres: 28, sort_by: 'popularity.desc'});
       p2 = API.discover('movie', {page: 2, with_genres: 28, sort_by: 'popularity.desc'});
-    } else if (f === 'comedy') {
-      p1 = API.discover('movie', {page: 1, with_genres: 35, sort_by: 'popularity.desc'});
-      p2 = API.discover('movie', {page: 2, with_genres: 35, sort_by: 'popularity.desc'});
     } else if (f === 'scifi') {
       p1 = API.discover('movie', {page: 1, with_genres: 878, sort_by: 'popularity.desc'});
       p2 = API.discover('movie', {page: 2, with_genres: 878, sort_by: 'popularity.desc'});
@@ -930,14 +954,14 @@ var PopularSection = {
       var data = res[0] || {};
       if (res[1] && res[1].results) data.results = (data.results || []).concat(res[1].results);
       if (row && data && data.results && data.results.length) {
-        row.innerHTML = data.results.slice(0, 35).map(x => Render.posterCard(x, 'movie')).join('');
+        row.innerHTML = data.results.slice(0, 35).map(x => Render.posterCard(x, mediaType)).join('');
         initDragScroll();
         initScrollButtons();
       } else if (row) {
-        row.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%;">No movies found in this category.</div>';
+        row.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);width:100%;">No titles found in this category.</div>';
       }
     }).catch(err => {
-      if (row) row.innerHTML = '<div style="padding:40px;text-align:center;color:var(--cv-red);width:100%;">Unable to load popular movies right now.</div>';
+      if (row) row.innerHTML = '<div style="padding:40px;text-align:center;color:var(--cv-red);width:100%;">Unable to load popular titles right now.</div>';
     });
   },
   init: function() {
