@@ -449,7 +449,29 @@ iframe {border:none}
 .pc-genre {padding:2px 7px;background:rgba(0,0,0,0.5);border-radius:var(--r-xs);color:#fff;font-weight:600;backdrop-filter:blur(4px)}
 .cv-hscroll .poster-card {flex-shrink:0;width:170px}
 
-.landscape-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.landscape-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+@media (min-width: 1200px) {
+  .landscape-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .landscape-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .landscape-grid .landscape-card:nth-child(n+7) {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .landscape-grid {
+    grid-template-columns: 1fr;
+  }
+  .landscape-grid .landscape-card:nth-child(n+5) {
+    display: none;
+  }
+}
 .landscape-card {position:relative;border-radius:var(--r-lg);overflow:hidden;cursor:pointer;background:var(--cv-dark-2);transition:transform 220ms var(--ease-standard), box-shadow 220ms var(--ease-standard);border:1px solid var(--b-1);will-change:transform;transform-origin:center}
 .landscape-card:hover {transform:translateY(-4px) scale(var(--hover-scale));box-shadow:0 12px 36px rgba(0,0,0,0.95);border-color:rgba(157,78,221,0.3)}
 .landscape-card:active {transform:scale(var(--press-scale))}

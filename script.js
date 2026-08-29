@@ -2240,7 +2240,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
     /* 5. Top Rated Films */
     if(rtd && rtd.results){
-      document.getElementById('grid-toprated').innerHTML = rtd.results.slice(0,6).map(x => Render.landscapeCard(x,'movie')).join('');
+      document.getElementById('grid-toprated').innerHTML = rtd.results.slice(0,8).map(x => Render.landscapeCard(x,'movie')).join('');
     }
 
     /* 6. TV Series */
