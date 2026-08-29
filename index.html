@@ -6,7 +6,7 @@
   <meta content="#0a0a0f" name="theme-color">
   <link rel="manifest" href="/manifest.json">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https://image.tmdb.org https://upload.wikimedia.org; media-src * blob:; frame-src *; connect-src *;">
-  <title>StreamHeaven - Watch New Free Movies, TV Series, Drama, Action & Anime Online</title>
+  <title>StreamHeaven - Watch Free Movies, Series &amp; Anime Online</title>
   
   <!-- GOOGLE ANALYTICS (Placeholder) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -18,25 +18,34 @@
   </script>
 
   <!-- SEO META TAGS -->
-  <meta name="description" content="StreamHeaven is the best free streaming site to watch new movies and TV series online with no sign up. Enjoy HD quality action, drama, horror, sci-fi, crime, and anime with zero buffering.">
-  <meta name="keywords" content="watch movies online, free movies, free tv shows, stream movies free, hd movies, 123movies alternative, soap2day alternative, StreamHeaven">
+  <meta name="description" content="Watch free movie online, free series online, and free anime online in HD on StreamHeaven. Stream unlimited movies and TV shows with zero buffering and no signup.">
+  <meta name="keywords" content="free movie online, free series online, free anime online, watch free movies online, watch series online free, watch anime online free, free streaming site, stream hd movies, free tv shows online, StreamHeaven">
   <meta name="robots" content="index, follow">
+  <meta name="author" content="StreamHeaven">
   <link rel="canonical" href="https://streamheaven.online/">
   
   <!-- OPEN GRAPH / SOCIAL -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://streamheaven.online">
-  <meta property="og:title" content="StreamHeaven">
-  <meta property="og:description" content="Watch high-definition movies and TV series online for free with no buffering.">
-  <meta property="og:image" content="https://streamheaven.online/assets/images/logo.png">
+  <meta property="og:site_name" content="StreamHeaven">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:url" content="https://streamheaven.online/">
+  <meta property="og:title" content="StreamHeaven - Watch Free Movies, Series &amp; Anime Online">
+  <meta property="og:description" content="Watch free movie online, free series online, and free anime online in HD on StreamHeaven. Stream unlimited movies and TV shows with zero buffering and no signup.">
+  <meta property="og:image" content="https://streamheaven.online/assets/images/logo-icon.png">
+  <meta property="og:image:alt" content="StreamHeaven Logo">
 
   <!-- FAVICONS -->
   <link rel="icon" type="image/png" href="/assets/images/favicon-square.png">
   <link rel="apple-touch-icon" href="/assets/images/favicon-square.png">
   
+  <!-- TWITTER CARDS -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="StreamHeaven - Watch Free Movies & TV Shows Online">
-  <meta name="twitter:description" content="Enjoy high-quality, free movie and TV show streaming with no sign up required.">
+  <meta name="twitter:site" content="@StreamHeaven26">
+  <meta name="twitter:creator" content="@StreamHeaven26">
+  <meta name="twitter:title" content="StreamHeaven - Watch Free Movies, Series &amp; Anime Online">
+  <meta name="twitter:description" content="Watch free movie online, free series online, and free anime online in HD on StreamHeaven. Stream unlimited movies and TV shows with zero buffering.">
+  <meta name="twitter:image" content="https://streamheaven.online/assets/images/logo-icon.png">
+  <meta name="twitter:image:alt" content="StreamHeaven Logo">
   <!-- FONTS & ICONS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,41 +54,123 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-
-
-  <!-- PWA / ADD TO HOME SCREEN WITH EMBEDDED PURPLE CLOUD ICON -->
+  <!-- PWA / ADD TO HOME SCREEN -->
   <meta content="yes" name="apple-mobile-web-app-capable">
   <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style">
   <meta content="StreamHeaven" name="apple-mobile-web-app-title">
   <meta content="yes" name="mobile-web-app-capable">
   <meta content="StreamHeaven" name="application-name">
 
-  <!-- SEO SCHEMA -->
+  <!-- SEO SCHEMA (JSON-LD) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "StreamHeaven",
-    "url": "https://streamheaven.online/",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://streamheaven.online/?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "StreamHeaven",
-    "url": "https://streamheaven.online/",
-    "logo": "https://streamheaven.online/assets/images/logo.png"
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://streamheaven.online/#website",
+        "url": "https://streamheaven.online/",
+        "name": "StreamHeaven",
+        "description": "Watch free movie online, free series online, and free anime online in HD quality with no registration required.",
+        "publisher": {
+          "@id": "https://streamheaven.online/#organization"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://streamheaven.online/?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        },
+        "inLanguage": "en-US"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://streamheaven.online/#organization",
+        "name": "StreamHeaven",
+        "url": "https://streamheaven.online/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://streamheaven.online/assets/images/logo-icon.png",
+          "caption": "StreamHeaven"
+        },
+        "sameAs": [
+          "https://www.facebook.com/share/1FeeHdgbtJ/",
+          "https://x.com/StreamHeaven26",
+          "https://www.instagram.com/streamheaven.me?igsi=NmRmd2N3NWJxMHRo"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "streamheaven.support@gmail.com",
+          "contactType": "customer support"
+        }
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://streamheaven.online/#webapp",
+        "name": "StreamHeaven",
+        "url": "https://streamheaven.online/",
+        "applicationCategory": "EntertainmentApplication",
+        "operatingSystem": "All (Web, Android, iOS, Windows, macOS, Linux)",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://streamheaven.online/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is StreamHeaven completely free to watch movies and series online?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes! StreamHeaven allows you to watch free movies online, free TV series online, and free anime online with zero subscription fees, no credit cards, and no hidden costs."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need an account or sign up to stream movies and TV shows?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No registration is required to stream. You can instantly watch all movies, full series episodes, and anime titles in guest mode right away."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What streaming quality and servers are available on StreamHeaven?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "StreamHeaven provides High Definition (720p, 1080p, and 4K Ultra HD) video playback across multiple reliable streaming servers, with an optional ad-free native video player for fast, uninterrupted entertainment."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I watch English subbed and dubbed anime series for free?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes! StreamHeaven features an extensive collection of popular and classic anime with both English subtitles and English dubbed audio tracks."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I install StreamHeaven as an app on Android and iOS devices?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, you can download the StreamHeaven APK directly for Android mobile and Smart TV devices, or install the Progressive Web App (PWA) via Safari on Apple iOS."
+            }
+          }
+        ]
+      }
+    ]
   }
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=194" rel="stylesheet">
+  <link href="style.css?v=195" rel="stylesheet">
 </head>
 <body>
 
@@ -313,6 +404,43 @@
           <div class="cv-hscroll" id="row-newreleases"></div>
         </section>
 
+        <!-- SEO CONTENT & GUIDE SECTION -->
+        <section class="section-wrapper seo-content-section">
+          <div class="seo-content-card">
+            <div class="seo-badge"><i class="fas fa-play-circle"></i> ULTIMATE STREAMING PLATFORM</div>
+            <h2 class="seo-title">Watch Free Movies, TV Series &amp; Anime Online on StreamHeaven</h2>
+            <p class="seo-intro">
+              Welcome to <strong>StreamHeaven</strong>, your premier entertainment hub to <strong>watch free movie online</strong>, <strong>free series online</strong>, and <strong>free anime online</strong> in stunning HD and 4K quality. With a vast library powered by real-time TMDB integration, StreamHeaven gives you instant access to over 1.2 million titles with zero subscription fees, no credit cards, and no signup hurdles.
+            </p>
+
+            <div class="seo-features-grid">
+              <div class="seo-feature-box">
+                <div class="seo-feature-icon"><i class="fas fa-film"></i></div>
+                <h3>Watch Free Movie Online in HD</h3>
+                <p>Explore thousands of full-length films spanning Hollywood blockbusters, indie gems, classic cinema, action thrillers, romantic dramas, and the latest box office hits updated daily.</p>
+              </div>
+
+              <div class="seo-feature-box">
+                <div class="seo-feature-icon"><i class="fas fa-tv"></i></div>
+                <h3>Binge Free Series Online</h3>
+                <p>Catch up on every season of your favorite TV shows, trending Netflix, HBO, and Prime hits, mini-series, and reality shows with seamless next-episode auto-progression.</p>
+              </div>
+
+              <div class="seo-feature-box">
+                <div class="seo-feature-icon"><i class="fas fa-dragon"></i></div>
+                <h3>Stream Free Anime Online</h3>
+                <p>Discover top-rated Japanese animation with both English Subbed and English Dubbed options. From shonen blockbusters to slice-of-life classics, stream it all in high definition.</p>
+              </div>
+
+              <div class="seo-feature-box">
+                <div class="seo-feature-icon"><i class="fas fa-bolt"></i></div>
+                <h3>Ad-Free Native &amp; Multi-Server Streaming</h3>
+                <p>Switch between fast multi-source streaming servers or our dedicated ad-free player. Enjoy cross-device watchlist syncing, resume playback progress, and Android APK &amp; iOS PWA support.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- SEO FAQ SECTION -->
         <section class="section-wrapper" style="margin-top: 40px;">
           <div class="section-header">
@@ -323,26 +451,42 @@
           </div>
           <div style="margin-top: 20px; display: flex; flex-direction: column;">
             <details class="faq-item">
-              <summary class="faq-summary">Is StreamHeaven completely free?</summary>
+              <summary class="faq-summary">Is StreamHeaven completely free to watch movies and series online?</summary>
               <div class="faq-content-wrapper">
                 <div class="faq-content-inner">
-                  <div class="faq-content">Yes, you can watch free movies and TV shows online on StreamHeaven without any registration or hidden fees. We provide high-quality HD streaming at no cost.</div>
+                  <div class="faq-content">Yes! StreamHeaven allows you to watch free movies online, free TV series online, and free anime online with zero subscription fees, no credit cards, and no hidden costs.</div>
                 </div>
               </div>
             </details>
             <details class="faq-item">
-              <summary class="faq-summary">Do I need an account to watch movies online?</summary>
+              <summary class="faq-summary">Do I need an account or sign up to stream movies and TV shows?</summary>
               <div class="faq-content-wrapper">
                 <div class="faq-content-inner">
-                  <div class="faq-content">No sign up is required! You can dive straight into your favorite drama, action, horror, sci-fi, and crime series immediately without creating an account.</div>
+                  <div class="faq-content">No registration is required to stream. You can instantly watch all movies, full series episodes, and anime titles in guest mode right away. If you wish to sync your watchlist and playback history across devices, you can optionally create a free account in seconds.</div>
                 </div>
               </div>
             </details>
             <details class="faq-item">
-              <summary class="faq-summary">Is the streaming quality good?</summary>
+              <summary class="faq-summary">What streaming quality and servers are available on StreamHeaven?</summary>
               <div class="faq-content-wrapper">
                 <div class="faq-content-inner">
-                  <div class="faq-content">Absolutely. StreamHeaven offers high definition (HD) streaming for new releases, popular TV series, and classic anime, ensuring a great viewing experience with zero buffering.</div>
+                  <div class="faq-content">StreamHeaven provides High Definition (720p, 1080p, and 4K Ultra HD) video playback across multiple reliable streaming servers, with an optional ad-free native video player for fast, uninterrupted entertainment.</div>
+                </div>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary class="faq-summary">Can I watch English subbed and dubbed anime series for free?</summary>
+              <div class="faq-content-wrapper">
+                <div class="faq-content-inner">
+                  <div class="faq-content">Yes! StreamHeaven features an extensive collection of popular and classic anime with both English subtitles and English dubbed audio tracks, updated with the latest episodes.</div>
+                </div>
+              </div>
+            </details>
+            <details class="faq-item">
+              <summary class="faq-summary">Can I install StreamHeaven as an app on Android and iOS devices?</summary>
+              <div class="faq-content-wrapper">
+                <div class="faq-content-inner">
+                  <div class="faq-content">Yes, you can download the StreamHeaven APK directly for Android mobile and Smart TV devices, or install the Progressive Web App (PWA) via Safari on Apple iOS.</div>
                 </div>
               </div>
             </details>
@@ -447,7 +591,7 @@
             <p class="footer-desc">Your ultimate high-definition destination for movies, TV series, anime, and classics. Discover trending cinema anytime, anywhere.</p>
           </div>
           <div>
-            <div class="footer-col-title">Navigation</div>
+            <h3 class="footer-col-title">Navigation</h3>
             <div class="footer-links">
               <span class="footer-link" onclick="App.goHome()">Home</span>
               <span class="footer-link" onclick="App.browseMovies()">Movies</span>
@@ -456,7 +600,7 @@
             </div>
           </div>
           <div>
-            <div class="footer-col-title">Top Genres</div>
+            <h3 class="footer-col-title">Top Genres</h3>
             <div class="footer-links">
               <span class="footer-link" onclick="Browse.byGenre(28, 'Action')">Action</span>
               <span class="footer-link" onclick="Browse.byGenre(35, 'Comedy')">Comedy</span>
@@ -465,7 +609,7 @@
             </div>
           </div>
           <div>
-            <div class="footer-col-title">Legal</div>
+            <h3 class="footer-col-title">Legal</h3>
             <div class="footer-links">
               <span class="footer-link" onclick="Legal.open('dmca')">DMCA Policy</span>
               <span class="footer-link" onclick="Legal.open('privacy')">Privacy Policy</span>
@@ -474,7 +618,7 @@
             </div>
           </div>
           <div>
-            <div class="footer-col-title">Connect & Contact</div>
+            <h3 class="footer-col-title">Connect &amp; Contact</h3>
             <div class="footer-links">
               <a href="https://www.facebook.com/share/1FeeHdgbtJ/" target="_blank" rel="noopener noreferrer" class="footer-link" style="text-decoration:none;"><i class="fab fa-facebook" style="width:16px;"></i> Facebook</a>
               <a href="https://x.com/StreamHeaven26" target="_blank" rel="noopener noreferrer" class="footer-link" style="text-decoration:none;"><i class="fa-brands fa-x-twitter" style="width:16px;"></i> X (Twitter)</a>

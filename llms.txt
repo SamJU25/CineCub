@@ -1,0 +1,19 @@
+# StreamHeaven
+
+> StreamHeaven is a modern, high-definition online streaming web application providing free access to over 1.2 million movies, television series, and anime titles.
+
+## Overview
+- Website: https://streamheaven.online
+- Tagline: Watch Free Movies, Series & Anime Online
+- Core Features: Free movie streaming, full TV series episodes, subbed & dubbed anime, multi-server playback, ad-free streaming player option, user watchlist & watch history cloud synchronization.
+- Compatibility: Web browsers (Desktop, Tablet, Mobile), Android APK application, Progressive Web App (PWA) on iOS & desktop.
+
+## Primary Streaming Categories
+- Free Movies Online: https://streamheaven.online/ (Hollywood, International, Classics, Action, Comedy, Horror, Sci-Fi, Thriller)
+- Free TV Series Online: https://streamheaven.online/ (Popular television shows, complete season episode guides)
+- Free Anime Online: https://streamheaven.online/ (Japanese animation, Shonen, Seinen, Isekai, Romance)
+- Trending & Top Rated: https://streamheaven.online/ (Live daily trending lists, all-time critically acclaimed films)
+
+## Privacy & Policies
+- Privacy Policy: https://streamheaven.online/privacy.html
+- Terms & DMCA: Built-in modal viewer for DMCA compliance and copyright inquiries.

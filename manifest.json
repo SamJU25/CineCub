@@ -1,14 +1,16 @@
 {
-  "name": "StreamHeaven",
+  "name": "StreamHeaven - Watch Free Movies, Series & Anime",
   "short_name": "StreamHeaven",
-  "description": "Premium Movie and TV Streaming",
+  "description": "Watch free movie online, free series online, and free anime online in HD quality with no registration.",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#0a0a0f",
   "theme_color": "#0a0a0f",
+  "categories": ["entertainment", "movies", "video"],
   "icons": [
     {
-      "src": "/assets/images/favicon-square.png?v=2",
+      "src": "/assets/images/favicon-square.png",
       "sizes": "192x192 512x512",
       "type": "image/png",
       "purpose": "any maskable"
