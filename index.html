@@ -96,6 +96,7 @@
           "caption": "StreamHeaven"
         },
         "sameAs": [
+          "https://t.me/StreamHeavenOnline",
           "https://www.facebook.com/share/1FeeHdgbtJ/",
           "https://x.com/StreamHeaven26",
           "https://www.instagram.com/streamheaven.me?igsi=NmRmd2N3NWJxMHRo"
@@ -136,7 +137,7 @@
             "name": "Do I need an account or sign up to stream movies and TV shows?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No registration is required to stream. You can instantly watch all movies, full series episodes, and anime titles in guest mode right away."
+              "text": "No registration is required to stream. You can instantly watch all movies, full series episodes, and anime titles in guest mode right away. If you wish to sync your watchlist and playback history across devices, you can optionally create a free account in seconds."
             }
           },
           {
@@ -152,7 +153,7 @@
             "name": "Can I watch English subbed and dubbed anime series for free?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes! StreamHeaven features an extensive collection of popular and classic anime with both English subtitles and English dubbed audio tracks."
+              "text": "Yes! StreamHeaven features an extensive collection of popular and classic anime with both English subtitles and English dubbed audio tracks, updated with the latest episodes."
             }
           },
           {
@@ -172,7 +173,7 @@
   <!-- STYLESHEET -->
   <link href="style.css?v=195" rel="stylesheet">
 </head>
-<body>
+<body id="cv-app">
 
   <!-- Top Progress Bar -->
   <div id="cv-progress"><div id="cv-progress-bar"></div></div>
@@ -181,10 +182,10 @@
   <div id="toast-container"></div>
 
   <!-- Sidebar Overlay -->
-  <div class="sidebar-overlay" id="sidebar-overlay" onclick="Sidebar.close()" ontouchmove="event.preventDefault();"></div>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="Sidebar.close()"></div>
 
   <!-- ============================================================ 
-       LEFT PANEL / SIDEBAR NAVIGATION (With Profile Footer)
+       DESKTOP SIDEBAR
   ============================================================ -->
   <aside class="cv-sidebar" id="cv-sidebar">
     <div class="sidebar-logo" onclick="App.goHome()">
@@ -224,11 +225,21 @@
       <div class="nav-item" id="nav-history" onclick="App.showHistory()">
         <span class="nav-item-icon"><i class="fas fa-history"></i></span><span class="nav-item-text">History</span>
       </div>
-      <div class="nav-section-label">Apps</div>
+      
+      <div class="nav-section-label">Community &amp; Apps</div>
+      <a href="https://t.me/StreamHeavenOnline" target="_blank" rel="noopener noreferrer" class="nav-item telegram-nav-item" title="Join StreamHeaven Telegram">
+        <span class="nav-item-icon" style="color:#229ED9;"><i class="fab fa-telegram-plane"></i></span>
+        <span class="nav-item-text">Telegram</span>
+        <span class="nav-badge" style="background:#229ED9; color:#fff;">JOIN</span>
+      </a>
       <div class="nav-item" id="nav-download" onclick="openAppsModal()" title="Get StreamHeaven App">
         <span class="nav-item-icon"><i class="fas fa-download"></i></span>
         <span class="nav-item-text">Get App</span>
         <span class="nav-badge">APK</span>
+      </div>
+      <div class="nav-item" id="nav-request" onclick="App.openRequestModal()" title="Request a Movie or TV Show">
+        <span class="nav-item-icon" style="color:var(--cv-purple-light);"><i class="fas fa-plus-circle"></i></span>
+        <span class="nav-item-text">Request Title</span>
       </div>
     </nav>
       <div class="cv-sidebar-bottom">
@@ -272,6 +283,9 @@
       </div>
 
       <div class="header-actions">
+        <a href="https://t.me/StreamHeavenOnline" target="_blank" rel="noopener noreferrer" class="header-action-btn header-telegram-btn" title="Join StreamHeaven Telegram Channel" style="border-radius: 50%; color: #229ED9; text-decoration: none; display: flex; align-items: center; justify-content: center;">
+          <i class="fab fa-telegram-plane"></i>
+        </a>
         <div id="header-profile-container" class="header-profile-wrap">
           <div id="header-profile-name" class="header-profile-name" style="display: none;"></div>
           <button class="header-action-btn" id="header-profile-btn" onclick="if(typeof AuthUI !== 'undefined') AuthUI.openLogin()" title="Profile" style="border-radius: 50%;"><i class="fas fa-user"></i></button>
@@ -323,6 +337,18 @@
             <div><div class="stat-value">4K</div><div class="stat-label">Ultra HD Quality</div></div>
           </div>
         </div>
+
+        <!-- CONTINUE WATCHING SECTION -->
+        <section class="section-wrapper" id="section-continue-watching" style="display:none;">
+          <div class="section-header">
+            <div class="section-title-group">
+              <div class="section-icon" style="background:rgba(199,125,255,0.12); color:var(--cv-purple-light);"><i class="fas fa-play"></i></div>
+              <div><h2 class="section-title">Continue Watching</h2><div class="section-subtitle">Jump back into your recent titles</div></div>
+            </div>
+            <div class="section-view-all" onclick="App.showHistory()">View History <i class="fas fa-arrow-right"></i></div>
+          </div>
+          <div class="cv-hscroll" id="row-continue-watching"></div> 
+        </section>
 
         <!-- BY GENRE SECTION -->
         <section class="section-wrapper by-genre-section">
@@ -620,6 +646,8 @@
           <div>
             <h3 class="footer-col-title">Connect &amp; Contact</h3>
             <div class="footer-links">
+              <a href="https://t.me/StreamHeavenOnline" target="_blank" rel="noopener noreferrer" class="footer-link" style="text-decoration:none;"><i class="fab fa-telegram-plane" style="width:16px; color:#229ED9;"></i> Telegram Channel</a>
+              <span class="footer-link" onclick="App.openRequestModal()"><i class="fas fa-plus-circle" style="width:16px; color:var(--cv-purple-light);"></i> Request a Title</span>
               <a href="https://www.facebook.com/share/1FeeHdgbtJ/" target="_blank" rel="noopener noreferrer" class="footer-link" style="text-decoration:none;"><i class="fab fa-facebook" style="width:16px;"></i> Facebook</a>
               <a href="https://x.com/StreamHeaven26" target="_blank" rel="noopener noreferrer" class="footer-link" style="text-decoration:none;"><i class="fa-brands fa-x-twitter" style="width:16px;"></i> X (Twitter)</a>
               <a href="https://www.instagram.com/streamheaven.me?igsi=NmRmd2N3NWJxMHRo" target="_blank" rel="noopener noreferrer" class="footer-link" style="text-decoration:none;"><i class="fab fa-instagram" style="width:16px;"></i> Instagram</a>
@@ -748,13 +776,19 @@
             <div class="fv-info-col" id="fv-info-col">
               <div class="fv-info-item" id="fv-info-item-1"><span class="fv-info-key" id="fv-info-key-1">Genre</span><span class="fv-info-val" id="fv-genre"></span></div>
               <div class="fv-info-item" id="fv-info-item-2"><span class="fv-info-key" id="fv-info-key-2">Runtime</span><span class="fv-info-val" id="fv-runtime"></span></div>
+              <div class="fv-info-item" id="fv-info-item-3"><span class="fv-info-key" id="fv-info-key-3">Release</span><span class="fv-info-val" id="fv-release"></span></div>
+              <div class="fv-info-item" id="fv-info-item-4"><span class="fv-info-key" id="fv-info-key-4">Language</span><span class="fv-info-val" id="fv-lang"></span></div>
+              <div class="fv-info-item" id="fv-info-item-5"><span class="fv-info-key" id="fv-info-key-5">Rating</span><span class="fv-info-val" id="fv-rating-text"></span></div>
             </div>
-            <p class="fv-desc" id="fv-desc"></p>
+            <div class="fv-overview-text">
+              <div class="fv-overview-heading">STORYLINE</div>
+              <p class="fv-desc" id="fv-desc"></p>
+            </div>
           </div>
           
           <!-- Trailer Container -->
           <div id="trailer-container" style="display:none; margin-top:24px; margin-bottom:24px; border-top: 1px solid var(--b-2); padding-top: 24px;">
-            <div class="fv-cast-header" style="margin-bottom:16px;">TRAILER</div>
+            <div class="fv-cast-header" style="margin-bottom:16px;">OFFICIAL TRAILER</div>
             <div class="player-wrap">
               <iframe id="trailer-player" allow="autoplay; encrypted-media; picture-in-picture; clipboard-write" allowfullscreen scrolling="no"></iframe>
             </div>
@@ -1017,7 +1051,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=194"></script>
+  <script src="script.js?v=196"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -1087,6 +1121,56 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- REQUEST A TITLE MODAL -->
+  <div id="modal-request" class="cv-modal">
+    <div class="cv-modal-content apps-modal-card" style="max-width: 440px;">
+      <span class="cv-modal-close" onclick="App.closeRequestModal()" style="font-size: 0.9rem; font-weight: 500; top: 25px; right: 25px;">Close</span>
+      
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+        <div style="width:42px; height:42px; border-radius:12px; background:var(--cv-purple-dim); color:var(--cv-purple-light); display:flex; align-items:center; justify-content:center; font-size:18px;">
+          <i class="fas fa-plus-circle"></i>
+        </div>
+        <div>
+          <h2 style="font-size:1.25rem; font-weight:800; color:#fff; margin:0;">Request a Title</h2>
+          <p style="font-size:12px; color:var(--text-3); margin:0;">Can't find a specific movie or series?</p>
+        </div>
+      </div>
+      
+      <form onsubmit="App.submitRequest(event)" class="auth-form" style="margin-top:16px;">
+        <div class="auth-field">
+          <label>Movie, Show, or Anime Name *</label>
+          <div class="auth-input-wrap">
+            <input type="text" id="req-title" required placeholder="e.g. Inception, Attack on Titan..." autocomplete="off">
+            <i class="fas fa-film input-icon"></i>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label>Media Type</label>
+          <div class="custom-select" style="width:100%;">
+            <select id="req-type">
+              <option value="movie">Movie</option>
+              <option value="tv">TV Series</option>
+              <option value="anime">Anime</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label>Release Year / Notes (Optional)</label>
+          <div class="auth-input-wrap">
+            <input type="text" id="req-notes" placeholder="e.g. 2024, Season 2, English Dub" autocomplete="off">
+            <i class="fas fa-comment-alt input-icon"></i>
+          </div>
+        </div>
+
+        <button type="submit" class="auth-btn-primary" id="btn-submit-request" style="margin-top:16px;">
+          <i class="fas fa-paper-plane"></i> Submit Request
+        </button>
+      </form>
     </div>
   </div>
 

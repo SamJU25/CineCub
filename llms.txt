@@ -4,8 +4,9 @@
 
 ## Overview
 - Website: https://streamheaven.online
+- Telegram Channel: https://t.me/StreamHeavenOnline
 - Tagline: Watch Free Movies, Series & Anime Online
-- Core Features: Free movie streaming, full TV series episodes, subbed & dubbed anime, multi-server playback, ad-free streaming player option, user watchlist & watch history cloud synchronization.
+- Core Features: Free movie streaming, full TV series episodes, subbed & dubbed anime, multi-server playback, ad-free streaming player option, user watchlist & watch history cloud synchronization, title request system, continue watching resume progress.
 - Compatibility: Web browsers (Desktop, Tablet, Mobile), Android APK application, Progressive Web App (PWA) on iOS & desktop.
 
 ## Primary Streaming Categories
@@ -13,6 +14,12 @@
 - Free TV Series Online: https://streamheaven.online/ (Popular television shows, complete season episode guides)
 - Free Anime Online: https://streamheaven.online/ (Japanese animation, Shonen, Seinen, Isekai, Romance)
 - Trending & Top Rated: https://streamheaven.online/ (Live daily trending lists, all-time critically acclaimed films)
+
+## Community & Socials
+- Official Telegram: https://t.me/StreamHeavenOnline
+- X (Twitter): https://x.com/StreamHeaven26
+- Instagram: https://www.instagram.com/streamheaven.me?igsi=NmRmd2N3NWJxMHRo
+- Facebook: https://www.facebook.com/share/1FeeHdgbtJ/
 
 ## Privacy & Policies
 - Privacy Policy: https://streamheaven.online/privacy.html

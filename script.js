@@ -455,6 +455,59 @@ var App = {
     if(navigator.share){navigator.share({title:title,text:'Watch '+title+' on StreamHeaven',url:shareUrl}).catch(function(err){if(err&&err.name!=='AbortError')fallback();});}
     else if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(shareUrl).then(function(){Toast.show('Link copied to clipboard.','success');}).catch(fallback);}
     else fallback();
+  },
+  openRequestModal: function(){
+    if(typeof Sidebar !== 'undefined' && Sidebar.close) Sidebar.close();
+    var modal = document.getElementById('modal-request');
+    if(modal) {
+      modal.style.display = 'flex';
+      if(typeof CustomSelect !== 'undefined') CustomSelect.init();
+      var input = document.getElementById('req-title');
+      if(input) setTimeout(function(){ input.focus(); }, 100);
+    }
+  },
+  closeRequestModal: function(){
+    var modal = document.getElementById('modal-request');
+    if(modal) modal.style.display = 'none';
+  },
+  submitRequest: function(e){
+    if(e) e.preventDefault();
+    var titleEl = document.getElementById('req-title');
+    var typeEl = document.getElementById('req-type');
+    var notesEl = document.getElementById('req-notes');
+    var title = titleEl ? titleEl.value.trim() : '';
+    var type = typeEl ? typeEl.value : 'movie';
+    var notes = notesEl ? notesEl.value.trim() : '';
+    if(!title) return;
+    
+    var btn = document.getElementById('btn-submit-request');
+    if(btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    }
+    
+    try {
+      if(typeof db !== 'undefined' && db) {
+        db.collection('title_requests').add({
+          title: title,
+          type: type,
+          notes: notes,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          user: (typeof currentUser !== 'undefined' && currentUser) ? currentUser.email : 'guest'
+        }).catch(function(err){ console.warn('Request save warning:', err); });
+      }
+    } catch(err){}
+    
+    setTimeout(function(){
+      if(btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request';
+      }
+      if(titleEl) titleEl.value = '';
+      if(notesEl) notesEl.value = '';
+      App.closeRequestModal();
+      Toast.show('Thank you! Your request for "' + title + '" has been received.', 'success');
+    }, 500);
   }
 };
 
@@ -1052,6 +1105,49 @@ var Render = {
   skeletons: function(id, count){
     var el = document.getElementById(id); if(!el) return;
     el.innerHTML = Array(count).fill('<div class="skel-poster"></div>').join('');
+  },
+  continueWatchingCard: function(item){
+    if(!item) return '';
+    var mType = item.type || item.media_type || (item.title ? 'movie' : 'tv');
+    var title = item.title || item.name || 'Untitled';
+    var img = item.poster_path ? CFG.IMG342 + item.poster_path : Utils.placeholder();
+    var s = item.season;
+    var e = item.episode;
+    var epLabel = (mType === 'tv' && s && e) ? 'S' + s + ' E' + e : (mType === 'tv' ? 'TV Series' : 'Movie');
+    
+    var progressPct = 35;
+    try {
+      var vlData = JSON.parse(localStorage.getItem('vidLinkProgress') || '{}');
+      var itemData = vlData[item.id];
+      if (itemData) {
+        if (mType === 'tv' && itemData.show_progress) {
+          var epKey = 's' + (s || 1) + 'e' + (e || 1);
+          if (itemData.show_progress[epKey] && itemData.show_progress[epKey].progress) {
+            var watched = itemData.show_progress[epKey].progress.watched || 0;
+            var dur = itemData.show_progress[epKey].progress.duration || 1;
+            if (dur > 0) progressPct = Math.min(100, Math.max(5, Math.round((watched / dur) * 100)));
+          }
+        } else if (mType === 'movie' && itemData.progress) {
+          var watched = itemData.progress.watched || 0;
+          var dur = itemData.progress.duration || 1;
+          if (dur > 0) progressPct = Math.min(100, Math.max(5, Math.round((watched / dur) * 100)));
+        }
+      }
+    } catch(err){}
+
+    return '<div class="poster-card cw-card" onclick="Modal.openFull(' + item.id + ', ' + Utils.jsAttr(mType) + ')">'
+      + '<div class="poster-card-img-wrap">'
+      + '<img class="poster-card-img" src="' + img + '" loading="lazy" decoding="async" alt="' + Utils.escape(title) + '" onerror="this.src=Utils.placeholder()"/>'
+      + '<div class="poster-card-grad"></div>'
+      + '<div class="cw-progress-overlay"><div class="cw-progress-bar"><div class="cw-progress-fill" style="width:' + progressPct + '%;"></div></div></div>'
+      + '<div class="pc-play-wrap"><div class="pc-play-btn"><i class="fas fa-play"></i></div></div>'
+      + '<div class="poster-card-top"><span class="pc-badge pc-badge-quality" style="background:rgba(0,0,0,0.75);">' + epLabel + '</span></div>'
+      + '</div>'
+      + '<div class="poster-card-info" style="opacity:1; transform:none; background:linear-gradient(0deg, rgba(0,0,0,0.85) 0%, transparent 100%);">'
+      + '<div class="pc-title">' + Utils.escape(title) + '</div>'
+      + '<div class="pc-meta"><span style="color:var(--cv-purple-light); font-weight:700;">' + progressPct + '% watched</span></div>'
+      + '</div>'
+      + '</div>';
   }
 };
 
@@ -2093,6 +2189,7 @@ var History = {
     State.history.unshift({id:id,type:type,title:title,poster_path:poster,season:s,episode:e,vote_average:vote,release_date:date,watchedAt:new Date().toISOString()});
     while(State.history.length>50)State.history.pop();
     Library.saveUserData();
+    if(typeof ContinueWatching !== 'undefined') ContinueWatching.render();
   },
   load: function(){this.render();},
   render: function(){
@@ -2108,8 +2205,29 @@ var History = {
       State.history=[];
       Library.saveUserData();
       History.render();
+      if(typeof ContinueWatching !== 'undefined') ContinueWatching.render();
       Toast.show('History cleared successfully.','success');
     });
+  }
+};
+
+var ContinueWatching = {
+  render: function(){
+    var section = document.getElementById('section-continue-watching');
+    var row = document.getElementById('row-continue-watching');
+    if(!section || !row) return;
+    var history = State.history || [];
+    if(!history || !history.length) {
+      section.style.display = 'none';
+      return;
+    }
+    var items = history.slice(0, 15);
+    row.innerHTML = items.map(function(item){
+      return Render.continueWatchingCard(item);
+    }).join('');
+    section.style.display = 'block';
+    initDragScroll();
+    initScrollButtons();
   }
 };
 
@@ -2262,18 +2380,26 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('row-newreleases').innerHTML = up.results.slice(0,35).map(x => Render.posterCard(x,'movie')).join('');
     }
 
+    /* Continue Watching Row */
+    ContinueWatching.render();
+
     Prog.done();
   }).catch(err => {
     console.error('Initialization error:', err);
     Prog.done();
   });
 
-  var urlParams=new URLSearchParams(window.location.search);
-  var shareId=urlParams.get('id');
-  var shareType=urlParams.get('type');
-  if(shareId && (shareType==='movie' || shareType==='tv')){
-    window.history.replaceState({},document.title,window.location.pathname);
-    Modal.openFull(shareId,shareType);
+  /* URL Deep Linking */
+  var urlParams = new URLSearchParams(window.location.search);
+  var shareId = urlParams.get('id') || urlParams.get('watch');
+  var shareType = urlParams.get('type') || 'movie';
+  if(shareId){
+    var parsedId = parseInt(shareId);
+    if(!isNaN(parsedId)){
+      setTimeout(function(){
+        Modal.openFull(parsedId, shareType);
+      }, 400);
+    }
   }
 
   // Infinite Scroll Observer
@@ -2325,6 +2451,8 @@ document.addEventListener('DOMContentLoaded', function(){
         Modal.closeAll();
       } else if (document.getElementById('auth-modal-overlay') && document.getElementById('auth-modal-overlay').classList.contains('open')) {
         if (typeof AuthUI !== 'undefined') AuthUI.close();
+      } else if (document.getElementById('modal-request') && document.getElementById('modal-request').style.display === 'flex') {
+        App.closeRequestModal();
       } else if (document.getElementById('apps-modal') && document.getElementById('apps-modal').style.display === 'flex') {
         if (typeof closeAppsModal === 'function') closeAppsModal();
       } else if (document.getElementById('legal-modal') && document.getElementById('legal-modal').classList.contains('open')) {
