@@ -187,7 +187,10 @@ var CustomSelect = {
       a = document.createElement("DIV");
       a.setAttribute("class", "select-selected");
       var activeOpt = selElmnt.options[selElmnt.selectedIndex];
-      a.innerHTML = activeOpt ? activeOpt.innerHTML : "";
+      var textSpan = document.createElement("SPAN");
+      textSpan.setAttribute("class", "select-text");
+      textSpan.innerHTML = activeOpt ? activeOpt.innerHTML : "";
+      a.appendChild(textSpan);
       x[i].appendChild(a);
       
       b = document.createElement("DIV");
@@ -207,7 +210,12 @@ var CustomSelect = {
             for (i = 0; i < sl; i++) {
               if (s.options[i].innerHTML == this.innerHTML) {
                 s.selectedIndex = i;
-                h.innerHTML = this.innerHTML;
+                var hText = h.querySelector('.select-text');
+                if (hText) {
+                  hText.innerHTML = this.innerHTML;
+                } else {
+                  h.innerHTML = '<span class="select-text">' + this.innerHTML + '</span>';
+                }
                 y = this.parentNode.getElementsByClassName("same-as-selected");
                 yl = y.length;
                 for (k = 0; k < yl; k++) {
@@ -254,7 +262,14 @@ var CustomSelect = {
     var itemsDiv = wrapper.querySelector('.select-items');
     if(!selectedDiv || !itemsDiv) return;
     var activeOpt = sel.options[sel.selectedIndex];
-    if(activeOpt) selectedDiv.innerHTML = activeOpt.innerHTML;
+    if(activeOpt) {
+      var hText = selectedDiv.querySelector('.select-text');
+      if (hText) {
+        hText.innerHTML = activeOpt.innerHTML;
+      } else {
+        selectedDiv.innerHTML = '<span class="select-text">' + activeOpt.innerHTML + '</span>';
+      }
+    }
     var options = itemsDiv.getElementsByTagName('DIV');
     for(var i=0; i<options.length; i++){
       if(options[i].getAttribute('data-value') === String(val)) {
@@ -1357,6 +1372,103 @@ var Player = {
 
 var AdFreePlayer = {
   hls: null,
+  formatServerName: function(s, idx, streams) {
+    if (!s) return 'Server ' + (idx + 1);
+
+    function getProvider(item) {
+      var itemFull = (item.provider || '') + ' ' + (item.name || '') + ' ' + (item.title || '') + ' ' + (item.quality || '');
+      if (/febbox direct/i.test(itemFull)) return 'Febbox Direct';
+      if (/febbox fid/i.test(itemFull)) return 'Febbox FID';
+      if (/febbox/i.test(itemFull)) return 'Febbox';
+      if (/showbox/i.test(itemFull)) return 'Showbox';
+      if (/pstream/i.test(itemFull)) return 'PStream';
+      if (/castletv/i.test(itemFull)) return 'CastleTV';
+      if (/netmirror/i.test(itemFull)) return 'NetMirror';
+      if (/4khdhub/i.test(itemFull)) return '4KHDHub';
+      if (/videasy/i.test(itemFull)) return 'Videasy';
+      if (/vidlink/i.test(itemFull)) return 'Vidlink';
+      if (/vixsrc/i.test(itemFull)) return 'Vixsrc';
+      if (/streamflix/i.test(itemFull)) return 'StreamFlix';
+      if (/zxcstreams/i.test(itemFull)) return 'ZXCStreams';
+      if (/hdghartv/i.test(itemFull)) return 'HDGharTV';
+      if (/dahmermovies/i.test(itemFull)) return 'DahmerMovies';
+      if (/vaplayer/i.test(itemFull)) return 'VaPlayer';
+      if (/onetouchtv/i.test(itemFull)) return 'OneTouchTV';
+      return (item.provider || '').trim() || 'Server';
+    }
+
+    function getLanguage(item) {
+      var itemFull = (item.provider || '') + ' ' + (item.name || '') + ' ' + (item.title || '') + ' ' + (item.quality || '');
+      var langMatch = itemFull.match(/\[(English|Hindi|Tamil|Telugu|Kannada|Malayalam|Bengali|Marathi|Punjabi|Gujarati|Urdu|Dual|Multi|Spanish|French|German|Italian|Japanese|Korean|Chinese|Russian|Portuguese|Dubbed|Subbed|Org)\]/i);
+      if (langMatch) {
+        return '[' + langMatch[1].charAt(0).toUpperCase() + langMatch[1].slice(1).toLowerCase() + ']';
+      }
+      return '';
+    }
+
+    function getQuality(item) {
+      var rawQuality = (item.quality || '').trim();
+      var rawName = (item.name || '').trim();
+      var rawTitle = (item.title || '').trim();
+      var qual = '';
+      var rQ = rawQuality.toLowerCase();
+
+      if (/\b(4k|2160p)\b/i.test(rQ)) qual = '4K';
+      else if (/\b(1080p|1080)\b/i.test(rQ)) qual = '1080p';
+      else if (/\b(720p|720)\b/i.test(rQ)) qual = '720p';
+      else if (/\b(480p|480)\b/i.test(rQ)) qual = '480p';
+      else if (/\b(360p|360)\b/i.test(rQ)) qual = '360p';
+      else {
+        var fallbackStr = rawName + ' ' + rawTitle;
+        var endMatch = fallbackStr.match(/-\s*(4k|2160p|1080p|720p|480p|360p)/i);
+        if (endMatch) {
+          qual = endMatch[1].toLowerCase();
+          if (qual === '4k' || qual === '2160p') qual = '4K';
+        } else if (/\b(4k|2160p)\b/i.test(fallbackStr)) qual = '4K';
+        else if (/\b(1080p|1080)\b/i.test(fallbackStr)) qual = '1080p';
+        else if (/\b(720p|720)\b/i.test(fallbackStr)) qual = '720p';
+        else if (/\b(480p|480)\b/i.test(fallbackStr)) qual = '480p';
+        else if (/\b(360p|360)\b/i.test(fallbackStr)) qual = '360p';
+        else if (/auto/i.test(rQ)) qual = 'Auto';
+        else if (rawQuality && rawQuality !== '?') qual = rawQuality.replace(/[()]/g, '').trim();
+        else qual = 'Auto';
+      }
+
+      if (/\borg\b/i.test(rawQuality) || /\bauto\s*\(org\)/i.test(rawName)) {
+        if (qual !== 'Auto') qual += ' (Org)';
+        else qual = 'Auto (Org)';
+      }
+      return qual;
+    }
+
+    var provider = getProvider(s);
+    var lang = getLanguage(s);
+    var qual = getQuality(s);
+
+    var matchingStreams = [];
+    if (Array.isArray(streams)) {
+      for (var k = 0; k < streams.length; k++) {
+        var item = streams[k];
+        if (getProvider(item) === provider && getLanguage(item) === lang && getQuality(item) === qual) {
+          matchingStreams.push(k);
+        }
+      }
+    }
+
+    var label = provider;
+    if (lang) label += ' ' + lang;
+
+    if (matchingStreams.length > 1) {
+      var subNum = matchingStreams.indexOf(idx) + 1;
+      label += ' (Server ' + (subNum > 0 ? subNum : (idx + 1)) + ')';
+    }
+
+    if (qual) {
+      label += ' | ' + qual;
+    }
+
+    return label;
+  },
   updateEpisodes: function() {
     if (State.activeType !== 'tv' || !State.activeData || !State.activeData.seasons) return;
     var sSelect = document.getElementById('ep-season-adfree');
@@ -1484,7 +1596,7 @@ var AdFreePlayer = {
         html += '<select id="adfree-server-select" onchange="AdFreePlayer.onServerSelect(this.value)">';
         AdFreePlayer.streams = streams;
         streams.forEach((s, idx) => {
-           html += '<option value="'+idx+'">' + (s.name || s.provider) + ' (' + (s.quality || '?') + ')</option>';
+           html += '<option value="'+idx+'">' + AdFreePlayer.formatServerName(s, idx, streams) + '</option>';
         });
         html += '</select></div></div></div>';
         
