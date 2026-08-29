@@ -1478,6 +1478,9 @@ var Modal = {
         document.getElementById('fv-poster').src = data.poster_path ? CFG.IMG342 + data.poster_path : Utils.placeholder();
         document.getElementById('fv-title').textContent = data.title || data.name;
         document.title = (data.title || data.name) + " \u2014 StreamHeaven";
+        if(type==='movie' || type==='tv') {
+          History.add(id, type, data.title||data.name, data.poster_path, null, null, data.vote_average, data.release_date||data.first_air_date);
+        }
 
         var ratingBadge = document.getElementById('fv-meta-rating');
         if (ratingBadge) ratingBadge.style.display = 'inline-flex';
@@ -2218,7 +2221,8 @@ var ContinueWatching = {
     if(!section || !row) return;
     var history = State.history || [];
     if(!history || !history.length) {
-      section.style.display = 'none';
+      row.innerHTML = '<div class="cw-empty-state"><i class="fas fa-play-circle"></i><span>No watched titles yet. Click any movie or TV series to start streaming and it will appear here so you can resume anytime!</span></div>';
+      section.style.display = 'block';
       return;
     }
     var items = history.slice(0, 15);
