@@ -482,7 +482,14 @@ iframe {border:none}
 .fv-tab {padding:12px 20px;font-size:14px;font-weight:700;color:var(--text-3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0}
 .fv-tab.active {color:var(--cv-purple-light);border-bottom-color:var(--cv-purple-light)}
 .fv-tab-pane {display:none}
-.fv-tab-pane.active {display:block}
+.fv-tab-pane.active {
+  display:block;
+  animation: tabFadeIn var(--t-norm) forwards;
+}
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 #tab-watch {padding: 0 50px;}
 .fv-overview-grid {display:grid;grid-template-columns:2fr 1fr;gap:28px}
 .fv-desc {font-size:14px;color:var(--text-2);line-height:1.8}
