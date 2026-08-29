@@ -309,9 +309,10 @@ iframe {border:none}
 .stat-label {font-size:12px;color:var(--text-3);font-weight:600}
 
 /* By Genre & Trending Toggle Buttons */
-.by-genre-toggle {position:relative; display:inline-flex; border:1px solid var(--b-2); border-radius:8px; overflow:hidden; background:rgba(12,10,20,0.6); padding:2px; height:36px; box-sizing:border-box; flex-shrink:0;}
+.by-genre-toggle {position:relative; display:inline-flex; border:1px solid var(--b-2); border-radius:8px; background:rgba(12,10,20,0.6); padding:2px; height:36px; box-sizing:border-box; flex-shrink:0; max-width:100%; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+.by-genre-toggle::-webkit-scrollbar {display:none;}
 .bgt-indicator {position:absolute; top:2px; bottom:2px; background:var(--cv-purple); z-index:0; transition:left var(--motion-fast) var(--ease-standard), width var(--motion-fast) var(--ease-standard); border-radius:6px;}
-.bgt-btn {position:relative; z-index:1; padding:0 14px; height:100%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:var(--text-3); cursor:pointer; background:transparent; transition:color var(--motion-fast) var(--ease-standard); letter-spacing:0.5px; text-transform:uppercase; touch-action:manipulation; border-radius:6px; white-space:nowrap;}
+.bgt-btn {position:relative; z-index:1; padding:0 14px; height:100%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:var(--text-3); cursor:pointer; background:transparent; transition:color var(--motion-fast) var(--ease-standard); letter-spacing:0.5px; text-transform:uppercase; touch-action:manipulation; border-radius:6px; white-space:nowrap; flex-shrink:0;}
 .bgt-btn.active {color:#fff;}
 .bgt-btn:hover:not(.active) {color:var(--text-1);}
 

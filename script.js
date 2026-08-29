@@ -911,6 +911,8 @@ var PopularSection = {
       var container = el.parentElement;
       if (container) {
         container.querySelectorAll('.bgt-btn').forEach(btn => btn.classList.remove('active'));
+        var scrollLeftTarget = el.offsetLeft - (container.clientWidth / 2) + (el.offsetWidth / 2);
+        container.scrollTo({ left: Math.max(0, scrollLeftTarget), behavior: 'smooth' });
       }
       el.classList.add('active');
       
