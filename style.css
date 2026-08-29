@@ -1352,15 +1352,15 @@ button, a, .poster-card, .compact-card { touch-action: manipulation; }
 .pf-modal-form label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-2); font-weight: 600; }
 .pf-modal-actions { display: flex; gap: 12px; margin-top: 24px; }
 .pf-modal-actions button { flex: 1 1 0; min-width: 0; white-space: nowrap; font-family: inherit; font-size: 14px; box-sizing: border-box; outline: none; }
-.pf-modal-actions .pf-btn-secondary { background: var(--cv-dark-4); color: var(--text-1); border: 1px solid var(--b-2); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast); }
+.pf-modal-actions .pf-btn-secondary { background: var(--cv-dark-4); color: var(--text-1); border: 1px solid var(--b-2); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background var(--t-fast), border-color var(--t-fast); }
 .pf-modal-actions .pf-btn-secondary:hover { background: var(--cv-dark-3); }
-.pf-modal-actions .pf-btn-secondary:active { transform: scale(var(--press-scale)); }
-.pf-modal-actions .pf-btn-danger { background: #220f12; color: #ff6b6b; border: 1px solid rgba(230, 57, 70, 0.25); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background var(--t-fast), border-color var(--t-fast), transform var(--t-fast); }
-.pf-modal-actions .pf-btn-danger:hover { background: #2c1317; color: #ff8585; border-color: rgba(230, 57, 70, 0.38); }
-.pf-modal-actions .pf-btn-danger:active { transform: scale(var(--press-scale)); }
-.pf-modal-actions .pf-btn-login { border: 1px solid transparent; padding: 14px; font-weight: 700; border-radius: 12px; transition: background var(--t-fast), transform var(--t-fast), box-shadow var(--t-fast); }
-.pf-modal-actions .pf-btn-login:hover { transform: translateY(-1px) scale(var(--hover-scale)); box-shadow: 0 4px 15px rgba(157,78,221,0.25); }
-.pf-modal-actions .pf-btn-login:active { transform: scale(var(--press-scale)); }
+.pf-modal-actions .pf-btn-secondary:active { transform: none; }
+.pf-modal-actions .pf-btn-danger { background: #220f12; color: #ff6b6b; border: 1px solid rgba(230, 57, 70, 0.25); padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background var(--t-fast), border-color var(--t-fast); box-shadow: none; }
+.pf-modal-actions .pf-btn-danger:hover { background: #2c1317; color: #ff8585; border-color: rgba(230, 57, 70, 0.38); box-shadow: none; transform: none; }
+.pf-modal-actions .pf-btn-danger:active { transform: none; }
+.pf-modal-actions .pf-btn-login { background: #9d4edd; color: #ffffff; border: 1px solid rgba(157, 78, 221, 0.4); padding: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; box-shadow: none; transition: background var(--t-fast), border-color var(--t-fast); }
+.pf-modal-actions .pf-btn-login:hover { background: #ab5df0; border-color: rgba(171, 93, 240, 0.6); box-shadow: none; transform: none; }
+.pf-modal-actions .pf-btn-login:active { background: #8b3dc7; transform: none; }
 
 
 .header-profile-wrap {
