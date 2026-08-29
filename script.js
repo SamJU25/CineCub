@@ -127,9 +127,13 @@ var API = {
   popular:  function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/popular',{page:page||1})); },
   upcoming: function(page){ return API.fetch(API.url('/movie/upcoming',{page:page||1})); },
   anime:    function(page){ return API.fetch(API.url('/discover/tv',{page:page||1, with_genres:16, with_original_language:'ja'})); },
-  search:   function(q, page){ return API.fetch(API.url('/search/multi',{query:q,page:page||1,include_adult:false})); },
-  detail:   function(id,type){ 
-    if(type==='person') return API.fetch(API.url('/person/'+id,{append_to_response:'combined_credits,external_ids'}));
+  detail: async function(id,type){ 
+    if(type==='person') {
+      var res = await API.fetch(API.url('/person/'+id,{append_to_response:'combined_credits,external_ids'}));
+      if (!res) res = await API.fetch(API.url('/person/'+id,{append_to_response:'combined_credits'}));
+      if (!res) res = await API.fetch(API.url('/person/'+id));
+      return res;
+    }
     return API.fetch(API.url('/'+(type||'movie')+'/'+id,{append_to_response:'credits,videos,similar'})); 
   },
   discover: function(type,params){ 
@@ -1368,12 +1372,19 @@ var Modal = {
           fvIcon.classList.toggle('fa-check', alreadyInWl);
           fvIcon.classList.toggle('fa-heart', !alreadyInWl);
         }
+
+        FVTabs.showTab('overview');
+        CustomSelect.init(); // Initialize combobox synchronously for 'watch' tab
       }
 
-      FVTabs.showTab('overview');
-      CustomSelect.init(); // Initialize combobox synchronously for 'watch' tab
       UIHelper.lockScroll();
       document.getElementById('modal-overlay').classList.add('open');
+      var modalOverlay = document.getElementById('modal-overlay');
+      var modalEl = document.getElementById('fv-modal');
+      if (modalOverlay) modalOverlay.scrollTop = 0;
+      if (modalEl) modalEl.scrollTop = 0;
+      initDragScroll();
+      initScrollButtons();
       Prog.done();
     }).catch(err => {
       this.isOpening = false; 
