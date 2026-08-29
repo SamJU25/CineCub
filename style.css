@@ -643,9 +643,10 @@ iframe {border:none}
   color: #fff !important;
 }
 .header-telegram-btn:hover {
-  background: rgba(34, 158, 217, 0.15) !important;
-  color: #229ED9 !important;
-  transform: scale(1.08);
+  background: var(--cv-dark-4) !important;
+  color: var(--cv-purple-light) !important;
+  border-color: var(--cv-purple) !important;
+  transform: translateY(-1px);
 }
 a.telegram-nav-item {
   text-decoration: none !important;
@@ -782,8 +783,8 @@ a.telegram-nav-item {
 .footer-brand-actions {display:flex;align-items:center;gap:10px;margin-top:2px;flex-wrap:nowrap}
 .footer-btn {display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.2px;min-height:38px;cursor:pointer;text-decoration:none !important;transition:all 180ms cubic-bezier(0.16, 1, 0.3, 1);border:1px solid transparent;line-height:1;user-select:none;white-space:nowrap}
 .footer-btn i {font-size:14px;flex-shrink:0}
-.footer-btn-telegram {background:rgba(34, 158, 217, 0.09);color:#38bdf8 !important;border-color:rgba(34, 158, 217, 0.28)}
-.footer-btn-telegram:hover {background:#229ED9;color:#ffffff !important;border-color:#229ED9;transform:translateY(-1px);box-shadow:0 4px 14px rgba(34, 158, 217, 0.35)}
+.footer-btn-telegram {background:rgba(157, 78, 221, 0.09);color:var(--cv-purple-light) !important;border-color:rgba(157, 78, 221, 0.28)}
+.footer-btn-telegram:hover {background:var(--cv-purple);color:#ffffff !important;border-color:var(--cv-purple);transform:translateY(-1px);box-shadow:0 4px 14px rgba(157, 78, 221, 0.35)}
 .footer-btn-app {background:rgba(157, 78, 221, 0.09);color:#d8b4fe !important;border-color:rgba(157, 78, 221, 0.28)}
 .footer-btn-app:hover {background:var(--cv-purple);color:#ffffff !important;border-color:var(--cv-purple);transform:translateY(-1px);box-shadow:0 4px 14px rgba(157, 78, 221, 0.35)}
 .footer-btn:active {transform:scale(0.97)}
