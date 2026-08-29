@@ -19,6 +19,61 @@ var UIHelper = {
 };
 
 /* ================================================================
+   00b. PLAYBACK PROGRESS HELPER
+================================================================ */
+var PlaybackProgress = {
+  get: function(itemId, mediaType, season, episode) {
+    if (!itemId) return null;
+    try {
+      // 1. Check VidLink structured progress data
+      var vlData = JSON.parse(localStorage.getItem('vidLinkProgress') || '{}');
+      var itemData = vlData[itemId];
+      if (itemData) {
+        if (mediaType === 'tv' && itemData.show_progress) {
+          var epKey = 's' + (season || 1) + 'e' + (episode || 1);
+          if (itemData.show_progress[epKey] && itemData.show_progress[epKey].progress) {
+            var watched = itemData.show_progress[epKey].progress.watched || 0;
+            var dur = itemData.show_progress[epKey].progress.duration || 0;
+            if (dur > 0) return Math.min(100, Math.max(1, Math.round((watched / dur) * 100)));
+          }
+        } else if (itemData.progress) {
+          var watched = itemData.progress.watched || 0;
+          var dur = itemData.progress.duration || 0;
+          if (dur > 0) return Math.min(100, Math.max(1, Math.round((watched / dur) * 100)));
+        }
+      }
+      // 2. Check unified local storage store
+      var store = JSON.parse(localStorage.getItem('sh_progress_store') || '{}');
+      var key = mediaType === 'tv' ? (itemId + '_s' + (season || 1) + 'e' + (episode || 1)) : String(itemId);
+      if (store[key] && typeof store[key].pct === 'number' && store[key].pct > 0) {
+        return Math.min(100, Math.max(1, store[key].pct));
+      }
+    } catch(e) {}
+    return null;
+  },
+  save: function(itemId, mediaType, season, episode, currentTime, duration, pct) {
+    if (!itemId) return;
+    try {
+      var calculatedPct = pct;
+      if (calculatedPct === undefined && duration > 0) {
+        calculatedPct = Math.min(100, Math.max(1, Math.round((currentTime / duration) * 100)));
+      }
+      var store = JSON.parse(localStorage.getItem('sh_progress_store') || '{}');
+      var key = mediaType === 'tv' ? (itemId + '_s' + (season || 1) + 'e' + (episode || 1)) : String(itemId);
+      store[key] = {
+        currentTime: currentTime || 0,
+        duration: duration || 0,
+        pct: calculatedPct || 0,
+        updatedAt: Date.now()
+      };
+      var keys = Object.keys(store);
+      if (keys.length > 150) delete store[keys[0]];
+      localStorage.setItem('sh_progress_store', JSON.stringify(store));
+    } catch(e) {}
+  }
+};
+
+/* ================================================================
    01. CONFIGURATION
 ================================================================ */
 const CFG = {
@@ -1062,37 +1117,27 @@ var Render = {
     var e = item.episode;
     var epLabel = (mType === 'tv' && s && e) ? 'S' + s + ' E' + e : (mType === 'tv' ? 'TV Series' : 'Movie');
     
-    var progressPct = 35;
-    try {
-      var vlData = JSON.parse(localStorage.getItem('vidLinkProgress') || '{}');
-      var itemData = vlData[item.id];
-      if (itemData) {
-        if (mType === 'tv' && itemData.show_progress) {
-          var epKey = 's' + (s || 1) + 'e' + (e || 1);
-          if (itemData.show_progress[epKey] && itemData.show_progress[epKey].progress) {
-            var watched = itemData.show_progress[epKey].progress.watched || 0;
-            var dur = itemData.show_progress[epKey].progress.duration || 1;
-            if (dur > 0) progressPct = Math.min(100, Math.max(5, Math.round((watched / dur) * 100)));
-          }
-        } else if (mType === 'movie' && itemData.progress) {
-          var watched = itemData.progress.watched || 0;
-          var dur = itemData.progress.duration || 1;
-          if (dur > 0) progressPct = Math.min(100, Math.max(5, Math.round((watched / dur) * 100)));
-        }
-      }
-    } catch(err){}
+    var progressPct = PlaybackProgress.get(item.id, mType, s, e);
+    var hasProgress = (progressPct !== null && progressPct > 0);
+    
+    var metaText = '';
+    if (hasProgress) {
+      metaText = progressPct + '% watched';
+    } else {
+      metaText = (mType === 'tv' && s && e) ? ('Resume S' + s + ' E' + e) : 'Recently Watched';
+    }
 
     return '<div class="poster-card cw-card" onclick="Modal.openFull(' + item.id + ', ' + Utils.jsAttr(mType) + ')">'
       + '<div class="poster-card-img-wrap">'
       + '<img class="poster-card-img" src="' + img + '" loading="lazy" decoding="async" alt="' + Utils.escape(title) + '" onerror="this.src=Utils.placeholder()"/>'
       + '<div class="poster-card-grad"></div>'
-      + '<div class="cw-progress-overlay"><div class="cw-progress-bar"><div class="cw-progress-fill" style="width:' + progressPct + '%;"></div></div></div>'
+      + (hasProgress ? '<div class="cw-progress-overlay"><div class="cw-progress-bar"><div class="cw-progress-fill" style="width:' + progressPct + '%;"></div></div></div>' : '')
       + '<div class="pc-play-wrap"><div class="pc-play-btn"><i class="fas fa-play"></i></div></div>'
       + '<div class="poster-card-top"><span class="pc-badge pc-badge-quality" style="background:rgba(0,0,0,0.75);">' + epLabel + '</span></div>'
       + '</div>'
       + '<div class="poster-card-info" style="opacity:1; transform:none; background:linear-gradient(0deg, rgba(0,0,0,0.85) 0%, transparent 100%);">'
       + '<div class="pc-title">' + Utils.escape(title) + '</div>'
-      + '<div class="pc-meta"><span style="color:var(--cv-purple-light); font-weight:700;">' + progressPct + '% watched</span></div>'
+      + '<div class="pc-meta"><span style="color:var(--cv-purple-light); font-weight:700;">' + metaText + '</span></div>'
       + '</div>'
       + '</div>';
   }
@@ -1989,6 +2034,13 @@ var AdFreePlayer = {
       this.hls = null;
     }
     
+    video.ontimeupdate = function() {
+      if (!video.duration || video.duration <= 0 || !State.activeId) return;
+      var s = (State.activeType === 'tv') ? Number(document.getElementById('ep-season-adfree')?.value || 1) : null;
+      var e = (State.activeType === 'tv') ? Number(document.getElementById('ep-episode-adfree')?.value || 1) : null;
+      PlaybackProgress.save(State.activeId, State.activeType, s, e, video.currentTime, video.duration);
+    };
+
     if (type === 'm3u8' && typeof Hls !== 'undefined' && Hls.isSupported()) {
       this.hls = new Hls({ xhrSetup: function(xhr) { xhr.timeout = 15000; } });
       this.hls.loadSource(url);
@@ -2471,7 +2523,13 @@ window.addEventListener('message', (event) => {
   }
 
   if (event.data?.type === 'PLAYER_EVENT') {
-    const { event: eventType, currentTime, duration } = event.data.data;
+    const { event: eventType, currentTime, duration } = event.data.data || {};
+    
+    if (currentTime !== undefined && duration > 0 && State.activeId) {
+      var s = (State.activeType === 'tv') ? Number(document.getElementById('ep-season')?.value || 1) : null;
+      var e = (State.activeType === 'tv') ? Number(document.getElementById('ep-episode')?.value || 1) : null;
+      PlaybackProgress.save(State.activeId, State.activeType, s, e, currentTime, duration);
+    }
     
     if (eventType === 'timeupdate' && State.activeType === 'tv') {
       var timeLeft = duration - currentTime;
