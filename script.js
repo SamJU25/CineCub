@@ -2144,3 +2144,41 @@ window.addEventListener('click', function(event) {
     closeAppsModal();
   }
 });
+
+/* ================================================================ 
+   FAQ ACCORDION ANIMATION
+================================================================ */
+function initFAQAccordion() {
+  document.querySelectorAll('.faq-item').forEach(details => {
+    const summary = details.querySelector('.faq-summary');
+    if (!summary || summary.dataset.faqInit) return;
+    summary.dataset.faqInit = 'true';
+
+    summary.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (details.classList.contains('is-animating')) return;
+
+      if (details.open) {
+        // Smooth collapse
+        details.classList.add('is-closing', 'is-animating');
+        setTimeout(() => {
+          details.removeAttribute('open');
+          details.classList.remove('is-closing', 'is-animating');
+        }, 240);
+      } else {
+        // Smooth expand
+        details.setAttribute('open', '');
+        details.classList.add('is-animating');
+        setTimeout(() => {
+          details.classList.remove('is-animating');
+        }, 240);
+      }
+    });
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initFAQAccordion);
+} else {
+  initFAQAccordion();
+}
