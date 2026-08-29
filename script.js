@@ -455,59 +455,6 @@ var App = {
     if(navigator.share){navigator.share({title:title,text:'Watch '+title+' on StreamHeaven',url:shareUrl}).catch(function(err){if(err&&err.name!=='AbortError')fallback();});}
     else if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(shareUrl).then(function(){Toast.show('Link copied to clipboard.','success');}).catch(fallback);}
     else fallback();
-  },
-  openRequestModal: function(){
-    if(typeof Sidebar !== 'undefined' && Sidebar.close) Sidebar.close();
-    var modal = document.getElementById('modal-request');
-    if(modal) {
-      modal.style.display = 'flex';
-      if(typeof CustomSelect !== 'undefined') CustomSelect.init();
-      var input = document.getElementById('req-title');
-      if(input) setTimeout(function(){ input.focus(); }, 100);
-    }
-  },
-  closeRequestModal: function(){
-    var modal = document.getElementById('modal-request');
-    if(modal) modal.style.display = 'none';
-  },
-  submitRequest: function(e){
-    if(e) e.preventDefault();
-    var titleEl = document.getElementById('req-title');
-    var typeEl = document.getElementById('req-type');
-    var notesEl = document.getElementById('req-notes');
-    var title = titleEl ? titleEl.value.trim() : '';
-    var type = typeEl ? typeEl.value : 'movie';
-    var notes = notesEl ? notesEl.value.trim() : '';
-    if(!title) return;
-    
-    var btn = document.getElementById('btn-submit-request');
-    if(btn) {
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-    }
-    
-    try {
-      if(typeof db !== 'undefined' && db) {
-        db.collection('title_requests').add({
-          title: title,
-          type: type,
-          notes: notes,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          user: (typeof currentUser !== 'undefined' && currentUser) ? currentUser.email : 'guest'
-        }).catch(function(err){ console.warn('Request save warning:', err); });
-      }
-    } catch(err){}
-    
-    setTimeout(function(){
-      if(btn) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request';
-      }
-      if(titleEl) titleEl.value = '';
-      if(notesEl) notesEl.value = '';
-      App.closeRequestModal();
-      Toast.show('Thank you! Your request for "' + title + '" has been received.', 'success');
-    }, 500);
   }
 };
 

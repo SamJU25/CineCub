@@ -171,7 +171,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=197" rel="stylesheet">
+  <link href="style.css?v=198" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -236,10 +236,6 @@
         <span class="nav-item-icon"><i class="fas fa-download"></i></span>
         <span class="nav-item-text">Get App</span>
         <span class="nav-badge">APK</span>
-      </div>
-      <div class="nav-item" id="nav-request" onclick="App.openRequestModal()" title="Request a Movie or TV Show">
-        <span class="nav-item-icon" style="color:var(--cv-purple-light);"><i class="fas fa-plus-circle"></i></span>
-        <span class="nav-item-text">Request Title</span>
       </div>
     </nav>
       <div class="cv-sidebar-bottom">
@@ -336,20 +332,6 @@
             <div class="stat-icon"><i class="fas fa-video"></i></div>
             <div><div class="stat-value">4K</div><div class="stat-label">Ultra HD Quality</div></div>
           </div>
-        </div>
-
-        <!-- TELEGRAM COMMUNITY BANNER -->
-        <div class="telegram-banner-card">
-          <div class="tg-banner-left">
-            <div class="tg-banner-icon"><i class="fab fa-telegram-plane"></i></div>
-            <div class="tg-banner-text">
-              <h3>Join Our Official Telegram Channel</h3>
-              <p>Get instant updates on latest HD releases, request movies &amp; series, and get mirror domain alerts.</p>
-            </div>
-          </div>
-          <a href="https://t.me/StreamHeavenOnline" target="_blank" rel="noopener noreferrer" class="tg-banner-btn">
-            <i class="fab fa-telegram-plane"></i> Join @StreamHeavenOnline
-          </a>
         </div>
 
         <!-- CONTINUE WATCHING SECTION -->
@@ -629,6 +611,14 @@
               <span style="font-family:'Nunito', sans-serif; font-weight:800; font-size:28px; color:#ffffff; letter-spacing:-0.5px;">StreamHeaven</span>
             </div>
             <p class="footer-desc">Your ultimate high-definition destination for movies, TV series, anime, and classics. Discover trending cinema anytime, anywhere.</p>
+            <div class="footer-brand-actions">
+              <a href="https://t.me/StreamHeavenOnline" target="_blank" rel="noopener noreferrer" class="footer-btn footer-btn-telegram" title="Join StreamHeaven Telegram">
+                <i class="fab fa-telegram-plane"></i> Join Telegram
+              </a>
+              <button onclick="openAppsModal()" class="footer-btn footer-btn-app" title="Download StreamHeaven App">
+                <i class="fas fa-download"></i> Get App
+              </button>
+            </div>
           </div>
           <div>
             <h3 class="footer-col-title">Navigation</h3>
@@ -661,7 +651,6 @@
             <h3 class="footer-col-title">Connect &amp; Contact</h3>
             <div class="footer-links">
               <a href="https://t.me/StreamHeavenOnline" target="_blank" rel="noopener noreferrer" class="footer-link" style="text-decoration:none;"><i class="fab fa-telegram-plane" style="width:16px; color:#229ED9;"></i> Telegram Channel</a>
-              <span class="footer-link" onclick="App.openRequestModal()"><i class="fas fa-plus-circle" style="width:16px; color:var(--cv-purple-light);"></i> Request a Title</span>
               <a href="https://www.facebook.com/share/1FeeHdgbtJ/" target="_blank" rel="noopener noreferrer" class="footer-link" style="text-decoration:none;"><i class="fab fa-facebook" style="width:16px;"></i> Facebook</a>
               <a href="https://x.com/StreamHeaven26" target="_blank" rel="noopener noreferrer" class="footer-link" style="text-decoration:none;"><i class="fa-brands fa-x-twitter" style="width:16px;"></i> X (Twitter)</a>
               <a href="https://www.instagram.com/streamheaven.me?igsi=NmRmd2N3NWJxMHRo" target="_blank" rel="noopener noreferrer" class="footer-link" style="text-decoration:none;"><i class="fab fa-instagram" style="width:16px;"></i> Instagram</a>
@@ -1065,7 +1054,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=34"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=197"></script>
+  <script src="script.js?v=198"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -1135,56 +1124,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- REQUEST A TITLE MODAL -->
-  <div id="modal-request" class="cv-modal">
-    <div class="cv-modal-content apps-modal-card" style="max-width: 440px;">
-      <span class="cv-modal-close" onclick="App.closeRequestModal()" style="font-size: 0.9rem; font-weight: 500; top: 25px; right: 25px;">Close</span>
-      
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
-        <div style="width:42px; height:42px; border-radius:12px; background:var(--cv-purple-dim); color:var(--cv-purple-light); display:flex; align-items:center; justify-content:center; font-size:18px;">
-          <i class="fas fa-plus-circle"></i>
-        </div>
-        <div>
-          <h2 style="font-size:1.25rem; font-weight:800; color:#fff; margin:0;">Request a Title</h2>
-          <p style="font-size:12px; color:var(--text-3); margin:0;">Can't find a specific movie or series?</p>
-        </div>
-      </div>
-      
-      <form onsubmit="App.submitRequest(event)" class="auth-form" style="margin-top:16px;">
-        <div class="auth-field">
-          <label>Movie, Show, or Anime Name *</label>
-          <div class="auth-input-wrap">
-            <input type="text" id="req-title" required placeholder="e.g. Inception, Attack on Titan..." autocomplete="off">
-            <i class="fas fa-film input-icon"></i>
-          </div>
-        </div>
-
-        <div class="auth-field">
-          <label>Media Type</label>
-          <div class="custom-select" style="width:100%;">
-            <select id="req-type">
-              <option value="movie">Movie</option>
-              <option value="tv">TV Series</option>
-              <option value="anime">Anime</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="auth-field">
-          <label>Release Year / Notes (Optional)</label>
-          <div class="auth-input-wrap">
-            <input type="text" id="req-notes" placeholder="e.g. 2024, Season 2, English Dub" autocomplete="off">
-            <i class="fas fa-comment-alt input-icon"></i>
-          </div>
-        </div>
-
-        <button type="submit" class="auth-btn-primary" id="btn-submit-request" style="margin-top:16px;">
-          <i class="fas fa-paper-plane"></i> Submit Request
-        </button>
-      </form>
     </div>
   </div>
 

@@ -758,6 +758,13 @@ a.telegram-nav-item {
 .footer-logo {display:flex;align-items:center;gap:12px;font-size:16px;font-weight:900;letter-spacing:1px;color:var(--text-1)}
 .footer-logo img {height:28px}
 .footer-desc {font-size:12px;color:var(--text-3);line-height:1.6;max-width:280px}
+.footer-brand-actions {display:flex;align-items:center;gap:10px;margin-top:2px;flex-wrap:wrap}
+.footer-btn {display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:var(--r-pill);font-size:12px;font-weight:700;cursor:pointer;text-decoration:none !important;transition:transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard), filter var(--motion-fast) var(--ease-standard);border:1px solid transparent}
+.footer-btn-telegram {background:linear-gradient(135deg, rgba(34, 158, 217, 0.15) 0%, rgba(34, 158, 217, 0.28) 100%);color:#229ED9 !important;border-color:rgba(34, 158, 217, 0.45)}
+.footer-btn-telegram:hover {background:#229ED9;color:#ffffff !important;transform:translateY(-2px);box-shadow:0 6px 20px rgba(34, 158, 217, 0.45)}
+.footer-btn-app {background:var(--cv-purple-dim);color:var(--cv-purple-light) !important;border-color:rgba(199, 125, 255, 0.35)}
+.footer-btn-app:hover {background:var(--grad-primary);color:#ffffff !important;transform:translateY(-2px);box-shadow:0 6px 20px rgba(157, 78, 221, 0.45)}
+.footer-btn:active {transform:scale(var(--press-scale))}
 .footer-col-title {font-size:12px;font-weight:800;color:var(--text-1);text-transform:uppercase;margin-bottom:20px;letter-spacing:1px}
 .footer-links {display:flex;flex-direction:column;gap:14px}
 .footer-link {font-size:12px;color:var(--text-3);cursor:pointer;transition:var(--t-fast)}
