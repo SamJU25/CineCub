@@ -713,7 +713,6 @@ var Spotlight = {
     if(!data || !data.length) return;
     this.items = data;
     var t = document.getElementById('spotlight-track');
-    var th = document.getElementById('spotlight-thumbstrip');
     var d = document.getElementById('spotlight-dots');
     t.innerHTML = data.map((x,i) => {
       var type = x.media_type||(x.title?'movie':'tv');
@@ -743,16 +742,18 @@ var Spotlight = {
         + '</div></div></div>';
     }).join('');
     
-    th.innerHTML = data.map((x,i) => '<div class="spotlight-thumb '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')"><img alt="Spotlight Thumbnail" src="'+CFG.IMG185+x.backdrop_path+'" loading="lazy" decoding="async" onerror="this.src=Utils.placeholder()"/></div>').join('');
-    d.innerHTML = data.map((x,i) => '<div class="spotlight-dot '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')"></div>').join('');
-    this.goTo(0); this.startAuto();
+    if(d) {
+      d.innerHTML = data.map((x,i) => '<div class="spotlight-dot '+(i===0?'active':'')+'" onclick="Spotlight.goTo('+i+')" title="Slide '+(i+1)+'"></div>').join('');
+    }
+    this.initSwipe();
+    this.goTo(0);
+    this.startAuto();
   },
   goTo: function(idx){
     this.current = idx;
     var tr = document.getElementById('spotlight-track');
     if(tr) tr.style.transform = 'translateX(-'+(idx*100)+'%)';
     document.querySelectorAll('.spotlight-slide').forEach((s,i) => s.classList.toggle('active', i===idx));
-    document.querySelectorAll('.spotlight-thumb').forEach((t,i) => t.classList.toggle('active', i===idx));
     document.querySelectorAll('.spotlight-dot').forEach((d,i) => d.classList.toggle('active', i===idx));
     this.resetProgress();
   },
@@ -768,6 +769,27 @@ var Spotlight = {
     pb.classList.remove('animating');
     void pb.offsetWidth;
     pb.classList.add('animating');
+  },
+  initSwipe: function(){
+    var section = document.getElementById('spotlight-section');
+    if(!section || section.dataset.swipeInit === 'true') return;
+    section.dataset.swipeInit = 'true';
+    var touchStartX = 0, touchEndX = 0;
+    section.addEventListener('touchstart', function(e){
+      if(e.changedTouches && e.changedTouches.length) {
+        touchStartX = e.changedTouches[0].screenX;
+      }
+    }, {passive: true});
+    section.addEventListener('touchend', function(e){
+      if(e.changedTouches && e.changedTouches.length) {
+        touchEndX = e.changedTouches[0].screenX;
+        var diff = touchStartX - touchEndX;
+        if(Math.abs(diff) > 45){
+          if(diff > 0) Spotlight.next();
+          else Spotlight.prev();
+        }
+      }
+    }, {passive: true});
   }
 };
 

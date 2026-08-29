@@ -79,7 +79,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=162" rel="stylesheet">
+  <link href="style.css?v=163" rel="stylesheet">
 </head>
 <body>
 
@@ -198,14 +198,9 @@
       <!-- HERO SPOTLIGHT -->
       <section class="spotlight-section" id="spotlight-section">
         <div class="spotlight-track" id="spotlight-track"></div>
-        <div class="spotlight-right-col">
-          <div class="spotlight-thumbstrip" id="spotlight-thumbstrip"></div>
-          <div class="spotlight-controls">
-            <button aria-label="Previous slide" class="spotlight-arrow" onclick="Spotlight.prev()"><i class="fas fa-chevron-left"></i></button>
-            <div class="spotlight-dots" id="spotlight-dots"></div>
-            <button aria-label="Next slide" class="spotlight-arrow" onclick="Spotlight.next()"><i class="fas fa-chevron-right"></i></button>
-          </div>
-        </div>
+        <button aria-label="Previous slide" class="spotlight-nav-btn prev" onclick="Spotlight.prev()"><i class="fas fa-chevron-left"></i></button>
+        <button aria-label="Next slide" class="spotlight-nav-btn next" onclick="Spotlight.next()"><i class="fas fa-chevron-right"></i></button>
+        <div class="spotlight-dots" id="spotlight-dots"></div>
         <div class="spotlight-progress"><div class="spotlight-progress-bar" id="spotlight-progress-bar"></div></div>
       </section>
 
@@ -791,7 +786,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=32"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=162"></script>
+  <script src="script.js?v=163"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
