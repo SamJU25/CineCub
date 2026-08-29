@@ -178,7 +178,18 @@ var API = {
     return await promise;
   },
   trending: function(type, page, timeWindow){ return API.fetch(API.url('/trending/'+(type||'all')+'/'+(timeWindow||'day'),{page:page||1})); },
-  topRated: function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/top_rated',{page:page||1})); },
+  topRated: function(type, page){ 
+    var isTv = type === 'tv';
+    var todayStr = new Date().toISOString().split('T')[0];
+    var params = {
+      page: page || 1,
+      sort_by: 'vote_average.desc',
+      'vote_count.gte': isTv ? 1000 : 2500
+    };
+    if (isTv) params['first_air_date.lte'] = todayStr;
+    else params['primary_release_date.lte'] = todayStr;
+    return API.discover(isTv ? 'tv' : 'movie', params);
+  },
   popular:  function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/popular',{page:page||1})); },
   upcoming: function(page){ return API.fetch(API.url('/movie/upcoming',{page:page||1})); },
   anime:    function(page){ return API.fetch(API.url('/discover/tv',{page:page||1, with_genres:16, with_original_language:'ja'})); },
@@ -2610,7 +2621,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
     /* 5. Top Rated Films */
     if(rtd && rtd.results){
-      document.getElementById('grid-toprated').innerHTML = rtd.results.slice(0,8).map(x => Render.landscapeCard(x,'movie')).join('');
+      var rtdFiltered = rtd.results.filter(function(x){ return x.backdrop_path; });
+      document.getElementById('grid-toprated').innerHTML = rtdFiltered.slice(0,8).map(x => Render.landscapeCard(x,'movie')).join('');
     }
 
     /* 6. TV Series */
