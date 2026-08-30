@@ -203,7 +203,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=281" rel="stylesheet">
+  <link href="style.css?v=282" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -911,8 +911,17 @@
 
         <!-- Watch Streaming Pane -->
         <div class="fv-tab-pane" id="tab-watch">
-          <!-- Server Selection -->
+          <!-- Stream Source Mode Switch (Visible in Native App Environment) -->
+          <div class="stream-source-switch" id="stream-source-switch">
+            <button type="button" class="src-mode-btn active" id="src-mode-cloud" onclick="Player.setSourceMode('cloud')"><i class="fas fa-cloud"></i> Cloud Servers (Fast)</button>
+            <button type="button" class="src-mode-btn" id="src-mode-direct" onclick="Player.setSourceMode('direct')"><i class="fas fa-bolt"></i> Direct Stream</button>
+          </div>
+
+          <!-- Server Selection for Cloud Servers -->
           <div class="server-tabs" id="server-tabs"></div>
+
+          <!-- Server Selection for Direct Streams (Render Backend) -->
+          <div class="server-tabs" id="server-tabs-direct" style="display:none;"></div>
           
           <!-- Controls for TV (Next/Prev) -->
           <div class="ep-nav" id="ep-nav-controls" style="display:none;">
@@ -931,8 +940,9 @@
           </div>
           
           <!-- Responsive Video Player -->
-          <div class="player-wrap">
+          <div class="player-wrap" id="player-wrap-main">
             <iframe allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write" allowfullscreen id="main-player" scrolling="no"></iframe>
+            <video id="native-player-watch" controls playsinline style="width:100%; height:100%; position:absolute; top:0; left:0; background:#000; display:none; z-index:2; border-radius:inherit;"></video>
             
             <!-- UP NEXT TOAST -->
             <div id="up-next-toast" class="hidden">
@@ -941,11 +951,9 @@
             </div>
           </div>
           
-          <div style="margin-top:16px; background:var(--cv-dark-4); border:1px solid var(--b-2); border-left:4px solid var(--cv-purple); border-radius:var(--r-sm); padding:14px; font-size:13px; color:var(--text-2); line-height:1.5;">
-            <strong style="color:var(--text-1);"><i class="fas fa-info-circle" style="color:var(--cv-purple);margin-right:6px;"></i>Player Note:</strong> We do not host or control these video players. If you experience pop-up ads or redirects, simply close the new tab and click play again. For an ad-free experience, try watching in the Ad-Free Watch section!
+          <div class="player-note-box web-only-note">
+            <strong style="color:var(--text-1);"><i class="fas fa-info-circle" style="color:var(--cv-purple);margin-right:6px;"></i>Player Note:</strong> We do not host or control these cloud players. If you experience pop-ups on web, try the <strong>Ad-Free Watch</strong> tab or <a href="javascript:void(0)" onclick="openAppsModal()" style="color:var(--cv-purple);text-decoration:underline;font-weight:600;"><i class="fab fa-android"></i> Download our free Android App</a> for 100% automatic ad & redirect blocking on all servers!
           </div>
-
-          
 
         </div>
 
@@ -1150,7 +1158,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=39"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=281"></script>
+  <script src="script.js?v=282"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

@@ -2594,3 +2594,66 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
     scroll-behavior: auto !important;
   }
 }
+
+/* ================================================================ 
+   ENVIRONMENT-AWARE STREAM PLAYER STYLES (APP VS WEB)
+================================================================ */
+.stream-source-switch {
+  display: none;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.is-app-env .stream-source-switch {
+  display: flex !important;
+}
+
+.is-app-env .fv-tab[onclick*="watch_adfree"] {
+  display: none !important;
+}
+
+.is-app-env .web-only-note {
+  display: none !important;
+}
+
+.src-mode-btn {
+  flex: 1;
+  padding: 9px 14px;
+  background: var(--cv-dark-4);
+  border: 1px solid var(--b-2);
+  border-radius: var(--r-pill);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.src-mode-btn:hover {
+  border-color: var(--cv-purple-dim);
+  color: var(--text-1);
+}
+
+.src-mode-btn.active {
+  background: var(--cv-gradient-1);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 2px 10px rgba(181, 95, 230, 0.35);
+}
+
+.player-note-box {
+  margin-top: 16px;
+  background: var(--cv-dark-4);
+  border: 1px solid var(--b-2);
+  border-left: 4px solid var(--cv-purple);
+  border-radius: var(--r-sm);
+  padding: 14px;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+

@@ -1782,6 +1782,21 @@ var Modal = {
       adFreeVideo.removeAttribute('src');
       adFreeVideo.load();
     }
+    var watchNativeVideo = document.getElementById('native-player-watch');
+    if (watchNativeVideo) {
+      watchNativeVideo.pause();
+      watchNativeVideo.removeAttribute('src');
+      watchNativeVideo.load();
+      watchNativeVideo.style.display = 'none';
+    }
+    if (typeof Player !== 'undefined' && Player.directHls) {
+      Player.directHls.destroy();
+      Player.directHls = null;
+    }
+    if (typeof Player !== 'undefined' && Player.directCheckWakeup) {
+      clearInterval(Player.directCheckWakeup);
+      Player.directCheckWakeup = null;
+    }
     if (typeof AdFreePlayer !== 'undefined') {
       if (AdFreePlayer.hls) {
         AdFreePlayer.hls.destroy();
@@ -2134,6 +2149,17 @@ var Modal = {
         }
 
         FVTabs.showTab('overview');
+        if (typeof Player !== 'undefined') {
+          Player.sourceMode = 'cloud';
+          var btnCloud = document.getElementById('src-mode-cloud');
+          var btnDirect = document.getElementById('src-mode-direct');
+          var sTabsCloud = document.getElementById('server-tabs');
+          var sTabsDirect = document.getElementById('server-tabs-direct');
+          if (btnCloud) btnCloud.classList.add('active');
+          if (btnDirect) btnDirect.classList.remove('active');
+          if (sTabsCloud) sTabsCloud.style.display = 'block';
+          if (sTabsDirect) sTabsDirect.style.display = 'none';
+        }
         try { CustomSelect.init(); } catch(e){}
       }
 
@@ -2181,10 +2207,251 @@ var Modal = {
 };
 
 var Player = {
+  sourceMode: 'cloud',
+  directHls: null,
+  directCheckWakeup: null,
+  directStreams: null,
+  directCache: new Map(),
+
+  setSourceMode: function(mode) {
+    this.sourceMode = mode;
+    var btnCloud = document.getElementById('src-mode-cloud');
+    var btnDirect = document.getElementById('src-mode-direct');
+    var sTabsCloud = document.getElementById('server-tabs');
+    var sTabsDirect = document.getElementById('server-tabs-direct');
+    var iframe = document.getElementById('main-player');
+    var nativeVideo = document.getElementById('native-player-watch');
+
+    if (mode === 'direct') {
+      if (btnCloud) btnCloud.classList.remove('active');
+      if (btnDirect) btnDirect.classList.add('active');
+      if (sTabsCloud) sTabsCloud.style.display = 'none';
+      if (sTabsDirect) sTabsDirect.style.display = 'block';
+
+      if (iframe) {
+        iframe.src = 'about:blank';
+        iframe.style.display = 'none';
+      }
+      if (nativeVideo) nativeVideo.style.display = 'block';
+      this.loadDirectVideo();
+    } else {
+      if (btnDirect) btnDirect.classList.remove('active');
+      if (btnCloud) btnCloud.classList.add('active');
+      if (sTabsDirect) sTabsDirect.style.display = 'none';
+      if (sTabsCloud) sTabsCloud.style.display = 'block';
+
+      if (nativeVideo) {
+        nativeVideo.pause();
+        nativeVideo.removeAttribute('src');
+        nativeVideo.load();
+        nativeVideo.style.display = 'none';
+      }
+      if (this.directHls) {
+        this.directHls.destroy();
+        this.directHls = null;
+      }
+      if (iframe) iframe.style.display = 'block';
+      this.loadVideo();
+    }
+  },
+
   switchServer: function(idx){
     State.activeServer = idx;
     this.loadVideo();
   },
+
+  switchDirectServer: function(idx) {
+    var s = this.directStreams ? this.directStreams[idx] : null;
+    if (!s) return;
+    var streamType = 'm3u8';
+    if (s.title && s.title.toLowerCase().indexOf('mp4') !== -1) streamType = 'mp4';
+    if (s.url && s.url.toLowerCase().indexOf('.mp4') !== -1) streamType = 'mp4';
+    this.playDirectStream(s.url, streamType);
+  },
+
+  loadDirectVideo: function() {
+    var video = document.getElementById('native-player-watch');
+    var sTabs = document.getElementById('server-tabs-direct');
+    if (this.directHls) { this.directHls.destroy(); this.directHls = null; }
+    if (this.directCheckWakeup) { clearInterval(this.directCheckWakeup); this.directCheckWakeup = null; }
+
+    var season = null, episode = null;
+    var apiUrl = '';
+    if (State.activeType === 'tv') {
+      season = Number(document.getElementById('ep-season')?.value || 1);
+      episode = Number(document.getElementById('ep-episode')?.value || 1);
+      apiUrl = 'https://streamheaven-api.onrender.com/api/streams/series/' + State.activeId + '?season=' + season + '&episode=' + episode;
+    } else {
+      apiUrl = 'https://streamheaven-api.onrender.com/api/streams/' + State.activeType + '/' + State.activeId;
+    }
+
+    var cacheKey = State.activeType + '_' + State.activeId + (season ? '_s' + season + 'e' + episode : '');
+    if (this.directCache && this.directCache.has(cacheKey)) {
+      var cachedStreams = this.directCache.get(cacheKey);
+      this.renderDirectServerOptions(cachedStreams);
+      return;
+    }
+
+    var startTime = Date.now();
+    if (sTabs) {
+      sTabs.innerHTML = '<div style="padding:10px; color:var(--text-3);" id="direct-status"><i class="fas fa-circle-notch fa-spin" style="margin-right:8px;"></i> Searching for direct streams...</div>';
+    }
+
+    var self = this;
+    this.directCheckWakeup = setInterval(function() {
+      var statusEl = document.getElementById('direct-status');
+      if (statusEl && (Date.now() - startTime) > 3500) {
+        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px; color:var(--cv-purple);"></i> Waking up stream servers... (this can take ~20s)';
+        statusEl.style.color = 'var(--text-1)';
+      }
+    }, 1000);
+
+    var fetchStreams = function(retries, delay) {
+      return fetch(apiUrl)
+        .then(r => {
+          if (!r.ok && retries > 0) throw new Error('Retry');
+          if (!r.ok) throw new Error('Stream service unavailable');
+          var ct = r.headers.get('content-type') || '';
+          if (ct.indexOf('application/json') === -1 && retries > 0) throw new Error('Retry');
+          if (ct.indexOf('application/json') === -1) throw new Error('Stream service unavailable');
+          return r.json();
+        })
+        .catch(e => {
+          if (e.message === 'Retry' && retries > 0) {
+            var nextDelay = delay || 1200;
+            return new Promise(resolve => setTimeout(resolve, nextDelay)).then(() => fetchStreams(retries - 1, nextDelay + 800));
+          }
+          throw e;
+        });
+    };
+
+    fetchStreams(3)
+      .then(resp => {
+        if (self.directCheckWakeup) { clearInterval(self.directCheckWakeup); self.directCheckWakeup = null; }
+        var streams = resp.streams || resp;
+        if (streams && Array.isArray(streams) && streams.length > 0) {
+          self.directCache.set(cacheKey, streams);
+        }
+        self.renderDirectServerOptions(streams);
+      })
+      .catch(e => {
+        if (self.directCheckWakeup) { clearInterval(self.directCheckWakeup); self.directCheckWakeup = null; }
+        console.error('Direct Stream Fetch Error:', e);
+        if (sTabs) {
+          sTabs.innerHTML = '<div style="padding:10px; color:var(--cv-red);">Direct streams unavailable right now. Try Cloud Servers above!</div>';
+        }
+      });
+  },
+
+  renderDirectServerOptions: function(streams) {
+    var sTabs = document.getElementById('server-tabs-direct');
+    if (!sTabs) return;
+    if (!streams || !streams.length || streams.length === 0) {
+      sTabs.innerHTML = '<div style="padding:10px; color:var(--cv-red);">No direct streams found. Try Cloud Servers above.</div>';
+      return;
+    }
+
+    var html = '<div style="font-size:13px; color:var(--text-2); margin-bottom: 5px; font-weight: 500; margin-left: 2px;">Select Direct Server</div>';
+    html += '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
+    html += '<select id="direct-stream-select" onchange="Player.switchDirectServer(this.value)">';
+    this.directStreams = streams;
+    streams.forEach((s, idx) => {
+       var sName = typeof AdFreePlayer !== 'undefined' ? AdFreePlayer.formatServerName(s, idx, streams) : ('Server ' + (idx + 1));
+       html += '<option value="'+idx+'">' + sName + '</option>';
+    });
+    html += '</select></div></div></div>';
+
+    sTabs.className = '';
+    sTabs.innerHTML = html;
+    CustomSelect.init();
+    this.switchDirectServer(0);
+  },
+
+  playDirectStream: function(url, type) {
+    var video = document.getElementById('native-player-watch');
+    var wrap = document.getElementById('player-wrap-main');
+    if (!video || !wrap) return;
+    video.style.display = 'block';
+    wrap.classList.add('is-loading');
+    var stopLoading = function(){ wrap.classList.remove('is-loading'); };
+    video.addEventListener('playing', stopLoading, { once: true });
+    video.addEventListener('canplay', stopLoading, { once: true });
+    video.addEventListener('error', stopLoading, { once: true });
+    setTimeout(stopLoading, 12000);
+
+    if (this.directHls) {
+      this.directHls.destroy();
+      this.directHls = null;
+    }
+
+    video.ontimeupdate = function() {
+      if (!video.duration || video.duration <= 0 || !State.activeId) return;
+      var s = (State.activeType === 'tv') ? Number(document.getElementById('ep-season')?.value || 1) : null;
+      var e = (State.activeType === 'tv') ? Number(document.getElementById('ep-episode')?.value || 1) : null;
+      PlaybackProgress.save(State.activeId, State.activeType, s, e, video.currentTime, video.duration);
+    };
+
+    var savedSeconds = 0;
+    try {
+      var sNum = (State.activeType === 'tv') ? Number(document.getElementById('ep-season')?.value || 1) : null;
+      var eNum = (State.activeType === 'tv') ? Number(document.getElementById('ep-episode')?.value || 1) : null;
+      var vlData = JSON.parse(localStorage.getItem('vidLinkProgress') || '{}');
+      var itemData = vlData[State.activeId];
+      if (itemData) {
+        if (State.activeType === 'tv' && itemData.show_progress) {
+          var epKey = 's' + (sNum || 1) + 'e' + (eNum || 1);
+          if (itemData.show_progress[epKey] && itemData.show_progress[epKey].progress) {
+            savedSeconds = itemData.show_progress[epKey].progress.watched || 0;
+          }
+        } else if (itemData.progress) {
+          savedSeconds = itemData.progress.watched || 0;
+        }
+      }
+    } catch(err){}
+
+    var hasSeeked = false;
+    var applySavedTime = function() {
+      if (!hasSeeked && savedSeconds > 0 && video.duration && savedSeconds < video.duration - 30) {
+        hasSeeked = true;
+        try { video.currentTime = savedSeconds; } catch(e){}
+      }
+    };
+    video.addEventListener('loadedmetadata', applySavedTime, { once: true });
+    video.addEventListener('canplay', applySavedTime, { once: true });
+
+    if (type === 'm3u8' && typeof Hls !== 'undefined' && Hls.isSupported()) {
+      this.directHls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        backBufferLength: 30,
+        maxBufferLength: 20,
+        maxMaxBufferLength: 40,
+        maxBufferSize: 30 * 1000 * 1000,
+        manifestLoadingTimeOut: 10000,
+        manifestLoadingMaxRetry: 3,
+        levelLoadingTimeOut: 10000,
+        fragLoadingTimeOut: 15000,
+        xhrSetup: function(xhr) { xhr.timeout = 15000; }
+      });
+      this.directHls.loadSource(url);
+      this.directHls.attachMedia(video);
+      this.directHls.on(Hls.Events.MANIFEST_PARSED, function() {
+        video.play().catch(e => console.log('Autoplay prevented', e));
+        applySavedTime();
+      });
+      this.directHls.on(Hls.Events.ERROR, function(event, data) {
+        if (data.fatal) {
+          stopLoading();
+          console.error('Direct HLS Fatal Error:', data.type, data.details);
+        }
+      });
+    } else {
+      video.src = url;
+      video.play().catch(e => console.log('Autoplay prevented', e));
+      applySavedTime();
+    }
+  },
+
   updateEpisodes: function() {
     if (State.activeType !== 'tv' || !State.activeData || !State.activeData.seasons) return;
     var sSelect = document.getElementById('ep-season');
@@ -2204,6 +2471,7 @@ var Player = {
     if (currentEp <= count) eSelect.value = currentEp;
     CustomSelect.init();
   },
+
   nextEpisode: function(){
     if(State.activeType !== 'tv') return;
     var sSelect = document.getElementById('ep-season');
@@ -2224,8 +2492,13 @@ var Player = {
     } else {
       eSelect.value = e + 1;
     }
-    this.loadVideo();
+    if (this.sourceMode === 'direct') {
+      this.loadDirectVideo();
+    } else {
+      this.loadVideo();
+    }
   },
+
   prevEpisode: function(){
     if(State.activeType !== 'tv') return;
     var sSelect = document.getElementById('ep-season');
@@ -2245,12 +2518,31 @@ var Player = {
     } else {
       eSelect.value = e - 1;
     }
-    this.loadVideo();
+    if (this.sourceMode === 'direct') {
+      this.loadDirectVideo();
+    } else {
+      this.loadVideo();
+    }
   },
+
   loadVideo: function(){
+    var nativeVideo = document.getElementById('native-player-watch');
+    if (nativeVideo) {
+      nativeVideo.pause();
+      nativeVideo.removeAttribute('src');
+      nativeVideo.load();
+      nativeVideo.style.display = 'none';
+    }
+    if (this.directHls) {
+      this.directHls.destroy();
+      this.directHls = null;
+    }
+
     var iframe = document.getElementById('main-player');
-    iframe.style.display = 'block';
-    iframe.removeAttribute('sandbox');
+    if (iframe) {
+      iframe.style.display = 'block';
+      iframe.removeAttribute('sandbox');
+    }
 
     var s=CFG.SERVERS[State.activeServer], url, season=null, episode=null, savedTime=0;
     
@@ -2283,16 +2575,18 @@ var Player = {
       url=s.movie(State.activeId, savedTime ? Math.floor(savedTime) : 0); 
     }
     
-    var wrap = iframe.parentNode;
-    wrap.classList.add('is-loading');
-    iframe.classList.remove('loaded');
-    iframe.onload = function() { 
-      iframe.classList.add('loaded'); 
-      wrap.classList.remove('is-loading');
-    }; 
-    iframe.src = url;
-    // Safety net: hide the spinner if the embed never fires its load event
-    setTimeout(function(){ wrap.classList.remove('is-loading'); }, 12000);
+    if (iframe) {
+      var wrap = iframe.parentNode;
+      wrap.classList.add('is-loading');
+      iframe.classList.remove('loaded');
+      iframe.onload = function() { 
+        iframe.classList.add('loaded'); 
+        wrap.classList.remove('is-loading');
+      }; 
+      iframe.src = url;
+      // Safety net: hide the spinner if the embed never fires its load event
+      setTimeout(function(){ wrap.classList.remove('is-loading'); }, 12000);
+    }
     
     if(State.activeData) History.add(State.activeId,State.activeType,State.activeData.title||State.activeData.name,State.activeData.poster_path,season,episode,State.activeData.vote_average,State.activeData.release_date||State.activeData.first_air_date);
   }
@@ -2679,13 +2973,26 @@ var FVTabs = {
     else document.querySelector('.fv-tab[onclick*="\''+t+'\'"]').classList.add('active');
     document.getElementById('tab-'+t).classList.add('active');
     
-    if(t==='watch') Player.loadVideo();
-    else {
+    if(t==='watch') {
+      if (Player.sourceMode === 'direct') Player.loadDirectVideo();
+      else Player.loadVideo();
+    } else {
       var iframe = document.getElementById('main-player');
       if (iframe && iframe.src && iframe.src !== 'about:blank') {
         var clone = iframe.cloneNode(true);
         clone.setAttribute('src', 'about:blank');
         iframe.parentNode.replaceChild(clone, iframe);
+      }
+      var nativeWatch = document.getElementById('native-player-watch');
+      if (nativeWatch) {
+        nativeWatch.pause();
+        nativeWatch.removeAttribute('src');
+        nativeWatch.load();
+        nativeWatch.style.display = 'none';
+      }
+      if (typeof Player !== 'undefined' && Player.directHls) {
+        Player.directHls.destroy();
+        Player.directHls = null;
       }
     }
     
