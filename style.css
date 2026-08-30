@@ -2625,6 +2625,15 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
   display: none !important;
 }
 
+.src-switch-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(157, 78, 221, 0.35);
+  flex-shrink: 0;
+  margin: 0 3px;
+  border-radius: 1px;
+}
+
 .src-mode-btn {
   flex: 1;
   position: relative;
