@@ -2505,6 +2505,7 @@ var Player = {
     } else {
       eSelect.value = e + 1;
     }
+    CustomSelect.init();
     if (this.sourceMode === 'direct') {
       this.loadDirectVideo();
     } else {
@@ -2531,6 +2532,7 @@ var Player = {
     } else {
       eSelect.value = e - 1;
     }
+    CustomSelect.init();
     if (this.sourceMode === 'direct') {
       this.loadDirectVideo();
     } else {
@@ -2743,6 +2745,7 @@ var AdFreePlayer = {
     } else {
       eSelect.value = e + 1;
     }
+    CustomSelect.init();
     this.loadVideo();
   },
   prevEpisode: function(){
@@ -2764,6 +2767,7 @@ var AdFreePlayer = {
     } else {
       eSelect.value = e - 1;
     }
+    CustomSelect.init();
     this.loadVideo();
   },
   cache: new Map(),
