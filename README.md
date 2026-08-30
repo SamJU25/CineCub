@@ -26,7 +26,7 @@
 - **120fps Hardware-Accelerated Touch Scrolling**: Optimized touch listeners, momentum flings, and `overscroll-behavior: contain` for native mobile fluidity.
 - **Interactive Hero Spotlight Slider**: Dynamic featured banners with real-time finger drag follow, edge resistance physics, and instant movie launch.
 - **Frictionless Guest Mode & Cloud Sync**: Full browsing, watchlist, and resume progress work 100% locally out-of-the-box, with optional Firebase Cloud Sync.
-- **Mailtrap Transactional Email**: Branded password reset flows and secure email verification delivered via Mailtrap.
+- **Mailtrap SMTP Relay**: Firebase Authentication is connected directly to Mailtrap via custom SMTP for high-deliverability password reset and account verification emails.
 
 ### 🎥 Streaming Engine & Playback
 - **Multi-Server Embed Players**: Instant fallback support across 6 global streaming servers (VidLink, VidSrc, AutoEmbed, SuperEmbed, CineSrc, VidCore).
@@ -50,7 +50,7 @@ graph TD
     CF -->|"TMDB API Proxy"| CFWorkers["⚙️ Cloudflare Serverless Function"]
     CFWorkers -->|"Secret API Key Injection"| TMDB[("🎬 TMDB Database API v3")]
     Client -->|"User Auth & Cloud Watchlist"| FB[("🔥 Firebase Auth & Firestore")]
-    Client -->|"Password Reset & Auth Emails"| MT[("✉️ Mailtrap Delivery Service")]
+    FB -->|"Custom SMTP Relay"| MT[("✉️ Mailtrap Delivery Service")]
     Client -->|"Ad-Free HLS Streams"| APIBack[("🚀 StreamHeaven Scraper Backend")]
 ```
 
