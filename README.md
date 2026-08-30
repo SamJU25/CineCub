@@ -6,10 +6,11 @@
 [![Android App](https://img.shields.io/badge/Android-Native_APK_v1.0.5-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://streamheaven.online/assets/StreamHeaven.apk)
 [![Cloudflare Pages](https://img.shields.io/badge/Hosted_on-Cloudflare_Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://pages.cloudflare.com)
 [![Firebase](https://img.shields.io/badge/Auth_&_Database-Firebase_v9-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com)
+[![Mailtrap](https://img.shields.io/badge/Email_Delivery-Mailtrap-22d172?style=for-the-badge&logo=mailgun&logoColor=white)](https://mailtrap.io)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 <p align="center">
-  <b>StreamHeaven</b> is an ultra-fast, serverless cinema and series streaming web application and native Android ecosystem. Built with pure Vanilla JavaScript, modern Glassmorphic CSS, Cloudflare Serverless Edge Functions, and an embedded Android Kotlin WebView wrapper.
+  <b>StreamHeaven</b> is an ultra-fast, serverless cinema and series streaming web application and native Android ecosystem. Built with pure Vanilla JavaScript, modern Glassmorphic CSS, Cloudflare Serverless Edge Functions, Mailtrap transactional email, and an embedded Android Kotlin WebView wrapper.
 </p>
 
 [🌐 Explore Website](https://streamheaven.online) • [📱 Download Android APK](https://streamheaven.online/assets/StreamHeaven.apk) • [🔒 Privacy & Legal](https://streamheaven.online/privacy.html)
@@ -25,6 +26,7 @@
 - **120fps Hardware-Accelerated Touch Scrolling**: Optimized touch listeners, momentum flings, and `overscroll-behavior: contain` for native mobile fluidity.
 - **Interactive Hero Spotlight Slider**: Dynamic featured banners with real-time finger drag follow, edge resistance physics, and instant movie launch.
 - **Frictionless Guest Mode & Cloud Sync**: Full browsing, watchlist, and resume progress work 100% locally out-of-the-box, with optional Firebase Cloud Sync.
+- **Mailtrap Transactional Email**: Branded password reset flows and secure email verification delivered via Mailtrap.
 
 ### 🎥 Streaming Engine & Playback
 - **Multi-Server Embed Players**: Instant fallback support across 6 global streaming servers (VidLink, VidSrc, AutoEmbed, SuperEmbed, CineSrc, VidCore).
@@ -48,6 +50,7 @@ graph TD
     CF -->|"TMDB API Proxy"| CFWorkers["⚙️ Cloudflare Serverless Function"]
     CFWorkers -->|"Secret API Key Injection"| TMDB[("🎬 TMDB Database API v3")]
     Client -->|"User Auth & Cloud Watchlist"| FB[("🔥 Firebase Auth & Firestore")]
+    Client -->|"Password Reset & Auth Emails"| MT[("✉️ Mailtrap Delivery Service")]
     Client -->|"Ad-Free HLS Streams"| APIBack[("🚀 StreamHeaven Scraper Backend")]
 ```
 
