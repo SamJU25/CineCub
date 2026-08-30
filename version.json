@@ -1,7 +1,7 @@
 {
-  "versionCode": 4,
-  "versionName": "1.0.3",
+  "versionCode": 5,
+  "versionName": "1.0.4",
   "apkUrl": "https://streamheaven.online/StreamHeaven.apk",
-  "releaseNotes": "Native app UI feel: bottom sheet dialogs, zero-shift input controls, smooth momentum scrolling, and gesture navigation bar support.",
+  "releaseNotes": "Fixed scrolling: fluid multi-directional scrolling, unblocked horizontal carousels, and seamless movie/profile transitions.",
   "mandatory": false
 }

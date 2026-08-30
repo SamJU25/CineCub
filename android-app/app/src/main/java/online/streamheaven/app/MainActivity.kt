@@ -305,6 +305,11 @@ class MainActivity : AppCompatActivity() {
         )
         swipeRefreshLayout.setProgressBackgroundColorSchemeColor(Color.parseColor("#18142A"))
 
+        // Prevent SwipeRefresh from intercepting normal vertical or horizontal scrolling
+        swipeRefreshLayout.setOnChildScrollUpCallback { _, _ ->
+            webView.canScrollVertically(-1) || webView.scrollY > 0
+        }
+
         swipeRefreshLayout.setOnRefreshListener {
             if (isNetworkAvailable()) {
                 isPageError = false

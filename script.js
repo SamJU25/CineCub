@@ -5,15 +5,13 @@
 ================================================================ */
 var UIHelper = {
   lockScroll: function() {
-    if (document.body.style.overflow === 'hidden') return;
-    var scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
-    document.body.style.paddingRight = scrollBarWidth + 'px';
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
   },
   unlockScroll: function() {
-    document.body.style.paddingRight = '';
+    document.body.classList.remove('modal-open');
+    document.body.classList.remove('no-scroll');
     document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
     document.documentElement.style.overflow = '';
   }
 };
@@ -378,6 +376,10 @@ var MobNav = {
 
 var App = {
   showPage: function(id){
+    UIHelper.unlockScroll();
+    if (typeof Modal !== 'undefined' && Modal.closeAll) {
+      Modal.closeAll(true);
+    }
     State.activePage = id;
     if(id !== 'page-search' && window.location.hash.startsWith('#search')) {
       try {

@@ -70,9 +70,6 @@
 html {
   scroll-behavior:smooth;
   font-size:16px;
-  overflow-x:hidden;
-  overscroll-behavior-y:contain;
-  overscroll-behavior-x:none;
   -webkit-overflow-scrolling:touch;
 }
 body {
@@ -84,9 +81,12 @@ body {
   overflow-x:hidden;
   min-height:100vh;
   line-height:1.6;
-  overscroll-behavior-y:contain;
   user-select:none;
   -webkit-user-select:none;
+}
+body.modal-open {
+  overflow:hidden !important;
+  touch-action:none;
 }
 input, textarea, [contenteditable="true"], .auth-input, .synopsis-text, .search-input, .hero-desc {
   user-select:text;
@@ -1563,7 +1563,8 @@ body::-webkit-scrollbar-track { background: var(--cv-bg); }
 body::-webkit-scrollbar-thumb { background: var(--cv-dark-5); border-radius: var(--r-pill); transition: background var(--t-fast); }
 body::-webkit-scrollbar-thumb:hover { background: var(--cv-purple); }
 
-button, a, .poster-card, .compact-card { touch-action: manipulation; }
+button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
+.poster-card, .compact-card, .landscape-card, .cast-card, .cw-card, .tr-item, .chip { touch-action: pan-x pan-y; }
 @media (max-width: 768px) {
   button:active, a:active, .poster-card:active, .compact-card:active, .nav-btn:active, .mbb-btn:active { transform: scale(0.96); opacity: 0.8; }
   
