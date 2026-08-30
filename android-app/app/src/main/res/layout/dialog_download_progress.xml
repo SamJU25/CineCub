@@ -5,18 +5,21 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_dialog_card"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:paddingStart="22dp"
+    android:paddingEnd="22dp"
+    android:paddingTop="22dp"
+    android:paddingBottom="18dp">
 
     <!-- Header -->
     <TextView
         android:id="@+id/tvDownloadTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Downloading Update…"
         android:textColor="@color/text_primary"
-        android:textSize="18sp"
+        android:textSize="17sp"
         android:textStyle="bold"
-        android:layout_marginBottom="18dp" />
+        android:layout_marginBottom="16dp" />
 
     <!-- Progress Bar -->
     <ProgressBar
@@ -33,16 +36,16 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="18dp">
+        android:layout_marginBottom="16dp">
 
         <TextView
             android:id="@+id/tvDownloadSize"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:text="0 MB / 0 MB"
+            android:text="Connecting…"
             android:textColor="@color/text_muted"
-            android:textSize="12sp" />
+            android:textSize="13sp" />
 
         <TextView
             android:id="@+id/tvDownloadPercent"

@@ -5,7 +5,10 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_dialog_card"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:paddingStart="22dp"
+    android:paddingEnd="22dp"
+    android:paddingTop="22dp"
+    android:paddingBottom="20dp">
 
     <!-- Header with Icon & Title -->
     <LinearLayout
@@ -16,31 +19,34 @@
         android:layout_marginBottom="16dp">
 
         <ImageView
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:src="@mipmap/ic_launcher"
+            android:id="@+id/ivUpdateIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/app_logo"
             android:background="@drawable/bg_icon_container"
-            android:padding="2dp" />
+            android:padding="6dp" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginStart="14dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvUpdateTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Update Available"
                 android:textColor="@color/text_primary"
-                android:textSize="18sp"
+                android:textSize="17sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvUpdateVersion"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:text="Version 1.0.1"
                 android:textColor="@color/primary_purple_light"
                 android:textSize="13sp"
@@ -51,38 +57,49 @@
     </LinearLayout>
 
     <!-- Release Notes Box -->
-    <TextView
-        android:id="@+id/tvReleaseNotesLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="What's New:"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="6dp" />
-
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxHeight="160dp"
+        android:background="@drawable/bg_release_notes"
+        android:orientation="vertical"
+        android:padding="14dp"
         android:layout_marginBottom="20dp">
 
         <TextView
-            android:id="@+id/tvReleaseNotes"
+            android:id="@+id/tvReleaseNotesLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:lineSpacingExtra="3dp"
-            android:text="Performance improvements and new streaming features."
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
+            android:text="What's New"
+            android:textColor="@color/text_primary"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
+            android:letterSpacing="0.04"
+            android:layout_marginBottom="6dp" />
 
-    </ScrollView>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="130dp">
+
+            <TextView
+                android:id="@+id/tvReleaseNotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="4dp"
+                android:text="High-definition app icons, smoother streaming performance, and bug fixes."
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
+
+        </ScrollView>
+
+    </LinearLayout>
 
     <!-- Action Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="end"
+        android:gravity="center_vertical|end"
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton

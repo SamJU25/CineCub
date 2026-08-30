@@ -136,12 +136,21 @@ object AppUpdater {
         }
 
         dialog.show()
+
+        // Set explicit width (90% of screen, max 420dp) to prevent squishing
+        dialog.window?.let { window ->
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            val displayMetrics = activity.resources.displayMetrics
+            val screenWidth = displayMetrics.widthPixels
+            val targetWidth = (screenWidth * 0.90).toInt().coerceAtMost((420 * displayMetrics.density).toInt())
+            window.setLayout(targetWidth, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
+            window.setGravity(android.view.Gravity.CENTER)
+        }
     }
 
     private fun showDownloadProgress(activity: Activity, apkUrl: String) {
         val dialog = Dialog(activity)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val view = LayoutInflater.from(activity).inflate(R.layout.dialog_download_progress, null)
         dialog.setContentView(view)
@@ -162,6 +171,16 @@ object AppUpdater {
         }
 
         dialog.show()
+
+        // Set explicit width for download progress dialog
+        dialog.window?.let { window ->
+            window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            val displayMetrics = activity.resources.displayMetrics
+            val screenWidth = displayMetrics.widthPixels
+            val targetWidth = (screenWidth * 0.90).toInt().coerceAtMost((420 * displayMetrics.density).toInt())
+            window.setLayout(targetWidth, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
+            window.setGravity(android.view.Gravity.CENTER)
+        }
 
         downloadThread = Thread {
             var inputStream: InputStream? = null

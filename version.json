@@ -1,7 +1,7 @@
 {
-  "versionCode": 2,
-  "versionName": "1.0.1",
+  "versionCode": 3,
+  "versionName": "1.0.2",
   "apkUrl": "https://streamheaven.online/StreamHeaven.apk",
-  "releaseNotes": "Updated high-definition adaptive app icon and performance improvements.",
+  "releaseNotes": "Enhanced user interface, updated high-definition adaptive app icons, and smoother streaming.",
   "mandatory": false
 }
