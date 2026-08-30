@@ -1,0 +1,33 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:translateX="-10.8"
+        android:translateY="-10.8">
+        <!-- Glow backing -->
+        <path
+            android:fillColor="#40C77DFF"
+            android:pathData="M38,30 L74,54 L38,78 Z" />
+        <!-- Play / Streaming Icon -->
+        <path
+            android:pathData="M40,32 L72,54 L40,76 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:startX="40"
+                    android:startY="32"
+                    android:endX="72"
+                    android:endY="76"
+                    android:type="linear">
+                    <item android:offset="0.0" android:color="#C77DFF" />
+                    <item android:offset="0.5" android:color="#9D4EDD" />
+                    <item android:offset="1.0" android:color="#06D6A0" />
+                </gradient>
+            </aapt:attr>
+        </path>
+    </group>
+</vector>

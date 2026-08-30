@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">StreamHeaven</string>
+    <string name="website_url">https://streamheaven.online</string>
+    <string name="offline_title">You\'re Offline</string>
+    <string name="offline_message">Please check your internet connection and try again.</string>
+    <string name="btn_retry">Try Again</string>
+    <string name="loading_text">Loading StreamHeaven…</string>
+</resources>

@@ -172,7 +172,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=240" rel="stylesheet">
+  <link href="style.css?v=241" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -271,9 +271,6 @@
       </div>
 
       <div class="header-actions">
-        <button onclick="openAppsModal()" class="header-action-btn header-app-btn" title="Download StreamHeaven App" style="border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-          <i class="fas fa-download"></i>
-        </button>
         <div id="header-profile-container" class="header-profile-wrap">
           <div id="header-profile-name" class="header-profile-name" style="display: none;"></div>
           <button class="header-action-btn" id="header-profile-btn" onclick="if(typeof AuthUI !== 'undefined') AuthUI.openLogin()" title="Profile" style="border-radius: 50%;"><i class="fas fa-user"></i></button>
@@ -650,9 +647,6 @@
               <a href="https://t.me/StreamHeavenOnline" target="_blank" rel="noopener noreferrer" class="footer-btn footer-btn-telegram" title="Join StreamHeaven Telegram">
                 <i class="fab fa-telegram-plane"></i> Join Telegram
               </a>
-              <button onclick="openAppsModal()" class="footer-btn footer-btn-app" title="Download StreamHeaven App">
-                <i class="fas fa-download"></i> Get App
-              </button>
             </div>
           </div>
           <div>
@@ -1089,7 +1083,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=37"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=240"></script>
+  <script src="script.js?v=241"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

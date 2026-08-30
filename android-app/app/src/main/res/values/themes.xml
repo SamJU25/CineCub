@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.StreamHeaven" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/primary_purple</item>
+        <item name="colorPrimaryVariant">@color/primary_purple_dark</item>
+        <item name="colorOnPrimary">@color/text_primary</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/primary_purple_light</item>
+        <item name="colorSecondaryVariant">@color/primary_purple_dark</item>
+        <item name="colorOnSecondary">@color/text_primary</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/bg_black</item>
+        <item name="android:navigationBarColor">@color/bg_black</item>
+        <item name="android:windowBackground">@color/bg_black</item>
+    </style>
+</resources>
