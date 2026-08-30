@@ -499,11 +499,11 @@ iframe {border:none}
 .poster-card-img-wrap {aspect-ratio:2/3;position:relative;overflow:hidden;width:100%;height:100%}
 .poster-card-img {width:100%;height:100%;object-fit:cover;transform-origin:center;transition:transform 300ms var(--ease-standard)}
 .poster-card-grad {position:absolute;inset:0;background:var(--grad-card);opacity:0;transition:opacity 220ms var(--ease-standard)}
-.poster-card-top {position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;z-index:3}
-.pc-badge {padding:3px 8px;border-radius:var(--r-xs);font-size:10px;font-weight:800;text-transform:uppercase}
+.poster-card-top {position:absolute;top:10px;left:10px;right:10px;display:flex;align-items:center;justify-content:space-between;gap:6px;z-index:3;pointer-events:none}
+.pc-badge {padding:3px 8px;border-radius:var(--r-xs);font-size:10px;font-weight:800;text-transform:uppercase;flex-shrink:0;white-space:nowrap}
 .pc-badge-new {background:var(--cv-purple-light);color:#000}
 .pc-badge-quality {background:var(--cv-purple-dark);color:white}
-.pc-rating {background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);padding:3px 8px;border-radius:var(--r-xs);font-size:11px;font-weight:800;color:var(--cv-gold);display:flex;align-items:center;gap:4px}
+.pc-rating {background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);padding:3px 8px;border-radius:var(--r-xs);font-size:11px;font-weight:800;color:var(--cv-gold);display:flex;align-items:center;gap:4px;flex-shrink:0;white-space:nowrap;margin-left:auto}
 
 .pc-play-wrap {position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 200ms var(--ease-standard)}
 .poster-card:hover .pc-play-wrap, .landscape-card:hover .pc-play-wrap {opacity:1}
@@ -554,7 +554,7 @@ iframe {border:none}
 .landscape-card:hover .lc-img {transform:scale(1.035)}
 .lc-overlay {position:absolute;inset:0;background:linear-gradient(0deg, rgba(0,0,0,0.95) 0%, transparent 70%);opacity:0.7;transition:opacity 220ms var(--ease-standard)}
 .landscape-card:hover .lc-overlay {opacity:0.95}
-.lc-top {position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;z-index:2}
+.lc-top {position:absolute;top:10px;left:10px;right:10px;display:flex;align-items:center;justify-content:space-between;gap:6px;z-index:2;pointer-events:none}
 .lc-info {position:absolute;bottom:0;left:0;right:0;padding:12px 14px 14px;z-index:5;opacity:0.8;transform:translateY(2px);transition:opacity 200ms var(--ease-standard), transform 200ms var(--ease-standard)}
 .landscape-card:hover .lc-info {opacity:1;transform:translateY(0)}
 .lc-title {font-size:14px;font-weight:800;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,0.8)}
