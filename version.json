@@ -1,7 +1,7 @@
 {
-  "versionCode": 5,
-  "versionName": "1.0.4",
+  "versionCode": 6,
+  "versionName": "1.0.5",
   "apkUrl": "https://streamheaven.online/StreamHeaven.apk",
-  "releaseNotes": "Fixed scrolling: fluid multi-directional scrolling, unblocked horizontal carousels, and seamless movie/profile transitions.",
+  "releaseNotes": "Redesigned update dialog matching website aesthetics, smart permission caution, and ultra-smooth fluid scrolling.",
   "mandatory": false
 }

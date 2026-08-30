@@ -17,4 +17,7 @@
     
     <color name="border_subtle">#262040</color>
     <color name="fullscreen_black">#000000</color>
+    <color name="warning_bg">#1E170A</color>
+    <color name="warning_border">#423214</color>
+    <color name="warning_text">#FFB703</color>
 </resources>

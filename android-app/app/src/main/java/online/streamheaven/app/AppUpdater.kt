@@ -118,9 +118,14 @@ object AppUpdater {
         val tvReleaseNotes = view.findViewById<TextView>(R.id.tvReleaseNotes)
         val btnUpdateNow = view.findViewById<MaterialButton>(R.id.btnUpdateNow)
         val btnUpdateLater = view.findViewById<MaterialButton>(R.id.btnUpdateLater)
+        val layoutPermissionCaution = view.findViewById<android.view.View>(R.id.layoutPermissionCaution)
 
-        tvUpdateVersion.text = "Version ${updateInfo.versionName}"
+        tvUpdateVersion.text = "StreamHeaven v${updateInfo.versionName}"
         tvReleaseNotes.text = updateInfo.releaseNotes
+
+        // Check if unknown app install permission is already granted; if granted, do not show caution
+        val needsPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !activity.packageManager.canRequestPackageInstalls()
+        layoutPermissionCaution.visibility = if (needsPermission) android.view.View.VISIBLE else android.view.View.GONE
 
         if (updateInfo.mandatory) {
             btnUpdateLater.visibility = android.view.View.GONE
