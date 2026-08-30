@@ -569,20 +569,68 @@ var App = {
     Prog.done();
   },
   shareCurrent: function(){
-    var d=State.activeData; if(!d) return;
-    var params=new URLSearchParams({id:String(State.activeId),type:String(State.activeType)});
-    var shareUrl=window.location.origin+window.location.pathname+'?'+params.toString();
-    var title=d.title||d.name||'Movie';
-    function fallback(){
-      var ta=document.createElement('textarea'); ta.value=shareUrl; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
-      document.body.appendChild(ta); ta.select();
-      try{document.execCommand('copy');Toast.show('Link copied to clipboard.','success');}
-      catch(e){Toast.show('Unable to copy the link.','error');}
+    var d = State.activeData; if(!d) return;
+    var params = new URLSearchParams({id: String(State.activeId), type: String(State.activeType)});
+    var origin = window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'https://streamheaven.online';
+    var shareUrl = origin + '/?' + params.toString();
+    var title = d.title || d.name || 'Movie';
+    var text = 'Watch ' + title + ' on StreamHeaven';
+
+    // 1. Native Android App Share Sheet Interface
+    if (window.AndroidShare && typeof window.AndroidShare.share === 'function') {
+      try {
+        window.AndroidShare.share(title, text, shareUrl);
+        return;
+      } catch(e) {
+        console.warn('Native Android share error:', e);
+      }
+    }
+
+    // 2. Web Share API (Mobile Browsers, Windows/Mac Web Share dialog)
+    if (navigator.share) {
+      navigator.share({
+        title: title,
+        text: text,
+        url: shareUrl
+      }).catch(function(err){
+        if (err && err.name !== 'AbortError') {
+          fallbackCopy();
+        }
+      });
+      return;
+    }
+
+    // 3. Fallback: Clipboard copy
+    fallbackCopy();
+
+    function fallbackCopy(){
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(shareUrl).then(function(){
+          Toast.show('Link copied to clipboard.', 'success');
+        }).catch(function(){
+          manualCopy();
+        });
+      } else {
+        manualCopy();
+      }
+    }
+
+    function manualCopy(){
+      var ta = document.createElement('textarea');
+      ta.value = shareUrl;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        Toast.show('Link copied to clipboard.', 'success');
+      } catch(e){
+        Toast.show('Unable to copy the link.', 'error');
+      }
       ta.remove();
     }
-    if(navigator.share){navigator.share({title:title,text:'Watch '+title+' on StreamHeaven',url:shareUrl}).catch(function(err){if(err&&err.name!=='AbortError')fallback();});}
-    else if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(shareUrl).then(function(){Toast.show('Link copied to clipboard.','success');}).catch(fallback);}
-    else fallback();
   }
 };
 

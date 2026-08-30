@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.CookieManager
+import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -163,6 +164,9 @@ class MainActivity : AppCompatActivity() {
             }
             false
         }
+
+        // Javascript Interface for Native Features (Share Sheet, etc.)
+        webView.addJavascriptInterface(WebAppInterface(this), "AndroidShare")
 
         // WebChromeClient (Handles Fullscreen Videos, Progress, and Permissions)
         webView.webChromeClient = object : WebChromeClient() {
@@ -466,5 +470,35 @@ class MainActivity : AppCompatActivity() {
         (webView.parent as? ViewGroup)?.removeView(webView)
         webView.destroy()
         super.onDestroy()
+    }
+
+    /**
+     * Native Android Interface exposed to WebView JavaScript.
+     * Enables rich Android Share Sheet chooser, clipboard bridge, etc.
+     */
+    inner class WebAppInterface(private val activity: MainActivity) {
+        @JavascriptInterface
+        fun share(title: String?, text: String?, url: String?) {
+            activity.runOnUiThread {
+                try {
+                    val shareText = when {
+                        !text.isNullOrBlank() && !url.isNullOrBlank() -> "$text\n$url"
+                        !url.isNullOrBlank() -> url
+                        else -> text ?: ""
+                    }
+                    val intent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_SUBJECT, title ?: "StreamHeaven")
+                        putExtra(Intent.EXTRA_TITLE, title ?: "StreamHeaven")
+                        putExtra(Intent.EXTRA_TEXT, shareText)
+                    }
+                    val chooser = Intent.createChooser(intent, "Share " + (title ?: "StreamHeaven"))
+                    chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    activity.startActivity(chooser)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 }
