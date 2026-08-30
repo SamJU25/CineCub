@@ -8,6 +8,14 @@
   "background_color": "#0a0a0f",
   "theme_color": "#0a0a0f",
   "categories": ["entertainment", "movies", "video"],
+  "prefer_related_applications": true,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://streamheaven.online/StreamHeaven.apk",
+      "id": "online.streamheaven.app"
+    }
+  ],
   "icons": [
     {
       "src": "/assets/images/favicon-square.png",

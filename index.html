@@ -8,9 +8,15 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https://image.tmdb.org https://upload.wikimedia.org; media-src * blob:; frame-src *; connect-src *;">
   <title>StreamHeaven - Watch Free Movies, Series &amp; Anime Online</title>
   
-  <!-- APP / PWA ENVIRONMENT DETECTION -->
+  <!-- APP / PWA ENVIRONMENT DETECTION & NATIVE ANDROID PREFERENCE -->
   <script>
     (function() {
+      // Prevent Android browsers from showing automatic web PWA install banners
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        return false;
+      });
+
       if (
         navigator.userAgent.indexOf('StreamHeavenApp') !== -1 ||
         window.matchMedia('(display-mode: standalone)').matches ||
@@ -176,7 +182,7 @@
             "name": "Can I install StreamHeaven as an app on Android and iOS devices?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes, you can download the StreamHeaven APK directly for Android mobile and Smart TV devices, or install the Progressive Web App (PWA) via Safari on Apple iOS."
+              "text": "Yes, you can download the native StreamHeaven APK directly for Android phones and tablets, or install the Progressive Web App (PWA) via Safari on Apple iOS."
             }
           }
         ]
@@ -186,7 +192,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=243" rel="stylesheet">
+  <link href="style.css?v=244" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -534,7 +540,7 @@
               <summary class="faq-summary">Can I install StreamHeaven as an app on Android and iOS devices?</summary>
               <div class="faq-content-wrapper">
                 <div class="faq-content-inner">
-                  <div class="faq-content">Yes, you can download the StreamHeaven APK directly for Android mobile and Smart TV devices, or install the Progressive Web App (PWA) via Safari on Apple iOS.</div>
+                  <div class="faq-content">Yes, you can download the native StreamHeaven APK directly for Android phones and tablets, or install the Progressive Web App (PWA) via Safari on Apple iOS.</div>
                 </div>
               </div>
             </details>
@@ -1103,7 +1109,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=37"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=243"></script>
+  <script src="script.js?v=244"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

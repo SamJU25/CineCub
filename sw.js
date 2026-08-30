@@ -1,12 +1,12 @@
-const CACHE_NAME = 'streamheaven-v243';
+const CACHE_NAME = 'streamheaven-v244';
 const urlsToCache = [
   '/',
   '/index.html',
   '/profile.html',
   '/privacy.html',
   '/llms.txt',
-  '/style.css?v=243',
-  '/script.js?v=243',
+  '/style.css?v=244',
+  '/script.js?v=244',
   '/firebase-auth.js?v=37',
   '/manifest.json',
   '/assets/images/favicon-square.png',
