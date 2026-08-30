@@ -1147,24 +1147,76 @@ var Spotlight = {
   },
   initSwipe: function(){
     var section = document.getElementById('spotlight-section');
-    if(!section || section.dataset.swipeInit === 'true') return;
+    var track = document.getElementById('spotlight-track');
+    if(!section || !track || section.dataset.swipeInit === 'true') return;
     section.dataset.swipeInit = 'true';
-    var touchStartX = 0, touchEndX = 0;
+    
+    var startX = 0, startY = 0, currentX = 0, diffX = 0, diffY = 0;
+    var isTouching = false, isHorizontalSwipe = false;
+    var sectionWidth = 0;
+    
     section.addEventListener('touchstart', function(e){
-      if(e.changedTouches && e.changedTouches.length) {
-        touchStartX = e.changedTouches[0].screenX;
-      }
+      if(!e.touches || e.touches.length !== 1) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      currentX = startX;
+      diffX = 0;
+      diffY = 0;
+      isTouching = true;
+      isHorizontalSwipe = false;
+      sectionWidth = section.offsetWidth || window.innerWidth;
+      track.style.transition = 'none';
     }, {passive: true});
-    section.addEventListener('touchend', function(e){
-      if(e.changedTouches && e.changedTouches.length) {
-        touchEndX = e.changedTouches[0].screenX;
-        var diff = touchStartX - touchEndX;
-        if(Math.abs(diff) > 45){
-          if(diff > 0) Spotlight.next();
-          else Spotlight.prev();
+
+    section.addEventListener('touchmove', function(e){
+      if(!isTouching || !e.touches || e.touches.length !== 1) return;
+      currentX = e.touches[0].clientX;
+      var currentY = e.touches[0].clientY;
+      diffX = currentX - startX;
+      diffY = currentY - startY;
+
+      if(!isHorizontalSwipe && Math.abs(diffX) > 8) {
+        if(Math.abs(diffX) > Math.abs(diffY)) {
+          isHorizontalSwipe = true;
+        } else {
+          isTouching = false;
+          track.style.transition = 'transform 0.45s cubic-bezier(0.25, 1, 0.5, 1)';
+          track.style.transform = 'translateX(-' + (Spotlight.current * 100) + '%)';
+          return;
         }
       }
+
+      if(isHorizontalSwipe) {
+        var basePercent = -(Spotlight.current * 100);
+        var dragPercent = (diffX / sectionWidth) * 100;
+        
+        if ((Spotlight.current === 0 && diffX > 0) || (Spotlight.current === Spotlight.items.length - 1 && diffX < 0)) {
+          dragPercent *= 0.35;
+        }
+        
+        track.style.transform = 'translateX(' + (basePercent + dragPercent) + '%)';
+      }
     }, {passive: true});
+
+    var endSwipe = function(){
+      if(!isTouching) return;
+      isTouching = false;
+      track.style.transition = 'transform 0.45s cubic-bezier(0.25, 1, 0.5, 1)';
+      
+      if(isHorizontalSwipe && Math.abs(diffX) > 35) {
+        if(diffX < 0) {
+          Spotlight.next();
+        } else {
+          Spotlight.prev();
+        }
+      } else {
+        Spotlight.goTo(Spotlight.current);
+      }
+      isHorizontalSwipe = false;
+    };
+
+    section.addEventListener('touchend', endSwipe, {passive: true});
+    section.addEventListener('touchcancel', endSwipe, {passive: true});
   }
 };
 
