@@ -2228,8 +2228,10 @@ var Player = {
       if (sTabsCloud) sTabsCloud.style.display = 'none';
       if (sTabsDirect) sTabsDirect.style.display = 'block';
 
+      // Completely halt cloud iframe so no audio/video plays in background
       if (iframe) {
         iframe.src = 'about:blank';
+        iframe.removeAttribute('src');
         iframe.style.display = 'none';
       }
       if (nativeVideo) nativeVideo.style.display = 'block';
@@ -2240,15 +2242,20 @@ var Player = {
       if (sTabsDirect) sTabsDirect.style.display = 'none';
       if (sTabsCloud) sTabsCloud.style.display = 'block';
 
+      // Completely stop direct video player & HLS stream
+      if (this.directCheckWakeup) {
+        clearInterval(this.directCheckWakeup);
+        this.directCheckWakeup = null;
+      }
+      if (this.directHls) {
+        try { this.directHls.stopLoad(); this.directHls.destroy(); } catch(e){}
+        this.directHls = null;
+      }
       if (nativeVideo) {
         nativeVideo.pause();
         nativeVideo.removeAttribute('src');
         nativeVideo.load();
         nativeVideo.style.display = 'none';
-      }
-      if (this.directHls) {
-        this.directHls.destroy();
-        this.directHls = null;
       }
       if (iframe) iframe.style.display = 'block';
       this.loadVideo();
@@ -2270,9 +2277,15 @@ var Player = {
   },
 
   loadDirectVideo: function() {
+    var iframe = document.getElementById('main-player');
+    if (iframe) {
+      iframe.src = 'about:blank';
+      iframe.removeAttribute('src');
+      iframe.style.display = 'none';
+    }
     var video = document.getElementById('native-player-watch');
     var sTabs = document.getElementById('server-tabs-direct');
-    if (this.directHls) { this.directHls.destroy(); this.directHls = null; }
+    if (this.directHls) { try { this.directHls.stopLoad(); this.directHls.destroy(); } catch(e){} this.directHls = null; }
     if (this.directCheckWakeup) { clearInterval(this.directCheckWakeup); this.directCheckWakeup = null; }
 
     var season = null, episode = null;
