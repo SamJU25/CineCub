@@ -694,7 +694,10 @@ var Search = {
     var breadcrumbQuery = document.getElementById('search-breadcrumb-query');
     if(breadcrumbQuery) breadcrumbQuery.innerText = 'Search: "'+q+'"';
     var spinner = document.getElementById('search-spinner');
-    if(spinner) spinner.classList.remove('hidden');
+    if(spinner) {
+      spinner.classList.remove('hidden');
+      spinner.style.display = 'block';
+    }
     var grid = document.getElementById('search-full-grid');
     
     if(!isAppend) {
@@ -707,7 +710,10 @@ var Search = {
     
     API.search(q, State.browsePage).then(data => {
       State.isFetching = false;
-      if(spinner) spinner.classList.add('hidden');
+      if(spinner) {
+        spinner.classList.add('hidden');
+        spinner.style.display = 'none';
+      }
       var r = ((data && data.results) || []).filter(x => x.poster_path && x.media_type!=='person');
       if(grid) {
         if(!isAppend && !r.length) { 
@@ -718,8 +724,9 @@ var Search = {
           if(isAppend) grid.insertAdjacentHTML('beforeend', html);
           else grid.innerHTML = html;
         }
-        if (data && data.page >= data.total_pages) {
+        if (!data || data.page >= data.total_pages || !r.length) {
           State.hasMore = false;
+          if (window.observerSearch) window.observerSearch.disconnect();
         } else if (State.hasMore && window.observerSearch) {
           var sentinelSearch = document.getElementById('search-infinite-scroll-trigger');
           if (sentinelSearch) {
@@ -730,7 +737,10 @@ var Search = {
       }
     }).catch(err => {
       State.isFetching = false;
-      if (spinner) spinner.classList.add('hidden');
+      if (spinner) {
+        spinner.classList.add('hidden');
+        spinner.style.display = 'none';
+      }
       if (isAppend) State.browsePage--;
       else if (grid) {
         grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--cv-red);grid-column:1/-1;"><i class="fas fa-wifi" style="margin-bottom:10px;font-size:24px;display:block;"></i> Network error. Please check your connection.</div>';
