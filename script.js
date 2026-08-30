@@ -1897,9 +1897,10 @@ var Modal = {
         }
 
         var ratingBadge = document.getElementById('fv-meta-rating');
-        if (ratingBadge) ratingBadge.style.display = 'inline-flex';
         var ratVal = document.getElementById('fv-rating');
-        if (ratVal) ratVal.textContent = data.vote_average ? data.vote_average.toFixed(1) : 'N/A';
+        var hasRating = data.vote_average && data.vote_average > 0;
+        if (ratVal) ratVal.textContent = hasRating ? data.vote_average.toFixed(1) : 'N/A';
+        if (ratingBadge) ratingBadge.style.display = hasRating ? 'inline-flex' : 'none';
         var qualityBadge = document.getElementById('fv-meta-quality');
         if (qualityBadge) qualityBadge.style.display = 'inline-flex';
         var yearBadge = document.getElementById('fv-year');
@@ -1920,6 +1921,15 @@ var Modal = {
         if (key2) key2.textContent = 'Runtime';
         var rtEl = document.getElementById('fv-runtime');
         if (rtEl) rtEl.textContent = type === 'movie' ? Utils.runtime(data.runtime) : ((data.number_of_seasons || 1) + ' Season(s)');
+
+        var relEl = document.getElementById('fv-release');
+        if (relEl) relEl.textContent = (data.release_date || data.first_air_date) ? (data.release_date || data.first_air_date) : 'N/A';
+
+        var langEl = document.getElementById('fv-lang');
+        if (langEl) langEl.textContent = (data.spoken_languages && data.spoken_languages.length) ? data.spoken_languages.map(function(l){ return l.english_name || l.name; }).join(', ') : (data.original_language ? data.original_language.toUpperCase() : 'N/A');
+
+        var ratTextEl = document.getElementById('fv-rating-text');
+        if (ratTextEl) ratTextEl.textContent = data.vote_average ? (data.vote_average.toFixed(1) + ' / 10' + (data.vote_count ? ' (' + data.vote_count.toLocaleString() + ' votes)' : '')) : 'N/A';
 
         var playBtn = document.querySelector('.btn-fv-play');
         if (playBtn) playBtn.style.display = 'inline-flex';
