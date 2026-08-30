@@ -119,12 +119,18 @@ class MainActivity : AppCompatActivity() {
             settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
         }
 
-        // Cache Configuration
+        // Cache & Rendering Optimization
         if (isNetworkAvailable()) {
             settings.cacheMode = WebSettings.LOAD_DEFAULT
         } else {
             settings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            settings.offscreenPreRaster = true
+        }
+        settings.setGeolocationEnabled(false)
+        @Suppress("DEPRECATION")
+        settings.setRenderPriority(WebSettings.RenderPriority.HIGH)
 
         // Custom User Agent string
         val defaultUserAgent = settings.userAgentString
