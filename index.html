@@ -193,9 +193,16 @@
     ]
   }
   </script>
+  <!-- ENVIRONMENT DETECTION -->
+  <script>
+    (function(){
+      var isNative = navigator.userAgent.indexOf('StreamHeavenApp') !== -1 || !!window.StreamHeavenNativeApp || window.matchMedia('(display-mode: standalone)').matches;
+      document.documentElement.classList.add(isNative ? 'is-app-env' : 'is-web-env');
+    })();
+  </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=259" rel="stylesheet">
+  <link href="style.css?v=260" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -1141,7 +1148,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=38"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=259"></script>
+  <script src="script.js?v=260"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
