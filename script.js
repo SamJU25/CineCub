@@ -1,17 +1,31 @@
 'use strict';
 
-// Anti-Hijack Guard: Prevents third-party iframe embed players from popping "Confirm Navigation" dialogs
-window.addEventListener('beforeunload', function(e) {
-  delete e['returnValue'];
-});
-try {
-  window.onbeforeunload = null;
-  Object.defineProperty(window, 'onbeforeunload', {
-    get: function() { return null; },
-    set: function() { return false; },
-    configurable: false
-  });
-} catch(e) {}
+// Anti-Hijack Guard: Blocks third-party ad popups and beforeunload lockups
+(function() {
+  try {
+    window.addEventListener('beforeunload', function(e) {
+      delete e['returnValue'];
+    }, true);
+    window.onbeforeunload = null;
+    Object.defineProperty(window, 'onbeforeunload', {
+      get: function() { return null; },
+      set: function() { return false; },
+      configurable: false
+    });
+
+    var originalOpen = window.open;
+    window.open = function(url, target, features) {
+      if (!url) return null;
+      var str = String(url).toLowerCase();
+      // Allow user-initiated telegram, mailto, tel, or internal streamheaven links
+      if (str.indexOf('t.me') !== -1 || str.indexOf('telegram.me') !== -1 || str.indexOf('streamheaven.online') !== -1 || str.indexOf('mailto:') === 0 || str.indexOf('tel:') === 0) {
+        return originalOpen.apply(window, arguments);
+      }
+      // Block third-party ad redirects and popup windows
+      return null;
+    };
+  } catch(e) {}
+})();
 
 /* ================================================================
    00. UI SCROLL LOCK HELPER (FIXES THE PAGE BLINK/SHIFT)
@@ -1758,7 +1772,6 @@ var Modal = {
       cloneMain.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write');
       cloneMain.setAttribute('allowfullscreen', '');
       cloneMain.setAttribute('scrolling', 'no');
-      cloneMain.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock');
       cloneMain.src = 'about:blank';
       if (iframe.parentNode) iframe.parentNode.replaceChild(cloneMain, iframe);
     }
@@ -2237,9 +2250,7 @@ var Player = {
   loadVideo: function(){
     var iframe = document.getElementById('main-player');
     iframe.style.display = 'block';
-    
-    // Strict Anti-Redirect Sandbox: prevents iframe from hijacking parent window or prompting beforeunload
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock');
+    iframe.removeAttribute('sandbox');
 
     var s=CFG.SERVERS[State.activeServer], url, season=null, episode=null, savedTime=0;
     
