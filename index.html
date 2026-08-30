@@ -203,7 +203,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=283" rel="stylesheet">
+  <link href="style.css?v=284" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -913,8 +913,16 @@
         <div class="fv-tab-pane" id="tab-watch">
           <!-- Stream Source Mode Switch (Visible in Native App Environment) -->
           <div class="stream-source-switch" id="stream-source-switch">
-            <button type="button" class="src-mode-btn active" id="src-mode-cloud" onclick="Player.setSourceMode('cloud')"><i class="fas fa-cloud"></i> Cloud Servers (Fast)</button>
-            <button type="button" class="src-mode-btn" id="src-mode-direct" onclick="Player.setSourceMode('direct')"><i class="fas fa-bolt"></i> Direct Stream</button>
+            <button type="button" class="src-mode-btn active" id="src-mode-cloud" onclick="Player.setSourceMode('cloud')">
+              <i class="fas fa-cloud"></i>
+              <span>Cloud Servers</span>
+              <span class="src-badge-tag tag-fast">FAST</span>
+            </button>
+            <button type="button" class="src-mode-btn" id="src-mode-direct" onclick="Player.setSourceMode('direct')">
+              <i class="fas fa-bolt"></i>
+              <span>Direct Stream</span>
+              <span class="src-badge-tag tag-vip">HLS</span>
+            </button>
           </div>
 
           <!-- Server Selection for Cloud Servers -->
@@ -1158,7 +1166,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=39"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=283"></script>
+  <script src="script.js?v=284"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
