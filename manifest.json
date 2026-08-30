@@ -18,7 +18,7 @@
   ],
   "icons": [
     {
-      "src": "/assets/images/favicon-square.png",
+      "src": "/assets/images/app-logo.png",
       "sizes": "192x192 512x512",
       "type": "image/png",
       "purpose": "any maskable"
