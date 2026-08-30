@@ -586,7 +586,7 @@ var Search = {
   dropdownQuery: '',
   dropdownPage: 1,
   dropdownHasMore: false,
-  isDropdownFetching: false,
+  searchSeq: 0,
   dropdownObserver: null,
   onInput: function(q){
     clearTimeout(this.timer);
@@ -598,18 +598,12 @@ var Search = {
     this.dropdownHasMore = true;
     var resultsEl = document.getElementById('srd-results');
     if(resultsEl) resultsEl.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);"><i class="fas fa-circle-notch fa-spin" style="margin-right:6px;"></i> Searching TMDB...</div>';
-    this.timer = setTimeout(()=>{ this.doSearch(q); }, 350);
+    this.timer = setTimeout(()=>{ this.doSearch(q); }, 300);
   },
   doSearch: function(q){
-    if(this.isDropdownFetching) return;
-    this.isDropdownFetching = true;
+    var seq = ++this.searchSeq;
     API.search(q, 1).then(data => {
-      this.isDropdownFetching = false;
-      var curVal = (document.getElementById('search-input') ? document.getElementById('search-input').value : '').trim();
-      if(curVal && curVal.toLowerCase() !== q.trim().toLowerCase()) {
-        this.doSearch(curVal);
-        return;
-      }
+      if (seq !== this.searchSeq) return; // Stale request
       var r = ((data && data.results) || []).filter(x => x.poster_path && x.media_type!=='person');
       
       var container = document.getElementById('srd-results');
@@ -633,7 +627,7 @@ var Search = {
         container.insertAdjacentHTML('beforeend', btnHtml);
       }
     }).catch(err => {
-      this.isDropdownFetching = false;
+      if (seq !== this.searchSeq) return;
       var container = document.getElementById('srd-results');
       if(container) container.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--cv-red);">Error loading results.</div>';
     });
