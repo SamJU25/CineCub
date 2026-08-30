@@ -656,6 +656,8 @@ var Search = {
     }
     var titleEl = document.getElementById('search-title');
     if(titleEl) titleEl.innerText = 'Search Results for "'+q+'"';
+    var breadcrumbQuery = document.getElementById('search-breadcrumb-query');
+    if(breadcrumbQuery) breadcrumbQuery.innerText = 'Search: "'+q+'"';
     var spinner = document.getElementById('search-spinner');
     if(spinner) spinner.classList.remove('hidden');
     var grid = document.getElementById('search-full-grid');

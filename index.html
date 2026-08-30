@@ -172,7 +172,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=233" rel="stylesheet">
+  <link href="style.css?v=234" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -591,22 +591,27 @@
 
     <!-- SEARCH PAGE -->
     <div class="cv-page" id="page-search">
-      <div class="cv-container" style="padding-top:20px;">
-        <div class="browse-header" id="search-header" style="margin-bottom:20px; display:flex;">
-          <h2 class="browse-title" id="search-title">Search Results</h2>
-        </div>
-        <div class="poster-grid" id="search-full-grid"></div>
-        <div class="loading-spinner hidden" id="search-spinner" style="margin-top:20px;">
-          <div class="poster-grid" style="width:100%;">
-            <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
-            <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
-            <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
-            <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
-            <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
-            <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
+      <div class="page-inner">
+        <div class="cv-container">
+          <div class="browse-header" id="search-header" style="margin-bottom:20px;">
+            <div class="browse-title-group">
+              <div class="browse-breadcrumbs">StreamHeaven &rsaquo; <span id="search-breadcrumb-query">Search Results</span></div>
+              <h2 class="section-title" id="search-title" style="margin:0; font-size:26px; font-weight:900;">Search Results</h2>
+            </div>
           </div>
+          <div class="poster-grid" id="search-full-grid"></div>
+          <div class="loading-spinner hidden" id="search-spinner" style="margin-top:20px;">
+            <div class="poster-grid" style="width:100%;">
+              <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
+              <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
+              <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
+              <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
+              <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
+              <div class="skeleton-card" style="width:100%; aspect-ratio:2/3;"></div>
+            </div>
+          </div>
+          <div id="search-infinite-scroll-trigger" style="height:20px;margin-top:20px;"></div>
         </div>
-        <div id="search-infinite-scroll-trigger" style="height:20px;margin-top:20px;"></div>
       </div>
     </div>
 
@@ -1080,7 +1085,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=37"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=233"></script>
+  <script src="script.js?v=234"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
