@@ -597,7 +597,7 @@ var Search = {
     this.dropdownPage = 1;
     this.dropdownHasMore = true;
     var resultsEl = document.getElementById('srd-results');
-    if(resultsEl) resultsEl.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);"><i class="fas fa-circle-notch fa-spin" style="margin-right:6px;"></i> Searching TMDB...</div>';
+    if(resultsEl) resultsEl.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);"><i class="fas fa-circle-notch fa-spin" style="margin-right:6px;"></i> Searching...</div>';
     this.timer = setTimeout(()=>{ this.doSearch(q); }, 300);
   },
   doSearch: function(q){
