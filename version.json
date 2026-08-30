@@ -1,7 +1,7 @@
 {
-  "versionCode": 3,
-  "versionName": "1.0.2",
+  "versionCode": 4,
+  "versionName": "1.0.3",
   "apkUrl": "https://streamheaven.online/StreamHeaven.apk",
-  "releaseNotes": "Enhanced user interface, updated high-definition adaptive app icons, and smoother streaming.",
+  "releaseNotes": "Native app UI feel: bottom sheet dialogs, zero-shift input controls, smooth momentum scrolling, and gesture navigation bar support.",
   "mandatory": false
 }

@@ -138,6 +138,12 @@ class MainActivity : AppCompatActivity() {
 
         // Enable Hardware Acceleration
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        webView.overScrollMode = View.OVER_SCROLL_NEVER
+        webView.isVerticalScrollBarEnabled = false
+        webView.isHorizontalScrollBarEnabled = false
+        webView.isLongClickable = false
+        webView.setOnLongClickListener { true }
+        webView.isHapticFeedbackEnabled = true
 
         // WebChromeClient (Handles Fullscreen Videos, Progress, and Permissions)
         webView.webChromeClient = object : WebChromeClient() {
