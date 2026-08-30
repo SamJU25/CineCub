@@ -31,7 +31,7 @@
       }
     })();
   </script>
-  <link href="style.css?v=267" rel="stylesheet">
+  <link href="style.css?v=268" rel="stylesheet">
   <link rel="prefetch" href="index.html">
   <link rel="prerender" href="index.html">
   <style>
@@ -201,6 +201,12 @@
       font-family: inherit;
       text-decoration: none;
       cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    }
+    .pf-sidebar-btn:active {
+      transform: scale(0.97);
     }
     .pf-sidebar-btn.btn-back {
       background: rgba(255, 255, 255, 0.05);
@@ -371,9 +377,13 @@
       padding: 16px 20px;
       border-bottom: 1px solid rgba(255,255,255,0.04);
       cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s ease, transform 0.15s ease;
     }
     .pf-settings-row:last-child { border-bottom: none; }
     .pf-settings-row:hover { background: rgba(255,255,255,0.03); }
+    .pf-settings-row:not(.static):active { background: rgba(255,255,255,0.06); transform: scale(0.99); }
     .pf-settings-row.static { cursor: default; }
     .pf-settings-row.static:hover { background: transparent; }
     
@@ -432,9 +442,13 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       cursor: pointer;
       background: transparent;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s ease, transform 0.15s ease;
     }
     .pf-settings-danger-row:last-child { border-bottom: none; }
     .pf-settings-danger-row:hover { background: rgba(255, 255, 255, 0.03); }
+    .pf-settings-danger-row:active { background: rgba(255, 75, 75, 0.08); transform: scale(0.99); }
     .pf-settings-danger-row.delete-row {
       border-bottom: none;
     }

@@ -1775,10 +1775,15 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
   justify-content: center;
   cursor: pointer;
   transition: background var(--t-fast), color var(--t-fast), transform var(--t-fast);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .auth-close:hover {
   background: var(--cv-dark-5);
   color: var(--text-1);
+}
+.auth-close:active {
+  transform: scale(0.92);
 }
 .auth-header {
   display: flex;
@@ -1877,25 +1882,32 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
   color: #fff;
   border: none;
   width: 100%;
-  padding: 16px;
+  padding: 15px 20px;
   border-radius: 12px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: background var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
+  transition: transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard), opacity var(--motion-fast) var(--ease-standard);
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
   box-shadow: var(--cv-purple-glow);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 .auth-btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(157, 78, 221, 0.6);
 }
+.auth-btn-primary:active {
+  transform: scale(0.97);
+}
 .auth-btn-primary:disabled {
-  opacity: 0.7;
+  opacity: 0.65;
   cursor: not-allowed;
+  transform: none;
 }
 .auth-switch {
   text-align: center;
@@ -1908,6 +1920,8 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
   font-weight: 700;
   cursor: pointer;
   margin-left: 6px;
+  transition: color 150ms ease;
+  touch-action: manipulation;
 }
 .auth-switch span:hover {
   color: #fff;
