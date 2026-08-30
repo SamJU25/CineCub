@@ -1109,6 +1109,7 @@ a.telegram-nav-item {
 .fv-mb-rating {background:rgba(255, 193, 7, 0.12);color:#ffffff;border:1px solid rgba(255, 193, 7, 0.35);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
 .fv-mb-rating i {color:#ffc107;font-size:11px;filter:drop-shadow(0 0 4px rgba(255, 193, 7, 0.6))}
 .fv-mb-rating #fv-rating {color:#ffffff;font-weight:800;letter-spacing:0.3px}
+.fv-mb-type {background:var(--cv-dark-4);color:var(--text-1);border:1px solid var(--b-3);letter-spacing:0.4px}
 .fv-mb-year {background:var(--cv-dark-4);color:var(--text-2);border:1px solid var(--b-2)}
 .fv-mb-quality {background:var(--cv-purple-dim);color:var(--cv-purple-light);border:1px solid rgba(157, 78, 221, 0.3);letter-spacing:0.5px}
 .fv-actions-row {display:flex;gap:12px;margin:20px 0;padding-left:0}

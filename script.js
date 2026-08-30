@@ -1336,7 +1336,7 @@ function initScrollButtons(){
 var Render = {
   posterCard: function(item, type){
     if(!item) return '';
-    var mType = type||item.media_type||(item.title?'movie':'tv');
+    var mType = type||item.media_type||(item.title?'movie':(item.name?'tv':'movie'));
     var title = item.title||item.name||'Untitled';
     var img = item.poster_path ? CFG.IMG342+item.poster_path : Utils.placeholder();
     var rating = item.vote_average ? item.vote_average.toFixed(1) : '';
@@ -1345,7 +1345,7 @@ var Render = {
     var yearHtml = year && year !== 'N/A' ? '<span>'+year+'</span>' : '';
     var genre = Utils.genreNames(item.genre_ids);
     var genreHtml = genre !== 'General' ? '<span class="pc-genre">'+Utils.escape(genre.split(',')[0])+'</span>' : '';
-    var isNew = item.release_date && (new Date(item.release_date) > new Date(Date.now()-60*24*60*60*1000));
+    var isNew = (item.release_date||item.first_air_date) && (new Date(item.release_date||item.first_air_date) > new Date(Date.now()-60*24*60*60*1000));
     var badge = isNew ? '<span class="pc-badge pc-badge-new">NEW</span>' : (mType==='tv' ? '<span class="pc-badge pc-badge-quality">TV SERIES</span>' : '');
     var inWl = State.watchlist.some(function(w){return w.id===item.id;});
     var wlClass = inWl?'in-list':''; var wlIcon=inWl?'fa-check':'fa-heart';
@@ -1362,18 +1362,22 @@ var Render = {
   },
   landscapeCard: function(item, type){
     if(!item) return '';
-    var mType=type||'movie'; var title=item.title||item.name||'Untitled';
-    var img=item.backdrop_path?CFG.IMG500+item.backdrop_path:(item.poster_path?CFG.IMG342+item.poster_path:Utils.placeholder());
-    var rating=item.vote_average?item.vote_average.toFixed(1):''; 
+    var mType = type||item.media_type||(item.name&&!item.title?'tv':'movie');
+    var title = item.title||item.name||'Untitled';
+    var img = item.backdrop_path?CFG.IMG500+item.backdrop_path:(item.poster_path?CFG.IMG342+item.poster_path:Utils.placeholder());
+    var rating = item.vote_average?item.vote_average.toFixed(1):''; 
     var ratingHtml = rating ? '<span class="pc-rating"><i class="fas fa-star"></i>'+rating+'</span>' : '';
-    var genre=Utils.genreNames(item.genre_ids);
+    var genre = Utils.genreNames(item.genre_ids);
     var genreHtml = genre !== 'General' ? Utils.escape(genre) : '';
-    var inWl=State.watchlist.some(function(w){return w.id===item.id;}); var wlClass=inWl?'in-list':''; var wlIcon=inWl?'fa-check':'fa-heart';
+    var inWl = State.watchlist.some(function(w){return w.id===item.id;});
+    var wlClass = inWl?'in-list':''; var wlIcon=inWl?'fa-check':'fa-heart';
     var year = Utils.year(item.release_date||item.first_air_date);
     var yearHtml = year && year !== 'N/A' ? Utils.escape(year)+(genreHtml?' &middot; ':'') : '';
+    var isNew = (item.release_date||item.first_air_date) && (new Date(item.release_date||item.first_air_date) > new Date(Date.now()-60*24*60*60*1000));
+    var badge = isNew ? '<span class="pc-badge pc-badge-new">NEW</span>' : '<span class="pc-badge pc-badge-quality">'+(mType==='tv'?'TV SERIES':'MOVIE')+'</span>';
     return '<div class="landscape-card" onclick="Modal.openFull('+item.id+', '+Utils.jsAttr(mType)+')">'
       + '<div class="lc-img-wrap"><img class="lc-img" src="'+img+'" loading="lazy" decoding="async" alt="'+Utils.escape(title)+'" onerror="this.src=Utils.placeholder()"/><div class="lc-overlay"></div>'
-      + '<div class="lc-top"><span class="pc-badge pc-badge-quality">'+(mType==='tv'?'TV SERIES':'MOVIE')+'</span>'+ratingHtml+'</div>'
+      + '<div class="lc-top">'+badge+ratingHtml+'</div>'
       + '<div class="pc-play-wrap"><div class="pc-play-btn"><i class="fas fa-play"></i></div></div>'
       + '<div class="pc-wl-btn wl-btn-'+item.id+' '+wlClass+'" title="'+(inWl?'Remove from watchlist':'Add to watchlist')+'" onclick="Watchlist.toggleById(event,'+item.id+','+Utils.jsAttr(mType)+','+Utils.jsAttr(title)+','+Utils.jsAttr(item.poster_path||'')+','+Number(item.vote_average||0)+','+Utils.jsAttr(item.release_date||item.first_air_date||'')+')"><i class="fas '+wlIcon+'"></i></div>'
       + '</div>'
@@ -1901,6 +1905,11 @@ var Modal = {
         var hasRating = data.vote_average && data.vote_average > 0;
         if (ratVal) ratVal.textContent = hasRating ? data.vote_average.toFixed(1) : 'N/A';
         if (ratingBadge) ratingBadge.style.display = hasRating ? 'inline-flex' : 'none';
+        var typeBadge = document.getElementById('fv-type');
+        if (typeBadge) {
+          typeBadge.textContent = type === 'tv' ? 'TV SERIES' : 'MOVIE';
+          typeBadge.style.display = 'inline-flex';
+        }
         var qualityBadge = document.getElementById('fv-meta-quality');
         if (qualityBadge) qualityBadge.style.display = 'inline-flex';
         var yearBadge = document.getElementById('fv-year');
