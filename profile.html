@@ -31,7 +31,7 @@
       }
     })();
   </script>
-  <link href="style.css?v=268" rel="stylesheet">
+  <link href="style.css?v=270" rel="stylesheet">
   <link rel="prefetch" href="index.html">
   <link rel="prerender" href="index.html">
   <style>
@@ -950,11 +950,6 @@
     }
 
     function handleLogout() {
-      if (typeof window.handleLogout === 'function') {
-        window.handleLogout();
-        return;
-      }
-      
       const user = (typeof auth !== 'undefined' && auth && auth.currentUser) ? auth.currentUser : null;
       const displayName = user ? (user.displayName || user.email.split('@')[0]) : (localStorage.getItem('cachedName') || 'User');
       
