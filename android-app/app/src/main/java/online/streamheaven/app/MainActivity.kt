@@ -468,7 +468,7 @@ class MainActivity : AppCompatActivity() {
 
         // Prevent SwipeRefresh from intercepting normal vertical or horizontal scrolling
         swipeRefreshLayout.setOnChildScrollUpCallback { _, _ ->
-            webView.canScrollVertically(-1) || webView.scrollY > 0
+            customView != null || webView.canScrollVertically(-1) || webView.scrollY > 0
         }
 
         swipeRefreshLayout.setOnRefreshListener {
@@ -636,6 +636,13 @@ class MainActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
+            }
+        }
+
+        @JavascriptInterface
+        fun setSwipeRefreshEnabled(enabled: Boolean) {
+            activity.runOnUiThread {
+                activity.swipeRefreshLayout.isEnabled = enabled
             }
         }
     }

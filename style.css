@@ -1112,12 +1112,17 @@ a.telegram-nav-item {
   z-index:8000;display:flex;align-items:center;justify-content:center;padding:20px;
   visibility:hidden;opacity:0;pointer-events:none;
   transition:opacity 220ms var(--ease-standard), visibility 220ms var(--ease-standard);
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
 }
 .modal-overlay.open {visibility:visible;opacity:1;pointer-events:auto;}
 
 .fv-modal {
   background:var(--cv-dark-2);border:1px solid var(--b-2);border-radius:var(--r-2xl);
   width:100%;max-width:1280px;max-height:92vh;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
   opacity:0;transform:scale(0.98);transition:opacity 240ms var(--ease-standard), transform 240ms var(--ease-standard);
   will-change: transform, opacity;
 }
@@ -1481,7 +1486,7 @@ a.telegram-nav-item {
   .stat-value {font-size:20px}
   
   #modal-overlay {padding:0; align-items:flex-start} 
-  .fv-modal {max-height:100dvh;height:100dvh;border-radius:0;border:none;overflow-y:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%}
+  .fv-modal {max-height:100dvh;height:100dvh;border-radius:0;border:none;overflow-y:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%;overscroll-behavior-y:contain;touch-action:pan-y;}
   .fv-body {padding:20px 16px 80px 16px} 
   .fv-title-row {padding-left:0;margin-bottom:16px}
   .fv-actions-row {padding-left:0}

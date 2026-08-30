@@ -35,6 +35,11 @@ var UIHelper = {
     document.body.classList.add('modal-open');
     var btt = document.getElementById('back-to-top');
     if (btt) btt.classList.remove('visible');
+    try {
+      if (window.AndroidShare && typeof window.AndroidShare.setSwipeRefreshEnabled === 'function') {
+        window.AndroidShare.setSwipeRefreshEnabled(false);
+      }
+    } catch(e){}
   },
   unlockScroll: function() {
     document.body.classList.remove('modal-open');
@@ -42,6 +47,11 @@ var UIHelper = {
     document.body.style.overflow = '';
     document.body.style.paddingRight = '';
     document.documentElement.style.overflow = '';
+    try {
+      if (window.AndroidShare && typeof window.AndroidShare.setSwipeRefreshEnabled === 'function') {
+        window.AndroidShare.setSwipeRefreshEnabled(true);
+      }
+    } catch(e){}
   }
 };
 
