@@ -172,7 +172,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=237" rel="stylesheet">
+  <link href="style.css?v=238" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -593,10 +593,13 @@
     <div class="cv-page" id="page-search">
       <div class="page-inner">
         <div class="cv-container">
-          <div class="browse-header" id="search-header" style="margin-bottom:20px;">
-            <div class="browse-title-group">
-              <div class="browse-breadcrumbs">StreamHeaven &rsaquo; <span id="search-breadcrumb-query">Search Results</span></div>
-              <h2 class="section-title" id="search-title" style="margin:0; font-size:26px; font-weight:900;">Search Results</h2>
+          <div class="browse-header" id="search-header" style="margin-bottom:20px; display:flex; align-items:center; gap:14px;">
+            <button class="header-action-btn" onclick="Search.goBackOrHome()" title="Go Back" style="border-radius:var(--r-pill); display:inline-flex; align-items:center; gap:8px; width:auto; padding:0 16px; font-weight:700; font-size:13px; cursor:pointer; background:var(--cv-dark-3); border:1px solid var(--b-2); color:var(--text-1); flex-shrink:0;">
+              <i class="fas fa-arrow-left"></i> <span>Back</span>
+            </button>
+            <div class="browse-title-group" style="flex:1;">
+              <div class="browse-breadcrumbs"><span onclick="App.goHome()" style="cursor:pointer; color:var(--cv-purple); font-weight:600;"><i class="fas fa-home" style="margin-right:3px;"></i> Home</span> &rsaquo; <span id="search-breadcrumb-query">Search Results</span></div>
+              <h2 class="section-title" id="search-title" style="margin:0; font-size:24px; font-weight:900;">Search Results</h2>
             </div>
           </div>
           <div class="poster-grid" id="search-full-grid"></div>
@@ -1085,7 +1088,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=37"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=237"></script>
+  <script src="script.js?v=238"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

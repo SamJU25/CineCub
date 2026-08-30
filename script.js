@@ -379,6 +379,11 @@ var MobNav = {
 var App = {
   showPage: function(id){
     State.activePage = id;
+    if(id !== 'page-search' && window.location.hash.startsWith('#search')) {
+      try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      } catch(e){}
+    }
     document.querySelectorAll('.cv-page').forEach(function(p){ p.classList.remove('active'); });
     var page=document.getElementById(id); if(page) page.classList.add('active');
     window.scrollTo({top:0}); Sidebar.close();
@@ -658,6 +663,13 @@ var Search = {
     var d = document.getElementById('search-dropdown');
     if(d) d.classList.remove('open'); 
   },
+  goBackOrHome: function(){
+    if (window.location.hash.startsWith('#search')) {
+      window.history.back();
+    } else {
+      App.goHome();
+    }
+  },
   executeFullSearch: function(q, isAppend) {
     if(!q || !q.trim()) return;
     q = q.trim();
@@ -672,6 +684,10 @@ var Search = {
       if(bCurrent) bCurrent.textContent = 'Search';
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.mbb-btn').forEach(el => el.classList.remove('active'));
+
+      if (!window.location.hash.startsWith('#search')) {
+        window.history.pushState({ page: 'page-search', q: q }, '', '#search');
+      }
     }
     var titleEl = document.getElementById('search-title');
     if(titleEl) titleEl.innerText = 'Search Results for "'+q+'"';
@@ -2942,10 +2958,32 @@ document.addEventListener('DOMContentLoaded', function(){
     overlay.addEventListener('touchmove', preventScroll, {passive: false});
   }
 
-  // Mobile Back Button Support
-  window.addEventListener('hashchange', function() {
-    if (window.location.hash !== '#media' && document.getElementById('modal-overlay').classList.contains('open')) {
+  // Mobile & Browser Back Button Navigation Support
+  window.addEventListener('popstate', function(e) {
+    if (document.getElementById('modal-overlay') && document.getElementById('modal-overlay').classList.contains('open')) {
       Modal.closeAll(true);
+      return;
+    }
+    if (document.getElementById('auth-modal-overlay') && document.getElementById('auth-modal-overlay').classList.contains('open')) {
+      if (typeof AuthUI !== 'undefined') AuthUI.close();
+      return;
+    }
+    if (document.getElementById('apps-modal') && document.getElementById('apps-modal').style.display === 'flex') {
+      if (typeof closeAppsModal === 'function') closeAppsModal();
+      return;
+    }
+    if (State.activePage === 'page-search' && !window.location.hash.startsWith('#search')) {
+      App.goHome();
+      return;
+    }
+  });
+
+  window.addEventListener('hashchange', function() {
+    if (window.location.hash !== '#media' && document.getElementById('modal-overlay') && document.getElementById('modal-overlay').classList.contains('open')) {
+      Modal.closeAll(true);
+    }
+    if (State.activePage === 'page-search' && !window.location.hash.startsWith('#search')) {
+      App.goHome();
     }
   });
 
