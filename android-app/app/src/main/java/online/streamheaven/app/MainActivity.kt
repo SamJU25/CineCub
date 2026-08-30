@@ -11,6 +11,7 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -136,14 +137,26 @@ class MainActivity : AppCompatActivity() {
             cookieManager.setAcceptThirdPartyCookies(webView, true)
         }
 
-        // Enable Hardware Acceleration
+        // Enable Hardware Acceleration & Responsive Touch Focus
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         webView.overScrollMode = View.OVER_SCROLL_NEVER
         webView.isVerticalScrollBarEnabled = false
         webView.isHorizontalScrollBarEnabled = false
+        webView.isFocusable = true
+        webView.isFocusableInTouchMode = true
         webView.isLongClickable = false
         webView.setOnLongClickListener { true }
         webView.isHapticFeedbackEnabled = true
+
+        // Instantly request focus on touch down so soft keyboard launches immediately
+        webView.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                if (!v.hasFocus()) {
+                    v.requestFocus()
+                }
+            }
+            false
+        }
 
         // WebChromeClient (Handles Fullscreen Videos, Progress, and Permissions)
         webView.webChromeClient = object : WebChromeClient() {

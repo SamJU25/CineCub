@@ -91,13 +91,14 @@ body {
 }
 body.modal-open {
   overflow:hidden !important;
-  touch-action:none;
 }
-input, textarea, [contenteditable="true"], .auth-input, .synopsis-text, .search-input, .hero-desc {
+input, textarea, select, [contenteditable="true"], .auth-input, .auth-input-wrap input, .synopsis-text, .search-input, .hero-desc {
   user-select:text;
   -webkit-user-select:text;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
-.no-scroll {overflow: hidden !important; height: 100vh !important; touch-action: none !important;}
+.no-scroll {overflow: hidden !important; height: 100vh !important;}
 .hidden {display: none !important;}
 .loading-spinner {width: 100%;}
 .loading-spinner.hidden {display: none !important;}
@@ -1875,6 +1876,7 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
   width: 100%;
   display: flex;
   align-items: center;
+  touch-action: manipulation;
 }
 .auth-input-wrap input {
   width: 100%;
@@ -1889,7 +1891,11 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
   color: var(--text-1);
   font-size: 14px;
   font-family: inherit;
-  line-height: 50px;
+  line-height: normal;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: text;
+  -webkit-user-select: text;
   transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
 .auth-input-wrap input:focus {
