@@ -203,7 +203,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=287" rel="stylesheet">
+  <link href="style.css?v=288" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -912,18 +912,9 @@
         <!-- Watch Streaming Pane -->
         <div class="fv-tab-pane" id="tab-watch">
           <!-- Stream Source Mode Switch (Visible in Native App Environment) -->
-          <div class="stream-source-switch" id="stream-source-switch">
-            <button type="button" class="src-mode-btn active" id="src-mode-cloud" onclick="Player.setSourceMode('cloud')">
-              <i class="fas fa-cloud"></i>
-              <span>Cloud Servers</span>
-              <span class="src-badge-tag tag-fast">FAST</span>
-            </button>
-            <div class="src-switch-divider"></div>
-            <button type="button" class="src-mode-btn" id="src-mode-direct" onclick="Player.setSourceMode('direct')">
-              <i class="fas fa-bolt"></i>
-              <span>Direct Stream</span>
-              <span class="src-badge-tag tag-vip">HLS</span>
-            </button>
+          <div class="stream-source-switch by-genre-toggle" id="stream-source-switch">
+            <button type="button" class="bgt-btn src-mode-btn active" id="src-mode-cloud" onclick="Player.setSourceMode('cloud')">CLOUD SERVERS</button>
+            <button type="button" class="bgt-btn src-mode-btn" id="src-mode-direct" onclick="Player.setSourceMode('direct')">DIRECT STREAM</button>
           </div>
 
           <!-- Server Selection for Cloud Servers -->
@@ -1167,7 +1158,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=39"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=287"></script>
+  <script src="script.js?v=288"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {

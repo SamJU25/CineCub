@@ -2600,17 +2600,16 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
 ================================================================ */
 .stream-source-switch {
   display: none;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 16px;
-  background: rgba(18, 14, 28, 0.85);
-  border: 1px solid rgba(157, 78, 221, 0.25);
-  padding: 5px;
-  border-radius: var(--r-pill);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  position: relative;
+  border: 1px solid var(--b-2);
+  border-radius: 8px;
+  background: rgba(12, 10, 20, 0.6);
+  padding: 3px;
+  height: 38px;
+  box-sizing: border-box;
+  margin-bottom: 14px;
+  width: 100%;
+  gap: 4px;
 }
 
 .is-app-env .stream-source-switch {
@@ -2625,105 +2624,42 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
   display: none !important;
 }
 
-.src-switch-divider {
-  width: 1px;
-  height: 24px;
-  background: rgba(157, 78, 221, 0.35);
-  flex-shrink: 0;
-  margin: 0 3px;
-  border-radius: 1px;
-}
-
 .src-mode-btn {
   flex: 1;
   position: relative;
-  padding: 10px 16px;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--r-pill);
-  color: var(--text-2);
-  font-size: 13.5px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  display: flex;
+  z-index: 1;
+  padding: 0 16px;
+  height: 100%;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--text-3);
   cursor: pointer;
-  user-select: none;
-  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  touch-action: manipulation;
   white-space: nowrap;
-}
-
-.src-mode-btn i {
-  font-size: 14px;
-  color: var(--cv-purple-light);
-  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), color 0.22s ease;
+  transition: all var(--motion-fast) var(--ease-standard);
+  user-select: none;
 }
 
 .src-mode-btn:hover:not(.active) {
-  background: rgba(36, 31, 61, 0.6);
-  color: #ffffff;
-  border-color: rgba(181, 95, 230, 0.3);
-}
-
-.src-mode-btn:hover:not(.active) i {
-  transform: translateY(-1px);
-  color: #ffffff;
+  color: var(--text-1);
 }
 
 .src-mode-btn:active {
-  transform: scale(0.98);
+  transform: scale(var(--press-scale));
 }
 
 .src-mode-btn.active {
-  background: var(--cv-gradient-1);
+  background: var(--cv-purple);
   color: #ffffff;
   font-weight: 800;
-  border: 1px solid transparent;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.src-mode-btn.active i {
-  color: #ffffff;
-}
-
-.src-badge-tag {
-  font-size: 9.5px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  line-height: 1;
-  padding: 3px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  background: var(--cv-dark-5);
-  color: var(--text-3);
-  border: 1px solid var(--b-2);
-  transition: all 0.2s ease;
-}
-
-.src-mode-btn.active .src-badge-tag {
-  background: rgba(0, 0, 0, 0.3);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.src-mode-btn:not(.active) .src-badge-tag {
-  background: var(--cv-dark-4);
-  color: var(--text-3);
-  border: 1px solid var(--b-2);
-}
-
-@media (max-width: 480px) {
-  .src-mode-btn {
-    padding: 9px 10px;
-    font-size: 12.5px;
-    gap: 6px;
-  }
-  .src-badge-tag {
-    font-size: 9px;
-    padding: 2px 5px;
-  }
 }
 
 .player-note-box {
@@ -2738,50 +2674,5 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
   line-height: 1.5;
 }
 
-/* Stream Section Mode Dividers */
-.stream-section-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 12px 0 10px 0;
-  width: 100%;
-}
-
-.ssd-line {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(157, 78, 221, 0.35), transparent);
-}
-
-.ssd-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10.5px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--text-2);
-  background: var(--cv-dark-4);
-  border: 1px solid rgba(157, 78, 221, 0.25);
-  padding: 4px 12px;
-  border-radius: var(--r-pill);
-  white-space: nowrap;
-}
-
-.ssd-badge i {
-  color: var(--cv-purple-light);
-  font-size: 11px;
-}
-
-.server-picker-label {
-  font-size: 13px;
-  color: var(--text-2);
-  margin-bottom: 6px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  margin-left: 2px;
-}
 
 
