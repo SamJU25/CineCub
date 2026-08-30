@@ -31,7 +31,7 @@
       }
     })();
   </script>
-  <link href="style.css?v=274" rel="stylesheet">
+  <link href="style.css?v=275" rel="stylesheet">
   <link rel="prefetch" href="index.html">
   <link rel="prerender" href="index.html">
   <style>
@@ -967,33 +967,22 @@
       const user = (typeof auth !== 'undefined' && auth && auth.currentUser) ? auth.currentUser : null;
       const displayName = user ? (user.displayName || user.email.split('@')[0]) : (localStorage.getItem('cachedName') || 'User');
       
-      const titleEl = document.getElementById('confirm-modal-title');
-      const textEl = document.getElementById('confirm-modal-text');
-      const btnEl = document.getElementById('confirm-modal-btn');
-      
-      if (titleEl) titleEl.textContent = 'Confirm Logout';
-      if (textEl) textEl.textContent = 'Are you sure you want to log out of ' + displayName + '?';
-      if (btnEl) {
-        btnEl.textContent = 'Logout';
-        btnEl.onclick = function() {
-          closeModals();
+      openConfirmModal(
+        'Confirm Logout',
+        'Are you sure you want to log out of ' + displayName + '?',
+        async function() {
           localStorage.removeItem('cachedAvatar');
           localStorage.removeItem('cachedName');
           localStorage.removeItem('cachedUsername');
           document.documentElement.classList.remove('has-cached-auth');
           
           if (typeof auth !== 'undefined' && auth) {
-            auth.signOut().catch(() => {}).finally(() => {
-              window.location.href = 'index.html';
-            });
-          } else {
-            window.location.href = 'index.html';
+            await auth.signOut().catch(() => {});
           }
-        };
-      }
-      
-      const modal = document.getElementById('modal-confirm');
-      if (modal) modal.classList.add('open');
+          window.location.href = 'index.html';
+        },
+        'Logout'
+      );
     }
 
     var Toast = {
@@ -1117,112 +1106,134 @@
       return error.message || defaultMsg;
     }
 
-    function openConfirmModal(title, text, actionFn) {
-      document.getElementById('confirm-modal-title').textContent = title;
-      document.getElementById('confirm-modal-text').textContent = text;
-      pendingConfirmAction = actionFn;
-      document.getElementById('modal-confirm').classList.add('open');
+    function openConfirmModal(title, text, actionFn, btnText) {
+      const titleEl = document.getElementById('confirm-modal-title');
+      const textEl = document.getElementById('confirm-modal-text');
+      const btnEl = document.getElementById('confirm-modal-btn');
+      
+      if (titleEl) titleEl.textContent = title || 'Confirm Action';
+      if (textEl) textEl.textContent = text || 'Are you sure?';
+      if (btnEl) {
+        btnEl.innerHTML = btnText || 'Confirm';
+        btnEl.disabled = false;
+        btnEl.onclick = async function(e) {
+          if (e) e.stopPropagation();
+          if (typeof actionFn === 'function') {
+            await actionFn();
+          }
+          closeModals();
+        };
+      }
+      const modal = document.getElementById('modal-confirm');
+      if (modal) modal.classList.add('open');
     }
 
-    document.getElementById('confirm-modal-btn').addEventListener('click', async function() {
-      if (pendingConfirmAction) {
-        const action = pendingConfirmAction;
-        pendingConfirmAction = null;
-        await action();
-      }
-      closeModals();
-    });
-
     function clearHistory() {
-      openConfirmModal('Clear Watch History', 'Permanently remove all watched titles? This cannot be undone.', async function() {
-        try {
-          if (auth && auth.currentUser && typeof db !== 'undefined') {
-            const uid = auth.currentUser.uid;
-            await db.collection('users').doc(uid).set({ history: [] }, { merge: true });
+      openConfirmModal(
+        'Clear Watch History',
+        'Permanently remove all watched titles? This cannot be undone.',
+        async function() {
+          try {
+            if (auth && auth.currentUser && typeof db !== 'undefined') {
+              const uid = auth.currentUser.uid;
+              await db.collection('users').doc(uid).set({ history: [] }, { merge: true });
+            }
+            localStorage.setItem(HISTORY_KEY, '[]');
+            renderGrid([], 'pf-hist-grid', 'pf-hist-empty');
+            const statHist = document.getElementById('stat-hist');
+            if (statHist) statHist.textContent = '0';
+            Toast.show("Watch history cleared successfully", "success");
+          } catch (e) {
+            console.error("Error clearing history:", e);
+            Toast.show("Failed to clear watch history. Please try again.", "error");
           }
-          localStorage.setItem(HISTORY_KEY, '[]');
-          renderGrid([], 'pf-hist-grid', 'pf-hist-empty');
-          const statHist = document.getElementById('stat-hist');
-          if (statHist) statHist.textContent = '0';
-          Toast.show("Watch history cleared successfully", "success");
-        } catch (e) {
-          console.error("Error clearing history:", e);
-          Toast.show("Failed to clear watch history. Please try again.", "error");
-        }
-      });
+        },
+        'Clear History'
+      );
     }
 
     function clearWatchlist() {
-      openConfirmModal('Clear Watchlist', 'Remove all saved titles from your watchlist? This cannot be undone.', async function() {
-        try {
-          if (auth && auth.currentUser && typeof db !== 'undefined') {
-            const uid = auth.currentUser.uid;
-            await db.collection('users').doc(uid).set({ watchlist: [] }, { merge: true });
+      openConfirmModal(
+        'Clear Watchlist',
+        'Remove all saved titles from your watchlist? This cannot be undone.',
+        async function() {
+          try {
+            if (auth && auth.currentUser && typeof db !== 'undefined') {
+              const uid = auth.currentUser.uid;
+              await db.collection('users').doc(uid).set({ watchlist: [] }, { merge: true });
+            }
+            localStorage.setItem(WATCH_KEY, '[]');
+            renderGrid([], 'pf-wl-grid', 'pf-wl-empty');
+            const statWl = document.getElementById('stat-wl');
+            if (statWl) statWl.textContent = '0';
+            Toast.show("Watchlist cleared successfully", "success");
+          } catch (e) {
+            console.error("Error clearing watchlist:", e);
+            Toast.show("Failed to clear watchlist. Please try again.", "error");
           }
-          localStorage.setItem(WATCH_KEY, '[]');
-          renderGrid([], 'pf-wl-grid', 'pf-wl-empty');
-          const statWl = document.getElementById('stat-wl');
-          if (statWl) statWl.textContent = '0';
-          Toast.show("Watchlist cleared successfully", "success");
-        } catch (e) {
-          console.error("Error clearing watchlist:", e);
-          Toast.show("Failed to clear watchlist. Please try again.", "error");
-        }
-      });
+        },
+        'Clear Watchlist'
+      );
     }
 
     function deleteAccount() {
-      openConfirmModal('Delete Account', 'Do you want to delete your profile? This action is permanent and will delete all your data from the server.', async function() {
-        if (!auth || !auth.currentUser) return;
-        const user = auth.currentUser;
-        const btn = document.getElementById('confirm-modal-btn');
-        const originalText = btn ? btn.innerHTML : 'Confirm';
-        if (btn) {
-          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...'; 
-          btn.disabled = true;
-        }
-        try {
-          const uid = user.uid;
-          
-          // 1. Clean up username mapping doc
-          if (typeof db !== 'undefined') {
-            const userDoc = await db.collection("users").doc(uid).get().catch(() => null);
-            if (userDoc && userDoc.exists) {
-              const uData = userDoc.data();
-              if (uData && uData.username) {
-                const lowerUsername = uData.username.toLowerCase();
-                await db.collection("usernames").doc(lowerUsername).delete().catch(e => console.warn(e));
-              }
-            }
-            // 2. Delete user doc from Firestore
-            await db.collection("users").doc(uid).delete().catch(e => console.warn(e));
-          }
-
-          // 3. Clear local storage cache
-          localStorage.removeItem('cachedAvatar');
-          localStorage.removeItem('cachedName');
-          localStorage.removeItem('cachedUsername');
-          localStorage.removeItem(WATCH_KEY);
-          localStorage.removeItem(HISTORY_KEY);
-
-          // 4. Delete Firebase Auth User
-          await user.delete();
-          Toast.show("Profile deleted successfully", "success");
-          closeModals();
-          setTimeout(() => {
-            window.location.href = 'index.html';
-          }, 500);
-        } catch (error) {
+      openConfirmModal(
+        'Delete Account',
+        'Do you want to delete your profile? This action is permanent and will delete all your data from the server.',
+        async function() {
+          if (!auth || !auth.currentUser) return;
+          const user = auth.currentUser;
+          const btn = document.getElementById('confirm-modal-btn');
+          const originalText = btn ? btn.innerHTML : 'Delete Account';
           if (btn) {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...'; 
+            btn.disabled = true;
           }
-          console.error("Account deletion error:", error);
-          const msg = formatAuthError(error, "Failed to delete account.");
-          Toast.show(msg, "error");
-          closeModals();
-        }
-      });
+          try {
+            const uid = user.uid;
+            
+            // 1. Clean up username mapping doc
+            if (typeof db !== 'undefined') {
+              const userDoc = await db.collection("users").doc(uid).get().catch(() => null);
+              if (userDoc && userDoc.exists) {
+                const uData = userDoc.data();
+                if (uData && uData.username) {
+                  const lowerUsername = uData.username.toLowerCase();
+                  await db.collection("usernames").doc(lowerUsername).delete().catch(e => console.warn(e));
+                }
+              }
+              // 2. Delete user doc from Firestore
+              await db.collection("users").doc(uid).delete().catch(e => console.warn(e));
+            }
+
+            // 3. Clear local storage cache
+            localStorage.removeItem('cachedAvatar');
+            localStorage.removeItem('cachedName');
+            localStorage.removeItem('cachedUsername');
+            localStorage.removeItem(WATCH_KEY);
+            localStorage.removeItem(HISTORY_KEY);
+            document.documentElement.classList.remove('has-cached-auth');
+
+            // 4. Delete Firebase Auth User
+            await user.delete();
+            Toast.show("Profile deleted successfully", "success");
+            closeModals();
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 400);
+          } catch (error) {
+            if (btn) {
+              btn.innerHTML = originalText;
+              btn.disabled = false;
+            }
+            console.error("Account deletion error:", error);
+            const msg = formatAuthError(error, "Failed to delete account.");
+            Toast.show(msg, "error");
+            closeModals();
+          }
+        },
+        'Delete Account'
+      );
     }
 
     function openAvatarModal() {
