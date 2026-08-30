@@ -26,14 +26,20 @@
     (function(){
       var isNative = navigator.userAgent.indexOf('StreamHeavenApp') !== -1 || !!window.StreamHeavenNativeApp || window.matchMedia('(display-mode: standalone)').matches;
       document.documentElement.classList.add(isNative ? 'is-app-env' : 'is-web-env');
+      if (localStorage.getItem('cachedName') || localStorage.getItem('cachedAvatar') || localStorage.getItem('cachedUsername')) {
+        document.documentElement.classList.add('has-cached-auth');
+      }
     })();
   </script>
-  <link href="style.css?v=264" rel="stylesheet">
+  <link href="style.css?v=267" rel="stylesheet">
   <link rel="prefetch" href="index.html">
+  <link rel="prerender" href="index.html">
   <style>
     :root { --profile-gutter: 28px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0a0a0f; color: #e8e8f0; min-height: 100vh; }
+    .has-cached-auth #pf-logged-in { display: flex !important; }
+    .has-cached-auth #pf-guest { display: none !important; }
     
     /* Layout Variables */
     :root {
@@ -58,6 +64,12 @@
       padding: 0 var(--profile-gutter);
       gap: 28px;
       align-items: flex-start;
+      animation: pfFadeIn 180ms ease-out;
+      will-change: opacity, transform;
+    }
+    @keyframes pfFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     /* Sidebar */
@@ -507,7 +519,7 @@
   <div class="pf-layout" id="pf-logged-in" style="display:none">
     
     <aside class="pf-sidebar">
-      <a class="pf-sidebar-brand" href="index.html">
+      <a class="pf-sidebar-brand" href="index.html" onclick="handleBack(event)">
         <img src="/assets/images/logo-icon.png" alt="StreamHeaven Icon">
         <span>StreamHeaven</span>
       </a>
@@ -524,7 +536,7 @@
       </div>
       
       <div class="pf-sidebar-actions">
-        <a class="pf-sidebar-btn btn-back" href="index.html"><i class="fas fa-arrow-left"></i> <span>Back</span></a>
+        <a class="pf-sidebar-btn btn-back" href="index.html" onclick="handleBack(event)"><i class="fas fa-arrow-left"></i> <span>Back</span></a>
         <button class="pf-sidebar-btn btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
       </div>
     </aside>
@@ -684,7 +696,7 @@
       <div class="pf-guest-icon"><i class="fas fa-user-lock"></i></div>
       <h2>Sign in to view your Profile</h2>
       <p>Create a free account to save your watchlist,<br>track your watch history, and more.</p>
-      <button class="pf-btn-login" onclick="window.location.href='index.html'">
+      <button class="pf-btn-login" onclick="handleBack(event)">
         <i class="fas fa-sign-in-alt" style="margin-right:8px"></i>Go to StreamHeaven
       </button>
     </div>
@@ -817,9 +829,18 @@
   <script src="lib/firebase-app-compat.js"></script>
   <script src="lib/firebase-auth-compat.js"></script>
   <script src="lib/firebase-firestore-compat.js"></script>
-  <script src="firebase-auth.js?v=37"></script>
+  <script src="firebase-auth.js?v=38"></script>
 
   <script>
+    function handleBack(e) {
+      if (e) e.preventDefault();
+      if (window.history.length > 1 && (document.referrer === '' || document.referrer.includes(window.location.host))) {
+        window.history.back();
+      } else {
+        window.location.href = 'index.html';
+      }
+    }
+
     var Toast = {
       show: function(msg, type){
         var c = document.getElementById('toast-container'); if(!c) return;
