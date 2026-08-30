@@ -78,6 +78,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             loadInitialUrl()
         }
+
+        // Check for App Updates in Background
+        AppUpdater.checkForUpdate(this)
     }
 
     private fun initViews() {

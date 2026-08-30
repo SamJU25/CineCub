@@ -1,0 +1,7 @@
+{
+  "versionCode": 1,
+  "versionName": "1.0.0",
+  "apkUrl": "https://streamheaven.online/StreamHeaven.apk",
+  "releaseNotes": "Initial native Android release with high-definition streaming, full-screen playback, and instant performance.",
+  "mandatory": false
+}
