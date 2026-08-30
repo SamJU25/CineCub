@@ -260,8 +260,8 @@
       <div class="header-center-area">
         <div class="search-container" id="search-container">
           <div class="search-input-wrap">
-            <i class="fas fa-search" style="color:var(--text-4); font-size:12px;"></i>
-            <input autocomplete="off" class="search-input" id="search-input" oninput="Search.onInput(this.value)" onkeypress="if(event.key==='Enter') { event.preventDefault(); Search.executeFullSearch(this.value); this.blur(); }" placeholder="Search movies, shows..." type="text">
+            <i class="fas fa-search" style="color:var(--text-4); font-size:12px; cursor:pointer;" onclick="Search.executeFullSearch(document.getElementById('search-input').value); document.getElementById('search-input').blur();" title="Search"></i>
+            <input autocomplete="off" class="search-input" id="search-input" oninput="Search.onInput(this.value)" onkeydown="if(event.key==='Enter') { event.preventDefault(); Search.executeFullSearch(this.value); this.blur(); }" onkeypress="if(event.key==='Enter') { event.preventDefault(); Search.executeFullSearch(this.value); this.blur(); }" placeholder="Search movies, shows..." type="text">
           </div>
           <div class="search-results-dropdown" id="search-dropdown">
             <div class="srd-header"><span>Search Results</span><span onclick="Search.closeDropdown()" style="cursor:pointer;"><i class="fas fa-times"></i></span></div>

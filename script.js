@@ -193,6 +193,7 @@ var API = {
   popular:  function(type, page){ return API.fetch(API.url('/'+(type||'movie')+'/popular',{page:page||1})); },
   upcoming: function(page){ return API.fetch(API.url('/movie/upcoming',{page:page||1})); },
   anime:    function(page){ return API.fetch(API.url('/discover/tv',{page:page||1, with_genres:16, with_original_language:'ja'})); },
+  search:   function(query, page){ return API.fetch(API.url('/search/multi',{query:query||'', page:page||1})); },
   detail: async function(id,type){ 
     if(type==='person') {
       var res = await API.fetch(API.url('/person/'+id,{append_to_response:'combined_credits,external_ids'}));
@@ -581,6 +582,7 @@ var App = {
 /* Search Module */
 var Search = {
   timer: null,
+  currentQuery: '',
   dropdownQuery: '',
   dropdownPage: 1,
   dropdownHasMore: false,
@@ -589,22 +591,29 @@ var Search = {
   onInput: function(q){
     clearTimeout(this.timer);
     var d = document.getElementById('search-dropdown');
-    if(!q || !q.trim()){ d.classList.remove('open'); return; }
-    d.classList.add('open');
+    if(!q || !q.trim()){ if(d) d.classList.remove('open'); return; }
+    if(d) d.classList.add('open');
     this.dropdownQuery = q;
     this.dropdownPage = 1;
     this.dropdownHasMore = true;
-    document.getElementById('srd-results').innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);">Searching TMDB...</div>';
-    this.timer = setTimeout(()=>{ this.doSearch(q); }, 400);
+    var resultsEl = document.getElementById('srd-results');
+    if(resultsEl) resultsEl.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);"><i class="fas fa-circle-notch fa-spin" style="margin-right:6px;"></i> Searching TMDB...</div>';
+    this.timer = setTimeout(()=>{ this.doSearch(q); }, 350);
   },
   doSearch: function(q){
     if(this.isDropdownFetching) return;
     this.isDropdownFetching = true;
     API.search(q, 1).then(data => {
       this.isDropdownFetching = false;
+      var curVal = (document.getElementById('search-input') ? document.getElementById('search-input').value : '').trim();
+      if(curVal && curVal.toLowerCase() !== q.trim().toLowerCase()) {
+        this.doSearch(curVal);
+        return;
+      }
       var r = ((data && data.results) || []).filter(x => x.poster_path && x.media_type!=='person');
       
       var container = document.getElementById('srd-results');
+      if(!container) return;
       if(!r.length){ 
         container.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text-3);">No results found.</div>'; 
         return; 
@@ -625,17 +634,31 @@ var Search = {
       }
     }).catch(err => {
       this.isDropdownFetching = false;
+      var container = document.getElementById('srd-results');
+      if(container) container.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--cv-red);">Error loading results.</div>';
     });
   },
   initDropdownObserver: function() {
     // Deprecated: Dropdown uses 'View all results' button now instead of infinite scroll
   },
-  closeDropdown: function(){ document.getElementById('search-dropdown').classList.remove('open'); },
+  closeDropdown: function(){ 
+    var d = document.getElementById('search-dropdown');
+    if(d) d.classList.remove('open'); 
+  },
   executeFullSearch: function(q, isAppend) {
     if(!q || !q.trim()) return;
+    q = q.trim();
     this.closeDropdown();
+    this.currentQuery = q;
+    var inputEl = document.getElementById('search-input');
+    if(inputEl && inputEl.value !== q) inputEl.value = q;
+
     if (!isAppend) {
       App.showPage('page-search');
+      var bCurrent = document.getElementById('breadcrumb-current');
+      if(bCurrent) bCurrent.textContent = 'Search';
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.mbb-btn').forEach(el => el.classList.remove('active'));
     }
     var titleEl = document.getElementById('search-title');
     if(titleEl) titleEl.innerText = 'Search Results for "'+q+'"';
@@ -657,7 +680,7 @@ var Search = {
       var r = ((data && data.results) || []).filter(x => x.poster_path && x.media_type!=='person');
       if(grid) {
         if(!isAppend && !r.length) { 
-          grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No results found.</div>';
+          grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3);grid-column:1/-1;">No results found for "'+Utils.escape(q)+'".</div>';
           State.hasMore = false;
         } else if (r.length) {
           var html = r.map(item => Render.posterCard(item, item.media_type||'movie')).join('');
@@ -685,7 +708,10 @@ var Search = {
   },
   focusMobile: function(){
     window.scrollTo({top:0,behavior:'smooth'});
-    setTimeout(function() { document.getElementById('search-input').focus(); }, 300);
+    setTimeout(function() { 
+      var input = document.getElementById('search-input');
+      if(input) input.focus(); 
+    }, 300);
   }
 };
 
@@ -2794,6 +2820,15 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }
 
+  var searchParam = urlParams.get('q') || urlParams.get('search') || urlParams.get('s');
+  if(searchParam){
+    var searchInput = document.getElementById('search-input');
+    if(searchInput) searchInput.value = searchParam;
+    setTimeout(function(){
+      Search.executeFullSearch(searchParam);
+    }, 300);
+  }
+
   // Infinite Scroll Observer
   var sentinel = document.getElementById('infinite-scroll-trigger');
   if(sentinel && window.IntersectionObserver) {
@@ -2813,7 +2848,7 @@ document.addEventListener('DOMContentLoaded', function(){
     window.observerSearch = new IntersectionObserver(function(entries){
       if(entries[0].isIntersecting && State.activePage === 'page-search' && !State.isFetching && State.hasMore !== false) {
         State.browsePage++;
-        Search.executeFullSearch(document.getElementById('search-input').value, true);
+        Search.executeFullSearch(Search.currentQuery || document.getElementById('search-input').value, true);
       }
     }, {rootMargin: '200px'});
     window.observerSearch.observe(sentinelSearch);
@@ -2839,6 +2874,7 @@ document.addEventListener('DOMContentLoaded', function(){
   // Global Keyboard Shortcuts
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+      Search.closeDropdown();
       if (document.getElementById('modal-overlay') && document.getElementById('modal-overlay').classList.contains('open')) {
         Modal.closeAll();
       } else if (document.getElementById('auth-modal-overlay') && document.getElementById('auth-modal-overlay').classList.contains('open')) {
