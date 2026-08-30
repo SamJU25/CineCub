@@ -715,8 +715,8 @@ a.telegram-nav-item {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  background: linear-gradient(135deg, rgba(34, 158, 217, 0.15) 0%, rgba(16, 16, 26, 0.9) 100%);
-  border: 1px solid rgba(34, 158, 217, 0.35);
+  background: linear-gradient(135deg, rgba(157, 78, 221, 0.15) 0%, rgba(16, 16, 26, 0.95) 100%);
+  border: 1px solid rgba(157, 78, 221, 0.35);
   border-radius: var(--r-xl);
   padding: 24px 28px;
   margin-top: 24px;
@@ -732,7 +732,7 @@ a.telegram-nav-item {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #229ED9, #c77dff);
+  background: linear-gradient(90deg, #7b2cbf, #c77dff);
 }
 .tg-banner-left {
   display: flex;
@@ -743,15 +743,15 @@ a.telegram-nav-item {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: rgba(34, 158, 217, 0.2);
-  color: #229ED9;
+  background: rgba(157, 78, 221, 0.18);
+  color: #c77dff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 26px;
   flex-shrink: 0;
-  border: 1px solid rgba(34, 158, 217, 0.4);
-  box-shadow: 0 0 16px rgba(34, 158, 217, 0.3);
+  border: 1px solid rgba(157, 78, 221, 0.4);
+  box-shadow: 0 0 16px rgba(157, 78, 221, 0.3);
 }
 .tg-banner-text h3 {
   font-size: 17px;
@@ -770,7 +770,7 @@ a.telegram-nav-item {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #229ED9;
+  background: linear-gradient(135deg, #7b2cbf, #9d4edd);
   color: #ffffff !important;
   font-size: 13px;
   font-weight: 800;
@@ -780,12 +780,12 @@ a.telegram-nav-item {
   white-space: nowrap;
   flex-shrink: 0;
   transition: transform var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard), background var(--motion-fast) var(--ease-standard);
-  box-shadow: 0 4px 16px rgba(34, 158, 217, 0.4);
+  box-shadow: 0 4px 16px rgba(157, 78, 221, 0.4);
 }
 .tg-banner-btn:hover {
   transform: translateY(-2px);
-  background: #1d8cc4;
-  box-shadow: 0 6px 20px rgba(34, 158, 217, 0.6);
+  background: linear-gradient(135deg, #9d4edd, #c77dff);
+  box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6);
 }
 .tg-banner-btn:active {
   transform: scale(var(--press-scale));
@@ -915,7 +915,7 @@ a.telegram-nav-item {
   -webkit-tap-highlight-color: transparent;
 }
 .acf-btn-telegram i {
-  color: #0088cc;
+  color: #c77dff;
   font-size: 14px;
   transition: color 0.18s ease;
 }
