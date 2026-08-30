@@ -3201,22 +3201,25 @@ function initFAQAccordion() {
 
     summary.addEventListener('click', function(e) {
       e.preventDefault();
-      if (details.classList.contains('is-animating')) return;
+      if (details.dataset.animating === 'true') return;
 
       if (details.open) {
         // Smooth collapse
-        details.classList.add('is-closing', 'is-animating');
+        details.dataset.animating = 'true';
+        details.classList.add('is-closing');
         setTimeout(() => {
           details.removeAttribute('open');
-          details.classList.remove('is-closing', 'is-animating');
-        }, 240);
+          details.classList.remove('is-closing');
+          details.dataset.animating = 'false';
+        }, 260);
       } else {
         // Smooth expand
+        details.dataset.animating = 'true';
+        details.classList.remove('is-closing');
         details.setAttribute('open', '');
-        details.classList.add('is-animating');
         setTimeout(() => {
-          details.classList.remove('is-animating');
-        }, 240);
+          details.dataset.animating = 'false';
+        }, 260);
       }
     });
   });
