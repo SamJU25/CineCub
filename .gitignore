@@ -9,3 +9,11 @@ StreamHeaven-API/
 serviceAccountKey.json
 *.pdf
 
+# Android build artifacts and local configs
+.gradle/
+**/android-app/.gradle/
+**/android-app/build/
+**/android-app/app/build/
+**/android-app/local.properties
+**/android-app/.idea/
+*.iml
