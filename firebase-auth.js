@@ -463,46 +463,37 @@ async function handleSignup(e) {
 
 
 window.handleLogout = function() {
-  const user = auth.currentUser;
-  let userImageHtml = `<div style="width: 56px; height: 56px; border-radius: 14px; background: rgba(255, 75, 75, 0.10); color: #ff5c5c; border: 1px solid rgba(255, 75, 75, 0.20); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px;"><i class="fas fa-sign-out-alt"></i></div>`;
-  let userNameHtml = '';
-
-  if (user) {
-      let photoURL = user.photoURL;
-      if (photoURL && photoURL.includes('assets/avatars/av_')) {
-          photoURL = photoURL.replace('.jpg', '.png');
-          const match = photoURL.match(/av_(\d+)\.png/);
-          if (match && parseInt(match[1]) > 21) {
-              photoURL = '/assets/avatars/av_1.png?v=3';
-          } else if (!photoURL.startsWith('/')) {
-              photoURL = '/' + photoURL;
-          }
+  const user = (typeof auth !== 'undefined' && auth && auth.currentUser) ? auth.currentUser : null;
+  let photoURL = user ? user.photoURL : (localStorage.getItem('cachedAvatar') || '/assets/avatars/av_1.png?v=3');
+  let displayName = user ? (user.displayName || user.email.split('@')[0]) : (localStorage.getItem('cachedName') || localStorage.getItem('cachedUsername') || 'User');
+  
+  if (photoURL && photoURL.includes('assets/avatars/av_')) {
+      photoURL = photoURL.replace('.jpg', '.png');
+      const match = photoURL.match(/av_(\d+)\.png/);
+      if (match && parseInt(match[1]) > 21) {
+          photoURL = '/assets/avatars/av_1.png?v=3';
+      } else if (!photoURL.startsWith('/')) {
+          photoURL = '/' + photoURL;
       }
-      const displayName = user.displayName || user.email.split('@')[0];
-      
-      if (photoURL) {
-          userImageHtml = `<img src="${photoURL}" alt="User Avatar" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; margin: 0 auto 10px auto; display: block; border: 3px solid var(--cv-dark-2);">`;
-      } else {
-          const initial = displayName.charAt(0).toUpperCase();
-          userImageHtml = `<div style="width: 80px; height: 80px; border-radius: 50%; background: var(--cv-dark-2); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 0 auto 10px auto; border: 3px solid var(--cv-dark-2);">${initial}</div>`;
-      }
-      userNameHtml = `<div style="color: var(--text-2); font-size: 16px; font-weight: 600; margin-bottom: 20px;">${displayName}</div>`;
   }
 
+  const userImageHtml = `<img src="${photoURL}" alt="User Avatar" style="width: 72px; height: 72px; object-fit: cover; border-radius: 50%; margin: 0 auto 12px auto; display: block; border: 2px solid rgba(157, 78, 221, 0.4); box-shadow: 0 0 16px rgba(157, 78, 221, 0.25);">`;
+  const userNameHtml = `<div style="color: #ffffff; font-size: 17px; font-weight: 800; font-family: inherit; margin-bottom: 18px;">${displayName}</div>`;
+
   const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s ease;';
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:99999;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.22s ease;';
   
   const modal = document.createElement('div');
-  modal.style.cssText = 'background:var(--cv-dark-1);border:1px solid var(--b-2);border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,0.5);width:90%;max-width:400px;text-align:center;padding:30px;transform:scale(0.9);opacity:0;transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);';
+  modal.style.cssText = 'background:#101018;border:1px solid rgba(255,255,255,0.1);border-radius:20px;box-shadow:0 24px 48px rgba(0,0,0,0.7);width:90%;max-width:380px;text-align:center;padding:32px 24px;transform:scale(0.92);opacity:0;transition:all 0.22s cubic-bezier(0.16, 1, 0.3, 1);font-family: inherit;';
   
   modal.innerHTML = `
     ${userImageHtml}
     ${userNameHtml}
-    <h3 style="font-size: 22px; font-weight: 800; margin-bottom: 10px; color: #fff; font-family: inherit;">Confirm Logout</h3>
-    <p style="color: var(--text-3); font-size: 14px; margin-bottom: 26px; line-height: 1.5;">Are you sure you want to log out of StreamHeaven?</p>
+    <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 8px; color: #fff; font-family: inherit;">Confirm Logout</h3>
+    <p style="color: rgba(232,232,240,0.6); font-size: 14px; margin-bottom: 24px; line-height: 1.5;">Are you sure you want to log out of StreamHeaven?</p>
     <div style="display: flex; gap: 12px; justify-content: center;">
-      <button id="btn-cancel-logout" style="background: var(--cv-dark-4); color: var(--text-2); border: 1px solid var(--b-2); padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s, color 0.2s; flex: 1; font-family: inherit;">Cancel</button>
-      <button id="btn-confirm-logout" style="background: rgba(255, 75, 75, 0.12); color: #ff5c5c; border: 1px solid rgba(255, 75, 75, 0.25); padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; flex: 1; font-family: inherit;">Logout</button>
+      <button id="btn-cancel-logout" style="background: rgba(255,255,255,0.06); color: #e8e8f0; border: 1px solid rgba(255,255,255,0.08); padding: 13px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background 0.18s; flex: 1; font-family: inherit; font-size: 14px;">Cancel</button>
+      <button id="btn-confirm-logout" style="background: rgba(255, 75, 75, 0.14); color: #ff5c5c; border: 1px solid rgba(255, 75, 75, 0.3); padding: 13px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background 0.18s; flex: 1; font-family: inherit; font-size: 14px;">Logout</button>
     </div>
   `;
 
@@ -517,34 +508,38 @@ window.handleLogout = function() {
 
   const close = () => {
     overlay.style.opacity = '0';
-    modal.style.transform = 'scale(0.9)';
+    modal.style.transform = 'scale(0.92)';
     modal.style.opacity = '0';
-    setTimeout(() => overlay.remove(), 300);
+    setTimeout(() => overlay.remove(), 220);
   };
 
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+
   document.getElementById('btn-cancel-logout').addEventListener('click', close);
-  document.getElementById('btn-cancel-logout').addEventListener('mouseover', function() { this.style.background = 'var(--cv-dark-3)'; this.style.color = '#fff'; });
-  document.getElementById('btn-cancel-logout').addEventListener('mouseout', function() { this.style.background = 'var(--cv-dark-4)'; this.style.color = 'var(--text-2)'; });
   
   document.getElementById('btn-confirm-logout').addEventListener('click', () => {
     close();
-    if(auth) {
-      if (typeof userDataUnsubscribe === 'function') {
-        userDataUnsubscribe();
-        userDataUnsubscribe = null;
-      }
-      auth.signOut().then(() => {
-        if (window.location.pathname.includes('profile.html')) {
-          window.location.href = 'index.html';
-        } else if(typeof App !== 'undefined') {
-          if(typeof Toast !== 'undefined') Toast.show("Logged out successfully", "success");
-        }
+    localStorage.removeItem('cachedAvatar');
+    localStorage.removeItem('cachedName');
+    localStorage.removeItem('cachedUsername');
+    document.documentElement.classList.remove('has-cached-auth');
+    
+    if (typeof userDataUnsubscribe === 'function') {
+      userDataUnsubscribe();
+      userDataUnsubscribe = null;
+    }
+    
+    if (typeof auth !== 'undefined' && auth) {
+      auth.signOut().catch(() => {}).finally(() => {
+        window.location.href = 'index.html';
       });
+    } else {
+      window.location.href = 'index.html';
     }
   });
-  document.getElementById('btn-confirm-logout').addEventListener('mouseover', function() { this.style.background = 'rgba(255, 75, 75, 0.20)'; this.style.color = '#ff6b6b'; this.style.borderColor = 'rgba(255, 75, 75, 0.35)'; });
-  document.getElementById('btn-confirm-logout').addEventListener('mouseout', function() { this.style.background = 'rgba(255, 75, 75, 0.12)'; this.style.color = '#ff5c5c'; this.style.borderColor = 'rgba(255, 75, 75, 0.25)'; });
-}
+};
 
 // Global Auth State Observer
 if (auth) {
