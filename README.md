@@ -43,12 +43,12 @@
 
 ```mermaid
 graph TD
-    Client[📱 Android App / 💻 Web Browser] -->|HTTPS Requests| CF[⚡ Cloudflare Edge Network]
-    CF -->|Static Assets & PWA Cache| SW[📦 Service Worker (v264)]
-    CF -->|/api/tmdb/* Proxy| CFWorkers[⚙️ Cloudflare Serverless Function]
-    CFWorkers -->|Injected Secret API Key| TMDB[(TMDB Database API v3)]
-    Client -->|User Auth & Cloud Watchlist| FB[(🔥 Firebase Auth & Firestore)]
-    Client -->|Ad-Free HLS Streams| APIBack[(🚀 StreamHeaven Scraper Backend)]
+    Client["📱 Android App / 💻 Web Browser"] -->|"HTTPS Requests"| CF["⚡ Cloudflare Edge Network"]
+    CF -->|"Static Assets & PWA Cache"| SW["📦 Service Worker Caching"]
+    CF -->|"TMDB API Proxy"| CFWorkers["⚙️ Cloudflare Serverless Function"]
+    CFWorkers -->|"Secret API Key Injection"| TMDB[("🎬 TMDB Database API v3")]
+    Client -->|"User Auth & Cloud Watchlist"| FB[("🔥 Firebase Auth & Firestore")]
+    Client -->|"Ad-Free HLS Streams"| APIBack[("🚀 StreamHeaven Scraper Backend")]
 ```
 
 ---
