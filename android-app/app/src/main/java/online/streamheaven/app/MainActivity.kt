@@ -11,10 +11,12 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Message
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import java.io.ByteArrayInputStream
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
@@ -133,6 +135,10 @@ class MainActivity : AppCompatActivity() {
         @Suppress("DEPRECATION")
         settings.setRenderPriority(WebSettings.RenderPriority.HIGH)
 
+        // Anti-Popup Controls: Prevent iframes from opening unwanted popup windows
+        settings.javaScriptCanOpenWindowsAutomatically = false
+        settings.setSupportMultipleWindows(false)
+
         // Custom User Agent string
         val defaultUserAgent = settings.userAgentString
         settings.userAgentString = "$defaultUserAgent StreamHeavenApp/1.0.0 (Android)"
@@ -170,6 +176,16 @@ class MainActivity : AppCompatActivity() {
 
         // WebChromeClient (Handles Fullscreen Videos, Progress, and Permissions)
         webView.webChromeClient = object : WebChromeClient() {
+
+            override fun onCreateWindow(
+                view: WebView?,
+                isDialog: Boolean,
+                isUserGesture: Boolean,
+                resultMsg: Message?
+            ): Boolean {
+                // Reject all popup window creation requests from embedded iframes
+                return false
+            }
 
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
@@ -238,8 +254,24 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // WebViewClient (Handles Navigation, Intents, and Error States)
+        // WebViewClient (Handles Navigation, Ad Interception, Intents, and Error States)
         webView.webViewClient = object : WebViewClient() {
+
+            override fun shouldInterceptRequest(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): WebResourceResponse? {
+                val url = request?.url?.toString()?.lowercase() ?: return super.shouldInterceptRequest(view, request)
+                if (isAdResource(url)) {
+                    // Drop unwanted ad network and tracker requests immediately
+                    return WebResourceResponse(
+                        "text/plain",
+                        "UTF-8",
+                        ByteArrayInputStream(ByteArray(0))
+                    )
+                }
+                return super.shouldInterceptRequest(view, request)
+            }
 
             override fun shouldOverrideUrlLoading(
                 view: WebView?,
@@ -301,23 +333,79 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Checks if a network request URL belongs to known video player ad networks, popunders, or trackers.
+     */
+    private fun isAdResource(url: String): Boolean {
+        val adKeywords = arrayOf(
+            "popcash", "popads", "monetag", "adsterra", "exoclick", "propellerads",
+            "juicyads", "trafficjunky", "adsco.re", "onclick", "syndication",
+            "adkeeper", "admaven", "clickadu", "hilltopads", "richpush", "evadav",
+            "ezmob", "bet365", "1xbet", "parimatch", "mostbet", "melbet", "linebet",
+            "dafabet", "stake.com", "pin-up", "adservice", "adtrue", "adnxs",
+            "cpmstar", "a-ads", "yllix", "bidvertiser", "ad-maven", "trafficstars",
+            "zeroredirect", "clicksor", "adcash", "inpagepush", "adnium", "vulkan",
+            "doubleclick.net", "googleads.g.doubleclick.net", "trafficfactory",
+            "tsyndicate", "creative.ad", "trackjs", "adnxs.com"
+        )
+        for (keyword in adKeywords) {
+            if (url.contains(keyword)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * Navigation and intent router. Prevents iframe players from hijacking the parent window,
+     * opening external browser popups, or launching external betting apps.
+     */
     private fun handleUrlNavigation(url: String): Boolean {
         val uri = Uri.parse(url)
+        val scheme = uri.scheme?.lowercase() ?: ""
         val host = uri.host?.lowercase() ?: ""
 
-        // Handle internal app navigation (streamheaven.online)
-        if (host.contains("streamheaven.online") || host.contains("firebaseapp.com")) {
+        // 1. Internal App & Trusted Infrastructure Domains -> Allow inside WebView
+        if (host.contains("streamheaven.online") ||
+            host.contains("firebaseapp.com") ||
+            host.contains("googleapis.com") ||
+            host.contains("tmdb.org") ||
+            host.contains("themoviedb.org") ||
+            host.contains("cloudflareinsights.com") ||
+            host.contains("jsdelivr.net") ||
+            host.contains("cdnjs.cloudflare.com")
+        ) {
             return false
         }
 
-        // Handle External Protocols (mailto:, tel:, intent:, tg:, market:)
-        return try {
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-            startActivity(intent)
-            true
-        } catch (e: Exception) {
-            false
+        // 2. Video Player Embed Hosts -> Allow inside WebView iframe
+        val videoEmbedHosts = arrayOf(
+            "vidlink.pro", "vidsrc.me", "vidsrc.to", "vidsrc.net", "vidsrc.in", "vidsrc.pm", "vidsrc.xyz",
+            "autoembed.co", "autoembed.cc", "autoembed.to", "multiembed.mov", "cinesrc.st",
+            "embed.su", "2embed.cc", "2embed.skin", "superembed.stream", "smashystream.com",
+            "rive.stream", "videasy.net", "player.autoembed.cc"
+        )
+        for (embedHost in videoEmbedHosts) {
+            if (host.contains(embedHost)) {
+                return false
+            }
         }
+
+        // 3. User-Initiated Social & External Contact (Telegram Community, Email, Phone)
+        if (host.contains("t.me") || host.contains("telegram.me") || scheme == "mailto" || scheme == "tel") {
+            return try {
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
+
+        // 4. Block all other unsolicited external redirects, intent popups, betting apps, and ad stores
+        // Returning true prevents WebView from following or spawning external apps for the URL
+        return true
     }
 
     private fun setupSwipeRefresh() {
