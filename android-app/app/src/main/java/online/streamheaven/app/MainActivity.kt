@@ -226,12 +226,14 @@ class MainActivity : AppCompatActivity() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 isPageError = false
+                view?.evaluateJavascript("document.documentElement.classList.add('is-app-env');", null)
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 swipeRefreshLayout.isRefreshing = false
                 pageProgressBar.visibility = View.GONE
+                view?.evaluateJavascript("document.documentElement.classList.add('is-app-env');", null)
 
                 if (!isPageError) {
                     offlineLayout.visibility = View.GONE

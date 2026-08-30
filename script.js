@@ -3145,3 +3145,25 @@ if (document.readyState === 'loading') {
 } else {
   initFAQAccordion();
 }
+
+/* ================================================================ 
+   APP / PWA ENVIRONMENT DETECTION
+================================================================ */
+(function detectAppEnvironment() {
+  function check() {
+    if (
+      navigator.userAgent.indexOf('StreamHeavenApp') !== -1 ||
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true ||
+      document.referrer.indexOf('android-app://') !== -1
+    ) {
+      document.documentElement.classList.add('is-app-env');
+      if (document.body) document.body.classList.add('is-app-env');
+    }
+  }
+  check();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', check);
+  }
+})();
+

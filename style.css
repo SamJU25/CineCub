@@ -792,6 +792,21 @@ a.telegram-nav-item {
 .footer-btn-app {background:rgba(157, 78, 221, 0.09);color:#d8b4fe !important;border-color:rgba(157, 78, 221, 0.28)}
 .footer-btn-app:hover {background:var(--cv-purple);color:#ffffff !important;border-color:var(--cv-purple);transform:translateY(-1px);box-shadow:0 4px 14px rgba(157, 78, 221, 0.35)}
 .footer-btn:active {transform:scale(0.97)}
+
+/* Hide App Download Buttons when already running inside the App */
+.is-app-env .header-app-btn,
+.is-app-env .footer-btn-app,
+.is-app-env #apps-modal {
+  display: none !important;
+}
+
+@media all and (display-mode: standalone) {
+  .header-app-btn,
+  .footer-btn-app,
+  #apps-modal {
+    display: none !important;
+  }
+}
 .footer-col-title {font-size:12px;font-weight:800;color:var(--text-1);text-transform:uppercase;margin-bottom:20px;letter-spacing:1px}
 .footer-links {display:flex;flex-direction:column;gap:14px}
 .footer-link {display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--text-3);cursor:pointer;transition:var(--t-fast);white-space:nowrap;text-decoration:none}
