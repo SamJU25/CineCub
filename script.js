@@ -1758,6 +1758,7 @@ var Modal = {
       cloneMain.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write');
       cloneMain.setAttribute('allowfullscreen', '');
       cloneMain.setAttribute('scrolling', 'no');
+      cloneMain.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock');
       cloneMain.src = 'about:blank';
       if (iframe.parentNode) iframe.parentNode.replaceChild(cloneMain, iframe);
     }
@@ -2237,8 +2238,8 @@ var Player = {
     var iframe = document.getElementById('main-player');
     iframe.style.display = 'block';
     
-    // Removed sandbox completely because most providers actively detect and block it
-    iframe.removeAttribute('sandbox');
+    // Strict Anti-Redirect Sandbox: prevents iframe from hijacking parent window or prompting beforeunload
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation allow-pointer-lock');
 
     var s=CFG.SERVERS[State.activeServer], url, season=null, episode=null, savedTime=0;
     
