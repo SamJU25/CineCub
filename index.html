@@ -195,7 +195,7 @@
   </script>
 
   <!-- STYLESHEET -->
-  <link href="style.css?v=251" rel="stylesheet">
+  <link href="style.css?v=252" rel="stylesheet">
 </head>
 <body id="cv-app">
 
@@ -461,8 +461,9 @@
           <div class="cv-hscroll" id="row-newreleases"></div>
         </section>
 
-        <!-- SEO CONTENT & GUIDE SECTION -->
-        <section class="section-wrapper seo-content-section">
+        <!-- SEO CONTENT & GUIDE SECTION (VISIBLE ON WEB FOR SEARCH ENGINES, HIDDEN IN APP) -->
+        <div class="seo-section-wrapper">
+          <section class="section-wrapper seo-content-section">
           <div class="seo-content-card">
             <div class="seo-badge"><i class="fas fa-play-circle"></i> ULTIMATE STREAMING PLATFORM</div>
             <h2 class="seo-title">Watch Free Movies, TV Series &amp; Anime Online on StreamHeaven</h2>
@@ -549,6 +550,7 @@
             </details>
           </div>
         </section>
+        </div> <!-- /seo-section-wrapper -->
 
       </div>
     </div>
@@ -719,6 +721,33 @@
         <div class="footer-bottom">
           <div class="footer-copy">&copy; 2026 StreamHeaven. All rights reserved. Powered by TMDB API.</div>
           <div class="footer-disclaimer">Disclaimer: StreamHeaven does not host any media files. All video contents are provided by non-affiliated third parties. User data is securely stored on Firebase.</div>
+        </div>
+
+        <!-- COMPACT NATIVE APP FOOTER (Active in Android App) -->
+        <div class="app-compact-footer">
+          <div class="acf-brand">
+            <img src="/assets/images/icon-logo.png" alt="StreamHeaven" class="acf-logo">
+            <div class="acf-info">
+              <div class="acf-name">StreamHeaven</div>
+              <div class="acf-tagline">Unlimited Entertainment • v1.0.5</div>
+            </div>
+          </div>
+          <div class="acf-actions">
+            <a href="https://t.me/StreamHeavenOnline" target="_blank" rel="noopener noreferrer" class="acf-btn-telegram" title="Join StreamHeaven Telegram">
+              <i class="fab fa-telegram-plane"></i> Join Telegram
+            </a>
+            <a href="mailto:streamheaven.support@gmail.com" class="acf-btn-contact" title="Contact Support">
+              <i class="fas fa-envelope"></i> Support
+            </a>
+          </div>
+          <div class="acf-links">
+            <span onclick="Legal.open('dmca')">DMCA</span>
+            <span class="acf-dot">•</span>
+            <span onclick="Legal.open('privacy')">Privacy</span>
+            <span class="acf-dot">•</span>
+            <span onclick="Legal.open('terms')">Terms</span>
+          </div>
+          <div class="acf-copy">&copy; 2026 StreamHeaven • Powered by TMDB</div>
         </div>
       </div>
     </footer>
@@ -1112,7 +1141,7 @@
   <script src="lib/firebase-firestore-compat.js"></script>
   <script src="firebase-auth.js?v=38"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="script.js?v=251"></script>
+  <script src="script.js?v=252"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
