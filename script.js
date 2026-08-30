@@ -1170,6 +1170,10 @@ var Spotlight = {
    05. DRAG & SLIDE ANIMATION FOR HORIZONTAL CAROUSELS
 ================================================================ */
 function initDragScroll(){
+  // On mobile touch devices, let native hardware compositor handle momentum flings with zero delay
+  if ('ontouchstart' in window || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0)) {
+    return;
+  }
   document.querySelectorAll('.cv-hscroll').forEach(function(el){
     if (el.dataset.dragInit === 'true') return; 
     el.dataset.dragInit = 'true';
