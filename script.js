@@ -1,5 +1,18 @@
 'use strict';
 
+// Anti-Hijack Guard: Prevents third-party iframe embed players from popping "Confirm Navigation" dialogs
+window.addEventListener('beforeunload', function(e) {
+  delete e['returnValue'];
+});
+try {
+  window.onbeforeunload = null;
+  Object.defineProperty(window, 'onbeforeunload', {
+    get: function() { return null; },
+    set: function() { return false; },
+    configurable: false
+  });
+} catch(e) {}
+
 /* ================================================================
    00. UI SCROLL LOCK HELPER (FIXES THE PAGE BLINK/SHIFT)
 ================================================================ */

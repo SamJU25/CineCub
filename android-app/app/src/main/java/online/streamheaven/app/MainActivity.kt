@@ -19,6 +19,7 @@ import android.view.WindowManager
 import java.io.ByteArrayInputStream
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
+import android.webkit.JsResult
 import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -187,6 +188,47 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
 
+            override fun onJsBeforeUnload(
+                view: WebView?,
+                url: String?,
+                message: String?,
+                result: JsResult?
+            ): Boolean {
+                // Automatically suppress "Confirm Navigation" popups from third-party players
+                result?.cancel()
+                return true
+            }
+
+            override fun onJsAlert(
+                view: WebView?,
+                url: String?,
+                message: String?,
+                result: JsResult?
+            ): Boolean {
+                val host = Uri.parse(url ?: "").host?.lowercase() ?: ""
+                if (host.contains("streamheaven.online")) {
+                    return super.onJsAlert(view, url, message, result)
+                }
+                // Suppress rogue alerts from third-party embed iframes
+                result?.cancel()
+                return true
+            }
+
+            override fun onJsConfirm(
+                view: WebView?,
+                url: String?,
+                message: String?,
+                result: JsResult?
+            ): Boolean {
+                val host = Uri.parse(url ?: "").host?.lowercase() ?: ""
+                if (host.contains("streamheaven.online")) {
+                    return super.onJsConfirm(view, url, message, result)
+                }
+                // Suppress rogue confirms from third-party embed iframes
+                result?.cancel()
+                return true
+            }
+
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
                 if (newProgress < 100) {
@@ -278,19 +320,21 @@ class MainActivity : AppCompatActivity() {
                 request: WebResourceRequest?
             ): Boolean {
                 val url = request?.url?.toString() ?: return false
-                return handleUrlNavigation(url)
+                val isForMainFrame = request.isForMainFrame
+                return handleUrlNavigation(url, isForMainFrame)
             }
 
             @Deprecated("Deprecated in Java")
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 if (url == null) return false
-                return handleUrlNavigation(url)
+                return handleUrlNavigation(url, false)
             }
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 isPageError = false
                 view?.evaluateJavascript("document.documentElement.classList.add('is-app-env');", null)
+                view?.evaluateJavascript("try{window.onbeforeunload=null;Object.defineProperty(window,'onbeforeunload',{get:function(){return null;},set:function(){return false;},configurable:false});}catch(e){}", null)
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -298,6 +342,7 @@ class MainActivity : AppCompatActivity() {
                 swipeRefreshLayout.isRefreshing = false
                 pageProgressBar.visibility = View.GONE
                 view?.evaluateJavascript("document.documentElement.classList.add('is-app-env');", null)
+                view?.evaluateJavascript("try{window.onbeforeunload=null;Object.defineProperty(window,'onbeforeunload',{get:function(){return null;},set:function(){return false;},configurable:false});}catch(e){}", null)
 
                 if (!isPageError) {
                     offlineLayout.visibility = View.GONE
@@ -360,7 +405,7 @@ class MainActivity : AppCompatActivity() {
      * Navigation and intent router. Prevents iframe players from hijacking the parent window,
      * opening external browser popups, or launching external betting apps.
      */
-    private fun handleUrlNavigation(url: String): Boolean {
+    private fun handleUrlNavigation(url: String, isForMainFrame: Boolean = false): Boolean {
         val uri = Uri.parse(url)
         val scheme = uri.scheme?.lowercase() ?: ""
         val host = uri.host?.lowercase() ?: ""
@@ -378,12 +423,17 @@ class MainActivity : AppCompatActivity() {
             return false
         }
 
-        // 2. Video Player Embed Hosts -> Allow inside WebView iframe
+        // 2. Main Frame Navigation Guard: Never let an external URL take over the main app window!
+        if (isForMainFrame) {
+            return true
+        }
+
+        // 3. Video Player Embed Hosts -> Allow inside WebView subframe (iframe)
         val videoEmbedHosts = arrayOf(
             "vidlink.pro", "vidsrc.me", "vidsrc.to", "vidsrc.net", "vidsrc.in", "vidsrc.pm", "vidsrc.xyz",
             "autoembed.co", "autoembed.cc", "autoembed.to", "multiembed.mov", "cinesrc.st",
             "embed.su", "2embed.cc", "2embed.skin", "superembed.stream", "smashystream.com",
-            "rive.stream", "videasy.net", "player.autoembed.cc"
+            "rive.stream", "videasy.net", "player.autoembed.cc", "cloudnestra.com", "2embed.org"
         )
         for (embedHost in videoEmbedHosts) {
             if (host.contains(embedHost)) {
@@ -391,7 +441,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 3. User-Initiated Social & External Contact (Telegram Community, Email, Phone)
+        // 4. User-Initiated Social & External Contact (Telegram Community, Email, Phone)
         if (host.contains("t.me") || host.contains("telegram.me") || scheme == "mailto" || scheme == "tel") {
             return try {
                 val intent = Intent(Intent.ACTION_VIEW, uri)
@@ -403,7 +453,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 4. Block all other unsolicited external redirects, intent popups, betting apps, and ad stores
+        // 5. Block all other unsolicited external redirects, intent popups, betting apps, and ad stores
         // Returning true prevents WebView from following or spawning external apps for the URL
         return true
     }
