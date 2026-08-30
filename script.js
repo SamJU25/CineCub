@@ -1415,6 +1415,9 @@ var Browse = {
         } else {
           p = API.trending('all', State.browsePage, State.trendingTimeWindow || 'day');
         }
+      } else if (State.browseType === 'anime') {
+        var animeGenre = State.genreId ? '16,'+State.genreId : 16;
+        p = API.discover('tv', {page:State.browsePage, with_genres:animeGenre, with_original_language:'ja', sort_by:'popularity.desc'});
       } else if (State.genreId) {
         p = API.discover(State.browseType, {page:State.browsePage, sort_by:'popularity.desc', with_genres:State.genreId});
       } else {
@@ -1433,6 +1436,9 @@ var Browse = {
             API.popular('tv', State.browsePage)
           ]).then(function(res){ return interleave(res[0], res[1]); });
         }
+      } else if (State.browseType === 'anime') {
+        var animeGenre = State.genreId ? '16,'+State.genreId : 16;
+        p = API.discover('tv', {page:State.browsePage, with_genres:animeGenre, with_original_language:'ja', sort_by:'popularity.desc'});
       } else if (State.genreId) {
         p = API.discover(State.browseType, {page:State.browsePage, sort_by:'popularity.desc', with_genres:State.genreId});
       } else {
@@ -1451,6 +1457,9 @@ var Browse = {
             API.topRated('tv', State.browsePage)
           ]).then(function(res){ return interleave(res[0], res[1]); });
         }
+      } else if (State.browseType === 'anime') {
+        var animeGenre = State.genreId ? '16,'+State.genreId : 16;
+        p = API.discover('tv', {page:State.browsePage, with_genres:animeGenre, with_original_language:'ja', sort_by:'vote_average.desc', 'vote_count.gte':200});
       } else if (State.genreId) {
         p = API.discover(State.browseType, {page:State.browsePage, sort_by:'vote_average.desc', 'vote_count.gte':150, with_genres:State.genreId});
       } else {
@@ -1469,6 +1478,9 @@ var Browse = {
             API.discover('tv', {page:State.browsePage, sort_by:'first_air_date.desc'})
           ]).then(function(res){ return interleave(res[0], res[1]); });
         }
+      } else if (State.browseType === 'anime') {
+        var animeGenre = State.genreId ? '16,'+State.genreId : 16;
+        p = API.discover('tv', {page:State.browsePage, with_genres:animeGenre, with_original_language:'ja', sort_by:'first_air_date.desc'});
       } else if (State.browseType === 'tv') {
         if (State.genreId) {
           p = API.discover('tv', {page:State.browsePage, sort_by:'first_air_date.desc', with_genres:State.genreId});
