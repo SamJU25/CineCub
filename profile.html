@@ -22,7 +22,7 @@
   <link rel="manifest" href="/manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link href="style.css?v=247" rel="stylesheet">
+  <link href="style.css?v=248" rel="stylesheet">
   <link rel="prefetch" href="index.html">
   <style>
     :root { --profile-gutter: 28px; }
@@ -699,9 +699,9 @@
         </div>
         <div class="auth-input-group">
           <label>Current Password (required)</label>
-          <div style="position: relative; width: 100%;">
-            <input type="password" id="pf-email-pass" class="auth-input" placeholder="Current password" style="padding-right: 45px;" autocomplete="current-password" />
-            <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('pf-email-pass')"><i class="fas fa-eye"></i></button>
+          <div class="auth-input-wrap">
+            <input type="password" id="pf-email-pass" class="auth-input" placeholder="Current password" autocomplete="current-password" />
+            <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('pf-email-pass', event)" onmousedown="event.preventDefault()"><i class="fas fa-eye"></i></button>
           </div>
         </div>
       <div class="pf-modal-actions">
@@ -736,16 +736,16 @@
       <form class="pf-modal-form" onsubmit="event.preventDefault(); savePassword();">
         <div class="auth-input-group">
           <label>Current Password</label>
-          <div style="position: relative; width: 100%;">
-            <input type="password" id="pf-curr-pass" class="auth-input" placeholder="Current password" style="padding-right: 45px;" autocomplete="current-password" />
-            <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('pf-curr-pass')"><i class="fas fa-eye"></i></button>
+          <div class="auth-input-wrap">
+            <input type="password" id="pf-curr-pass" class="auth-input" placeholder="Current password" autocomplete="current-password" />
+            <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('pf-curr-pass', event)" onmousedown="event.preventDefault()"><i class="fas fa-eye"></i></button>
           </div>
         </div>
         <div class="auth-input-group">
           <label>New Password</label>
-          <div style="position: relative; width: 100%;">
-            <input type="password" id="pf-new-pass" class="auth-input" placeholder="New password" style="padding-right: 45px;" autocomplete="new-password" />
-            <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('pf-new-pass')"><i class="fas fa-eye"></i></button>
+          <div class="auth-input-wrap">
+            <input type="password" id="pf-new-pass" class="auth-input" placeholder="New password" autocomplete="new-password" />
+            <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('pf-new-pass', event)" onmousedown="event.preventDefault()"><i class="fas fa-eye"></i></button>
           </div>
         </div>
       <div class="pf-modal-actions">
@@ -849,24 +849,42 @@
 
     let pendingConfirmAction = null;
     
-    function togglePassword(inputId) {
+    function togglePassword(inputId, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
       const input = document.getElementById(inputId);
       if (!input) return;
-      const btn = input.parentElement ? input.parentElement.querySelector('.auth-password-toggle') : null;
+      const wrap = input.closest('.auth-input-wrap') || input.parentElement;
+      const btn = wrap ? wrap.querySelector('.auth-password-toggle') : null;
       const icon = btn ? btn.querySelector('i') : (input.nextElementSibling ? input.nextElementSibling.querySelector('i') : null);
-      if (input.type === 'password') {
+      const isPassword = input.type === 'password' || input.getAttribute('type') === 'password';
+      if (isPassword) {
+        input.setAttribute('type', 'text');
         input.type = 'text';
         if (icon) {
-          icon.classList.remove('fa-eye');
-          icon.classList.add('fa-eye-slash');
+          icon.className = 'fas fa-eye-slash';
+        }
+        if (btn) {
+          btn.setAttribute('aria-label', 'Hide password');
         }
       } else {
+        input.setAttribute('type', 'password');
         input.type = 'password';
         if (icon) {
-          icon.classList.remove('fa-eye-slash');
-          icon.classList.add('fa-eye');
+          icon.className = 'fas fa-eye';
+        }
+        if (btn) {
+          btn.setAttribute('aria-label', 'Show password');
         }
       }
+      try {
+        const len = input.value.length;
+        if (document.activeElement === input) {
+          input.setSelectionRange(len, len);
+        }
+      } catch(e) {}
     }
 
     function formatAuthError(error, defaultMsg) {

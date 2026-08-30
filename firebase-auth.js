@@ -824,18 +824,45 @@ window.handleForgotPassword = handleForgotPassword;
 // window.handleLogout already attached
 
 
-window.togglePassword = function(inputId) {
-  const input = document.getElementById(inputId);
-  if(!input) return;
-  const toggleBtn = input.parentElement.querySelector('.auth-password-toggle');
-  if(!toggleBtn) return;
-  const icon = toggleBtn.querySelector('i');
-  
-  if(input.type === 'password') {
-    input.type = 'text';
-    icon.className = 'fas fa-eye-slash';
-  } else {
-    input.type = 'password';
-    icon.className = 'fas fa-eye';
+window.togglePassword = function(inputId, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
   }
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  
+  const wrap = input.closest('.auth-input-wrap') || input.parentElement;
+  const toggleBtn = wrap ? wrap.querySelector('.auth-password-toggle') : null;
+  const icon = toggleBtn ? toggleBtn.querySelector('i') : null;
+  
+  const isPassword = input.type === 'password' || input.getAttribute('type') === 'password';
+  
+  if (isPassword) {
+    input.setAttribute('type', 'text');
+    input.type = 'text';
+    if (icon) {
+      icon.className = 'fas fa-eye-slash';
+    }
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-label', 'Hide password');
+    }
+  } else {
+    input.setAttribute('type', 'password');
+    input.type = 'password';
+    if (icon) {
+      icon.className = 'fas fa-eye';
+    }
+    if (toggleBtn) {
+      toggleBtn.setAttribute('aria-label', 'Show password');
+    }
+  }
+  
+  // Maintain cursor position at end of text without blur
+  try {
+    const len = input.value.length;
+    if (document.activeElement === input) {
+      input.setSelectionRange(len, len);
+    }
+  } catch(e) {}
 };
