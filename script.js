@@ -6,6 +6,8 @@
 var UIHelper = {
   lockScroll: function() {
     document.body.classList.add('modal-open');
+    var btt = document.getElementById('back-to-top');
+    if (btt) btt.classList.remove('visible');
   },
   unlockScroll: function() {
     document.body.classList.remove('modal-open');
@@ -2927,7 +2929,10 @@ document.addEventListener('DOMContentLoaded', function(){
       window.requestAnimationFrame(function() {
         var btn = document.getElementById('back-to-top');
         if (btn) {
-          if (window.scrollY > 800) btn.classList.add('visible');
+          var isModalOpen = document.body.classList.contains('modal-open') ||
+                            document.body.classList.contains('no-scroll') ||
+                            document.querySelector('.modal-overlay.open, .legal-modal-overlay.open, .apps-modal-overlay.open, #apps-modal.open, #modal-overlay.open, #legal-modal-overlay.open');
+          if (window.scrollY > 800 && !isModalOpen) btn.classList.add('visible');
           else btn.classList.remove('visible');
         }
         bttIsScrolling = false;
