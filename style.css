@@ -2729,3 +2729,50 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
   line-height: 1.5;
 }
 
+/* Stream Section Mode Dividers */
+.stream-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 10px 0;
+  width: 100%;
+}
+
+.ssd-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(157, 78, 221, 0.35), transparent);
+}
+
+.ssd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-2);
+  background: var(--cv-dark-4);
+  border: 1px solid rgba(157, 78, 221, 0.25);
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+
+.ssd-badge i {
+  color: var(--cv-purple-light);
+  font-size: 11px;
+}
+
+.server-picker-label {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 6px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  margin-left: 2px;
+}
+
+

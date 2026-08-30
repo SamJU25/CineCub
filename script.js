@@ -2117,7 +2117,8 @@ var Modal = {
           if(epNavAdFree) epNavAdFree.style.display = 'none';
         }
 
-        var serverHtml = '<div style="font-size:13px; color:var(--text-2); margin-bottom: 5px; font-weight: 500; margin-left: 2px;">Select server</div>';
+        var serverHtml = '<div class="stream-section-divider"><div class="ssd-line"></div><div class="ssd-badge"><i class="fas fa-cloud"></i><span>Cloud Backup Servers</span></div><div class="ssd-line"></div></div>';
+        serverHtml += '<div class="server-picker-label"><i class="fas fa-server" style="color:var(--cv-purple-light);margin-right:6px;"></i>Select Server</div>';
         serverHtml += '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
         serverHtml += '<select id="regular-server-select" onchange="Player.switchServer(this.value)">';
         serverHtml += CFG.SERVERS.map((s,i) => '<option value="'+i+'">' + s.name + '</option>').join('');
@@ -2351,7 +2352,8 @@ var Player = {
       return;
     }
 
-    var html = '<div style="font-size:13px; color:var(--text-2); margin-bottom: 5px; font-weight: 500; margin-left: 2px;">Select Direct Server</div>';
+    var html = '<div class="stream-section-divider"><div class="ssd-line"></div><div class="ssd-badge"><i class="fas fa-bolt"></i><span>Direct Quality Streams</span></div><div class="ssd-line"></div></div>';
+    html += '<div class="server-picker-label"><i class="fas fa-sliders-h" style="color:var(--cv-purple-light);margin-right:6px;"></i>Select Direct Stream (Resolution / Audio)</div>';
     html += '<div class="ep-nav" style="margin-top:0; margin-bottom: 14px; width:100%; justify-content: flex-start;"><div class="ep-selects" style="width:100%; flex: 1 1 100%;"><div class="custom-select" style="min-width:200px; width:100%">';
     html += '<select id="direct-stream-select" onchange="Player.switchDirectServer(this.value)">';
     this.directStreams = streams;
