@@ -31,7 +31,7 @@
       }
     })();
   </script>
-  <link href="style.css?v=292" rel="stylesheet">
+  <link href="style.css?v=293" rel="stylesheet">
   <link rel="prefetch" href="index.html">
   <link rel="prerender" href="index.html">
   <style>
@@ -520,6 +520,12 @@
     .pf-modal-actions .pf-btn-danger:active { transform: scale(0.97); }
     
     /* Responsive */
+    @media (min-width: 601px) and (max-width: 1024px) {
+      .pf-layout { max-width: 960px; margin: 24px auto; padding: 0 20px; }
+      .pf-sidebar { width: 260px; flex-shrink: 0; }
+      .pf-main { flex: 1; min-width: 0; }
+      .pf-stats { grid-template-columns: repeat(3, 1fr); }
+    }
     @media (max-width: 900px) {
       .pf-layout { flex-direction: column; align-items: stretch; margin: 20px auto; padding: 0 16px; gap: 20px; }
       .pf-sidebar { width: 100%; padding: 20px; gap: 16px; }
@@ -539,6 +545,15 @@
     @media (max-width: 600px) {
       .pf-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
       .pf-stat-card:last-child { grid-column: span 2; }
+    }
+    @media (max-height: 520px) and (orientation: landscape) {
+      .pf-layout { margin: 12px auto; padding: 0 12px; gap: 12px; }
+      .pf-sidebar { padding: 14px; }
+      .pf-main { padding: 16px; gap: 14px; }
+      .pf-main-title { font-size: 20px; }
+      .pf-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .pf-stat-card { padding: 10px; }
+      .pf-stat-val { font-size: 16px; }
     }
   </style>
 </head>
