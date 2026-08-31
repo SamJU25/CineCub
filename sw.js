@@ -1,4 +1,4 @@
-const CACHE_NAME = 'streamheaven-v294';
+const CACHE_NAME = 'streamheaven-v295';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -64,13 +64,15 @@ self.addEventListener('fetch', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(self.clients.claim());
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.filter(name => name !== CACHE_NAME)
-          .map(name => caches.delete(name))
-      );
-    })
+    Promise.all([
+      self.clients.claim(),
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.filter(name => name !== CACHE_NAME)
+            .map(name => caches.delete(name))
+        );
+      })
+    ])
   );
 });
