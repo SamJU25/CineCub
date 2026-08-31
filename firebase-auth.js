@@ -439,13 +439,13 @@ async function handleSignup(e) {
     }
 
     if (backendSuccess) {
-      AuthUI.showSuccess(`Password reset link sent to <strong>${email}</strong>.<br><small style="display:block;margin-top:6px;opacity:0.9;">Please check your inbox (and spam folder) to set a new password.</small>`, 'forgot');
+      AuthUI.showSuccess(`If an account exists for <strong>${email}</strong>, a password reset link has been sent.<br><small style="display:block;margin-top:6px;opacity:0.9;">Please check your inbox (and spam folder) to set a new password.</small>`, 'forgot');
       if (typeof Toast !== 'undefined') {
-        Toast.show("Reset link sent to " + email, "success");
+        Toast.show("If an account exists, a reset link has been sent", "success");
       }
       if(btn) {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-check"></i> Link Sent';
+        btn.innerHTML = '<i class="fas fa-check"></i> Request Received';
       }
       setTimeout(() => {
         if (btn) {
