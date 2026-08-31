@@ -3354,7 +3354,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   /* URL Deep Linking */
   var urlParams = new URLSearchParams(window.location.search);
-  var shareId = urlParams.get('id') || urlParams.get('watch');
+  var shareId = urlParams.get('id') || urlParams.get('watch') || urlParams.get('play');
   var shareType = urlParams.get('type') || 'movie';
   if(shareId){
     var parsedId = parseInt(shareId);

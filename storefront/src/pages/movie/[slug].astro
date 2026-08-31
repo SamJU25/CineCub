@@ -6,7 +6,7 @@ import { getMovie, buildSlug, parseSlug, IMG, formatRuntime, year } from '../../
 
 const { slug } = Astro.params;
 const id = parseSlug(slug);
-const movie = id ? await getMovie(id, Astro.locals.runtime.env) : null;
+const movie = id ? await getMovie(id, Astro.locals.runtime?.env) : null;
 
 // Unknown id / TMDB failure → real 404
 if (!movie || movie.success === false) {
@@ -33,7 +33,7 @@ const runtime = formatRuntime(movie.runtime);
 const meta = [movieYear, runtime, movie.vote_average ? `★ ${movie.vote_average.toFixed(1)}` : ''].filter(Boolean).join(' · ');
 
 // Play deep-link into the existing vanilla app (script.js opens the details modal)
-const playUrl = `/?play=${movie.id}&type=movie`;
+const playUrl = `/index.html?watch=${movie.id}&type=movie`;
 
 const jsonLd = {
   '@context': 'https://schema.org',

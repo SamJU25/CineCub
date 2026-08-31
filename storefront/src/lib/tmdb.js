@@ -16,7 +16,7 @@ export function slugify(text) {
   return String(text || '')
     .toLowerCase()
     .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/&/g, 'and')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
@@ -25,8 +25,9 @@ export function slugify(text) {
 
 /** Canonical URL slug for a TMDB item: "<id>-<title-slug>" */
 export function buildSlug(item) {
-  const title = item.title || item.name || 'title';
-  return `${item.id}-${slugify(title)}`;
+  const title = item.title || item.name || '';
+  const slug = slugify(title);
+  return slug ? `${item.id}-${slug}` : `${item.id}`;
 }
 
 /** Extract the numeric TMDB id from a slug like "693134-dune-part-two" */
@@ -43,7 +44,7 @@ export function parseSlug(slug) {
  * @returns {Promise<object|null>}
  */
 export async function tmdb(path, params, env) {
-  const apiKey = env && env.TMDB_API_KEY;
+  const apiKey = (env && env.TMDB_API_KEY) || (typeof process !== 'undefined' && process.env?.TMDB_API_KEY) || (typeof import.meta !== 'undefined' && import.meta.env?.TMDB_API_KEY);
   if (!apiKey) {
     console.error('[tmdb] TMDB_API_KEY is not configured');
     return null;

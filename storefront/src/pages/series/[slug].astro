@@ -6,7 +6,7 @@ import { getSeries, buildSlug, parseSlug, IMG, year } from '../../lib/tmdb.js';
 
 const { slug } = Astro.params;
 const id = parseSlug(slug);
-const show = id ? await getSeries(id, Astro.locals.runtime.env) : null;
+const show = id ? await getSeries(id, Astro.locals.runtime?.env) : null;
 
 if (!show || show.success === false) {
   return new Response('Not found', { status: 404 });
@@ -34,7 +34,7 @@ const meta = [
   show.vote_average ? `★ ${show.vote_average.toFixed(1)}` : ''
 ].filter(Boolean).join(' · ');
 
-const playUrl = `/?play=${show.id}&type=tv`;
+const playUrl = `/index.html?watch=${show.id}&type=tv`;
 
 const jsonLd = {
   '@context': 'https://schema.org',

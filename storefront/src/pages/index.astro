@@ -11,8 +11,10 @@ const [trending, popularMovies, popularTv] = await Promise.all([
   getPopular('tv', env, 1)
 ]);
 
-const cardHref = (item) =>
-  (item.title || item.media_type === 'movie') ? `/movie/${buildSlug(item)}` : `/series/${buildSlug(item)}`;
+const cardHref = (item) => {
+  const isMovie = item.media_type === 'movie' || (!item.media_type && Boolean(item.title));
+  return isMovie ? `/movie/${buildSlug(item)}` : `/series/${buildSlug(item)}`;
+};
 
 const pageTitle = 'StreamHeaven — Watch Free Movies, Series & Anime Online in HD';
 const description = 'Discover trending movies, series and anime with reviews, ratings and cast. Watch free in HD on StreamHeaven — no signup required.';
