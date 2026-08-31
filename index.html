@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <meta content="#0a0a0f" name="theme-color">
   <link rel="manifest" href="/manifest.json">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https://image.tmdb.org https://upload.wikimedia.org; media-src * blob:; frame-src *; connect-src *;">
@@ -574,12 +574,12 @@
             </div>
             <div class="browse-filters-wrap">
               <div class="custom-select" id="wrap-browse-genre" style="width:160px;">
-                <select id="browse-genre" onchange="App.changeGenre(this.value)">
+                <select id="browse-genre" aria-label="Filter by genre" title="Filter by genre" onchange="App.changeGenre(this.value)">
                   <option value="">All Genres</option>
                 </select>
               </div>
               <div class="custom-select" id="wrap-browse-sort" style="width:150px;">
-                <select id="browse-sort" onchange="App.changeSort(this.value)">
+                <select id="browse-sort" aria-label="Sort by" title="Sort by" onchange="App.changeSort(this.value)">
                   <option value="popular">Popular</option>
                   <option value="trending">Trending</option>
                   <option value="toprated">Top Rated</option>
@@ -587,7 +587,7 @@
                 </select>
               </div>
               <div class="custom-select" id="wrap-browse-media-type" style="width:150px; display:none;">
-                <select id="browse-media-type" onchange="App.changeBrowseMediaType(this.value)">
+                <select id="browse-media-type" aria-label="Filter by media type" title="Filter by media type" onchange="App.changeBrowseMediaType(this.value)">
                   <option value="all">All Media</option>
                   <option value="movie">Movies</option>
                   <option value="tv">TV Series</option>
@@ -595,7 +595,7 @@
                 </select>
               </div>
               <div class="custom-select" id="wrap-browse-trending-time" style="width:150px; display:none;">
-                <select id="browse-trending-time" onchange="App.changeTrendingTime(this.value)">
+                <select id="browse-trending-time" aria-label="Filter trending timeframe" title="Filter trending timeframe" onchange="App.changeTrendingTime(this.value)">
                   <option value="day">Today</option>
                   <option value="week">This Week</option>
                 </select>
@@ -927,10 +927,10 @@
           <div class="ep-nav" id="ep-nav-controls" style="display:none;">
             <div class="ep-selects">
               <div class="custom-select" style="min-width: 150px;">
-                <select id="ep-season" onchange="Player.updateEpisodes(); Player.loadVideo()"></select>
+                <select id="ep-season" aria-label="Select Season" title="Select Season" onchange="Player.updateEpisodes(); Player.loadVideo()"></select>
               </div>
               <div class="custom-select" style="min-width: 150px;">
-                <select id="ep-episode" onchange="Player.loadVideo()"></select>
+                <select id="ep-episode" aria-label="Select Episode" title="Select Episode" onchange="Player.loadVideo()"></select>
               </div>
             </div>
             <div class="ep-btns">
@@ -941,7 +941,7 @@
           
           <!-- Responsive Video Player -->
           <div class="player-wrap" id="player-wrap-main">
-            <iframe allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write" allowfullscreen id="main-player" scrolling="no"></iframe>
+            <iframe allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write" allowfullscreen id="main-player" scrolling="no" title="StreamHeaven Video Player"></iframe>
             <video id="native-player-watch" controls playsinline style="width:100%; height:100%; position:absolute; top:0; left:0; background:#000; display:none; z-index:2; border-radius:inherit;"></video>
             
             <!-- UP NEXT TOAST -->
