@@ -40,7 +40,7 @@ self.addEventListener('fetch', event => {
   // This guarantees users always get the freshest code instantly on refresh
   const isOurFile = requestUrl.origin === location.origin;
 
-  if (isOurFile) {
+  if (isOurFile && event.request.method === 'GET') {
     event.respondWith(
       fetch(event.request)
         .then(networkResponse => {
