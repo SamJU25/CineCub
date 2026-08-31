@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Local dev secrets
+.dev.vars
+
+# Wrangler
+.wrangler/
+
+# Logs
+*.log
+
+# Astro cache
+.astro/
+
+# OS
+.DS_Store

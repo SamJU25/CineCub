@@ -1,0 +1,153 @@
+---
+export const prerender = false;
+
+import Base from '../../layouts/Base.astro';
+import { getMovie, buildSlug, parseSlug, IMG, formatRuntime, year } from '../../lib/tmdb.js';
+
+const { slug } = Astro.params;
+const id = parseSlug(slug);
+const movie = id ? await getMovie(id, Astro.locals.runtime.env) : null;
+
+// Unknown id / TMDB failure → real 404
+if (!movie || movie.success === false) {
+  return new Response('Not found', { status: 404 });
+}
+
+// Redirect outdated/incorrect slugs to the canonical one (301)
+const canonicalSlug = buildSlug(movie);
+if (slug !== canonicalSlug) {
+  return Astro.redirect(`/movie/${canonicalSlug}`, 301);
+}
+
+const movieYear = year(movie.release_date);
+const pageTitle = `${movie.title}${movieYear ? ` (${movieYear})` : ''} — Watch Free Online | StreamHeaven`;
+const description = (movie.overview || `Watch ${movie.title} free online in HD on StreamHeaven. No signup required.`).slice(0, 158);
+const poster = IMG.poster(movie.poster_path, 'w780');
+const backdrop = IMG.backdrop(movie.backdrop_path);
+const canonical = `https://streamheaven.online/movie/${canonicalSlug}`;
+const cast = movie.credits?.cast?.slice(0, 8) ?? [];
+const similar = (movie.recommendations?.results ?? [])
+  .filter((r) => r.poster_path && (r.title || r.name))
+  .slice(0, 12);
+const runtime = formatRuntime(movie.runtime);
+const meta = [movieYear, runtime, movie.vote_average ? `★ ${movie.vote_average.toFixed(1)}` : ''].filter(Boolean).join(' · ');
+
+// Play deep-link into the existing vanilla app (script.js opens the details modal)
+const playUrl = `/?play=${movie.id}&type=movie`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Movie',
+  name: movie.title,
+  datePublished: movie.release_date || undefined,
+  image: poster || undefined,
+  description: movie.overview || undefined,
+  genre: (movie.genres ?? []).map((g) => g.name),
+  duration: movie.runtime ? `PT${movie.runtime}M` : undefined,
+  aggregateRating: movie.vote_count > 0 ? {
+    '@type': 'AggregateRating',
+    ratingValue: movie.vote_average.toFixed(1),
+    ratingCount: movie.vote_count,
+    bestRating: 10,
+    worstRating: 0
+  } : undefined,
+  url: canonical
+};
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=300, s-maxage=3600');
+---
+<Base title={pageTitle} description={description} canonical={canonical} ogType="video.movie" ogImage={poster} jsonLd={jsonLd}>
+  <article>
+    <div class="hero" style={backdrop ? `--backdrop:url('${backdrop}')` : ''}>
+      <div class="hero-inner">
+        {poster && <img class="hero-poster" src={poster} alt={`${movie.title} poster`} width="300" height="450" fetchpriority="high" />}
+        <div class="hero-info">
+          <h1>{movie.title}{movieYear && <span class="year"> ({movieYear})</span>}</h1>
+          {meta && <p class="meta">{meta}</p>}
+          <div class="genres">
+            {(movie.genres ?? []).slice(0, 4).map((g) => <span class="pill">{g.name}</span>)}
+          </div>
+          {movie.overview && <p class="overview">{movie.overview}</p>}
+          <div class="cta-row">
+            <a class="btn-play" href={playUrl}>▶ Play now — free</a>
+            <a class="btn-ghost" href="/index.html">Browse more in the app</a>
+          </div>
+          {movie.tagline && <p class="tagline">“{movie.tagline}”</p>}
+        </div>
+      </div>
+    </div>
+
+    {cast.length > 0 && (
+      <section>
+        <h2 class="section">Top cast</h2>
+        <div class="grid">
+          {cast.map((c) => (
+            <div class="card">
+              <img class="card-poster person" src={IMG.profile(c.profile_path) ?? '/placeholder.svg'} alt={c.name} loading="lazy" width="170" height="255" />
+              <div class="card-body">
+                <div class="card-title">{c.name}</div>
+                <div class="card-meta">{c.character}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {similar.length > 0 && (
+      <section>
+        <h2 class="section">More like this</h2>
+        <div class="grid">
+          {similar.map((r) => {
+            const t = r.title || r.name;
+            const href = r.title ? `/movie/${buildSlug(r)}` : `/series/${buildSlug(r)}`;
+            return (
+              <a class="card" href={href}>
+                <img class="card-poster" src={IMG.poster(r.poster_path)} alt={`${t} poster`} loading="lazy" width="170" height="255" />
+                <div class="card-body">
+                  <div class="card-title">{t}</div>
+                  <div class="card-meta">{year(r.release_date || r.first_air_date)} · ★ {r.vote_average?.toFixed(1) ?? '—'}</div>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
+  </article>
+
+  <style>
+    .hero {
+      position: relative; border-radius: 20px; overflow: hidden; border: 1px solid var(--border);
+      background: linear-gradient(90deg, rgba(10,10,15,.96) 0%, rgba(10,10,15,.75) 55%, rgba(10,10,15,.45) 100%),
+        var(--backdrop, none) center / cover no-repeat, #14141f;
+    }
+    .hero-inner { display: flex; gap: clamp(16px, 3vw, 32px); padding: clamp(18px, 3.5vw, 36px); }
+    .hero-poster { width: clamp(120px, 22vw, 300px); height: auto; border-radius: var(--radius);
+      border: 1px solid var(--border); box-shadow: 0 16px 48px rgba(0,0,0,.6); flex-shrink: 0; }
+    .hero-info { min-width: 0; }
+    h1 { font-size: clamp(22px, 3.4vw, 36px); font-weight: 800; letter-spacing: -.5px; line-height: 1.15; }
+    h1 .year { color: var(--text-3); font-weight: 600; font-size: .72em; }
+    .meta { color: var(--text-2); font-size: 15px; margin-top: 6px; font-weight: 600; }
+    .genres { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+    .overview { color: var(--text-2); font-size: 15px; max-width: 70ch; }
+    .tagline { color: var(--text-3); font-style: italic; margin-top: 12px; font-size: 14px; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+    .btn-play { background: linear-gradient(135deg, var(--purple-deep), var(--purple)); color: #fff;
+      font-weight: 800; font-size: 15px; padding: 13px 26px; border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(123,44,191,.4); }
+    .btn-play:hover { filter: brightness(1.15); }
+    .btn-ghost { background: rgba(255,255,255,.06); border: 1px solid var(--border); color: var(--text);
+      font-weight: 700; font-size: 14px; padding: 13px 22px; border-radius: 12px; }
+    .btn-ghost:hover { border-color: rgba(157,78,221,.45); }
+    .card-poster.person { object-fit: cover; }
+    @media (max-width: 640px) {
+      .hero-inner { flex-direction: column; align-items: center; text-align: center; }
+      .hero-poster { width: clamp(150px, 45vw, 220px); }
+      .genres { justify-content: center; }
+      .overview { max-width: none; }
+      .cta-row { justify-content: center; }
+    }
+  </style>
+</Base>
+

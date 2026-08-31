@@ -1,0 +1,9 @@
+{
+  "name": "streamheaven-storefront",
+  "main": "dist/_worker.js",
+  "compatibility_date": "2026-08-31",
+  "compatibility_flags": ["nodejs_als"],
+  "observability": {
+    "enabled": true
+  }
+}

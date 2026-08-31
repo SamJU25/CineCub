@@ -1,0 +1,83 @@
+---
+export const prerender = false;
+
+import Base from '../layouts/Base.astro';
+import { getTrending, getPopular, buildSlug, IMG, year } from '../lib/tmdb.js';
+
+const env = Astro.locals.runtime.env;
+const [trending, popularMovies, popularTv] = await Promise.all([
+  getTrending(env, 1),
+  getPopular('movie', env, 1),
+  getPopular('tv', env, 1)
+]);
+
+const cardHref = (item) =>
+  (item.title || item.media_type === 'movie') ? `/movie/${buildSlug(item)}` : `/series/${buildSlug(item)}`;
+
+const pageTitle = 'StreamHeaven — Watch Free Movies, Series & Anime Online in HD';
+const description = 'Discover trending movies, series and anime with reviews, ratings and cast. Watch free in HD on StreamHeaven — no signup required.';
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=300, s-maxage=3600');
+---
+<Base title={pageTitle} description={description} canonical="https://streamheaven.online/">
+  <section>
+    <h2 class="section">🔥 Trending this week</h2>
+    <div class="grid">
+      {(trending?.results ?? []).filter((r) => r.poster_path && (r.title || r.name)).map((r) => (
+        <a class="card" href={cardHref(r)}>
+          <img class="card-poster" src={IMG.poster(r.poster_path)} alt={`${r.title || r.name} poster`} loading="lazy" width="170" height="255" />
+          <div class="card-body">
+            <div class="card-title">{r.title || r.name}</div>
+            <div class="card-meta">{year(r.release_date || r.first_air_date)} · ★ {r.vote_average?.toFixed(1) ?? '—'}</div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section">🎬 Popular movies</h2>
+    <div class="grid">
+      {(popularMovies?.results ?? []).filter((r) => r.poster_path).map((r) => (
+        <a class="card" href={`/movie/${buildSlug(r)}`}>
+          <img class="card-poster" src={IMG.poster(r.poster_path)} alt={`${r.title} poster`} loading="lazy" width="170" height="255" />
+          <div class="card-body">
+            <div class="card-title">{r.title}</div>
+            <div class="card-meta">{year(r.release_date)} · ★ {r.vote_average?.toFixed(1) ?? '—'}</div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section">📺 Popular series</h2>
+    <div class="grid">
+      {(popularTv?.results ?? []).filter((r) => r.poster_path).map((r) => (
+        <a class="card" href={`/series/${buildSlug(r)}`}>
+          <img class="card-poster" src={IMG.poster(r.poster_path)} alt={`${r.name} poster`} loading="lazy" width="170" height="255" />
+          <div class="card-body">
+            <div class="card-title">{r.name}</div>
+            <div class="card-meta">{year(r.first_air_date)} · ★ {r.vote_average?.toFixed(1) ?? '—'}</div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="app-cta">
+    <h2 class="section">Ready to watch?</h2>
+    <p>Open the full StreamHeaven app for the complete experience — player, watchlist and profiles.</p>
+    <a class="btn-play" href="/index.html">▶ Open StreamHeaven</a>
+  </section>
+
+  <style>
+    .app-cta { margin-top: 48px; padding: 28px; text-align: center;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 20px; }
+    .app-cta p { color: var(--text-2); margin-bottom: 18px; }
+    .btn-play { display: inline-block; background: linear-gradient(135deg, var(--purple-deep), var(--purple));
+      color: #fff; font-weight: 800; font-size: 15px; padding: 13px 28px; border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(123,44,191,.4); }
+    .btn-play:hover { filter: brightness(1.15); }
+  </style>
+</Base>
