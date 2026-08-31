@@ -67,3 +67,16 @@ To build the release APK:
 ```bash
 ./gradlew assembleRelease
 ```
+
+### Release Signing (Production)
+By default, release builds fall back to the debug keystore when no release keystore is configured. For production APKs:
+
+1. Generate a release keystore:
+   ```bash
+   keytool -genkey -v -keystore release.keystore -alias streamheaven -keyalg RSA -keysize 2048 -validity 10000
+   ```
+2. Copy `keystore.properties.example` to `keystore.properties` and fill in your credentials.
+3. Place `release.keystore` in the `android-app/` directory.
+4. Rebuild with `./gradlew assembleRelease` — the release signing config is picked up automatically.
+
+Never commit `keystore.properties` or `*.keystore` files to version control.

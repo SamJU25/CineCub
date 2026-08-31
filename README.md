@@ -3,7 +3,7 @@
 <div align="center">
 
 [![Website](https://img.shields.io/badge/Live_Site-streamheaven.online-9d4edd?style=for-the-badge&logo=googlechrome&logoColor=white)](https://streamheaven.online)
-[![Android App](https://img.shields.io/badge/Android_App-v1.0.5_Release-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://streamheaven.online/assets/StreamHeaven.apk)
+[![Android App](https://img.shields.io/badge/Android_App-v1.0.7_Release-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://streamheaven.online/StreamHeaven.apk)
 [![Cloudflare Pages](https://img.shields.io/badge/Edge_Hosting-Cloudflare_Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://pages.cloudflare.com)
 [![Firebase](https://img.shields.io/badge/Auth_&_DB-Firebase_v9_Firestore-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com)
 [![Mailtrap](https://img.shields.io/badge/Email_SMTP-Mailtrap_Relay-22d172?style=for-the-badge&logo=mailgun&logoColor=white)](https://mailtrap.io)
@@ -13,7 +13,7 @@
   <b>StreamHeaven</b> is an end-to-end, high-performance entertainment streaming platform designed to provide a frictionless cinema experience across the web and mobile devices. Built without heavy frontend framework overhead, StreamHeaven combines a tailored dark-neon glassmorphic UI, Cloudflare serverless edge computing, adaptive HLS multi-audio video playback, Firebase real-time data persistence, Mailtrap transactional email, and a native Android application with instant Over-The-Air (OTA) updates.
 </p>
 
-[🌐 Visit Live Website](https://streamheaven.online) • [📱 Download Android APK](https://streamheaven.online/assets/StreamHeaven.apk) • [📖 Read Showcase Study](SHOWCASE.md) • [🔒 Privacy & Legal](https://streamheaven.online/privacy.html)
+[🌐 Visit Live Website](https://streamheaven.online) • [📱 Download Android APK](https://streamheaven.online/StreamHeaven.apk) • [📖 Read Showcase Study](SHOWCASE.md) • [🔒 Privacy & Legal](https://streamheaven.online/privacy.html)
 
 </div>
 
@@ -49,7 +49,7 @@ graph TD
     subgraph Clients["📱 Client Layer"]
         WebApp["💻 Web Browser (Desktop / iOS / Mobile)"]
         NativeApp["📱 Native Android App (Kotlin WebView)"]
-        SW["📦 Service Worker (PWA & OTA Cache v264)"]
+        SW["📦 Service Worker (PWA & OTA Cache)"]
     end
 
     subgraph Edge["⚡ Cloudflare Edge Network"]
@@ -251,8 +251,8 @@ CSS toggles then selectively render appropriate components:
 ```
 
 ### 7. Dual-Channel App Update Engine
-1. **OTA Web Updates**: Handled by Service Worker (`sw.js`). When `CACHE_NAME` is bumped (e.g. `streamheaven-v264`), the Service Worker skips waiting (`self.skipWaiting()`), claims clients, and invalidates old caches.
-2. **Native APK Updater (`AppUpdater.kt`)**: On app startup, queries `https://streamheaven.online/update.json`. If `versionCode > currentVersion`, displays a branded update modal with download progress and automatic APK install intents.
+1. **OTA Web Updates**: Handled by Service Worker (`sw.js`). When `CACHE_NAME` is bumped (e.g. `streamheaven-v291`), the Service Worker skips waiting (`self.skipWaiting()`), claims clients, and invalidates old caches.
+2. **Native APK Updater (`AppUpdater.kt`)**: On app startup, queries `https://streamheaven.online/version.json`. If `versionCode > currentVersion`, displays a branded update modal with download progress and automatic APK install intents.
 
 ---
 
@@ -269,7 +269,7 @@ d:\StreamHeaven\
 │   ├── firebase-auth.js           # Firebase Auth v9 integration & Firestore cloud sync
 │   ├── sw.js                      # Progressive Web App service worker with Network-First caching
 │   ├── manifest.json              # Web app manifest for PWA installation
-│   ├── update.json                # In-app updater manifest for Android APK releases
+│   ├── version.json               # In-app updater manifest for Android APK releases
 │   ├── _headers                   # Cloudflare security policies, CSP, and CORS headers
 │   ├── sitemap.xml                # Dynamic XML sitemap for search engines
 │   ├── robots.txt                 # Search engine bot directives
@@ -310,8 +310,8 @@ d:\StreamHeaven\
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/SamJU25/SteamHeaven.git
-cd SteamHeaven
+git clone https://github.com/SamJU25/StreamHeaven.git
+cd StreamHeaven
 ```
 
 ### 3. Running the Web Frontend Locally
@@ -319,6 +319,7 @@ Using Cloudflare Wrangler to emulate edge functions:
 ```bash
 npx wrangler pages dev . --binding TMDB_API_KEY="your_tmdb_api_key_here"
 ```
+Copy `.dev.vars.example` to `.dev.vars` for local Wrangler development (never commit `.dev.vars`).
 Open `http://localhost:8788` in your browser.
 
 ### 4. Running the Scraper API Backend
@@ -362,13 +363,13 @@ To compile a new production release APK:
    cd android-app
    ./gradlew assembleRelease
    ```
-4. Copy the generated APK from `app/build/outputs/apk/release/app-release.apk` to `StreamHeaven/assets/StreamHeaven.apk`.
-5. Update `update.json` in the root directory:
+4. Copy the generated APK from `app/build/outputs/apk/release/app-release.apk` to `StreamHeaven/StreamHeaven.apk`.
+5. Update `version.json` in the root directory:
    ```json
    {
      "versionCode": 7,
      "versionName": "1.0.6",
-     "apkUrl": "https://streamheaven.online/assets/StreamHeaven.apk",
+     "apkUrl": "https://streamheaven.online/StreamHeaven.apk",
      "releaseNotes": "Performance upgrades, smooth scrolling, and updated player servers."
    }
    ```

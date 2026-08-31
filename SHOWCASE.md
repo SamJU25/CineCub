@@ -6,7 +6,7 @@
 ### *Next-Generation Serverless Cinematic Streaming Engine & Android Ecosystem*
 
 [![Live Website](https://img.shields.io/badge/Live_Website-streamheaven.online-9d4edd?style=for-the-badge&logo=googlechrome&logoColor=white)](https://streamheaven.online)
-[![Android Native APK](https://img.shields.io/badge/Android_APK-v1.0.5_Release-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://streamheaven.online/assets/StreamHeaven.apk)
+[![Android Native APK](https://img.shields.io/badge/Android_APK-v1.0.7_Release-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://streamheaven.online/StreamHeaven.apk)
 [![Cloudflare Edge](https://img.shields.io/badge/Edge_Infrastructure-Cloudflare_Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://pages.cloudflare.com)
 [![Firebase Engine](https://img.shields.io/badge/Auth_&_Store-Firebase_v9-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com)
 [![Mailtrap](https://img.shields.io/badge/Email_Delivery-Mailtrap_SMTP-22d172?style=for-the-badge&logo=mailgun&logoColor=white)](https://mailtrap.io)
@@ -16,7 +16,7 @@
   <b>StreamHeaven</b> is an end-to-end cinema streaming web application and native Android platform engineered from the ground up without heavy JavaScript framework bloat. It combines tailored Dark-Neon Glassmorphism, 120fps hardware-accelerated touch physics, Cloudflare Edge serverless security, adaptive HLS multi-audio streaming, and an embedded Android Kotlin wrapper with Over-The-Air (OTA) updates.
 </p>
 
-[🌐 Explore Website](https://streamheaven.online) • [📱 Download Android APK](https://streamheaven.online/assets/StreamHeaven.apk) • [📖 Developer README](README.md) • [🔒 Privacy & Legal](https://streamheaven.online/privacy.html)
+[🌐 Explore Website](https://streamheaven.online) • [📱 Download Android APK](https://streamheaven.online/StreamHeaven.apk) • [📖 Developer README](README.md) • [🔒 Privacy & Legal](https://streamheaven.online/privacy.html)
 
 </div>
 
@@ -165,8 +165,8 @@ Obsidian Base       Electric Purple     Vibrant Neon Accent     Frosted Glass Ca
 ### Case Study 6: Dual-Channel OTA Web & Native In-App Updating
 - **The Challenge**: Shipping updates through the Google Play Store or manual APK downloads takes days and disrupts active users.
 - **The Breakthrough**: Engineered a dual-channel update pipeline:
-  1. **Instant Web Over-The-Air (OTA)**: Service Worker cache invalidation (`streamheaven-v264`) updates 99% of UI, movie catalogs, and player features instantly on refresh.
-  2. **Native APK In-App Self-Updater (`AppUpdater.kt`)**: On startup, the native Kotlin layer checks `update.json`. If a new native binary is published, it launches a custom dark-neon progress dialog, downloads the APK via `DownloadManager`, and triggers the Android `FileProvider` install intent.
+  1. **Instant Web Over-The-Air (OTA)**: Service Worker cache invalidation (bump `CACHE_NAME` in `sw.js`) updates 99% of UI, movie catalogs, and player features instantly on refresh.
+  2. **Native APK In-App Self-Updater (`AppUpdater.kt`)**: On startup, the native Kotlin layer checks `version.json`. If a new native binary is published, it launches a custom dark-neon progress dialog, downloads the APK via `DownloadManager`, and triggers the Android `FileProvider` install intent.
 - **The Result**: Continuous delivery of both web assets and native Android binaries with zero user friction.
 
 ---
@@ -187,7 +187,7 @@ graph TD
     subgraph ClientDevices["📱 Client & Application Layer"]
         WebUser["💻 Desktop / Mobile Web Browsers"]
         AndroidUser["📱 Android Native App (Kotlin WebView)"]
-        SW["📦 PWA Service Worker (v264 Cache)"]
+        SW["📦 PWA Service Worker (OTA Cache)"]
     end
 
     subgraph EdgeCompute["⚡ Cloudflare Global Edge"]
@@ -264,10 +264,10 @@ graph TD
 
 - **Lead Engineer & Creator**: [SamJU25](https://github.com/SamJU25)
 - **Live Platform**: [https://streamheaven.online](https://streamheaven.online)
-- **Android APK**: [Download v1.0.5 APK](https://streamheaven.online/assets/StreamHeaven.apk)
+- **Android APK**: [Download v1.0.7 APK](https://streamheaven.online/StreamHeaven.apk)
 - **Community Telegram**: [@StreamHeavenOnline](https://t.me/StreamHeavenOnline)
 - **Contact**: [streamheaven.support@gmail.com](mailto:streamheaven.support@gmail.com)
-- **Source Repository**: [https://github.com/SamJU25/SteamHeaven](https://github.com/SamJU25/SteamHeaven)
+- **Source Repository**: [https://github.com/SamJU25/StreamHeaven](https://github.com/SamJU25/StreamHeaven)
 
 <div align="center">
   <sub>StreamHeaven demonstrates how thoughtful vanilla web engineering and serverless edge architecture outperform bloated frameworks in speed, reliability, and user satisfaction.</sub>

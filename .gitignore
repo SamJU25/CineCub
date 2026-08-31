@@ -1,6 +1,7 @@
 node_modules/
 .DS_Store
 .env
+.dev.vars
 .wrangler/
 dist/
 build/
@@ -16,4 +17,7 @@ serviceAccountKey.json
 **/android-app/app/build/
 **/android-app/local.properties
 **/android-app/.idea/
+**/android-app/keystore.properties
+**/android-app/*.keystore
+**/android-app/*.jks
 *.iml

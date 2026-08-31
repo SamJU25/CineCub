@@ -2,7 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "com.streamheaven.app",
+        "package_name": "online.streamheaven.app",
         "sha256_cert_fingerprints": ["32:BA:69:A1:7A:3F:A5:0E:A5:39:8B:6F:FC:9C:83:B5:F7:C0:FF:03:6F:73:19:E6:8C:9B:9E:1B:69:79:BF:61"]
       }
     }]
