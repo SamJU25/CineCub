@@ -58,8 +58,12 @@ const SITE = 'https://streamheaven.online';
         background: rgba(10,10,15,.85); backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--border);
       }
+      .sh-nav-left { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
       .sh-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: -.3px; flex-shrink: 0; }
       .sh-logo span { color: var(--purple); }
+      .sh-nav-links { display: flex; align-items: center; gap: 14px; }
+      .nav-link { font-size: 13px; font-weight: 700; color: var(--text-2); transition: color .15s; }
+      .nav-link:hover { color: #fff; }
       .sh-open-app {
         display: inline-flex; align-items: center; gap: 8px;
         background: linear-gradient(135deg, var(--purple-deep), var(--purple));
@@ -111,7 +115,13 @@ const SITE = 'https://streamheaven.online';
   </head>
   <body>
     <header class="sh-header">
-      <a class="sh-logo" href="/">Stream<span>Heaven</span></a>
+      <div class="sh-nav-left">
+        <a class="sh-logo" href="/">Stream<span>Heaven</span></a>
+        <nav class="sh-nav-links">
+          <a href="/trending" class="nav-link">🔥 Trending</a>
+          <a href="/anime" class="nav-link">🎌 Anime</a>
+        </nav>
+      </div>
       <QuickSearch client:idle />
       <a class="sh-open-app" href="/">▶ Open App</a>
     </header>
