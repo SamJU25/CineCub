@@ -113,6 +113,16 @@ export function getPopular(type, env, page = 1) {
   return tmdb(`/${type}/popular`, { page }, env);
 }
 
+/** Anime titles (discover TV/movie with animation genre & Japanese audio) */
+export function getAnime(env, page = 1) {
+  return tmdb('/discover/tv', {
+    with_genres: '16',
+    with_original_language: 'ja',
+    sort_by: 'popularity.desc',
+    page
+  }, env);
+}
+
 /** Format runtime minutes → "2h 46m" */
 export function formatRuntime(mins) {
   if (!mins || mins <= 0) return '';

@@ -1,0 +1,242 @@
+---
+export const prerender = false;
+
+import Base from '../layouts/Base.astro';
+import SpotlightCarousel from '../components/SpotlightCarousel.svelte';
+import ContinueWatching from '../components/ContinueWatching.svelte';
+import Watchlist from '../components/Watchlist.svelte';
+import { getTrending, buildSlug, IMG, year } from '../lib/tmdb.js';
+
+const data = await getTrending(Astro.locals.runtime?.env, 1);
+const items = (data?.results || []).filter((i) => i.poster_path && (i.title || i.name));
+
+const pageTitle = 'Trending Movies & TV Shows — Watch Free in HD | StreamHeaven';
+const description = 'Explore what is trending worldwide today on StreamHeaven. Stream trending blockbuster movies and viral TV shows free in HD with zero ads.';
+const canonical = 'https://streamheaven.online/trending';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Trending Movies and TV Series on StreamHeaven',
+  itemListElement: items.slice(0, 10).map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    url: item.media_type === 'tv'
+      ? `https://streamheaven.online/series/${buildSlug(item)}`
+      : `https://streamheaven.online/movie/${buildSlug(item)}`,
+    name: item.title || item.name
+  }))
+};
+---
+
+<Base
+  title={pageTitle}
+  description={description}
+  canonical={canonical}
+  jsonLd={jsonLd}
+>
+  <div class="trending-container">
+    <!-- Hero Island -->
+    <SpotlightCarousel client:load />
+
+    <!-- User Islands -->
+    <ContinueWatching client:idle />
+    <Watchlist client:idle />
+
+    <!-- Trending Grid -->
+    <section class="catalog-section">
+      <div class="catalog-header">
+        <h1 class="catalog-title">🔥 Trending Worldwide</h1>
+        <p class="catalog-subtitle">The hottest releases streaming right now</p>
+      </div>
+
+      <div class="media-grid">
+        {items.map((item) => {
+          const isMovie = item.media_type === 'movie' || Boolean(item.title);
+          const title = item.title || item.name;
+          const itemYear = year(item.release_date || item.first_air_date);
+          const slug = buildSlug(item);
+          const href = isMovie ? `/movie/${slug}` : `/series/${slug}`;
+          const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
+          const poster = IMG.poster(item.poster_path, 'w500');
+
+          return (
+            <article class="media-card">
+              <a href={href} class="poster-link" aria-label={`View ${title}`}>
+                <div class="poster-box">
+                  {poster && (
+                    <img
+                      src={poster}
+                      alt={title}
+                      loading="lazy"
+                      width="240"
+                      height="360"
+                    />
+                  )}
+                  {rating && <span class="rating-badge">★ {rating}</span>}
+                  <button
+                    class="quick-play-btn"
+                    data-play-id={item.id}
+                    data-media-type={isMovie ? 'movie' : 'tv'}
+                    aria-label={`Play ${title}`}
+                    onclick="event.preventDefault(); window.openMediaModal && window.openMediaModal(this.dataset.playId, this.dataset.mediaType, true);"
+                  >
+                    ▶
+                  </button>
+                </div>
+              </a>
+              <div class="card-details">
+                <a href={href} class="title-link">
+                  <h2 class="card-title">{title}</h2>
+                </a>
+                <div class="card-meta">
+                  <span>{isMovie ? 'Movie' : 'Series'}</span>
+                  {itemYear && <span>· {itemYear}</span>}
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .trending-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 16px 48px;
+  }
+  .catalog-section {
+    margin-top: 16px;
+  }
+  .catalog-header {
+    margin-bottom: 24px;
+  }
+  .catalog-title {
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    margin: 0 0 6px;
+  }
+  .catalog-subtitle {
+    color: var(--text-2, #a5a6b8);
+    font-size: 14px;
+    margin: 0;
+  }
+  .media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  @media (min-width: 640px) {
+    .media-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .media-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 24px;
+    }
+  }
+  .media-card {
+    background: #12121c;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .media-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(157, 78, 221, 0.45);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  }
+  .poster-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    background: #0d0d14;
+    overflow: hidden;
+  }
+  .poster-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  .media-card:hover .poster-box img {
+    transform: scale(1.04);
+  }
+  .rating-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    color: #ffc107;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .quick-play-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--purple, #9d4edd);
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 2px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .media-card:hover .quick-play-btn {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .quick-play-btn:hover {
+    filter: brightness(1.15);
+  }
+  .card-details {
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .title-link {
+    color: #fff;
+    text-decoration: none;
+  }
+  .title-link:hover {
+    color: var(--purple, #9d4edd);
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-meta {
+    font-size: 11px;
+    color: var(--text-3, #7e8094);
+  }
+</style>

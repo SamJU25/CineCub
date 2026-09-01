@@ -106,10 +106,53 @@
     }
   }
 
+  function selectServer(idx) {
+    currentServer = idx;
+    try {
+      localStorage.setItem('sh_preferred_server', String(idx));
+    } catch (e) {}
+  }
+
+  function shareMedia() {
+    if (!mediaData) return;
+    const title = mediaData.title || mediaData.name;
+    const url = `${window.location.origin}/?watch=${mediaId}&type=${mediaType}`;
+    const text = `Watch ${title} on StreamHeaven!`;
+
+    if (typeof window !== 'undefined' && window.AndroidShare && typeof window.AndroidShare.share === 'function') {
+      window.AndroidShare.share(title, text, url);
+    } else if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator.share({ title, text, url }).catch(() => {});
+    } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+      alert('Link copied to clipboard!');
+    }
+  }
+
+  function nextEpisode() {
+    if (mediaType !== 'tv') return;
+    const nextEpNum = episode + 1;
+    const exists = episodeList.some((ep) => ep.episode_number === nextEpNum);
+    if (exists) {
+      episode = nextEpNum;
+      isPlayerActive = true;
+    } else if (season < totalSeasons) {
+      season += 1;
+      episode = 1;
+      loadEpisodes(season);
+      isPlayerActive = true;
+    }
+  }
+
   async function open(id, type = 'movie', startPlaying = true) {
     mediaId = id;
     mediaType = type === 'tv' || type === 'series' ? 'tv' : 'movie';
-    currentServer = 0;
+    try {
+      const savedServer = localStorage.getItem('sh_preferred_server');
+      if (savedServer !== null) {
+        currentServer = parseInt(savedServer, 10) || 0;
+      }
+    } catch (e) {}
     season = 1;
     episode = 1;
     isPlayerActive = startPlaying;
@@ -239,7 +282,7 @@
               <button
                 class="server-chip"
                 class:active={currentServer === idx}
-                onclick={() => (currentServer = idx)}
+                onclick={() => selectServer(idx)}
               >
                 {srv.name}
               </button>
@@ -250,20 +293,25 @@
         <!-- TV Show Episode & Season Selector -->
         {#if mediaType === 'tv' && totalSeasons > 0}
           <div class="tv-controls">
-            <div class="season-select-wrapper">
-              <label for="season-select">Season:</label>
-              <select
-                id="season-select"
-                bind:value={season}
-                onchange={() => {
-                  episode = 1;
-                  loadEpisodes(season);
-                }}
-              >
-                {#each Array.from({ length: totalSeasons }, (_, i) => i + 1) as sNum}
-                  <option value={sNum}>Season {sNum}</option>
-                {/each}
-              </select>
+            <div class="tv-header-row">
+              <div class="season-select-wrapper">
+                <label for="season-select">Season:</label>
+                <select
+                  id="season-select"
+                  bind:value={season}
+                  onchange={() => {
+                    episode = 1;
+                    loadEpisodes(season);
+                  }}
+                >
+                  {#each Array.from({ length: totalSeasons }, (_, i) => i + 1) as sNum}
+                    <option value={sNum}>Season {sNum}</option>
+                  {/each}
+                </select>
+              </div>
+              <button class="btn-next-ep" onclick={nextEpisode} title="Jump to next episode">
+                Next Episode ⏭
+              </button>
             </div>
 
             {#if episodeList.length > 0}
@@ -290,14 +338,23 @@
           <div class="info-section">
             <div class="title-row">
               <h2 class="title">{mediaData.title || mediaData.name}</h2>
-              <button
-                class="btn-bookmark"
-                class:saved={isBookmarked}
-                onclick={toggleBookmark}
-                title={isBookmarked ? 'Remove from Watchlist' : 'Add to Watchlist'}
-              >
-                {isBookmarked ? '🔖 Saved in Watchlist' : '+ Add to Watchlist'}
-              </button>
+              <div class="action-buttons">
+                <button
+                  class="btn-action btn-share"
+                  onclick={shareMedia}
+                  title="Share with friends"
+                >
+                  ↗ Share
+                </button>
+                <button
+                  class="btn-action btn-bookmark"
+                  class:saved={isBookmarked}
+                  onclick={toggleBookmark}
+                  title={isBookmarked ? 'Remove from Watchlist' : 'Add to Watchlist'}
+                >
+                  {isBookmarked ? '🔖 Saved' : '+ Watchlist'}
+                </button>
+              </div>
             </div>
             <div class="meta-row">
               {#if mediaData.release_date || mediaData.first_air_date}
@@ -551,7 +608,32 @@
     font-weight: 800;
     color: #fff;
   }
-  .btn-bookmark {
+  .tv-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .btn-next-ep {
+    background: rgba(157, 78, 221, 0.15);
+    border: 1px solid rgba(157, 78, 221, 0.35);
+    color: #c77dff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-next-ep:hover {
+    background: rgba(157, 78, 221, 0.3);
+  }
+  .action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-action {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: #e8e8f0;
@@ -562,7 +644,7 @@
     cursor: pointer;
     transition: background 0.18s, border-color 0.18s, color 0.18s;
   }
-  .btn-bookmark:hover {
+  .btn-action:hover {
     background: rgba(157, 78, 221, 0.2);
     border-color: #9d4edd;
   }
