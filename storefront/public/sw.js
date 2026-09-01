@@ -1,4 +1,4 @@
-const CACHE_NAME = 'streamheaven-v307';
+const CACHE_NAME = 'streamheaven-v308';
 const urlsToCache = [
   '/',
   '/index.html',
