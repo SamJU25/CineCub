@@ -5,7 +5,7 @@ const urlsToCache = [
   '/profile.html',
   '/privacy.html',
   '/llms.txt',
-  '/style.css?v=293',
+  '/style.css?v=294',
   '/script.js?v=293',
   '/firebase-auth.js?v=40',
   '/manifest.json',
