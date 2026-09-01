@@ -39,7 +39,13 @@
 {#if toasts.length > 0}
   <div class="toast-container" aria-live="polite" role="status">
     {#each toasts as toast (toast.id)}
-      <div class="toast-pill {toast.type}" onclick={() => removeToast(toast.id)}>
+      <div
+        class="toast-pill {toast.type}"
+        onclick={() => removeToast(toast.id)}
+        role="alert"
+        tabindex="0"
+        onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && removeToast(toast.id)}
+      >
         <span class="toast-icon">
           {#if toast.type === 'success'}✓
           {:else if toast.type === 'error'}✕
