@@ -10,7 +10,13 @@
 /script.js
   Cache-Control: no-cache, no-store, must-revalidate
 
+/script.v295.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
 /style.css
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/style.v296.css
   Cache-Control: no-cache, no-store, must-revalidate
 
 /sw.js
