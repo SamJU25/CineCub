@@ -48,9 +48,11 @@ object AppUpdater {
             try {
                 val url = URL("$VERSION_CHECK_URL?t=${System.currentTimeMillis()}")
                 val conn = (url.openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 8000
-                    readTimeout = 8000
+                    connectTimeout = 10000
+                    readTimeout = 10000
                     requestMethod = "GET"
+                    setRequestProperty("User-Agent", "StreamHeavenApp")
+                    setRequestProperty("Accept", "application/json")
                     useCaches = false
                 }
 
@@ -68,8 +70,9 @@ object AppUpdater {
                     val mandatory = json.optBoolean("mandatory", false)
 
                     val currentVersionCode = getCurrentVersionCode(activity)
+                    val currentVersionName = getCurrentVersionName(activity)
 
-                    if (remoteVersionCode > currentVersionCode) {
+                    if (remoteVersionCode > currentVersionCode || isNewerVersion(remoteVersionName, currentVersionName)) {
                         val updateInfo = UpdateInfo(
                             versionCode = remoteVersionCode,
                             versionName = remoteVersionName,
@@ -88,6 +91,30 @@ object AppUpdater {
             } catch (e: Exception) {
                 // Silently ignore network errors during automatic update check
             }
+        }
+    }
+
+    private fun isNewerVersion(remote: String, current: String): Boolean {
+        try {
+            val rParts = remote.split(".").map { it.filter { c -> c.isDigit() }.toIntOrNull() ?: 0 }
+            val cParts = current.split(".").map { it.filter { c -> c.isDigit() }.toIntOrNull() ?: 0 }
+            val maxLen = maxOf(rParts.size, cParts.size)
+            for (i in 0 until maxLen) {
+                val r = if (i < rParts.size) rParts[i] else 0
+                val c = if (i < cParts.size) cParts[i] else 0
+                if (r > c) return true
+                if (r < c) return false
+            }
+        } catch (_: Exception) {}
+        return false
+    }
+
+    private fun getCurrentVersionName(context: Context): String {
+        return try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            packageInfo.versionName ?: "1.0.0"
+        } catch (e: Exception) {
+            "1.0.0"
         }
     }
 
