@@ -423,12 +423,26 @@ class MainActivity : AppCompatActivity() {
             return false
         }
 
-        // 2. Main Frame Navigation Guard: Never let an external URL take over the main app window!
+        // 2. User-Initiated Social & External Contact (Telegram Community, Email, Phone, Socials)
+        if (host.contains("t.me") || host.contains("telegram.me") || scheme == "mailto" || scheme == "tel" ||
+            host.contains("facebook.com") || host.contains("x.com") || host.contains("twitter.com") || host.contains("instagram.com")
+        ) {
+            return try {
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
+
+        // 3. Main Frame Navigation Guard: Never let an external ad/betting URL take over the main app window!
         if (isForMainFrame) {
             return true
         }
 
-        // 3. Video Player Embed Hosts -> Allow inside WebView subframe (iframe)
+        // 4. Video Player Embed Hosts -> Allow inside WebView subframe (iframe)
         val videoEmbedHosts = arrayOf(
             "vidlink.pro", "vidsrc.me", "vidsrc.to", "vidsrc.net", "vidsrc.in", "vidsrc.pm", "vidsrc.xyz",
             "autoembed.co", "autoembed.cc", "autoembed.to", "multiembed.mov", "cinesrc.st",
@@ -438,18 +452,6 @@ class MainActivity : AppCompatActivity() {
         for (embedHost in videoEmbedHosts) {
             if (host.contains(embedHost)) {
                 return false
-            }
-        }
-
-        // 4. User-Initiated Social & External Contact (Telegram Community, Email, Phone)
-        if (host.contains("t.me") || host.contains("telegram.me") || scheme == "mailto" || scheme == "tel") {
-            return try {
-                val intent = Intent(Intent.ACTION_VIEW, uri)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-                true
-            } catch (e: Exception) {
-                false
             }
         }
 
