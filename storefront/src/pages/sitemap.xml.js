@@ -10,6 +10,7 @@ export const GET = async ({ locals }) => {
     `${SITE}/`,
     `${SITE}/trending`,
     `${SITE}/anime`,
+    `${SITE}/genres`,
     `${SITE}/privacy.html`
   ]);
 
