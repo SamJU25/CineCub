@@ -2,8 +2,10 @@
   "appName": "StreamHeaven",
   "versionName": "1.0.8",
   "versionCode": 9,
+  "apkUrl": "https://streamheaven.online/StreamHeaven.apk",
   "downloadUrl": "https://streamheaven.online/StreamHeaven.apk",
   "minSupportedVersion": 1,
-  "releaseNotes": "Svelte 5 islands, updated Telegram community integration, 6-server streaming player, and Android PiP mode.",
-  "updatedAt": "2026-09-01T17:39:00Z"
+  "mandatory": false,
+  "releaseNotes": "Svelte 5 interactive islands, 6-server streaming engine, offline continue watching, and updated Telegram community integration.",
+  "updatedAt": "2026-09-01T17:40:00Z"
 }

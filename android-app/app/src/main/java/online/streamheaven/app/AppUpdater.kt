@@ -60,7 +60,7 @@ object AppUpdater {
 
                     val remoteVersionCode = json.optInt("versionCode", 0)
                     val remoteVersionName = json.optString("versionName", "1.0.0")
-                    val apkUrl = json.optString("apkUrl", "https://streamheaven.online/StreamHeaven.apk")
+                    val apkUrl = if (json.has("apkUrl")) json.getString("apkUrl") else json.optString("downloadUrl", "https://streamheaven.online/StreamHeaven.apk")
                     val releaseNotes = json.optString(
                         "releaseNotes",
                         "Bug fixes and performance enhancements."
