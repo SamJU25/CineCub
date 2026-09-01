@@ -255,11 +255,18 @@
 
 {#if isOpen}
   <div class="modal-backdrop" onclick={close} role="presentation">
-    <div class="modal-card" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+    <div
+      class="modal-card"
+      onclick={(e) => e.stopPropagation()}
+      oncontextmenu={(e) => e.preventDefault()}
+      ondragstart={(e) => e.preventDefault()}
+      role="dialog"
+      aria-modal="true"
+    >
       <button class="btn-close" onclick={close} aria-label="Close modal">✕</button>
 
       <!-- Player Frame -->
-      <div class="player-container">
+      <div class="player-container" oncontextmenu={(e) => e.preventDefault()}>
         {#if isPlayerActive && currentStreamUrl}
           <iframe
             src={currentStreamUrl}
@@ -419,6 +426,8 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
   }
   .btn-close {
     position: absolute;
@@ -447,6 +456,8 @@
     aspect-ratio: 16 / 9;
     background: #000;
     position: relative;
+    user-select: none;
+    -webkit-user-select: none;
   }
   iframe {
     width: 100%;
