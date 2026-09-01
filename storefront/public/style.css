@@ -1,4 +1,4 @@
-/* ================================================================ 
+﻿/* ================================================================ 
    01. DESIGN TOKENS & NETFLIX PURPLE/BLACK THEME
 ================================================================ */
 :root {
@@ -1235,7 +1235,7 @@ a.telegram-nav-item {
 .ep-select {flex:0 0 auto;width:140px;background:var(--cv-dark-4);color:var(--text-2);border:1px solid var(--b-2);padding:9px 16px;border-radius:var(--r-pill);font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239d4edd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 14px center;background-size:14px;transition:var(--t-fast);outline:none;}
 .ep-select:hover {background:var(--cv-dark-5);color:var(--text-1);border-color:var(--cv-purple-light);}
 
-/* Season / Episode selector row — Watch & Ad-Free Watch tabs */
+/* Season / Episode selector row â€” Watch & Ad-Free Watch tabs */
 .ep-nav {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;margin-top:16px;width:100%}
 .ep-selects {display:flex;flex-wrap:wrap;gap:10px;flex:0 0 auto}
 .ep-nav select {min-width:150px;background:var(--cv-dark-4);color:var(--text-1);border:1px solid var(--b-2);height:44px;padding:0 40px 0 16px;border-radius:var(--r-pill);font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a3a3a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 16px center;background-size:14px;transition:var(--t-fast);outline:none}
@@ -1256,7 +1256,7 @@ a.telegram-nav-item {
 .ep-selects .select-selected { height: 44px; padding: 0 16px; font-size: 13px; }
 .select-selected.select-arrow-active {border-color:var(--cv-purple); box-shadow:0 0 0 2px rgba(181,95,230,0.25);}
 .select-selected.select-arrow-active:after {transform:rotate(180deg)}
-.select-items {position:absolute; background-color:#161224; border:1px solid rgba(157, 78, 221, 0.35); box-shadow:0 12px 36px rgba(0,0,0,0.75); top:calc(100% + 6px); left:0; right:0; z-index:6000; border-radius:16px; padding:6px; margin-top:0; max-height:280px; overflow-y:auto; overscroll-behavior:contain; box-sizing:border-box; transform-origin:top center; animation:dropdownUnfold 160ms var(--ease-standard) forwards}
+.select-items {position:absolute; background-color:#161224; border:1px solid rgba(157, 78, 221, 0.35); box-shadow:0 12px 36px rgba(0,0,0,0.75); top:calc(100% + 6px); left:0; right:0; z-index:6000; border-radius:16px; padding:6px; margin-top:0; max-height:280px; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain; touch-action:pan-y; box-sizing:border-box; transform-origin:top center; animation:dropdownUnfold 160ms var(--ease-standard) forwards}
 @keyframes dropdownUnfold { from { opacity: 0; transform: translateY(-6px) scaleY(0.96); } to { opacity: 1; transform: translateY(0) scaleY(1); } }
 .select-items::-webkit-scrollbar {width:6px;}
 .select-items::-webkit-scrollbar-thumb {background:var(--cv-dark-5); border-radius:var(--r-pill);}
@@ -2690,7 +2690,7 @@ button, a, .nav-btn, .mbb-btn { touch-action: manipulation; }
    14. TABLET & LANDSCAPE POLISH
 ================================================================ */
 
-/* Tablet landscape / iPad (769px–1024px) */
+/* Tablet landscape / iPad (769pxâ€“1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
   .cv-container { padding: 0 24px; }
 
