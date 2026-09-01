@@ -35,9 +35,13 @@ export const GET = async ({ request, params, locals, url }) => {
     return cachedResponse;
   }
 
-  // Reconstruct the TMDB path from the catch-all route segments
+  // Reconstruct and sanitize the TMDB path from the catch-all route segments
   const rawPath = params.path ?? '';
-  const tmdbPath = '/' + (Array.isArray(rawPath) ? rawPath.join('/') : rawPath);
+  const sanitizedPath = (Array.isArray(rawPath) ? rawPath.join('/') : String(rawPath))
+    .replace(/\.\./g, '')
+    .replace(/\/+/g, '/')
+    .replace(/^\/+/, '');
+  const tmdbPath = '/' + sanitizedPath;
 
   // Get the query string from the original request and add the API key
   const queryParams = new URLSearchParams(url.search);

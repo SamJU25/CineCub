@@ -103,12 +103,12 @@ class MainActivity : AppCompatActivity() {
     private fun setupWebView() {
         val settings = webView.settings
 
-        // Enable Core Web Capabilities
+        // Enable Core Web Capabilities (Strict Sandbox)
         settings.javaScriptEnabled = true
         settings.domStorageEnabled = true
         settings.databaseEnabled = true
-        settings.allowFileAccess = true
-        settings.allowContentAccess = true
+        settings.allowFileAccess = false
+        settings.allowContentAccess = false
 
         // Viewport & Scaling
         settings.useWideViewPort = true
