@@ -1,0 +1,33 @@
+# Cache rules for Cloudflare Workers Static Assets (same format as Pages).
+# SSR routes (/, /profile.html, /privacy.html, /movie/*, /series/*) set their
+# own Cache-Control in the page frontmatter — these rules cover static files.
+
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/manifest.json
+  Cache-Control: public, max-age=0, must-revalidate
+
+/version.json
+  Cache-Control: public, max-age=0, must-revalidate
+
+/style.css
+  Cache-Control: public, max-age=86400
+
+/script.js
+  Cache-Control: public, max-age=86400
+
+/firebase-auth.js
+  Cache-Control: public, max-age=86400
+
+/llms.txt
+  Cache-Control: public, max-age=86400
+
+/StreamHeaven.apk
+  Cache-Control: public, max-age=3600
+
+/assets/*
+  Cache-Control: public, max-age=2592000, immutable
+
+/lib/*
+  Cache-Control: public, max-age=2592000, immutable

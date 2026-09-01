@@ -1,0 +1,9 @@
+---
+// Profile page — served verbatim from src/app/profile.html.
+import pageHtml from '../app/profile.html?raw';
+
+export const prerender = false;
+
+Astro.response.headers.set('Cache-Control', 'no-cache, must-revalidate');
+---
+<Fragment set:html={pageHtml} />

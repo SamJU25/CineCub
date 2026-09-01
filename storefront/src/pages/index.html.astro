@@ -1,0 +1,10 @@
+---
+// Legacy /index.html URL — backlinks and the Android WebView keep using it.
+// Same document as / (canonical tag in the HTML points to https://streamheaven.online/).
+import appHtml from '../app/index.html?raw';
+
+export const prerender = false;
+
+Astro.response.headers.set('Cache-Control', 'no-cache, must-revalidate');
+---
+<Fragment set:html={appHtml} />

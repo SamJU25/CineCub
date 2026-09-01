@@ -21,3 +21,5 @@ serviceAccountKey.json
 **/android-app/*.keystore
 **/android-app/*.jks
 *.iml
+
+.commandcode/

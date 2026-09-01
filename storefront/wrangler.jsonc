@@ -3,13 +3,14 @@
   "main": "dist/_worker.js",
   "compatibility_date": "2026-08-31",
   "compatibility_flags": ["nodejs_als"],
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "none",
+    "not_found_handling": "none"
+  },
   "routes": [
-    { "pattern": "streamheaven.online/movie*", "zone_name": "streamheaven.online" },
-    { "pattern": "streamheaven.online/series*", "zone_name": "streamheaven.online" },
-    { "pattern": "streamheaven.online/sitemap.xml", "zone_name": "streamheaven.online" },
-    { "pattern": "www.streamheaven.online/movie*", "zone_name": "streamheaven.online" },
-    { "pattern": "www.streamheaven.online/series*", "zone_name": "streamheaven.online" },
-    { "pattern": "www.streamheaven.online/sitemap.xml", "zone_name": "streamheaven.online" }
+    { "pattern": "streamheaven.online/*", "zone_name": "streamheaven.online" },
+    { "pattern": "www.streamheaven.online/*", "zone_name": "streamheaven.online" }
   ],
   "observability": {
     "enabled": true

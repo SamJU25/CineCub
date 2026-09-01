@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07050a">
+  <title>Privacy Policy &amp; Terms – StreamHeaven</title>
+  <meta name="description" content="Read the Privacy Policy, Terms of Service, and DMCA Copyright guidelines for StreamHeaven.">
+  <meta name="robots" content="index, follow">
+
+  <!-- OPEN GRAPH / SOCIAL -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://streamheaven.online/privacy.html">
+  <meta property="og:title" content="Privacy Policy &amp; Terms – StreamHeaven">
+  <meta property="og:description" content="Privacy Policy, Terms of Service, and DMCA guidelines for StreamHeaven.">
+  <meta property="og:image" content="https://streamheaven.online/assets/images/logo-icon.png">
+
+  <!-- FAVICONS -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/app-logo.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- FONTS & ICONS -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script>
+    (function(){
+      var isNative = navigator.userAgent.indexOf('StreamHeavenApp') !== -1 || !!window.StreamHeavenNativeApp || window.matchMedia('(display-mode: standalone)').matches;
+      document.documentElement.classList.add(isNative ? 'is-app-env' : 'is-web-env');
+    })();
+  </script>
+  <link rel="stylesheet" href="style.css?v=293">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #07050a;
+      background-image: radial-gradient(circle at 50% -10%, rgba(157, 78, 221, 0.15) 0%, transparent 60%);
+      background-attachment: fixed;
+      color: #c5c4d8;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.7;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* Top App Navigation Header */
+    .legal-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 8, 18, 0.88);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px 20px;
+    }
+    .legal-nav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .legal-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    .legal-back-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #c77dff;
+      transform: translateX(-2px);
+    }
+    .legal-back-btn:active {
+      transform: scale(0.96);
+    }
+    .legal-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .legal-brand img {
+      width: 32px;
+      height: 32px;
+    }
+    .legal-brand span {
+      font-family: 'Nunito', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    /* Main Container */
+    .legal-container {
+      max-width: 900px;
+      margin: 28px auto 0;
+      padding: 0 20px;
+    }
+
+    /* Hero Header */
+    .legal-hero {
+      text-align: center;
+      margin-bottom: 28px;
+      padding: 24px 16px;
+      background: rgba(22, 17, 36, 0.6);
+      border: 1px solid rgba(157, 78, 221, 0.2);
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .legal-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(157, 78, 221, 0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .legal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(157, 78, 221, 0.16);
+      border: 1px solid rgba(157, 78, 221, 0.35);
+      color: #c77dff;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+    .legal-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .legal-updated {
+      font-size: 12px;
+      color: #8c8a9e;
+      font-weight: 500;
+    }
+
+    /* Section Navigation Tabs */
+    .legal-nav-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 2px 14px 2px;
+      margin-bottom: 20px;
+      scrollbar-width: none;
+    }
+    .legal-nav-tabs::-webkit-scrollbar { display: none; }
+    .legal-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #a5a3b8;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .legal-tab-btn:hover, .legal-tab-btn.active {
+      background: rgba(157, 78, 221, 0.18);
+      border-color: rgba(157, 78, 221, 0.4);
+      color: #ffffff;
+    }
+
+    /* Policy Card */
+    .legal-card {
+      background: rgba(16, 12, 28, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 18px;
+      padding: 28px 24px;
+      margin-bottom: 22px;
+    }
+    .legal-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .legal-card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(157, 78, 221, 0.15);
+      color: #c77dff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .legal-card-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    /* Typography inside content */
+    .legal-body h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 20px 0 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .legal-body p {
+      font-size: 14px;
+      color: #b8b7cb;
+      margin-bottom: 14px;
+    }
+    .legal-body ul {
+      margin: 10px 0 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .legal-body li {
+      font-size: 13.5px;
+      color: #b8b7cb;
+    }
+    .legal-body strong {
+      color: #ffffff;
+    }
+    .legal-body a {
+      color: #c77dff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .legal-body a:hover {
+      text-decoration: underline;
+    }
+
+    /* Highlight Note Box */
+    .legal-highlight-box {
+      background: rgba(157, 78, 221, 0.08);
+      border-left: 3px solid #9d4edd;
+      padding: 14px 16px;
+      border-radius: 0 12px 12px 0;
+      margin: 18px 0;
+    }
+    .legal-highlight-box p {
+      margin-bottom: 0;
+      font-size: 13px;
+      color: #e0dff2;
+    }
+
+    /* Footer text */
+    .legal-footer-note {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 12px;
+      color: #727088;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top App Navigation Bar -->
+  <header class="legal-navbar">
+    <div class="legal-nav-inner">
+      <button class="legal-back-btn" onclick="goBack()" type="button">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back</span>
+      </button>
+      <a href="index.html" class="legal-brand">
+        <img src="/assets/images/icon-logo.png" alt="StreamHeaven Logo">
+        <span>StreamHeaven</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Content Container -->
+  <main class="legal-container">
+
+    <!-- Hero Header -->
+    <div class="legal-hero">
+      <div class="legal-badge"><i class="fas fa-shield-halved"></i> Legal &amp; Policies</div>
+      <h1 class="legal-title">Privacy Policy &amp; Terms</h1>
+      <div class="legal-updated">Last Updated: August 2026 • Effective Worldwide</div>
+    </div>
+
+    <!-- Quick Jump Tabs -->
+    <nav class="legal-nav-tabs">
+      <a href="#privacy" class="legal-tab-btn active"><i class="fas fa-user-shield"></i> Privacy Policy</a>
+      <a href="#terms" class="legal-tab-btn"><i class="fas fa-file-contract"></i> Terms of Service</a>
+      <a href="#dmca" class="legal-tab-btn"><i class="fas fa-copyright"></i> DMCA Policy</a>
+      <a href="#contact" class="legal-tab-btn"><i class="fas fa-envelope"></i> Contact Support</a>
+    </nav>
+
+    <!-- 1. PRIVACY POLICY -->
+    <section class="legal-card" id="privacy">
+      <div class="legal-card-header">
+        <div class="legal-card-icon"><i class="fas fa-user-shield"></i></div>
+        <h2 class="legal-card-title">Privacy Policy</h2>
+      </div>
+      <div class="legal-body">
+        <p>Welcome to <strong>StreamHeaven</strong>. We respect your privacy and are committed to protecting your personal information. This Privacy Policy outlines how your data is handled when you use our website and mobile application.</p>
+
+        <div class="legal-highlight-box">
+          <p><strong>Summary:</strong> We collect minimal data solely to sync your watchlist, resume playback timestamps, and manage optional accounts. We never sell, rent, or trade your personal information.</p>
+        </div>
+
+        <h2>1. Information We Collect</h2>
+        <p>Depending on how you use StreamHeaven, we may store:</p>
+        <ul>
+          <li><strong>Authentication Data:</strong> When you optionally sign in (via Google or email), we store your display name, email, and encrypted authentication tokens provided securely by Firebase.</li>
+          <li><strong>Watchlist &amp; Playback Progress:</strong> Content titles you add to your watchlist, along with playback resume timestamps, so you can continue watching seamlessly across your devices.</li>
+          <li><strong>Preferences:</strong> Custom theme preferences and playback settings saved locally on your device.</li>
+        </ul>
+
+        <h2>2. How We Use Your Data</h2>
+        <p>Your data is strictly used to:</p>
+        <ul>
+          <li>Provide instant synchronization of your watchlist and watch history.</li>
+          <li>Enable seamless cloud resume across web, Android, and tablets.</li>
+          <li>Maintain and protect the security and reliability of our platform.</li>
+        </ul>
+
+        <h2>3. Data Retention &amp; Control</h2>
+        <p>You maintain 100% control over your data. At any time from your <strong>Profile Settings</strong>, you can:</p>
+        <ul>
+          <li><strong>Clear Watch History:</strong> Wipe all stored playback timestamps and history entries.</li>
+          <li><strong>Clear Watchlist:</strong> Remove all saved bookmarked titles.</li>
+          <li><strong>Delete Account:</strong> Permanently erase your account, profile, and all synced data from our servers.</li>
+        </ul>
+
+        <h2>4. Third-Party Integrations</h2>
+        <p>We retrieve movie and TV series metadata and poster artwork using the TMDB API. Video streaming sources are provided by independent third parties.</p>
+      </div>
+    </section>
+
+    <!-- 2. TERMS OF SERVICE -->
+    <section class="legal-card" id="terms">
+      <div class="legal-card-header">
+        <div class="legal-card-icon"><i class="fas fa-file-contract"></i></div>
+        <h2 class="legal-card-title">Terms of Service</h2>
+      </div>
+      <div class="legal-body">
+        <p>By accessing or using the StreamHeaven website and application, you agree to comply with and be bound by these Terms of Service.</p>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>You must be at least 13 years of age to use this platform. By using StreamHeaven, you warrant and represent that you meet this age requirement.</p>
+
+        <h2>2. Third-Party Content Disclaimer</h2>
+        <p>StreamHeaven operates as an informational directory and media search index. StreamHeaven <strong>does not host, upload, or store any video files or copyrighted media on its own servers</strong>. All video streams and media files are embedded from independent, non-affiliated third-party providers.</p>
+
+        <h2>3. Proper Use</h2>
+        <p>You agree not to disrupt or attempt to compromise the integrity, security, or availability of StreamHeaven services or its connected servers.</p>
+      </div>
+    </section>
+
+    <!-- 3. DMCA COPYRIGHT POLICY -->
+    <section class="legal-card" id="dmca">
+      <div class="legal-card-header">
+        <div class="legal-card-icon"><i class="fas fa-copyright"></i></div>
+        <h2 class="legal-card-title">DMCA Copyright Policy</h2>
+      </div>
+      <div class="legal-body">
+        <p>StreamHeaven respects the intellectual property rights of creators and copyright holders and complies with the Digital Millennium Copyright Act (DMCA).</p>
+
+        <h2>Notice &amp; Takedown Procedure</h2>
+        <p>Because StreamHeaven does not host media files on its servers, infringement claims should be directed to the third-party file hosts where the files reside. However, if you are a copyright owner and wish to request the removal of indexed links or references from StreamHeaven, please email us with:</p>
+        <ul>
+          <li>Identification of the copyrighted work claimed to be infringed.</li>
+          <li>The exact link/URL on StreamHeaven where the reference appears.</li>
+          <li>Your contact information and statement of authorization.</li>
+        </ul>
+        <p>Direct all notices to our designated agent at: <a href="mailto:streamheaven.support@gmail.com">streamheaven.support@gmail.com</a></p>
+      </div>
+    </section>
+
+    <!-- 4. CONTACT SUPPORT -->
+    <section class="legal-card" id="contact">
+      <div class="legal-card-header">
+        <div class="legal-card-icon"><i class="fas fa-envelope"></i></div>
+        <h2 class="legal-card-title">Contact Us</h2>
+      </div>
+      <div class="legal-body">
+        <p>Have questions, feedback, or need assistance? Reach out to us directly:</p>
+        <ul>
+          <li><strong>Email Support:</strong> <a href="mailto:streamheaven.support@gmail.com">streamheaven.support@gmail.com</a></li>
+          <li><strong>Official Telegram Channel:</strong> <a href="https://t.me/StreamHeavenOnline" target="_blank" rel="noopener noreferrer">@StreamHeavenOnline</a></li>
+        </ul>
+        <p>We typically respond to inquiries within 24 to 48 hours.</p>
+      </div>
+    </section>
+
+    <div class="legal-footer-note">
+      &copy; 2026 StreamHeaven. All rights reserved. • Powered by TMDB API
+    </div>
+
+  </main>
+
+  <script>
+    function goBack() {
+      if (window.history.length > 1 && (document.referrer === '' || document.referrer.includes(window.location.hostname))) {
+        window.history.back();
+      } else {
+        window.location.href = 'index.html';
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "versionCode": 8,
+  "versionName": "1.0.7",
+  "apkUrl": "https://streamheaven.online/StreamHeaven.apk",
+  "releaseNotes": "Fix modal upward scrolling: Resolved swipe-refresh touch conflict so movie and series details scroll up and down with 100% smooth fluidity.",
+  "mandatory": true
+}

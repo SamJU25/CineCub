@@ -34,7 +34,7 @@ const meta = [
   show.vote_average ? `★ ${show.vote_average.toFixed(1)}` : ''
 ].filter(Boolean).join(' · ');
 
-const playUrl = `/index.html?watch=${show.id}&type=tv`;
+const playUrl = `/?watch=${show.id}&type=tv`;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -71,7 +71,7 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=300, s-maxage=3600'
           {show.overview && <p class="overview">{show.overview}</p>}
           <div class="cta-row">
             <a class="btn-play" href={playUrl}>▶ Play now — free</a>
-            <a class="btn-ghost" href="/index.html">Browse more in the app</a>
+            <a class="btn-ghost" href="/">Browse more in the app</a>
           </div>
         </div>
       </div>

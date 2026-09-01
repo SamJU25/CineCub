@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a0f">
+  <title>My Profile – StreamHeaven</title>
+  <meta name="robots" content="noindex">
+  <!-- OPEN GRAPH / SOCIAL -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://streamheaven.online">
+  <meta property="og:title" content="StreamHeaven">
+  <meta property="og:description" content="Watch high-definition movies and TV series online for free with no buffering.">
+  <meta property="og:image" content="https://streamheaven.online/assets/images/logo-icon.png">
+
+  <!-- FAVICONS & GOOGLE SEARCH ICON -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/images/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/app-logo.png">
+  <link rel="manifest" href="/manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script>
+    (function(){
+      var isNative = navigator.userAgent.indexOf('StreamHeavenApp') !== -1 || !!window.StreamHeavenNativeApp || window.matchMedia('(display-mode: standalone)').matches;
+      document.documentElement.classList.add(isNative ? 'is-app-env' : 'is-web-env');
+      if (localStorage.getItem('cachedName') || localStorage.getItem('cachedAvatar') || localStorage.getItem('cachedUsername')) {
+        document.documentElement.classList.add('has-cached-auth');
+      }
+    })();
+  </script>
+  <link href="style.css?v=293" rel="stylesheet">
+  <link rel="prefetch" href="index.html">
+  <link rel="prerender" href="index.html">
+  <style>
+    :root { --profile-gutter: 28px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0a0a0f; color: #e8e8f0; min-height: 100vh; }
+    input, textarea, select { font-family: inherit; touch-action: manipulation; -webkit-tap-highlight-color: transparent; -webkit-user-select: text; user-select: text; }
+    .has-cached-auth #pf-logged-in { display: flex !important; }
+    .has-cached-auth #pf-guest { display: none !important; }
+    
+    /* Layout Variables */
+    :root {
+      --pf-bg-sidebar: rgba(16, 16, 24, 0.85);
+      --pf-bg-main: rgba(16, 16, 24, 0.65);
+      --pf-card-bg: rgba(255, 255, 255, 0.025);
+      --pf-border: rgba(255, 255, 255, 0.07);
+      --pf-purple: #c77dff;
+      --pf-purple-dim: rgba(157, 78, 221, 0.12);
+      --pf-purple-border: rgba(157, 78, 221, 0.25);
+      --pf-danger-bg: #220f12;
+      --pf-danger-border: rgba(230, 57, 70, 0.22);
+      --pf-danger-text: #ff6b6b;
+      --pf-danger-hover: #2c1317;
+    }
+
+    /* Global Layout */
+    .pf-layout {
+      display: flex;
+      max-width: 1140px;
+      margin: 40px auto;
+      padding: 0 var(--profile-gutter);
+      gap: 28px;
+      align-items: flex-start;
+      animation: pfFadeIn 180ms ease-out;
+      will-change: opacity, transform;
+    }
+    @keyframes pfFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Sidebar */
+    .pf-sidebar {
+      width: 290px;
+      background: var(--pf-bg-sidebar);
+      border: 1px solid var(--pf-border);
+      border-radius: 20px;
+      padding: 32px 24px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .pf-sidebar-brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-decoration: none;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .pf-sidebar-brand img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+    .pf-sidebar-brand span {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 22px;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+    }
+    
+    .pf-sidebar-user {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 4px 0 12px;
+    }
+    
+    .pf-avatar-container {
+      width: 104px;
+      height: 104px;
+      margin: 0 auto 16px;
+      position: relative;
+    }
+    
+    .pf-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7b2cbf, #9d4edd);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      font-weight: 900;
+      color: #fff;
+      border: 2px solid rgba(157, 78, 221, 0.4);
+      box-shadow: 0 0 20px rgba(157, 78, 221, 0.2);
+      overflow: hidden;
+    }
+    
+    .pf-sidebar-edit-avatar {
+      position: absolute;
+      bottom: 0px;
+      right: 0px;
+      width: 32px;
+      height: 32px;
+      background: #9d4edd;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      border: 3px solid #101018;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    
+    .pf-sidebar-info {
+      width: 100%;
+    }
+    .pf-sidebar-name {
+      font-size: 19px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: #ffffff;
+      font-family: 'Nunito', sans-serif;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .pf-sidebar-username {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(232, 232, 240, 0.5);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .pf-sidebar-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .pf-sidebar-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 12px;
+      border: none;
+      font-family: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    }
+    .pf-sidebar-btn:active {
+      transform: scale(0.97);
+    }
+    .pf-sidebar-btn.btn-back {
+      background: rgba(255, 255, 255, 0.05);
+      color: #e8e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .pf-sidebar-btn.btn-back:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .pf-sidebar-btn.btn-logout {
+      background: rgba(255, 255, 255, 0.05);
+      color: #ff5c5c;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .pf-sidebar-btn.btn-logout:hover {
+      background: rgba(255, 75, 75, 0.12);
+      color: #ff6b6b;
+      border-color: rgba(255, 75, 75, 0.25);
+    }
+
+    /* Main Content */
+    .pf-main {
+      flex: 1;
+      background: var(--pf-bg-main);
+      border: 1px solid var(--pf-border);
+      border-radius: 20px;
+      padding: 32px 36px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .pf-main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .pf-main-title {
+      font-size: 22px;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .pf-main-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(6, 214, 160, 0.10);
+      border: 1px solid rgba(6, 214, 160, 0.25);
+      color: #06d6a0;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .pf-main-badge-dot {
+      width: 6px;
+      height: 6px;
+      background: #06d6a0;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(6, 214, 160, 0.5);
+    }
+    
+    /* Stats Section */
+    .pf-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .pf-stat-card {
+      background: var(--pf-card-bg);
+      border: 1px solid var(--pf-border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .pf-stat-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .pf-stat-icon.purple {
+      background: var(--pf-purple-dim);
+      color: var(--pf-purple);
+      border: 1px solid var(--pf-purple-border);
+    }
+    .pf-stat-icon.blue {
+      background: rgba(58, 134, 255, 0.12);
+      color: #78b4ff;
+      border: 1px solid rgba(58, 134, 255, 0.22);
+    }
+    .pf-stat-icon.green {
+      background: rgba(6, 214, 160, 0.12);
+      color: #06d6a0;
+      border: 1px solid rgba(6, 214, 160, 0.22);
+    }
+    .pf-stat-val {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.1;
+      font-family: 'Nunito', sans-serif;
+      color: #ffffff;
+    }
+    .pf-stat-val.pf-stat-date {
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .pf-stat-lbl {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(232, 232, 240, 0.5);
+      margin-top: 3px;
+    }
+    
+    /* Section Headers */
+    .pf-section-header {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(232, 232, 240, 0.55);
+      margin-bottom: 12px;
+    }
+    .pf-section-header i {
+      color: var(--pf-purple);
+      font-size: 13px;
+    }
+    .pf-section-header.danger i {
+      color: #ff6b6b;
+    }
+    
+    /* Settings List */
+    .pf-settings-list {
+      background: var(--pf-card-bg);
+      border: 1px solid var(--pf-border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    
+    .pf-settings-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    .pf-settings-row:last-child { border-bottom: none; }
+    .pf-settings-row:hover { background: rgba(255,255,255,0.03); }
+    .pf-settings-row:not(.static):active { background: rgba(255,255,255,0.06); transform: scale(0.99); }
+    .pf-settings-row.static { cursor: default; }
+    .pf-settings-row.static:hover { background: transparent; }
+    
+    .pf-settings-row-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      background: var(--pf-purple-dim);
+      color: var(--pf-purple);
+      border: 1px solid var(--pf-purple-border);
+    }
+    
+    .pf-settings-row-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+    .pf-settings-row-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .pf-settings-row-val {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(232, 232, 240, 0.55);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pf-settings-row-arrow {
+      color: rgba(232, 232, 240, 0.3);
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    
+    /* Danger Actions List */
+    .pf-settings-danger-list {
+      background: var(--pf-card-bg);
+      border: 1px solid var(--pf-border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .pf-settings-danger-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      background: transparent;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    .pf-settings-danger-row:last-child { border-bottom: none; }
+    .pf-settings-danger-row:hover { background: rgba(255, 255, 255, 0.03); }
+    .pf-settings-danger-row:active { background: rgba(255, 75, 75, 0.08); transform: scale(0.99); }
+    .pf-settings-danger-row.delete-row {
+      border-bottom: none;
+    }
+    .pf-settings-danger-row.delete-row:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    
+    .pf-settings-danger-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      background: rgba(255, 75, 75, 0.10);
+      color: #ff5c5c;
+      border: 1px solid rgba(255, 75, 75, 0.20);
+    }
+    .pf-settings-danger-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+    .pf-settings-danger-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .pf-settings-danger-desc {
+      font-size: 13px;
+      color: rgba(232, 232, 240, 0.55);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pf-settings-danger-arrow {
+      color: rgba(232, 232, 240, 0.3);
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    
+    /* Guest Wall */
+    .pf-guest-wall { text-align: center; padding: 80px 24px; max-width: 600px; margin: 0 auto; }
+    .pf-guest-icon { width: 90px; height: 90px; border-radius: 50%; background: rgba(157,78,221,0.12); display: flex; align-items: center; justify-content: center; font-size: 36px; color: #c77dff; margin: 0 auto 24px; border: 1px solid rgba(157,78,221,0.2); }
+    .pf-guest-wall h2 { font-size: 22px; font-weight: 900; margin-bottom: 10px; }
+    .pf-modal-actions { display: flex; gap: 12px; margin-top: 24px; width: 100%; }
+    .pf-modal-actions button,
+    .pf-modal-actions a,
+    .pf-modal-actions .pf-btn-secondary,
+    .pf-modal-actions .pf-btn-login,
+    .pf-modal-actions .pf-btn-danger { flex: 1 1 0; min-width: 0; white-space: nowrap; font-family: inherit; font-size: 14px; box-sizing: border-box; outline: none; display: inline-flex; align-items: center; justify-content: center; text-align: center; }
+    
+    .pf-btn-login { background: linear-gradient(135deg, #7b2cbf, #9d4edd); color: #ffffff; border: 1px solid rgba(157, 78, 221, 0.4); padding: 13px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(157,78,221,0.25); transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease; font-family: inherit; }
+    .pf-btn-login:hover { background: linear-gradient(135deg, #9d4edd, #c77dff); border-color: rgba(171, 93, 240, 0.6); box-shadow: 0 6px 18px rgba(157,78,221,0.35); }
+    .pf-btn-login:active { background: #8b3dc7; transform: scale(0.97); }
+    
+    .pf-btn-secondary { background: rgba(255, 255, 255, 0.06); color: #e8e8f0; border: 1px solid rgba(255, 255, 255, 0.12); padding: 13px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.15s ease; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .pf-btn-secondary:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.22); color: #ffffff; }
+    .pf-btn-secondary:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.08); }
+    
+    .pf-modal-actions .pf-btn-danger { background: rgba(255, 75, 75, 0.14); color: #ff5c5c; border: 1px solid rgba(255, 75, 75, 0.30); padding: 13px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.15s ease; box-shadow: none; font-family: inherit; }
+    .pf-modal-actions .pf-btn-danger:hover { background: rgba(255, 75, 75, 0.22); color: #ff6b6b; border-color: rgba(255, 75, 75, 0.45); box-shadow: none; }
+    .pf-modal-actions .pf-btn-danger:active { transform: scale(0.97); }
+    
+    /* Responsive */
+    @media (min-width: 601px) and (max-width: 1024px) {
+      .pf-layout { max-width: 960px; margin: 24px auto; padding: 0 20px; }
+      .pf-sidebar { width: 260px; flex-shrink: 0; }
+      .pf-main { flex: 1; min-width: 0; }
+      .pf-stats { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .pf-layout { flex-direction: column; align-items: stretch; margin: 20px auto; padding: 0 16px; gap: 20px; }
+      .pf-sidebar { width: 100%; padding: 20px; gap: 16px; }
+      .pf-sidebar-brand { padding-bottom: 14px; margin-bottom: 0; }
+      .pf-sidebar-user { flex-direction: row; text-align: left; gap: 16px; padding: 0; }
+      .pf-avatar-container { margin: 0; width: 68px; height: 68px; flex-shrink: 0; }
+      .pf-sidebar-edit-avatar { width: 26px; height: 26px; font-size: 11px; }
+      .pf-sidebar-actions { flex-direction: row; gap: 10px; padding-top: 14px; }
+      .pf-sidebar-btn { flex: 1; }
+      .pf-main { padding: 20px; gap: 20px; }
+      .pf-stats { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .pf-stat-card { padding: 14px 12px; gap: 10px; }
+      .pf-stat-icon { width: 36px; height: 36px; font-size: 14px; }
+      .pf-stat-val { font-size: 18px; }
+      .pf-stat-val.pf-stat-date { font-size: 13px; }
+    }
+    @media (max-width: 600px) {
+      .pf-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .pf-stat-card:last-child { grid-column: span 2; }
+    }
+    @media (max-height: 520px) and (orientation: landscape) {
+      .pf-layout { margin: 12px auto; padding: 0 12px; gap: 12px; }
+      .pf-sidebar { padding: 14px; }
+      .pf-main { padding: 16px; gap: 14px; }
+      .pf-main-title { font-size: 20px; }
+      .pf-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .pf-stat-card { padding: 10px; }
+      .pf-stat-val { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logged-In View -->
+  <div class="pf-layout" id="pf-logged-in" style="display:none">
+    
+    <aside class="pf-sidebar">
+      <a class="pf-sidebar-brand" href="index.html" onclick="handleBack(event)">
+        <img src="/assets/images/logo-icon.png" alt="StreamHeaven Icon">
+        <span>StreamHeaven</span>
+      </a>
+
+      <div class="pf-sidebar-user">
+        <div class="pf-avatar-container">
+          <div class="pf-avatar" id="pf-avatar">?<div class="pf-avatar-badge" style="display:none;"></div></div>
+          <div class="pf-sidebar-edit-avatar" onclick="openAvatarModal()" title="Change Avatar"><i class="fas fa-pencil-alt"></i></div>
+        </div>
+        <div class="pf-sidebar-info">
+          <div class="pf-sidebar-name" id="pf-name">Loading…</div>
+          <div class="pf-sidebar-username" id="pf-username"></div>
+        </div>
+      </div>
+      
+      <div class="pf-sidebar-actions">
+        <a class="pf-sidebar-btn btn-back" href="index.html" onclick="handleBack(event)"><i class="fas fa-arrow-left"></i> <span>Back</span></a>
+        <button class="pf-sidebar-btn btn-logout" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
+      </div>
+    </aside>
+
+    <main class="pf-main">
+      <div class="pf-main-header">
+        <h1 class="pf-main-title">My Profile & Account Settings</h1>
+        <div class="pf-main-badge"><div class="pf-main-badge-dot"></div> ACTIVE SESSION</div>
+      </div>
+      
+      <!-- Account Overview Statistics -->
+      <section>
+        <div class="pf-section-header">
+          <i class="fas fa-chart-pie"></i>
+          <span>Account Overview</span>
+        </div>
+        <div class="pf-stats">
+          <div class="pf-stat-card">
+            <div class="pf-stat-icon purple"><i class="fas fa-heart"></i></div>
+            <div>
+              <div class="pf-stat-val" id="stat-wl">0</div>
+              <div class="pf-stat-lbl">Watchlist</div>
+            </div>
+          </div>
+          <div class="pf-stat-card">
+            <div class="pf-stat-icon blue"><i class="fas fa-history"></i></div>
+            <div>
+              <div class="pf-stat-val" id="stat-hist">0</div>
+              <div class="pf-stat-lbl">Watched</div>
+            </div>
+          </div>
+          <div class="pf-stat-card">
+            <div class="pf-stat-icon green"><i class="fas fa-calendar-check"></i></div>
+            <div>
+              <div class="pf-stat-val pf-stat-date" id="stat-days">—</div>
+              <div class="pf-stat-lbl">Member Since</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Account Information Section -->
+      <section>
+        <div class="pf-section-header">
+          <i class="fas fa-user-shield"></i>
+          <span>Account Information</span>
+        </div>
+        <div class="pf-settings-list">
+          <div class="pf-settings-row static">
+            <div class="pf-settings-row-icon"><i class="fas fa-id-badge"></i></div>
+            <div class="pf-settings-row-text">
+              <div class="pf-settings-row-label">Username</div>
+              <div class="pf-settings-row-val" id="settings-username-sub">...</div>
+            </div>
+          </div>
+          <div class="pf-settings-row" onclick="openNameModal()">
+            <div class="pf-settings-row-icon"><i class="fas fa-user-edit"></i></div>
+            <div class="pf-settings-row-text">
+              <div class="pf-settings-row-label">Display Name</div>
+              <div class="pf-settings-row-val" id="settings-name-sub">...</div>
+            </div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+          <div class="pf-settings-row" onclick="openEmailModal()">
+            <div class="pf-settings-row-icon"><i class="fas fa-envelope"></i></div>
+            <div class="pf-settings-row-text">
+              <div class="pf-settings-row-label">Email Address</div>
+              <div class="pf-settings-row-val" id="settings-email-sub">—</div>
+            </div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+          <div class="pf-settings-row" onclick="openPasswordModal()">
+            <div class="pf-settings-row-icon"><i class="fas fa-lock"></i></div>
+            <div class="pf-settings-row-text">
+              <div class="pf-settings-row-label">Password</div>
+              <div class="pf-settings-row-val">••••••••</div>
+            </div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Community & Support Section -->
+      <section>
+        <div class="pf-section-header">
+          <i class="fas fa-headset"></i>
+          <span>Community &amp; Support</span>
+        </div>
+        <div class="pf-settings-list">
+          <a href="https://t.me/StreamHeavenOnline" target="_blank" rel="noopener noreferrer" class="pf-settings-row" style="text-decoration:none;">
+            <div class="pf-settings-row-icon"><i class="fab fa-telegram-plane"></i></div>
+            <div class="pf-settings-row-text">
+              <div class="pf-settings-row-label" style="color:#ffffff;">Join Telegram Channel</div>
+              <div class="pf-settings-row-val">@StreamHeavenOnline</div>
+            </div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+          </a>
+          <div onclick="openSupportModal()" class="pf-settings-row" style="cursor:pointer;">
+            <div class="pf-settings-row-icon"><i class="fas fa-envelope"></i></div>
+            <div class="pf-settings-row-text">
+              <div class="pf-settings-row-label" style="color:#ffffff;">Contact Support</div>
+              <div class="pf-settings-row-val">streamheaven.support@gmail.com</div>
+            </div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+          <a href="privacy.html" class="pf-settings-row" style="text-decoration:none;">
+            <div class="pf-settings-row-icon"><i class="fas fa-file-contract"></i></div>
+            <div class="pf-settings-row-text">
+              <div class="pf-settings-row-label" style="color:#ffffff;">Privacy Policy &amp; Terms</div>
+              <div class="pf-settings-row-val">Legal and DMCA information</div>
+            </div>
+            <div class="pf-settings-row-arrow"><i class="fas fa-chevron-right"></i></div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Account Actions Section -->
+      <section>
+        <div class="pf-section-header danger">
+          <i class="fas fa-shield-alt"></i>
+          <span>Account Actions</span>
+        </div>
+        <div class="pf-settings-danger-list">
+          <div class="pf-settings-danger-row" onclick="clearHistory()">
+            <div class="pf-settings-danger-icon"><i class="fas fa-trash-alt"></i></div>
+            <div class="pf-settings-danger-text">
+              <div class="pf-settings-danger-title">Clear Watch History</div>
+              <div class="pf-settings-danger-desc">Remove all items from your watch history</div>
+            </div>
+            <div class="pf-settings-danger-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+          <div class="pf-settings-danger-row" onclick="clearWatchlist()">
+            <div class="pf-settings-danger-icon"><i class="fas fa-heart-broken"></i></div>
+            <div class="pf-settings-danger-text">
+              <div class="pf-settings-danger-title">Clear Watchlist</div>
+              <div class="pf-settings-danger-desc">Remove all saved items from your watchlist</div>
+            </div>
+            <div class="pf-settings-danger-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+          <div class="pf-settings-danger-row delete-row" onclick="deleteAccount()">
+            <div class="pf-settings-danger-icon"><i class="fas fa-user-slash"></i></div>
+            <div class="pf-settings-danger-text">
+              <div class="pf-settings-danger-title">Delete Account</div>
+              <div class="pf-settings-danger-desc">Permanently delete your account and all data</div>
+            </div>
+            <div class="pf-settings-danger-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Guest Wall -->
+  <div class="pf-layout" id="pf-guest" style="display:none; justify-content: center; align-items: center; min-height: 60vh;">
+    <div class="pf-guest-wall">
+      <div class="pf-guest-icon"><i class="fas fa-user-lock"></i></div>
+      <h2>Sign in to view your Profile</h2>
+      <p>Create a free account to save your watchlist,<br>track your watch history, and more.</p>
+      <button class="pf-btn-login" onclick="handleBack(event)">
+        <i class="fas fa-sign-in-alt" style="margin-right:8px"></i>Go to StreamHeaven
+      </button>
+    </div>
+  </div>
+
+  <!-- Avatar Modal -->
+  <div class="pf-modal-overlay" id="modal-avatar" onclick="closeModals(event)">
+    <div class="pf-modal" onclick="event.stopPropagation()">
+      <div class="pf-modal-title">Select Avatar</div>
+      <div class="pf-avatar-grid">
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_1.png?v=3', this)"><img src="assets/avatars/av_1.png?v=3" alt="Avatar 1"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_2.png?v=3', this)"><img src="assets/avatars/av_2.png?v=3" alt="Avatar 2"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_3.png?v=3', this)"><img src="assets/avatars/av_3.png?v=3" alt="Avatar 3"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_4.png?v=3', this)"><img src="assets/avatars/av_4.png?v=3" alt="Avatar 4"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_5.png?v=3', this)"><img src="assets/avatars/av_5.png?v=3" alt="Avatar 5"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_6.png?v=3', this)"><img src="assets/avatars/av_6.png?v=3" alt="Avatar 6"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_7.png?v=3', this)"><img src="assets/avatars/av_7.png?v=3" alt="Avatar 7"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_8.png?v=3', this)"><img src="assets/avatars/av_8.png?v=3" alt="Avatar 8"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_9.png?v=3', this)"><img src="assets/avatars/av_9.png?v=3" alt="Avatar 9"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_10.png?v=3', this)"><img src="assets/avatars/av_10.png?v=3" alt="Avatar 10"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_11.png?v=3', this)"><img src="assets/avatars/av_11.png?v=3" alt="Avatar 11"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_12.png?v=3', this)"><img src="assets/avatars/av_12.png?v=3" alt="Avatar 12"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_13.png?v=3', this)"><img src="assets/avatars/av_13.png?v=3" alt="Avatar 13"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_14.png?v=3', this)"><img src="assets/avatars/av_14.png?v=3" alt="Avatar 14"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_15.png?v=3', this)"><img src="assets/avatars/av_15.png?v=3" alt="Avatar 15"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_16.png?v=3', this)"><img src="assets/avatars/av_16.png?v=3" alt="Avatar 16"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_17.png?v=3', this)"><img src="assets/avatars/av_17.png?v=3" alt="Avatar 17"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_18.png?v=3', this)"><img src="assets/avatars/av_18.png?v=3" alt="Avatar 18"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_19.png?v=3', this)"><img src="assets/avatars/av_19.png?v=3" alt="Avatar 19"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_20.png?v=3', this)"><img src="assets/avatars/av_20.png?v=3" alt="Avatar 20"></div>
+        <div class="pf-avatar-option" onclick="selectAvatar('assets/avatars/av_21.png?v=3', this)"><img src="assets/avatars/av_21.png?v=3" alt="Avatar 21"></div>
+      </div>
+      <div class="pf-modal-actions">
+        <button class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
+        <button class="pf-btn-login" onclick="saveAvatar()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Modal -->
+  <div class="pf-modal-overlay" id="modal-email" onclick="closeModals(event)">
+    <div class="pf-modal" onclick="event.stopPropagation()">
+      <div class="pf-modal-title">Update Email</div>
+      <form class="pf-modal-form" onsubmit="event.preventDefault(); saveEmail();">
+        <div class="auth-input-group">
+          <label>Current Email</label>
+          <input type="email" id="pf-curr-email" class="auth-input" placeholder="Enter current email" autocomplete="email" spellcheck="false" autocorrect="off" />
+        </div>
+        <div class="auth-input-group">
+          <label>New Email</label>
+          <input type="email" id="pf-new-email" class="auth-input" placeholder="Enter new email" autocomplete="email" spellcheck="false" autocorrect="off" />
+        </div>
+        <div class="auth-input-group">
+          <label>Current Password (required)</label>
+          <div class="auth-input-wrap">
+            <input type="password" id="pf-email-pass" class="auth-input" placeholder="Current password" autocomplete="current-password" />
+            <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('pf-email-pass', event)" onmousedown="event.preventDefault()"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+      <div class="pf-modal-actions">
+        <button type="button" class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
+        <button type="submit" class="pf-btn-login">Update</button>
+      </div>
+      </form>
+    </div>
+  </div>
+
+    <!-- Name Modal -->
+    <div class="pf-modal-overlay" id="modal-name" onclick="closeModals(event)">
+      <div class="pf-modal" onclick="event.stopPropagation()">
+        <div class="pf-modal-title">Change Display Name</div>
+        <form class="pf-modal-form" onsubmit="updateDisplayName(event)">
+          <div class="auth-input-group">
+            <label>New Display Name</label>
+            <input type="text" id="new-display-name" class="auth-input" placeholder="Enter new display name" autocomplete="username" spellcheck="false" autocorrect="off">
+          </div>
+        <div class="pf-modal-actions">
+          <button type="button" class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
+          <button type="submit" class="pf-btn-login" id="btn-update-name">Save Changes</button>
+        </div>
+        </form>
+      </div>
+    </div>
+
+  <!-- Password Modal -->
+  <div class="pf-modal-overlay" id="modal-password" onclick="closeModals(event)">
+    <div class="pf-modal" onclick="event.stopPropagation()">
+      <div class="pf-modal-title">Change Password</div>
+      <form class="pf-modal-form" onsubmit="event.preventDefault(); savePassword();">
+        <div class="auth-input-group">
+          <label>Current Password</label>
+          <div class="auth-input-wrap">
+            <input type="password" id="pf-curr-pass" class="auth-input" placeholder="Current password" autocomplete="current-password" />
+            <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('pf-curr-pass', event)" onmousedown="event.preventDefault()"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="auth-input-group">
+          <label>New Password</label>
+          <div class="auth-input-wrap">
+            <input type="password" id="pf-new-pass" class="auth-input" placeholder="New password" autocomplete="new-password" />
+            <button aria-label="Toggle password visibility" type="button" class="auth-password-toggle" onclick="togglePassword('pf-new-pass', event)" onmousedown="event.preventDefault()"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+      <div class="pf-modal-actions">
+        <button type="button" class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
+        <button type="submit" class="pf-btn-login">Update</button>
+      </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Support Modal -->
+  <div class="pf-modal-overlay" id="modal-support" onclick="closeModals(event)">
+    <div class="pf-modal" onclick="event.stopPropagation()" style="max-width: 440px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(157, 78, 221, 0.15); color: #c77dff; display: flex; align-items: center; justify-content: center; font-size: 19px; border: 1px solid rgba(157, 78, 221, 0.3); flex-shrink: 0;">
+          <i class="fas fa-headset"></i>
+        </div>
+        <div>
+          <div class="pf-modal-title" style="margin-bottom: 2px;">Customer Support</div>
+          <div style="font-size: 12px; color: rgba(232, 232, 240, 0.55);">We typically respond within 24 hours</div>
+        </div>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px;">
+        <!-- Email Support Card -->
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 11px; font-weight: 800; color: rgba(232,232,240,0.6); text-transform: uppercase; letter-spacing: 0.6px;">Direct Email</span>
+            <span style="font-size: 11px; background: rgba(6, 214, 160, 0.12); color: #06d6a0; border: 1px solid rgba(6, 214, 160, 0.25); padding: 2px 8px; border-radius: 6px; font-weight: 800;">ONLINE</span>
+          </div>
+          <div style="font-size: 14px; font-weight: 700; color: #ffffff; margin-bottom: 14px; word-break: break-all; font-family: monospace;">streamheaven.support@gmail.com</div>
+          <div style="display: flex; gap: 10px;">
+            <a href="mailto:streamheaven.support@gmail.com" class="pf-btn-login" style="flex: 1; text-align: center; text-decoration: none; padding: 11px 14px; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+              <i class="fas fa-paper-plane"></i> Send Email
+            </a>
+            <button type="button" onclick="copySupportEmail(this)" class="pf-btn-secondary" style="flex: 1; padding: 11px 14px; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+              <i class="fas fa-copy"></i> Copy Email
+            </button>
+          </div>
+        </div>
+
+        <!-- Telegram Support Card -->
+        <a href="https://t.me/StreamHeavenOnline" target="_blank" rel="noopener noreferrer" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 14px 16px; text-decoration: none; display: flex; align-items: center; justify-content: space-between; transition: border-color 0.2s, background 0.2s;" onmouseover="this.style.borderColor='rgba(157, 78, 221, 0.4)'; this.style.background='rgba(157, 78, 221, 0.06)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'; this.style.background='rgba(255,255,255,0.03)';">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(157, 78, 221, 0.15); color: #c77dff; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; border: 1px solid rgba(157, 78, 221, 0.3);">
+              <i class="fab fa-telegram-plane"></i>
+            </div>
+            <div>
+              <div style="font-size: 13px; font-weight: 700; color: #ffffff;">Telegram Community</div>
+              <div style="font-size: 12px; color: rgba(232,232,240,0.5);">@StreamHeavenOnline</div>
+            </div>
+          </div>
+          <i class="fas fa-external-link-alt" style="color: rgba(232,232,240,0.4); font-size: 12px;"></i>
+        </a>
+      </div>
+
+      <div class="pf-modal-actions">
+        <button type="button" class="pf-btn-secondary" onclick="closeModals()" style="width: 100%;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div class="pf-modal-overlay" id="modal-confirm" onclick="closeModals(event)">
+    <div class="pf-modal" onclick="event.stopPropagation()">
+      <div class="pf-modal-title" id="confirm-modal-title" style="color: #ff4b4b;">Confirm Action</div>
+      <div class="pf-modal-form">
+        <p id="confirm-modal-text" style="color: var(--text-2); font-size: 14px; margin-bottom: 0;">Are you sure?</p>
+      </div>
+      <div class="pf-modal-actions">
+        <button class="pf-btn-secondary" onclick="closeModals()">Cancel</button>
+        <button class="pf-btn-danger" id="confirm-modal-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <!-- Firebase -->
+  <script src="lib/firebase-app-compat.js"></script>
+  <script src="lib/firebase-auth-compat.js"></script>
+  <script src="lib/firebase-firestore-compat.js"></script>
+  <script src="firebase-auth.js?v=40"></script>
+
+  <script>
+    function handleBack(e) {
+      if (e) e.preventDefault();
+      if (window.history.length > 1 && (document.referrer === '' || document.referrer.includes(window.location.host))) {
+        window.history.back();
+      } else {
+        window.location.href = 'index.html';
+      }
+    }
+
+    function openSupportModal() {
+      closeModals();
+      const m = document.getElementById('modal-support');
+      if (m) m.classList.add('open');
+    }
+
+    function copySupportEmail(btn) {
+      const email = 'streamheaven.support@gmail.com';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email).then(() => {
+          Toast.show('Support email copied to clipboard!', 'success');
+          if (btn) {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => { btn.innerHTML = orig; }, 2000);
+          }
+        }).catch(() => fallbackCopyEmail(email, btn));
+      } else {
+        fallbackCopyEmail(email, btn);
+      }
+    }
+
+    function fallbackCopyEmail(email, btn) {
+      const ta = document.createElement('textarea');
+      ta.value = email;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        Toast.show('Support email copied to clipboard!', 'success');
+        if (btn) {
+          const orig = btn.innerHTML;
+          btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+          setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        }
+      } catch(e) {
+        Toast.show(email, 'info');
+      }
+      ta.remove();
+    }
+
+    function handleLogout() {
+      const user = (typeof auth !== 'undefined' && auth && auth.currentUser) ? auth.currentUser : null;
+      const displayName = user ? (user.displayName || user.email.split('@')[0]) : (localStorage.getItem('cachedName') || 'User');
+      
+      openConfirmModal(
+        'Confirm Logout',
+        'Are you sure you want to log out of ' + displayName + '?',
+        async function() {
+          localStorage.removeItem('cachedAvatar');
+          localStorage.removeItem('cachedName');
+          localStorage.removeItem('cachedUsername');
+          document.documentElement.classList.remove('has-cached-auth');
+          
+          if (typeof auth !== 'undefined' && auth) {
+            await auth.signOut().catch(() => {});
+          }
+          window.location.href = 'index.html';
+        },
+        'Logout'
+      );
+    }
+
+    var Toast = {
+      show: function(msg, type){
+        var c = document.getElementById('toast-container'); if(!c) return;
+        var t = document.createElement('div'); t.className='toast';
+        var icon = document.createElement('i');
+        var iconClass = type==='error' ? 'fa-exclamation-circle' : (type==='success' ? 'fa-check-circle' : 'fa-info-circle');
+        var iconColor = type==='error' ? 'var(--cv-red)' : (type==='success' ? 'var(--cv-green)' : 'var(--cv-purple-light)');
+        icon.className='fas '+iconClass; icon.style.color=iconColor;
+        var text=document.createElement('span'); text.textContent=String(msg==null?'':msg);
+        t.appendChild(icon); t.appendChild(text); c.appendChild(t);
+        setTimeout(function(){ t.style.opacity=0; setTimeout(function(){t.remove();},300); },3000);
+      }
+    };
+
+    const WATCH_KEY   = 'sh_watchlist';
+    const HISTORY_KEY = 'sh_history';
+
+    function switchTab(tab) {
+      document.querySelectorAll('.pf-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.pf-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('panel-' + tab).classList.add('active');
+    }
+
+    function renderGrid(items, gridId, emptyId) {
+      const grid  = document.getElementById(gridId);
+      const empty = document.getElementById(emptyId);
+      if (!grid) return;
+      grid.innerHTML = '';
+      if (!items || items.length === 0) {
+        if (empty) empty.style.display = 'block';
+        return;
+      }
+      if (empty) empty.style.display = 'none';
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'pf-media-card';
+        const type = item.media_type || item.type || 'movie';
+        const itemId = item.id || (item.mediaId ? item.mediaId : null);
+        if (itemId) {
+          const targetUrl = 'index.html?id=' + encodeURIComponent(itemId) + '&type=' + encodeURIComponent(type);
+          card.onclick = () => { window.location.href = targetUrl; };
+        } else {
+          card.onclick = () => { window.location.href = 'index.html'; };
+        }
+        const year = item.release_date || item.first_air_date || item.year || '';
+        const yearStr = year ? String(year).substring(0, 4) : '';
+        const label = type === 'tv' ? 'TV Show' : 'Movie';
+        const posterUrl = item.poster_path ? 'https://image.tmdb.org/t/p/w300' + item.poster_path : null;
+
+        if (posterUrl) {
+          card.innerHTML = '<img class="pf-media-poster" src="' + posterUrl + '" alt="' + String(item.title || item.name || 'Poster').replace(/"/g, '&quot;') + '" loading="lazy">';
+        } else {
+          card.innerHTML = '<div class="pf-media-poster-ph"><i class="fas fa-film"></i></div>';
+        }
+        card.innerHTML += '<div class="pf-media-info"><div class="pf-media-title">' + (item.title || item.name || 'Unknown') + '</div><div class="pf-media-meta">' + yearStr + '</div><span class="pf-media-badge ' + type + '">' + label + '</span></div>';
+        grid.appendChild(card);
+      });
+    }
+
+    function loadLocalData() {
+      let watchlist = [], history = [];
+      try { watchlist = JSON.parse(localStorage.getItem(WATCH_KEY) || '[]'); } catch(e){}
+      try { history   = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch(e){}
+      return { watchlist, history };
+    }
+
+    let pendingConfirmAction = null;
+    
+    function togglePassword(inputId, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const wrap = input.closest('.auth-input-wrap') || input.parentElement;
+      const btn = wrap ? wrap.querySelector('.auth-password-toggle') : null;
+      const icon = btn ? btn.querySelector('i') : (input.nextElementSibling ? input.nextElementSibling.querySelector('i') : null);
+      const isPassword = input.type === 'password' || input.getAttribute('type') === 'password';
+      if (isPassword) {
+        input.setAttribute('type', 'text');
+        input.type = 'text';
+        if (icon) {
+          icon.className = 'fas fa-eye-slash';
+        }
+        if (btn) {
+          btn.setAttribute('aria-label', 'Hide password');
+        }
+      } else {
+        input.setAttribute('type', 'password');
+        input.type = 'password';
+        if (icon) {
+          icon.className = 'fas fa-eye';
+        }
+        if (btn) {
+          btn.setAttribute('aria-label', 'Show password');
+        }
+      }
+      try {
+        const len = input.value.length;
+        if (document.activeElement === input) {
+          input.setSelectionRange(len, len);
+        }
+      } catch(e) {}
+    }
+
+    function formatAuthError(error, defaultMsg) {
+      if (!error) return defaultMsg;
+      const code = error.code || '';
+      if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') return "Incorrect current password.";
+      if (code === 'auth/email-already-in-use') return "This email is already in use by another account.";
+      if (code === 'auth/invalid-email') return "Please enter a valid email address.";
+      if (code === 'auth/weak-password') return "Password is too weak. Please use at least 6 characters.";
+      if (code === 'auth/requires-recent-login') return "Security check: Please log out and log back in before making this change.";
+      if (code === 'auth/too-many-requests') return "Too many attempts. Please try again in a few moments.";
+      if (code === 'auth/network-request-failed') return "Network error. Please check your internet connection.";
+      if (code === 'auth/user-not-found') return "Account not found.";
+      return error.message || defaultMsg;
+    }
+
+    function openConfirmModal(title, text, actionFn, btnText) {
+      const titleEl = document.getElementById('confirm-modal-title');
+      const textEl = document.getElementById('confirm-modal-text');
+      const btnEl = document.getElementById('confirm-modal-btn');
+      
+      if (titleEl) titleEl.textContent = title || 'Confirm Action';
+      if (textEl) textEl.textContent = text || 'Are you sure?';
+      if (btnEl) {
+        btnEl.innerHTML = btnText || 'Confirm';
+        btnEl.disabled = false;
+        btnEl.onclick = async function(e) {
+          if (e) e.stopPropagation();
+          if (typeof actionFn === 'function') {
+            await actionFn();
+          }
+          closeModals();
+        };
+      }
+      const modal = document.getElementById('modal-confirm');
+      if (modal) modal.classList.add('open');
+    }
+
+    function clearHistory() {
+      openConfirmModal(
+        'Clear Watch History',
+        'Permanently remove all watched titles? This cannot be undone.',
+        async function() {
+          try {
+            if (auth && auth.currentUser && typeof db !== 'undefined') {
+              const uid = auth.currentUser.uid;
+              await db.collection('users').doc(uid).set({ history: [] }, { merge: true });
+            }
+            localStorage.setItem(HISTORY_KEY, '[]');
+            renderGrid([], 'pf-hist-grid', 'pf-hist-empty');
+            const statHist = document.getElementById('stat-hist');
+            if (statHist) statHist.textContent = '0';
+            Toast.show("Watch history cleared successfully", "success");
+          } catch (e) {
+            console.error("Error clearing history:", e);
+            Toast.show("Failed to clear watch history. Please try again.", "error");
+          }
+        },
+        'Clear History'
+      );
+    }
+
+    function clearWatchlist() {
+      openConfirmModal(
+        'Clear Watchlist',
+        'Remove all saved titles from your watchlist? This cannot be undone.',
+        async function() {
+          try {
+            if (auth && auth.currentUser && typeof db !== 'undefined') {
+              const uid = auth.currentUser.uid;
+              await db.collection('users').doc(uid).set({ watchlist: [] }, { merge: true });
+            }
+            localStorage.setItem(WATCH_KEY, '[]');
+            renderGrid([], 'pf-wl-grid', 'pf-wl-empty');
+            const statWl = document.getElementById('stat-wl');
+            if (statWl) statWl.textContent = '0';
+            Toast.show("Watchlist cleared successfully", "success");
+          } catch (e) {
+            console.error("Error clearing watchlist:", e);
+            Toast.show("Failed to clear watchlist. Please try again.", "error");
+          }
+        },
+        'Clear Watchlist'
+      );
+    }
+
+    function deleteAccount() {
+      openConfirmModal(
+        'Delete Account',
+        'Do you want to delete your profile? This action is permanent and will delete all your data from the server.',
+        async function() {
+          if (!auth || !auth.currentUser) return;
+          const user = auth.currentUser;
+          const btn = document.getElementById('confirm-modal-btn');
+          const originalText = btn ? btn.innerHTML : 'Delete Account';
+          if (btn) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...'; 
+            btn.disabled = true;
+          }
+          try {
+            const uid = user.uid;
+            
+            // 1. Clean up username mapping doc
+            if (typeof db !== 'undefined') {
+              const userDoc = await db.collection("users").doc(uid).get().catch(() => null);
+              if (userDoc && userDoc.exists) {
+                const uData = userDoc.data();
+                if (uData && uData.username) {
+                  const lowerUsername = uData.username.toLowerCase();
+                  await db.collection("usernames").doc(lowerUsername).delete().catch(e => console.warn(e));
+                }
+              }
+              // 2. Delete user doc from Firestore
+              await db.collection("users").doc(uid).delete().catch(e => console.warn(e));
+            }
+
+            // 3. Clear local storage cache
+            localStorage.removeItem('cachedAvatar');
+            localStorage.removeItem('cachedName');
+            localStorage.removeItem('cachedUsername');
+            localStorage.removeItem(WATCH_KEY);
+            localStorage.removeItem(HISTORY_KEY);
+            document.documentElement.classList.remove('has-cached-auth');
+
+            // 4. Delete Firebase Auth User
+            await user.delete();
+            Toast.show("Profile deleted successfully", "success");
+            closeModals();
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 400);
+          } catch (error) {
+            if (btn) {
+              btn.innerHTML = originalText;
+              btn.disabled = false;
+            }
+            console.error("Account deletion error:", error);
+            const msg = formatAuthError(error, "Failed to delete account.");
+            Toast.show(msg, "error");
+            closeModals();
+          }
+        },
+        'Delete Account'
+      );
+    }
+
+    function openAvatarModal() {
+      const currentAvatar = localStorage.getItem('cachedAvatar') || (auth.currentUser ? auth.currentUser.photoURL : '') || '/assets/avatars/av_1.png?v=3';
+      selectedAvatarUrl = currentAvatar;
+      document.querySelectorAll('.pf-avatar-option').forEach(opt => {
+        const img = opt.querySelector('img');
+        if (img) {
+          const src = img.getAttribute('src');
+          if (currentAvatar.includes(src) || src.includes(currentAvatar.replace(/^\//, ''))) {
+            opt.classList.add('selected');
+          } else {
+            opt.classList.remove('selected');
+          }
+        }
+      });
+      document.getElementById('modal-avatar').classList.add('open');
+    }
+
+    function openNameModal() {
+      var currentName = document.getElementById('settings-name-sub').textContent;
+      document.getElementById('new-display-name').value = (currentName === '...' || currentName === '—') ? '' : currentName;
+      document.getElementById('modal-name').classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    async function updateDisplayName(e) {
+      if (e) e.preventDefault();
+      const user = auth.currentUser;
+      if (!user) {
+        Toast.show("Please log in to update your name.", "error");
+        return;
+      }
+      const inputEl = document.getElementById('new-display-name');
+      const newName = inputEl ? inputEl.value.trim() : '';
+      
+      if (!newName) {
+        Toast.show("Please enter a display name.", "error");
+        return;
+      }
+      if (newName.length < 2) {
+        Toast.show("Display name must be at least 2 characters.", "error");
+        return;
+      }
+      if (newName.length > 50) {
+        Toast.show("Display name cannot exceed 50 characters.", "error");
+        return;
+      }
+
+      const btn = document.getElementById('btn-update-name');
+      const originalText = btn ? btn.innerHTML : 'Save Changes';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+      }
+
+      // Optimistic UI update for instant feel
+      const nameEl = document.getElementById('pf-name');
+      const subNameEl = document.getElementById('settings-name-sub');
+      if (nameEl) nameEl.textContent = newName;
+      if (subNameEl) subNameEl.textContent = newName;
+      localStorage.setItem('cachedName', newName);
+      closeModal('modal-name');
+
+      try {
+        await user.updateProfile({ displayName: newName }).catch(e => console.warn(e));
+        if (typeof db !== 'undefined') {
+          await db.collection('users').doc(user.uid).set({ displayName: newName, name: newName }, { merge: true });
+        }
+        Toast.show("Display name updated successfully", "success");
+      } catch (err) {
+        console.error(err);
+        Toast.show(formatAuthError(err, "Error updating display name."), "error");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      }
+    }
+
+    function openEmailModal() { document.getElementById('modal-email').classList.add('open'); }
+    function openPasswordModal() { document.getElementById('modal-password').classList.add('open'); }
+    function closeModals(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.querySelectorAll('.pf-modal-overlay').forEach(m => m.classList.remove('open'));
+    }
+    
+    let selectedAvatarUrl = '';
+    function selectAvatar(url, el) {
+      selectedAvatarUrl = url;
+      document.querySelectorAll('.pf-avatar-option').forEach(opt => opt.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    async function saveAvatar() {
+      const user = auth.currentUser;
+      if (!user) {
+        Toast.show("Please log in to change your avatar.", "error");
+        return;
+      }
+      if (!selectedAvatarUrl) {
+        selectedAvatarUrl = '/assets/avatars/av_1.png?v=3';
+      }
+      
+      const avatarUrl = selectedAvatarUrl.startsWith('/') ? selectedAvatarUrl : '/' + selectedAvatarUrl;
+      const btn = document.querySelector('#modal-avatar .pf-btn-login');
+      const originalText = btn ? btn.innerHTML : 'Save';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+      }
+
+      // Optimistic UI update for instant feel
+      const avatarEl = document.getElementById('pf-avatar');
+      if (avatarEl) {
+        avatarEl.innerHTML = '<img src="' + avatarUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="User Avatar"><div class="pf-avatar-badge"></div>';
+        avatarEl.style.border = 'none';
+      }
+      const topProfileBtn = document.getElementById('header-profile-btn');
+      if (topProfileBtn) {
+        topProfileBtn.innerHTML = `<img src="${avatarUrl}" alt="User Avatar" class="header-profile-avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+      }
+      localStorage.setItem('cachedAvatar', avatarUrl);
+      closeModals();
+      
+      try {
+        await user.updateProfile({ photoURL: avatarUrl }).catch(e => console.warn(e));
+        if (typeof db !== 'undefined') {
+          await db.collection("users").doc(user.uid).set({ avatar: avatarUrl }, { merge: true });
+        }
+        Toast.show("Avatar updated successfully", "success");
+      } catch (e) {
+        console.error("Error saving avatar:", e);
+        Toast.show(formatAuthError(e, "Error saving avatar."), "error");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      }
+    }
+
+    async function reauthenticate(password) {
+      const user = auth.currentUser;
+      const cred = firebase.auth.EmailAuthProvider.credential(user.email, password);
+      return user.reauthenticateWithCredential(cred);
+    }
+
+    async function saveEmail() {
+      const user = auth.currentUser;
+      if (!user) {
+        Toast.show("Please log in to update your email.", "error");
+        return;
+      }
+      const currEmail = document.getElementById('pf-curr-email').value.trim();
+      const newEmail = document.getElementById('pf-new-email').value.trim();
+      const passField = document.getElementById('pf-email-pass');
+      const pass = passField ? passField.value : '';
+      
+      if (!currEmail || !newEmail || !pass) {
+        Toast.show("Please fill all fields.", "error");
+        return;
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(currEmail) || !emailRegex.test(newEmail)) {
+        Toast.show("Please enter a valid email address.", "error");
+        return;
+      }
+
+      if (currEmail.toLowerCase() === newEmail.toLowerCase()) {
+        Toast.show("New email must be different from current email.", "error");
+        return;
+      }
+      
+      if (user.email && currEmail.toLowerCase() !== user.email.toLowerCase()) {
+        Toast.show("The current email you entered is incorrect.", "error");
+        return;
+      }
+      
+      const btn = document.querySelector('#modal-email .pf-btn-login');
+      const originalText = btn ? btn.innerHTML : 'Update';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+      }
+
+      try {
+        await reauthenticate(pass);
+        
+        // Instantly update the email
+        await user.updateEmail(newEmail);
+        
+        // Update the users collection
+        if (typeof db !== 'undefined') {
+          const userRef = db.collection("users").doc(user.uid);
+          const userDoc = await userRef.get().catch(() => null);
+          await userRef.set({ email: newEmail }, { merge: true });
+          
+          // Update the usernames collection so login works with the new email
+          if (userDoc && userDoc.exists && userDoc.data().username) {
+            const lowerUsername = userDoc.data().username.toLowerCase();
+            await db.collection("usernames").doc(lowerUsername).set({
+              email: newEmail
+            }, { merge: true }).catch(e => console.warn("Could not update username mapping", e));
+          }
+        }
+        
+        document.getElementById('pf-curr-email').value = '';
+        document.getElementById('pf-new-email').value = '';
+        if (passField) passField.value = '';
+        
+        // Update the UI
+        const subEmailEl = document.getElementById('settings-email-sub');
+        if (subEmailEl) subEmailEl.textContent = newEmail;
+        
+        Toast.show("Email updated successfully!", "success");
+        closeModals();
+      } catch (e) {
+        console.error("Save email error:", e);
+        const friendlyMsg = formatAuthError(e, "Failed to update email.");
+        Toast.show(friendlyMsg, "error");
+        if (passField) passField.value = ''; // Clear password on error
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      }
+    }
+
+    async function savePassword() {
+      const user = auth.currentUser;
+      if (!user) {
+        Toast.show("Please log in to update your password.", "error");
+        return;
+      }
+      const currPassField = document.getElementById('pf-curr-pass');
+      const newPassField = document.getElementById('pf-new-pass');
+      const currPass = currPassField ? currPassField.value : '';
+      const newPass = newPassField ? newPassField.value : '';
+
+      if (!currPass || !newPass) {
+        Toast.show("Please fill all fields.", "error");
+        return;
+      }
+      if (newPass.length < 6) {
+        Toast.show("New password must be at least 6 characters.", "error");
+        return;
+      }
+      if (currPass === newPass) {
+        Toast.show("New password must be different from current password.", "error");
+        return;
+      }
+
+      const btn = document.querySelector('#modal-password .pf-btn-login');
+      const originalText = btn ? btn.innerHTML : 'Update';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+      }
+
+      try {
+        await reauthenticate(currPass);
+        await user.updatePassword(newPass);
+        Toast.show("Password updated successfully!", "success");
+        
+        if (currPassField) currPassField.value = '';
+        if (newPassField) newPassField.value = '';
+        closeModals();
+      } catch (e) {
+        console.error("Save password error:", e);
+        const friendlyMsg = formatAuthError(e, "Failed to update password.");
+        Toast.show(friendlyMsg, "error");
+        if (currPassField) currPassField.value = ''; // Clear on error
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      }
+    }
+
+    // Immediate Optimistic Cache Render (0ms Instant Display)
+    (function renderInstantProfile() {
+      const cachedAvatar = localStorage.getItem('cachedAvatar') || '/assets/avatars/av_1.png?v=3';
+      const cachedName = localStorage.getItem('cachedName');
+      const cachedUser = localStorage.getItem('cachedUsername');
+      
+      if (cachedName || cachedUser || cachedAvatar) {
+        document.getElementById('pf-logged-in').style.display = 'flex';
+        document.getElementById('pf-guest').style.display = 'none';
+        
+        if (cachedAvatar) {
+          const pfAvatar = document.getElementById('pf-avatar');
+          if (pfAvatar) {
+            pfAvatar.innerHTML = '<img src="' + cachedAvatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="User Avatar"><div class="pf-avatar-badge"></div>';
+            pfAvatar.style.border = 'none';
+          }
+          const topBtn = document.getElementById('header-profile-btn');
+          if (topBtn) {
+            topBtn.innerHTML = `<img src="${cachedAvatar}" alt="User Avatar" class="header-profile-avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+          }
+        }
+        if (cachedUser) {
+          const uEl = document.getElementById('pf-username');
+          if (uEl) uEl.textContent = cachedUser;
+          const su = document.getElementById('settings-username-sub');
+          if (su) su.textContent = cachedUser;
+        }
+        if (cachedName) {
+          const nEl = document.getElementById('pf-name');
+          if (nEl) nEl.textContent = cachedName;
+          const sn = document.getElementById('settings-name-sub');
+          if (sn) sn.textContent = cachedName;
+        }
+        const data = loadLocalData();
+        const statWl = document.getElementById('stat-wl');
+        const statHist = document.getElementById('stat-hist');
+        if (statWl) statWl.textContent = data.watchlist.length;
+        if (statHist) statHist.textContent = data.history.length;
+        renderGrid(data.watchlist, 'pf-wl-grid', 'pf-wl-empty');
+        renderGrid(data.history, 'pf-hist-grid', 'pf-hist-empty');
+      }
+    })();
+
+    // Auth state hook
+    function initProfile() {
+      if (typeof auth === 'undefined' || !auth) {
+        if (!localStorage.getItem('cachedName') && !localStorage.getItem('cachedUsername')) {
+          document.getElementById('pf-logged-in').style.display = 'none';
+          document.getElementById('pf-guest').style.display = 'flex';
+        }
+        return;
+      }
+      auth.onAuthStateChanged(function(user) {
+        if (user) {
+          document.getElementById('pf-logged-in').style.display = 'flex';
+          document.getElementById('pf-guest').style.display = 'none';
+
+          var displayName = user.displayName || user.email.split('@')[0];
+          var photoURL = user.photoURL || '/assets/avatars/av_1.png?v=3';
+
+          if (photoURL && photoURL.includes('assets/avatars/av_')) {
+              photoURL = photoURL.replace('.jpg', '.png');
+              const match = photoURL.match(/av_(\d+)\.png/);
+              if (match && parseInt(match[1]) > 21) {
+                  photoURL = '/assets/avatars/av_1.png?v=3';
+              } else if (!photoURL.startsWith('/') && !photoURL.startsWith('http')) {
+                  photoURL = '/' + photoURL;
+              }
+          }
+
+          const updateProfileAvatar = (url) => {
+            document.getElementById('pf-avatar').innerHTML = '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;transform:scale(1.04);" alt="User Avatar"><div class="pf-avatar-badge"></div>';
+            document.getElementById('pf-avatar').style.border = 'none';
+            localStorage.setItem('cachedAvatar', url);
+          };
+
+          updateProfileAvatar(photoURL);
+          
+          var displayName = user.displayName || user.email.split('@')[0];
+          var username = localStorage.getItem('cachedUsername') || displayName;
+          var display = localStorage.getItem('cachedName') || displayName;
+          
+          document.getElementById('pf-username').textContent = username;
+          var su = document.getElementById('settings-username-sub');
+          if (su) su.textContent = username;
+          document.getElementById('pf-name').textContent  = display;
+          var sn = document.getElementById('settings-name-sub');
+          if (sn) sn.textContent = display;
+          var se = document.getElementById('settings-email-sub');
+          if (se) se.textContent = user.email;
+
+          db.collection("users").doc(user.uid).get().then(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.avatar) {
+                    let fsAvatar = data.avatar;
+                    if (fsAvatar.includes('assets/avatars/av_')) {
+                      fsAvatar = fsAvatar.replace('.jpg', '.png');
+                      if (!fsAvatar.startsWith('/') && !fsAvatar.startsWith('http')) {
+                        fsAvatar = '/' + fsAvatar;
+                      }
+                    }
+                    if (fsAvatar !== photoURL) {
+                        user.updateProfile({ photoURL: fsAvatar }).catch(()=>{});
+                        updateProfileAvatar(fsAvatar);
+                    }
+                }
+                if (data.username) {
+                    username = data.username;
+                    localStorage.setItem('cachedUsername', username);
+                    document.getElementById('pf-username').textContent = username;
+                    if (su) su.textContent = username;
+                }
+                if (data.displayName) {
+                    display = data.displayName;
+                    localStorage.setItem('cachedName', display);
+                    document.getElementById('pf-name').textContent = display;
+                    if (sn) sn.textContent = display;
+                } else if (data.name) {
+                    display = data.name;
+                    localStorage.setItem('cachedName', display);
+                    document.getElementById('pf-name').textContent = display;
+                    if (sn) sn.textContent = display;
+                }
+            }
+          }).catch(e => console.warn("Firestore fetch error:", e));
+
+          if (user.metadata && user.metadata.creationTime) {
+            var d = new Date(user.metadata.creationTime);
+            document.getElementById('stat-days').textContent = d.toLocaleDateString('en-US', { month:'short', year:'numeric' });
+          }
+
+          var data = loadLocalData();
+          document.getElementById('stat-wl').textContent   = data.watchlist.length;
+          document.getElementById('stat-hist').textContent = data.history.length;
+          renderGrid(data.watchlist, 'pf-wl-grid',  'pf-wl-empty');
+          renderGrid(data.history,   'pf-hist-grid', 'pf-hist-empty');
+
+        } else {
+          document.getElementById('pf-logged-in').style.display = 'none';
+          document.getElementById('pf-guest').style.display = 'flex';
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initProfile);
+    } else {
+      initProfile();
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function(err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

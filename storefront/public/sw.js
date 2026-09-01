@@ -1,0 +1,78 @@
+const CACHE_NAME = 'streamheaven-v295';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/profile.html',
+  '/privacy.html',
+  '/llms.txt',
+  '/style.css?v=293',
+  '/script.js?v=293',
+  '/firebase-auth.js?v=40',
+  '/manifest.json',
+  '/favicon.ico',
+  '/assets/images/favicon-48x48.png',
+  '/assets/images/favicon-32x32.png',
+  '/assets/images/favicon-16x16.png',
+  '/assets/images/favicon-192x192.png',
+  '/assets/images/favicon-512x512.png',
+  '/assets/images/app-logo.png',
+  '/assets/images/favicon-square.png',
+  '/assets/images/icon-logo.png',
+  '/assets/images/logo-icon.png',
+  '/assets/avatars/av_1.png'
+];
+
+self.addEventListener('install', event => {
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(async cache => {
+      await Promise.allSettled(
+        urlsToCache.map(url => cache.add(url).catch(err => console.warn('[SW] Failed to pre-cache:', url, err)))
+      );
+    })
+  );
+});
+
+self.addEventListener('fetch', event => {
+  const requestUrl = new URL(event.request.url);
+  
+  // Use Network-First strategy for our app's static files
+  // This guarantees users always get the freshest code instantly on refresh
+  const isOurFile = requestUrl.origin === location.origin;
+
+  if (isOurFile && event.request.method === 'GET') {
+    event.respondWith(
+      fetch(event.request)
+        .then(networkResponse => {
+          // If we got a valid response, cache it for offline use later
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          // If network fails (offline), try to serve from cache
+          return caches.match(event.request);
+        })
+    );
+  } else {
+    event.respondWith(fetch(event.request));
+  }
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    Promise.all([
+      self.clients.claim(),
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.filter(name => name !== CACHE_NAME)
+            .map(name => caches.delete(name))
+        );
+      })
+    ])
+  );
+});
