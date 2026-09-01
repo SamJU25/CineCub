@@ -72,7 +72,7 @@ export const GET = async ({ request, params, locals, url }) => {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': url.origin,
-        'Cache-Control': 'public, max-age=300', // Cache for 5 minutes
+        'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
         'X-Content-Type-Options': 'nosniff'
       }
     });

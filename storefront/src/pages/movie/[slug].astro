@@ -69,7 +69,7 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=300, s-maxage=3600'
           </div>
           {movie.overview && <p class="overview">{movie.overview}</p>}
           <div class="cta-row">
-            <a class="btn-play" href={playUrl}>▶ Play now — free</a>
+            <a class="btn-play" href={playUrl} data-play-id={movie.id} data-play-type="movie">▶ Play now — free</a>
             <a class="btn-ghost" href="/">Browse more in the app</a>
           </div>
           {movie.tagline && <p class="tagline">“{movie.tagline}”</p>}

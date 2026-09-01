@@ -70,7 +70,10 @@ export async function tmdb(path, params, env) {
       }
       const data = await res.json();
       const cacheRes = new Response(JSON.stringify(data), {
-        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400'
+        }
       });
       await caches.default.put(cacheKey, cacheRes);
       return data;
