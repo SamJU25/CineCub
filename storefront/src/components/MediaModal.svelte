@@ -58,6 +58,54 @@
       : srv.movie(mediaId);
   });
 
+  let isBookmarked = $state(false);
+
+  function checkBookmark() {
+    if (!mediaId) {
+      isBookmarked = false;
+      return;
+    }
+    try {
+      const store = JSON.parse(localStorage.getItem('sh_watchlist_store') || '[]');
+      isBookmarked = Array.isArray(store) && store.some((item) => item.id === mediaId);
+    } catch (e) {
+      isBookmarked = false;
+    }
+  }
+
+  function toggleBookmark() {
+    if (!mediaId || !mediaData) return;
+    try {
+      const store = JSON.parse(localStorage.getItem('sh_watchlist_store') || '[]');
+      const title = mediaData.title || mediaData.name;
+      const year = (mediaData.release_date || mediaData.first_air_date || '').slice(0, 4);
+      let updated = [];
+
+      if (isBookmarked) {
+        updated = store.filter((item) => item.id !== mediaId);
+        isBookmarked = false;
+      } else {
+        updated = [
+          {
+            id: mediaId,
+            type: mediaType,
+            title,
+            year,
+            poster: mediaData.poster_path,
+            addedAt: Date.now()
+          },
+          ...store.filter((item) => item.id !== mediaId)
+        ];
+        isBookmarked = true;
+      }
+
+      localStorage.setItem('sh_watchlist_store', JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('watchlist-updated'));
+    } catch (e) {
+      console.error('[MediaModal] failed to toggle bookmark:', e);
+    }
+  }
+
   async function open(id, type = 'movie', startPlaying = true) {
     mediaId = id;
     mediaType = type === 'tv' || type === 'series' ? 'tv' : 'movie';
@@ -66,6 +114,7 @@
     episode = 1;
     isPlayerActive = startPlaying;
     isOpen = true;
+    checkBookmark();
 
     document.body.style.overflow = 'hidden';
 
@@ -73,6 +122,7 @@
       const res = await fetch(`/api/tmdb/${mediaType === 'tv' ? 'tv' : 'movie'}/${id}?append_to_response=credits`);
       if (res.ok) {
         mediaData = await res.json();
+        checkBookmark();
         if (mediaType === 'tv') {
           totalSeasons = mediaData.number_of_seasons || 1;
           loadEpisodes(season);
@@ -104,6 +154,7 @@
     mediaId = null;
     mediaData = null;
     isPlayerActive = false;
+    isBookmarked = false;
     document.body.style.overflow = '';
   }
 
@@ -237,7 +288,17 @@
         <!-- Details Info -->
         {#if mediaData}
           <div class="info-section">
-            <h2 class="title">{mediaData.title || mediaData.name}</h2>
+            <div class="title-row">
+              <h2 class="title">{mediaData.title || mediaData.name}</h2>
+              <button
+                class="btn-bookmark"
+                class:saved={isBookmarked}
+                onclick={toggleBookmark}
+                title={isBookmarked ? 'Remove from Watchlist' : 'Add to Watchlist'}
+              >
+                {isBookmarked ? '🔖 Saved in Watchlist' : '+ Add to Watchlist'}
+              </button>
+            </div>
             <div class="meta-row">
               {#if mediaData.release_date || mediaData.first_air_date}
                 <span>{(mediaData.release_date || mediaData.first_air_date).slice(0, 4)}</span>
@@ -478,10 +539,37 @@
     flex-direction: column;
     gap: 6px;
   }
+  .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
   .title {
     font-size: clamp(16px, 2.5vw, 22px);
     font-weight: 800;
     color: #fff;
+  }
+  .btn-bookmark {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e8e8f0;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, color 0.18s;
+  }
+  .btn-bookmark:hover {
+    background: rgba(157, 78, 221, 0.2);
+    border-color: #9d4edd;
+  }
+  .btn-bookmark.saved {
+    background: rgba(157, 78, 221, 0.25);
+    border-color: #9d4edd;
+    color: #c77dff;
   }
   .meta-row {
     display: flex;

@@ -2,6 +2,7 @@
 // StreamHeaven storefront base layout — dark-neon theme, responsive, zero webfonts
 import QuickSearch from '../components/QuickSearch.svelte';
 import MediaModal from '../components/MediaModal.svelte';
+import InstallBanner from '../components/InstallBanner.svelte';
 
 const { title, description, canonical, ogType = 'website', ogImage = null, jsonLd = null } = Astro.props;
 const SITE = 'https://streamheaven.online';
@@ -119,5 +120,6 @@ const SITE = 'https://streamheaven.online';
       <p>© {new Date().getFullYear()} StreamHeaven · <a href="/privacy.html">Privacy</a> · <a href="/">Open the full app</a></p>
     </footer>
     <MediaModal client:idle />
+    <InstallBanner client:idle />
   </body>
 </html>

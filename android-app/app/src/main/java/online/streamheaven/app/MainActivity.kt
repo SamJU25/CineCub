@@ -600,6 +600,28 @@ class MainActivity : AppCompatActivity() {
         webView.onPause()
     }
 
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (customView != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+                val params = android.app.PictureInPictureParams.Builder().build()
+                enterPictureInPictureMode(params)
+            } catch (_: Exception) {}
+        }
+    }
+
+    override fun onPictureInPictureModeChanged(
+        isInPictureInPictureMode: Boolean,
+        newConfig: android.content.res.Configuration
+    ) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        if (isInPictureInPictureMode) {
+            setFullscreenImmersive(true)
+        } else if (customView == null) {
+            setFullscreenImmersive(false)
+        }
+    }
+
     override fun onDestroy() {
         if (customView != null) {
             webView.webChromeClient?.onHideCustomView()
