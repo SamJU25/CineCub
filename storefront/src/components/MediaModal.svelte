@@ -295,6 +295,7 @@
                 class:active={currentServer === idx}
                 onclick={() => selectServer(idx)}
               >
+                <span class="status-dot" aria-hidden="true"></span>
                 {srv.name}
               </button>
             {/each}
@@ -531,6 +532,9 @@
     gap: 6px;
   }
   .server-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #e8e8f0;
@@ -540,6 +544,13 @@
     font-weight: 600;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s;
+  }
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4ed99d;
+    box-shadow: 0 0 6px rgba(78, 217, 157, 0.6);
   }
   .server-chip:hover {
     background: rgba(255, 255, 255, 0.12);

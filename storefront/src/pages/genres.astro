@@ -1,0 +1,319 @@
+---
+export const prerender = false;
+
+import Base from '../layouts/Base.astro';
+import ContinueWatching from '../components/ContinueWatching.svelte';
+import Watchlist from '../components/Watchlist.svelte';
+import { tmdb, buildSlug, IMG, year } from '../lib/tmdb.js';
+
+const GENRES = [
+  { id: 28, name: 'Action', emoji: '💥' },
+  { id: 12, name: 'Adventure', emoji: '🗺️' },
+  { id: 16, name: 'Animation', emoji: '🎨' },
+  { id: 35, name: 'Comedy', emoji: '😂' },
+  { id: 80, name: 'Crime', emoji: '🕵️' },
+  { id: 99, name: 'Documentary', emoji: '📽️' },
+  { id: 18, name: 'Drama', emoji: '🎭' },
+  { id: 10751, name: 'Family', emoji: '👨‍👩‍👧‍👦' },
+  { id: 14, name: 'Fantasy', emoji: '🧙‍♂️' },
+  { id: 27, name: 'Horror', emoji: '👻' },
+  { id: 9648, name: 'Mystery', emoji: '🔍' },
+  { id: 10749, name: 'Romance', emoji: '💖' },
+  { id: 878, name: 'Sci-Fi', emoji: '🚀' },
+  { id: 53, name: 'Thriller', emoji: '⚡' },
+  { id: 10752, name: 'War', emoji: '⚔️' }
+];
+
+const selectedGenreId = Number(Astro.url.searchParams.get('id')) || 28;
+const currentGenre = GENRES.find((g) => g.id === selectedGenreId) || GENRES[0];
+
+const data = await tmdb('/discover/movie', {
+  with_genres: String(currentGenre.id),
+  sort_by: 'popularity.desc',
+  page: 1
+}, Astro.locals.runtime?.env);
+
+const items = (data?.results || []).filter((i) => i.poster_path && (i.title || i.name));
+
+const pageTitle = `Watch ${currentGenre.name} Movies & Shows Free Online — StreamHeaven`;
+const description = `Explore top-rated and trending ${currentGenre.name} movies and TV series on StreamHeaven. Stream free in HD with zero signups.`;
+const canonical = `https://streamheaven.online/genres?id=${currentGenre.id}`;
+---
+
+<Base
+  title={pageTitle}
+  description={description}
+  canonical={canonical}
+>
+  <div class="genres-page-container">
+    <div class="genres-hero">
+      <span class="genre-pill">{currentGenre.emoji} Genre Hub</span>
+      <h1 class="page-title">{currentGenre.name} Movies & TV Shows</h1>
+      <p class="page-subtitle">
+        Browse top-rated {currentGenre.name.toLowerCase()} releases streaming free in high definition.
+      </p>
+    </div>
+
+    <!-- Genre Selector Chips -->
+    <div class="genre-chips-scroll">
+      {GENRES.map((g) => (
+        <a
+          href={`/genres?id=${g.id}`}
+          class={`genre-chip ${g.id === currentGenre.id ? 'active' : ''}`}
+        >
+          <span>{g.emoji}</span>
+          <span>{g.name}</span>
+        </a>
+      ))}
+    </div>
+
+    <!-- User Islands -->
+    <ContinueWatching client:idle />
+    <Watchlist client:idle />
+
+    <!-- Media Grid -->
+    <section class="catalog-section">
+      <div class="media-grid">
+        {items.map((item) => {
+          const title = item.title || item.name;
+          const itemYear = year(item.release_date || item.first_air_date);
+          const slug = buildSlug(item);
+          const href = `/movie/${slug}`;
+          const rating = typeof item.vote_average === 'number' && item.vote_average > 0 ? item.vote_average.toFixed(1) : null;
+          const poster = IMG.poster(item.poster_path, 'w500');
+
+          return (
+            <article class="media-card">
+              <a href={href} class="poster-link" aria-label={`View ${title}`}>
+                <div class="poster-box">
+                  {poster && (
+                    <img
+                      src={poster}
+                      alt={title}
+                      loading="lazy"
+                      width="240"
+                      height="360"
+                    />
+                  )}
+                  {rating && <span class="rating-badge">★ {rating}</span>}
+                  <button
+                    class="quick-play-btn"
+                    data-play-id={item.id}
+                    data-media-type="movie"
+                    aria-label={`Play ${title}`}
+                    onclick="event.preventDefault(); window.openMediaModal && window.openMediaModal(this.dataset.playId, 'movie', true);"
+                  >
+                    ▶
+                  </button>
+                </div>
+              </a>
+              <div class="card-details">
+                <a href={href} class="title-link">
+                  <h2 class="card-title">{title}</h2>
+                </a>
+                <div class="card-meta">
+                  <span>{currentGenre.name}</span>
+                  {itemYear && <span>· {itemYear}</span>}
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .genres-page-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 16px 48px;
+  }
+  .genres-hero {
+    padding: 24px 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .genre-pill {
+    align-self: flex-start;
+    padding: 4px 12px;
+    background: rgba(157, 78, 221, 0.15);
+    border: 1px solid rgba(157, 78, 221, 0.35);
+    color: #c77dff;
+    font-size: 12px;
+    font-weight: 800;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+  .page-title {
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+    margin: 0;
+  }
+  .page-subtitle {
+    color: var(--text-2, #a5a6b8);
+    font-size: 14px;
+    margin: 0;
+  }
+  .genre-chips-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 12px 0 20px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  }
+  .genre-chips-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+  .genre-chips-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+  .genre-chip {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e0e0ec;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background 0.18s, border-color 0.18s, color 0.18s;
+  }
+  .genre-chip:hover {
+    background: rgba(157, 78, 221, 0.18);
+    border-color: #9d4edd;
+    color: #fff;
+  }
+  .genre-chip.active {
+    background: linear-gradient(135deg, var(--purple-deep, #7b2cbf), var(--purple, #9d4edd));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(123, 44, 191, 0.4);
+  }
+  .catalog-section {
+    margin-top: 16px;
+  }
+  .media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  @media (min-width: 640px) {
+    .media-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .media-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 24px;
+    }
+  }
+  .media-card {
+    background: #12121c;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .media-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(157, 78, 221, 0.45);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  }
+  .poster-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    background: #0d0d14;
+    overflow: hidden;
+  }
+  .poster-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  .media-card:hover .poster-box img {
+    transform: scale(1.04);
+  }
+  .rating-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    color: #ffc107;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .quick-play-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--purple, #9d4edd);
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 2px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .media-card:hover .quick-play-btn {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .quick-play-btn:hover {
+    filter: brightness(1.15);
+  }
+  .card-details {
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .title-link {
+    color: #fff;
+    text-decoration: none;
+  }
+  .title-link:hover {
+    color: var(--purple, #9d4edd);
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card-meta {
+    font-size: 11px;
+    color: var(--text-3, #7e8094);
+  }
+</style>

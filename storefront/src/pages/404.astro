@@ -1,0 +1,113 @@
+---
+export const prerender = false;
+
+import Base from '../layouts/Base.astro';
+import QuickSearch from '../components/QuickSearch.svelte';
+
+const pageTitle = '404: Page Not Found — StreamHeaven';
+const description = 'The page or movie you are looking for might have been moved or removed. Search our catalog or browse trending titles.';
+---
+
+<Base
+  title={pageTitle}
+  description={description}
+>
+  <div class="error-container">
+    <div class="error-card">
+      <span class="error-code">404</span>
+      <h1 class="error-title">Lost in the Stream?</h1>
+      <p class="error-desc">
+        We couldn't find the page or movie you were looking for. Search our global catalog or jump into what's popular today.
+      </p>
+
+      <div class="search-wrapper">
+        <QuickSearch client:load />
+      </div>
+
+      <div class="quick-links">
+        <a href="/trending" class="quick-btn">🔥 Browse Trending</a>
+        <a href="/anime" class="quick-btn">🎌 Watch Anime</a>
+        <a href="/" class="quick-btn home">🏠 Return Home</a>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .error-container {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+  .error-card {
+    max-width: 560px;
+    width: 100%;
+    background: #12121c;
+    border: 1px solid rgba(157, 78, 221, 0.3);
+    border-radius: 24px;
+    padding: clamp(24px, 5vw, 48px);
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .error-code {
+    font-size: clamp(60px, 12vw, 100px);
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, #c77dff, #9d4edd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -2px;
+  }
+  .error-title {
+    font-size: clamp(22px, 4vw, 28px);
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+  }
+  .error-desc {
+    color: var(--text-2, #a5a6b8);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .search-wrapper {
+    width: 100%;
+    max-width: 420px;
+    margin-top: 8px;
+  }
+  .quick-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .quick-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #e8e8f0;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: background 0.18s, border-color 0.18s, transform 0.18s;
+  }
+  .quick-btn:hover {
+    background: rgba(157, 78, 221, 0.2);
+    border-color: #9d4edd;
+    transform: translateY(-2px);
+  }
+  .quick-btn.home {
+    background: linear-gradient(135deg, var(--purple-deep, #7b2cbf), var(--purple, #9d4edd));
+    border: none;
+    color: #fff;
+  }
+</style>
