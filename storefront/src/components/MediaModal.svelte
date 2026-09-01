@@ -84,6 +84,7 @@
       if (isBookmarked) {
         updated = store.filter((item) => item.id !== mediaId);
         isBookmarked = false;
+        if (typeof window !== 'undefined' && window.showToast) window.showToast('Removed from Watchlist', 'info');
       } else {
         updated = [
           {
@@ -97,6 +98,7 @@
           ...store.filter((item) => item.id !== mediaId)
         ];
         isBookmarked = true;
+        if (typeof window !== 'undefined' && window.showToast) window.showToast('🔖 Saved to Watchlist', 'success');
       }
 
       localStorage.setItem('sh_watchlist_store', JSON.stringify(updated));
@@ -108,6 +110,10 @@
 
   function selectServer(idx) {
     currentServer = idx;
+    const srv = SERVERS[idx];
+    if (typeof window !== 'undefined' && window.showToast && srv) {
+      window.showToast(`Switched to ${srv.name}`, 'info', 2000);
+    }
     try {
       localStorage.setItem('sh_preferred_server', String(idx));
     } catch (e) {}
@@ -125,7 +131,9 @@
       navigator.share({ title, text, url }).catch(() => {});
     } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(url);
-      alert('Link copied to clipboard!');
+      if (typeof window !== 'undefined' && window.showToast) {
+        window.showToast('🔗 Link copied to clipboard!', 'success');
+      }
     }
   }
 
@@ -202,8 +210,11 @@
   }
 
   function handleKeydown(e) {
-    if (e.key === 'Escape' && isOpen) {
+    if (!isOpen) return;
+    if (e.key === 'Escape') {
       close();
+    } else if (e.key === 'n' || e.key === 'N') {
+      if (mediaType === 'tv') nextEpisode();
     }
   }
 

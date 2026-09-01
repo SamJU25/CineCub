@@ -3,6 +3,7 @@
 import QuickSearch from '../components/QuickSearch.svelte';
 import MediaModal from '../components/MediaModal.svelte';
 import InstallBanner from '../components/InstallBanner.svelte';
+import Toast from '../components/Toast.svelte';
 
 const { title, description, canonical, ogType = 'website', ogImage = null, jsonLd = null } = Astro.props;
 const SITE = 'https://streamheaven.online';
@@ -133,5 +134,6 @@ const SITE = 'https://streamheaven.online';
     </footer>
     <MediaModal client:idle />
     <InstallBanner client:idle />
+    <Toast client:idle />
   </body>
 </html>

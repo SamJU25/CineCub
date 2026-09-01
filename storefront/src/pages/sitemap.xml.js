@@ -8,6 +8,8 @@ export const GET = async ({ locals }) => {
 
   const urls = new Set([
     `${SITE}/`,
+    `${SITE}/trending`,
+    `${SITE}/anime`,
     `${SITE}/privacy.html`
   ]);
 
