@@ -220,11 +220,14 @@ object AppUpdater {
             var connection: HttpURLConnection? = null
 
             try {
-                val url = URL(apkUrl)
+                val downloadUrlStr = if (apkUrl.contains("?")) "$apkUrl&t=${System.currentTimeMillis()}" else "$apkUrl?t=${System.currentTimeMillis()}"
+                val url = URL(downloadUrlStr)
                 connection = (url.openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 15000
-                    readTimeout = 15000
+                    connectTimeout = 20000
+                    readTimeout = 20000
                     requestMethod = "GET"
+                    setRequestProperty("User-Agent", "StreamHeavenApp")
+                    useCaches = false
                 }
 
                 if (connection.responseCode != HttpURLConnection.HTTP_OK) {

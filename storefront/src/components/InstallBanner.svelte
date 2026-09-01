@@ -24,7 +24,7 @@
       }
       deferredPrompt = null;
     } else if (isAndroid) {
-      window.location.href = '/StreamHeaven.apk';
+      window.location.href = '/StreamHeaven.apk?v=108';
     } else {
       alert('To install StreamHeaven: tap your browser menu and select "Add to Home Screen".');
       dismiss();
