@@ -1,0 +1,137 @@
+{
+  "pbtResults": {
+    "1. Write bug condition exploration test": {
+      "status": "passed",
+      "failingExample": "Counterexample 1: version.json versionCode=9 (stale) vs. simulated post-bump build.gradle.kts versionCode=10. AppUpdater fetches version.json and compares remoteVersionCode (9) against installedVersionCode (9) -- comparison remoteVersionCode > currentVersionCode is FALSE -- no update prompt shown.\n\nCounterexample 2: android-app/scripts/release.ps1 is absent -- the desynchronisation between build.gradle.kts and version.json has no automated remedy. Developers must manually update version.json and copy the APK, a step that is routinely omitted.\n\nisBugCondition state: gradleVersionCode=10, jsonVersionCode=9, installedVersionCode=9 -- all three predicates TRUE (versionCodeDesync=True, gradleGtInstalled=True, jsonLeInstalled=True).",
+      "lastRunTimestamp": 1788278312091
+    }
+  },
+  "executionHistory": {
+    "1. Write bug condition exploration test": [
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278068601
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278076759
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278329670
+      }
+    ],
+    "2. Write preservation property tests (BEFORE implementing fix)": [
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278068733
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278333499
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278544243
+      }
+    ],
+    "3.1 Create `android-app/scripts/release.ps1`": [
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278068774
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278552908
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278874723
+      }
+    ],
+    "3.2 (Optional) Create `.github/workflows/release.yml`": [
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278068815
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278883881
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788279078145
+      }
+    ],
+    "3.3 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278068861
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788279082513
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788279132210
+      }
+    ],
+    "3.4 Verify preservation tests still pass": [
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278068893
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788279136936
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788279166561
+      }
+    ],
+    "4. Checkpoint — Ensure all tests pass": [
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788278068945
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788279170280
+      },
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788279231284
+      }
+    ],
+    "3. Fix: introduce release sync script for version-update-not-detected": [
+      {
+        "executionId": "cdb94367-a4f7-446a-9d9c-9030f8d2068a",
+        "chatSessionId": "sess_f0b3fe51-5e5a-4155-a1e3-c7bb0948e597",
+        "timestamp": 1788279166596
+      }
+    ]
+  }
+}
