@@ -30,7 +30,7 @@ const similar = (movie.recommendations?.results ?? [])
   .filter((r) => r.poster_path && (r.title || r.name))
   .slice(0, 12);
 const runtime = formatRuntime(movie.runtime);
-const meta = [movieYear, runtime, movie.vote_average ? `★ ${movie.vote_average.toFixed(1)}` : ''].filter(Boolean).join(' · ');
+const meta = [movieYear, runtime, typeof movie.vote_average === 'number' && movie.vote_average > 0 ? `★ ${movie.vote_average.toFixed(1)}` : ''].filter(Boolean).join(' · ');
 
 // Play deep-link into the existing vanilla app (script.js opens the details modal)
 const playUrl = `/?watch=${movie.id}&type=movie`;
@@ -44,7 +44,7 @@ const jsonLd = {
   description: movie.overview || undefined,
   genre: (movie.genres ?? []).map((g) => g.name),
   duration: movie.runtime ? `PT${movie.runtime}M` : undefined,
-  aggregateRating: movie.vote_count > 0 ? {
+  aggregateRating: movie.vote_count > 0 && typeof movie.vote_average === 'number' ? {
     '@type': 'AggregateRating',
     ratingValue: movie.vote_average.toFixed(1),
     ratingCount: movie.vote_count,

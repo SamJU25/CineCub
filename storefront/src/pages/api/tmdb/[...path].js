@@ -27,10 +27,10 @@ export const GET = async ({ request, params, locals, url }) => {
   const runtime = locals.runtime ?? {};
   const env = runtime.env ?? {};
 
-  // 1. Check Cloudflare Cache first to prevent API spam
-  const cache = runtime.caches?.default ?? caches.default;
+  // 1. Check Cloudflare Cache first to prevent API spam (guarded against environments without Cache API)
+  const cache = runtime.caches?.default ?? (typeof caches !== 'undefined' ? caches.default : null);
   const cacheKey = new Request(request.url, request);
-  const cachedResponse = await cache.match(cacheKey);
+  const cachedResponse = cache ? await cache.match(cacheKey) : null;
   if (cachedResponse) {
     return cachedResponse;
   }
@@ -43,7 +43,7 @@ export const GET = async ({ request, params, locals, url }) => {
   const queryParams = new URLSearchParams(url.search);
 
   // Inject the secret API key server-side
-  const apiKey = env.TMDB_API_KEY;
+  const apiKey = env.TMDB_API_KEY || (typeof process !== 'undefined' && process.env?.TMDB_API_KEY) || (typeof import.meta !== 'undefined' && import.meta.env?.TMDB_API_KEY);
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'TMDB API key not configured' }), {
       status: 500,
@@ -78,7 +78,7 @@ export const GET = async ({ request, params, locals, url }) => {
     });
 
     // 2. Save the successful response to Cloudflare Cache
-    if (tmdbResponse.ok) {
+    if (tmdbResponse.ok && cache) {
       const waitUntil = runtime.waitUntil ?? ((p) => p);
       waitUntil(cache.put(cacheKey, finalResponse.clone()));
     }

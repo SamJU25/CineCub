@@ -3,7 +3,7 @@ import { getTrending, getPopular, buildSlug } from '../lib/tmdb.js';
 // Dynamic sitemap: real catalog URLs generated from TMDB popularity feeds.
 // Replaces the static 3-URL sitemap served by the legacy site.
 export const GET = async ({ locals }) => {
-  const env = locals.runtime.env;
+  const env = locals.runtime?.env;
   const SITE = 'https://streamheaven.online';
 
   const urls = new Set([

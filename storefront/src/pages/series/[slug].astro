@@ -31,7 +31,7 @@ const seasonCount = show.number_of_seasons;
 const meta = [
   showYear ? `${showYear}${show.last_air_date && show.last_air_date.slice(0, 4) !== showYear ? `–${show.last_air_date.slice(0, 4)}` : ''}` : '',
   seasonCount ? `${seasonCount} season${seasonCount > 1 ? 's' : ''}` : '',
-  show.vote_average ? `★ ${show.vote_average.toFixed(1)}` : ''
+  typeof show.vote_average === 'number' && show.vote_average > 0 ? `★ ${show.vote_average.toFixed(1)}` : ''
 ].filter(Boolean).join(' · ');
 
 const playUrl = `/?watch=${show.id}&type=tv`;
@@ -45,7 +45,7 @@ const jsonLd = {
   image: poster || undefined,
   description: show.overview || undefined,
   genre: (show.genres ?? []).map((g) => g.name),
-  aggregateRating: show.vote_count > 0 ? {
+  aggregateRating: show.vote_count > 0 && typeof show.vote_average === 'number' ? {
     '@type': 'AggregateRating',
     ratingValue: show.vote_average.toFixed(1),
     ratingCount: show.vote_count,
