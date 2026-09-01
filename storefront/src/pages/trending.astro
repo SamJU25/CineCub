@@ -57,7 +57,7 @@ const jsonLd = {
           const itemYear = year(item.release_date || item.first_air_date);
           const slug = buildSlug(item);
           const href = isMovie ? `/movie/${slug}` : `/series/${slug}`;
-          const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
+          const rating = typeof item.vote_average === 'number' && item.vote_average > 0 ? item.vote_average.toFixed(1) : null;
           const poster = IMG.poster(item.poster_path, 'w500');
 
           return (

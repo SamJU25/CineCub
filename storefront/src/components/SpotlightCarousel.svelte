@@ -81,7 +81,7 @@
   {:else if currentItem}
     {@const title = currentItem.title || currentItem.name}
     {@const year = (currentItem.release_date || currentItem.first_air_date || '').slice(0, 4)}
-    {@const rating = currentItem.vote_average ? currentItem.vote_average.toFixed(1) : '—'}
+    {@const rating = typeof currentItem.vote_average === 'number' && currentItem.vote_average > 0 ? currentItem.vote_average.toFixed(1) : '—'}
     {@const backdrop = `https://image.tmdb.org/t/p/w1280${currentItem.backdrop_path}`}
 
     <div class="spotlight-slide" style={`background-image: url('${backdrop}')`}>

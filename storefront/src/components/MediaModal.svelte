@@ -227,7 +227,7 @@
       if (playBtn) {
         e.preventDefault();
         const id = parseInt(playBtn.getAttribute('data-play-id'), 10);
-        const type = playBtn.getAttribute('data-play-type') || 'movie';
+        const type = playBtn.getAttribute('data-play-type') || playBtn.getAttribute('data-media-type') || 'movie';
         open(id, type, true);
       }
     };
