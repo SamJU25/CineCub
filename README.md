@@ -4,7 +4,7 @@
 
 [![Website](https://img.shields.io/badge/Live_Site-streamheaven.online-9d4edd?style=for-the-badge&logo=googlechrome&logoColor=white)](https://streamheaven.online)
 [![Android App](https://img.shields.io/badge/Android_App-v1.0.7_Release-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://streamheaven.online/StreamHeaven.apk)
-[![Cloudflare Pages](https://img.shields.io/badge/Edge_Hosting-Cloudflare_Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://pages.cloudflare.com)
+[![Cloudflare Workers](https://img.shields.io/badge/Edge_Hosting-Cloudflare_Workers-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://workers.cloudflare.com)
 [![Firebase](https://img.shields.io/badge/Auth_&_DB-Firebase_v9_Firestore-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com)
 [![Mailtrap](https://img.shields.io/badge/Email_SMTP-Mailtrap_Relay-22d172?style=for-the-badge&logo=mailgun&logoColor=white)](https://mailtrap.io)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
@@ -32,7 +32,7 @@
    - [Dual-Channel App Update Engine](#7-dual-channel-app-update-engine)
 4. [Directory & File Structure](#-directory--file-structure)
 5. [Local Development & Setup](#-local-development--setup)
-6. [Cloudflare Pages Deployment](#-cloudflare-pages-deployment)
+6. [Cloudflare Workers Deployment](#-cloudflare-workers-deployment)
 7. [Android APK Compilation & Release](#-android-apk-compilation--release)
 8. [Configuration & Environment Variables](#-configuration--environment-variables)
 9. [Performance, SEO & Security Standards](#-performance-seo--security-standards)
@@ -54,7 +54,7 @@ graph TD
 
     subgraph Edge["⚡ Cloudflare Edge Network"]
         CDN["🌐 Global Edge CDN (Assets & HTML)"]
-        CFWorkers["⚙️ Serverless Pages Function (/api/tmdb/*)"]
+        CFWorkers["⚙️ Astro SSR Worker (pages + /api/tmdb/*)"]
     end
 
     subgraph UpstreamServices["☁️ Cloud & Upstream Services"]
@@ -119,7 +119,7 @@ graph TD
 ## 🔬 Deep-Dive Technical Implementation
 
 ### 1. Zero-Exposure TMDB Serverless Edge Proxy
-To prevent exposure of the private TMDB API key in client-side bundles, all metadata requests are routed through a Cloudflare Pages Function at `functions/api/tmdb/[[path]].js`:
+To prevent exposure of the private TMDB API key in client-side bundles, all metadata requests are routed through an Astro API route at `storefront/src/pages/api/tmdb/[...path].js`, served by the same Cloudflare Worker as the rest of the site:
 
 ```javascript
 export async function onRequest(context) {
@@ -260,42 +260,50 @@ CSS toggles then selectively render appropriate components:
 
 ```
 d:\StreamHeaven\
-├── 🌐 Web Application Core
-│   ├── index.html                 # Main discovery feed, hero banner, search, & video player modal
-│   ├── profile.html               # User profile, account management, & support card
-│   ├── privacy.html               # Dark-neon legal center (Privacy Policy, Terms of Service, DMCA)
-│   ├── script.js                  # Core frontend controller (TMDB API, Spotlight, Video Players, Modal)
-│   ├── style.css                  # Design system tokens, glassmorphic styling, and animations
-│   ├── firebase-auth.js           # Firebase Auth v9 integration & Firestore cloud sync
-│   ├── sw.js                      # Progressive Web App service worker with Network-First caching
-│   ├── manifest.json              # Web app manifest for PWA installation
-│   ├── version.json               # In-app updater manifest for Android APK releases
-│   ├── _headers                   # Cloudflare security policies, CSP, and CORS headers
-│   ├── sitemap.xml                # Dynamic XML sitemap for search engines
-│   ├── robots.txt                 # Search engine bot directives
-│   └── llms.txt                   # LLM documentation and discovery file
-│
-├── ⚙️ Serverless Functions
-│   └── functions/api/tmdb/
-│       └── [[path]].js            # Cloudflare Pages Function proxying TMDB requests safely
+├── 🌐 Web Application (storefront/ — Astro on a single Cloudflare Worker)
+│   ├── src/
+│   │   ├── app/                      # Source of truth for the vanilla app shell
+│   │   │   ├── index.html            # Main discovery feed, hero banner, search, & video player modal
+│   │   │   ├── profile.html          # User profile, account management, & support card
+│   │   │   └── privacy.html          # Dark-neon legal center (Privacy Policy, Terms of Service, DMCA)
+│   │   ├── pages/
+│   │   │   ├── index.astro           # Serves / and /index.html verbatim (Vite ?raw + set:html)
+│   │   │   ├── profile.html.astro    # Serves /profile.html
+│   │   │   ├── privacy.html.astro    # Serves /privacy.html
+│   │   │   ├── api/tmdb/[...path].js # Astro API route proxying TMDB requests safely
+│   │   │   ├── movie/[slug].astro    # SSR SEO detail pages (movie)
+│   │   │   ├── series/[slug].astro   # SSR SEO detail pages (series)
+│   │   │   └── sitemap.xml.js        # Dynamic XML sitemap from TMDB feeds
+│   │   ├── layouts/Base.astro        # SEO page layout
+│   │   └── lib/tmdb.js               # Server-side TMDB data layer (cached)
+│   ├── public/                       # Static assets served by Workers Static Assets
+│   │   ├── script.js                 # Core frontend controller (TMDB API, Spotlight, Video Players, Modal)
+│   │   ├── style.css                 # Design system tokens, glassmorphic styling, and animations
+│   │   ├── firebase-auth.js          # Firebase Auth v9 integration & Firestore cloud sync
+│   │   ├── sw.js                     # Progressive Web App service worker with Network-First caching
+│   │   ├── manifest.json             # Web app manifest for PWA installation
+│   │   ├── version.json              # In-app updater manifest for Android APK releases
+│   │   ├── StreamHeaven.apk          # Served for in-app OTA updates
+│   │   ├── _headers                  # Cache-control rules for static assets
+│   │   ├── lib/                      # Vendored Firebase compat SDKs
+│   │   └── assets/                   # Images, icons & avatars
+│   ├── astro.config.mjs              # Astro + @astrojs/cloudflare adapter (output: server)
+│   └── wrangler.jsonc                # Worker routes (streamheaven.online/*) + assets binding
 │
 ├── 🚀 Streaming Scraper Backend
-│   └── StreamHeaven-API/
-│       ├── apiServer.js           # Express API server resolving HLS streams & subtitles
-│       ├── package.json           # Scraper backend dependencies
-│       └── .env.example           # Environment template for scraper API
+│   └── StreamHeaven-API/             # Express API resolving HLS streams & subtitles (Render)
 │
 └── 📱 Android Native Application
     └── android-app/
         ├── app/
-        │   ├── build.gradle       # App-level build config, SDK versions, & dependencies
+        │   ├── build.gradle          # App-level build config, SDK versions, & dependencies
         │   └── src/main/
-        │       ├── AndroidManifest.xml  # Permissions, activities, and file provider config
+        │       ├── AndroidManifest.xml    # Permissions, activities, and file provider config
         │       ├── java/online/streamheaven/app/
-        │       │   ├── MainActivity.kt  # Hardware-accelerated WebView & full-screen video
-        │       │   └── AppUpdater.kt    # In-app background APK downloader & update dialog
-        │       └── res/                 # Layouts (dialog_update.xml), mipmaps, & adaptive icons
-        └── build.gradle           # Project-level build script
+        │       │   ├── MainActivity.kt    # Hardware-accelerated WebView & full-screen video
+        │       │   └── AppUpdater.kt      # In-app background APK downloader & update dialog
+        │       └── res/                   # Layouts (dialog_update.xml), mipmaps, & adaptive icons
+        └── build.gradle             # Project-level build script
 ```
 
 ---
