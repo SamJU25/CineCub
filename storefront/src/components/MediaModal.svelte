@@ -50,7 +50,7 @@
     }
   ];
 
-  let currentStreamUrl = $derived(() => {
+  let currentStreamUrl = $derived.by(() => {
     if (!mediaId) return '';
     const srv = SERVERS[currentServer] || SERVERS[0];
     return mediaType === 'tv'
@@ -155,9 +155,9 @@
 
       <!-- Player Frame -->
       <div class="player-container">
-        {#if isPlayerActive && currentStreamUrl()}
+        {#if isPlayerActive && currentStreamUrl}
           <iframe
-            src={currentStreamUrl()}
+            src={currentStreamUrl}
             title="Video Player"
             allowfullscreen
             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"

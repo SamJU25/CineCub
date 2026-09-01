@@ -76,7 +76,17 @@
         {@const title = item.title || item.name}
         {@const year = (item.release_date || item.first_air_date || '').slice(0, 4)}
         {@const href = isMovie ? `/?watch=${item.id}&type=movie` : `/?watch=${item.id}&type=tv`}
-        <a class="result-item" {href}>
+        <a
+          class="result-item"
+          {href}
+          onclick={(e) => {
+            if (typeof window !== 'undefined' && window.openMediaModal) {
+              e.preventDefault();
+              window.openMediaModal(item.id, isMovie ? 'movie' : 'tv', true);
+              isOpen = false;
+            }
+          }}
+        >
           <img
             src={`https://image.tmdb.org/t/p/w92${item.poster_path}`}
             alt={title}
