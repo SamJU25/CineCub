@@ -592,9 +592,6 @@ export const Top10Card = memo(function Top10Card({ item, rank }: { item: MediaIt
       title={`#${rank} in Top 10 Today: ${title}${year ? ` (${year})` : ""}`}
     >
       <div className="poster-card-img-wrap">
-        <span className={`top10-giant-rank rank-${rank}`} aria-hidden="true">
-          {rank}
-        </span>
         <img
           className="poster-card-img"
           src={IMG.poster(item.poster_path) || IMG.placeholder()}

@@ -2453,62 +2453,9 @@ iframe {
   }
 }
 
-/* Giant Stylized Top 10 Rank Numerals (Apple TV+ / Netflix Blockbuster Style) */
+/* Top 10 Ranking Cards */
 .top10-poster-card {
   position: relative;
-}
-
-.top10-giant-rank {
-  position: absolute;
-  bottom: -4px;
-  left: -8px;
-  font-size: clamp(52px, 6vw, 76px);
-  font-weight: 900;
-  line-height: 0.85;
-  letter-spacing: -0.06em;
-  font-family: var(--font-jakarta), -apple-system, BlinkMacSystemFont, sans-serif;
-  z-index: 4;
-  pointer-events: none;
-  user-select: none;
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.45);
-  -webkit-background-clip: text;
-  background-clip: text;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.9));
-  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.top10-giant-rank.rank-1 {
-  background-image: linear-gradient(180deg, #fff3b0 0%, #ffb703 40%, #fb8500 80%, rgba(20, 10, 0, 0.4) 100%);
-  -webkit-text-stroke: 1.5px rgba(255, 235, 150, 0.8);
-  filter: drop-shadow(0 4px 14px rgba(251, 133, 0, 0.5)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.9));
-}
-
-.top10-giant-rank.rank-2 {
-  background-image: linear-gradient(180deg, #ffffff 0%, #cbd5e1 40%, #64748b 80%, rgba(15, 23, 42, 0.4) 100%);
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.8);
-  filter: drop-shadow(0 4px 14px rgba(148, 163, 184, 0.5)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.9));
-}
-
-.top10-giant-rank.rank-3 {
-  background-image: linear-gradient(180deg, #fed7aa 0%, #fb923c 40%, #c2410c 80%, rgba(67, 20, 7, 0.4) 100%);
-  -webkit-text-stroke: 1.5px rgba(254, 215, 170, 0.8);
-  filter: drop-shadow(0 4px 14px rgba(251, 146, 60, 0.5)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.9));
-}
-
-.top10-giant-rank.rank-4,
-.top10-giant-rank.rank-5,
-.top10-giant-rank.rank-6,
-.top10-giant-rank.rank-7,
-.top10-giant-rank.rank-8,
-.top10-giant-rank.rank-9,
-.top10-giant-rank.rank-10 {
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(199, 125, 255, 0.65) 45%, rgba(15, 12, 28, 0.7) 100%);
-  -webkit-text-stroke: 1.5px rgba(199, 125, 255, 0.6);
-}
-
-.top10-poster-card:hover .top10-giant-rank {
-  transform: translate(-2px, -3px) scale(1.06);
 }
 
 /* Sleek Corner Rank Badges */
