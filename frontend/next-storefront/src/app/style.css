@@ -1104,6 +1104,27 @@ iframe {
   display: flex;
 }
 
+.srd-shortcuts {
+  font-size: 10px;
+  color: var(--text-4);
+  text-transform: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.srd-shortcuts kbd {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-family: inherit;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
 .srd-results {
   touch-action: pan-y;
   overscroll-behavior: contain;
@@ -1123,8 +1144,8 @@ iframe {
   display: flex;
 }
 
-.srd-item:hover {
-  background: var(--cv-purple-dim);
+.srd-item:hover, .srd-item.active {
+  background: rgba(157, 78, 221, 0.22);
 }
 
 .srd-item:active {
@@ -1290,7 +1311,8 @@ iframe {
   content: "";
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0.55) 40%, rgba(0, 0, 0, 0.18) 75%, transparent 100%);
+  background: linear-gradient(90deg, #06060c 0%, rgba(6, 6, 12, 0.8) 32%, rgba(6, 6, 12, 0.35) 60%, transparent 85%),
+              linear-gradient(0deg, #000 0%, rgba(6, 6, 12, 0.8) 25%, rgba(6, 6, 12, 0.2) 60%, transparent 100%);
   position: absolute;
   inset: 0;
 }
@@ -1299,7 +1321,7 @@ iframe {
   content: "";
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.25) 0%, transparent 45%, transparent 100%);
+  background: radial-gradient(ellipse 70% 60% at 20% 70%, rgba(157, 78, 221, 0.15) 0%, transparent 75%);
   position: absolute;
   inset: 0;
 }
@@ -1371,7 +1393,7 @@ iframe {
   line-clamp: 4;
   text-shadow: 0 2px 14px #000000f2;
   -webkit-box-orient: vertical;
-  max-width: 640px;
+  max-width: 68ch;
   margin-bottom: 24px;
   font-size: 15px;
   line-height: 1.65;
@@ -1388,7 +1410,7 @@ iframe {
 .btn-cinejoy-play {
   color: #0b0b12;
   cursor: pointer;
-  background: #fff;
+  background: #ffffff;
   border: none;
   border-radius: 9999px;
   align-items: center;
@@ -1396,12 +1418,19 @@ iframe {
   padding: 13px 32px;
   font-size: 15px;
   font-weight: 800;
-  transition: all .2s cubic-bezier(.16, 1, .3, 1);
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.25), 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.2s ease;
   display: inline-flex;
 }
 
 .btn-cinejoy-play:hover {
-  transform: scale(1.04);
+  transform: scale(1.04) translateY(-1px);
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.6);
+  background: #ffffff;
+}
+
+.btn-cinejoy-play:active {
+  transform: scale(0.96);
 }
 
 .btn-cinejoy-icon {

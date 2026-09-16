@@ -24,6 +24,7 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [dropdown, setDropdown] = useState(false);
   const [results, setResults] = useState<MediaItem[]>([]);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -56,12 +57,14 @@ export default function Header() {
     if (!q.trim()) {
       setResults([]);
       setDropdown(false);
+      setActiveIndex(-1);
       return;
     }
     const seq = ++seqRef.current;
     setLoading(true);
     setDropdown(true);
     setError(false);
+    setActiveIndex(-1);
     try {
       const data = await searchTMDB(q, 1);
       if (seq !== seqRef.current) return;
@@ -337,8 +340,26 @@ export default function Header() {
                 value={searchQuery}
                 onChange={onInput}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") onSubmit(e);
-                  if (e.key === "Escape") {
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    if (results.length > 0) {
+                      setDropdown(true);
+                      setActiveIndex((prev) => (prev + 1 < results.length ? prev + 1 : 0));
+                    }
+                  } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    if (results.length > 0) {
+                      setDropdown(true);
+                      setActiveIndex((prev) => (prev - 1 >= 0 ? prev - 1 : results.length - 1));
+                    }
+                  } else if (e.key === "Enter") {
+                    if (dropdown && activeIndex >= 0 && activeIndex < results.length) {
+                      e.preventDefault();
+                      selectResult(results[activeIndex]);
+                    } else {
+                      onSubmit(e);
+                    }
+                  } else if (e.key === "Escape") {
                     setDropdown(false);
                     setSearchOpen(false);
                   }
@@ -351,11 +372,13 @@ export default function Header() {
                   if (searchQuery) {
                     setSearchQuery("");
                     setResults([]);
+                    setActiveIndex(-1);
                     setDropdown(false);
                     inputRef.current?.focus();
                   } else {
                     setSearchOpen(false);
                     setDropdown(false);
+                    setActiveIndex(-1);
                   }
                 }}
                 aria-label={searchQuery ? "Clear search" : "Close search"}
@@ -385,6 +408,9 @@ export default function Header() {
           >
             <div className="srd-header">
               <span>Quick Results</span>
+              <span className="srd-shortcuts">
+                <kbd>↑↓</kbd> navigate <kbd>↵</kbd> select
+              </span>
             </div>
             <div className="srd-results" id="srd-results">
               {loading && (
@@ -422,10 +448,11 @@ export default function Header() {
                     No results found
                   </div>
                 )}
-              {results.map((item) => (
+              {results.map((item, idx) => (
                 <div
                   key={item.id}
-                  className="srd-item"
+                  className={`srd-item${idx === activeIndex ? " active" : ""}`}
+                  onMouseEnter={() => setActiveIndex(idx)}
                   onClick={() => selectResult(item)}
                 >
                   <img
