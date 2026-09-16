@@ -954,6 +954,10 @@ export default function DetailModal() {
                         <span className="fv-meta-badge fv-meta-pg" id="fv-pg">{rating}</span>
                       )}
                       <span className="fv-meta-badge fv-meta-hd" id="fv-quality">4K UHD</span>
+                      <span className="fv-meta-badge fv-meta-hdr">HDR10+</span>
+                      <span className="fv-meta-badge fv-meta-atmos">DOLBY ATMOS</span>
+                      <span className="fv-meta-badge fv-meta-audio">5.1 CH</span>
+                      <span className="fv-meta-badge fv-meta-cc">CC</span>
                       <span className="fv-meta-badge" id="fv-year">{year(date)}</span>
                       {runtime(d.runtime || (d.episode_run_time?.[0])) ? (
                         <span className="fv-meta-badge" id="fv-runtime">{runtime(d.runtime || (d.episode_run_time?.[0]))}</span>
@@ -1043,20 +1047,31 @@ export default function DetailModal() {
             <div className="fv-body" id="fv-body">
               {(type === "tv" || type === "anime") && d?.seasons && d.seasons.length > 0 && (
                 <div className="fv-episodes-section" id="fv-episodes-section">
-                  <div className="fv-section-header-row">
-                    <div className="fv-section-heading" id="fv-episodes-header">EPISODES</div>
-                    <div className="fv-season-select-wrap" id="fv-season-select-wrap">
-                      <CustomSelect
-                        id="fv-season-select"
-                        wrapId="fv-season-select-wrap"
-                        className="fv-season-select"
-                        title="Select Season"
-                        ariaLabel="Select Season"
-                        options={seasonOptions}
-                        value={String(selectedSeason)}
-                        onChange={(val) => setSelectedSeason(Number(val))}
-                      />
+                  <div className="fv-section-header-row fv-ep-header-row">
+                    <div className="fv-ep-title-group">
+                      <div className="section-header-kicker">EPISODE GUIDE</div>
+                      <div className="fv-section-heading" id="fv-episodes-header">
+                        Episodes {episodes.length > 0 ? `(${episodes.length})` : ""}
+                      </div>
                     </div>
+                    {seasonOptions.length > 1 && (
+                      <div className="fv-season-pills-wrap">
+                        <div className="fv-season-pills" role="tablist" aria-label="Seasons">
+                          {seasonOptions.map((s) => (
+                            <button
+                              key={s.value}
+                              type="button"
+                              role="tab"
+                              aria-selected={String(selectedSeason) === s.value}
+                              className={`fv-season-pill${String(selectedSeason) === s.value ? " active" : ""}`}
+                              onClick={() => setSelectedSeason(Number(s.value))}
+                            >
+                              {s.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <HScrollWrapper className="fv-episodes-scroll" id="fv-episodes-scroll">
                     {loadingEpisodes ? (
@@ -1064,17 +1079,53 @@ export default function DetailModal() {
                     ) : episodes.length === 0 ? (
                       <div style={{ padding: "24px", color: "var(--text-3)", fontSize: "13px" }}>No episodes available for this season.</div>
                     ) : episodes.map((ep) => (
-                      <div key={ep.id} className="fv-episode-card" onClick={() => handlePlay(selectedSeason, ep.episode_number)}>
+                      <div
+                        key={ep.id}
+                        className="fv-episode-card"
+                        onClick={() => handlePlay(selectedSeason, ep.episode_number)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handlePlay(selectedSeason, ep.episode_number);
+                          }
+                        }}
+                      >
                         <div className="fv-episode-thumb-wrap">
-                          {ep.still_path ? <img className="fv-episode-thumb" src={IMG.backdrop(ep.still_path, "w300") || ""} alt="" /> : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-4)" }}><i className="fas fa-play" /></div>}
-                          <span className="fv-episode-badge">{selectedSeason === 0 ? `SP${ep.episode_number}` : `E${ep.episode_number}`}</span>
-                          <div className="fv-episode-play-icon"><i className="fas fa-play" /></div>
+                          {ep.still_path ? (
+                            <img
+                              className="fv-episode-thumb"
+                              src={IMG.backdrop(ep.still_path, "w300") || ""}
+                              alt={ep.name || `Episode ${ep.episode_number}`}
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : (
+                            <div className="fv-episode-placeholder">
+                              <i className="fas fa-play" />
+                            </div>
+                          )}
+                          <span className="fv-episode-badge">
+                            {selectedSeason === 0 ? `SP${ep.episode_number}` : `E${ep.episode_number}`}
+                          </span>
+                          {ep.runtime ? (
+                            <span className="fv-episode-duration">{ep.runtime}m</span>
+                          ) : null}
+                          <div className="fv-episode-play-icon">
+                            <i className="fas fa-play" />
+                          </div>
                         </div>
                         <div className="fv-episode-info">
-                          <div className="fv-episode-title" title={ep.name}>
-                            {ep.name}
+                          <div className="fv-episode-number-label">
+                            Episode {ep.episode_number} {ep.air_date ? `· ${ep.air_date.slice(0, 4)}` : ""}
                           </div>
-                          <div className="fv-episode-meta">{ep.overview ? (ep.overview.length > 110 ? `${ep.overview.slice(0, 110)}…` : ep.overview) : "No description"}</div>
+                          <div className="fv-episode-title" title={ep.name}>
+                            {ep.name || `Episode ${ep.episode_number}`}
+                          </div>
+                          <div className="fv-episode-meta">
+                            {ep.overview ? (ep.overview.length > 120 ? `${ep.overview.slice(0, 120)}…` : ep.overview) : "No description available for this episode."}
+                          </div>
                         </div>
                       </div>
                     ))}

@@ -44,6 +44,33 @@ export function CinemaStageCanvas({ className = "" }: { className?: string }) {
     };
     document.addEventListener("visibilitychange", onVisibility);
 
+    // Interactive pointer proximity (img2threejs principles)
+    let pointerX = -9999;
+    let pointerY = -9999;
+    let targetScrollImpulse = 0;
+    let currentScrollImpulse = 0;
+    let lastScrollY = typeof window !== "undefined" ? window.scrollY : 0;
+
+    const onPointerMove = (e: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      pointerX = e.clientX - rect.left;
+      pointerY = e.clientY - rect.top;
+    };
+    const onPointerLeave = () => {
+      pointerX = -9999;
+      pointerY = -9999;
+    };
+    const onScroll = () => {
+      const curY = window.scrollY;
+      const dy = curY - lastScrollY;
+      lastScrollY = curY;
+      targetScrollImpulse = Math.min(Math.max(dy * 0.04, -2), 2);
+    };
+
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("pointerleave", onPointerLeave, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     const render = () => {
       if (!isVisible) {
         animId = requestAnimationFrame(render);
@@ -51,13 +78,30 @@ export function CinemaStageCanvas({ className = "" }: { className?: string }) {
       }
 
       ctx.clearRect(0, 0, width, height);
+      currentScrollImpulse += (targetScrollImpulse - currentScrollImpulse) * 0.08;
+      targetScrollImpulse *= 0.92;
 
       for (const p of particles) {
+        // Pointer avoidance / gentle air turbulence
+        const dx = p.x - pointerX;
+        const dy = p.y - pointerY;
+        const distSq = dx * dx + dy * dy;
+        if (distSq < 16000 && distSq > 1) {
+          const dist = Math.sqrt(distSq);
+          const force = (1 - dist / 126) * 0.45;
+          p.x += (dx / dist) * force;
+          p.y += (dy / dist) * force;
+        }
+
         p.x += p.vx;
-        p.y += p.vy;
+        p.y += p.vy - currentScrollImpulse;
 
         if (p.y < -10) {
           p.y = height + 10;
+          p.x = Math.random() * width;
+        }
+        if (p.y > height + 10) {
+          p.y = -10;
           p.x = Math.random() * width;
         }
         if (p.x < -10) p.x = width + 10;
@@ -80,6 +124,9 @@ export function CinemaStageCanvas({ className = "" }: { className?: string }) {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerleave", onPointerLeave);
+      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 
