@@ -88,6 +88,8 @@ export default function DetailModal() {
   const prevModalRef = useRef<{ id: number; type: string } | null>(null);
 
 
+  const [retryCount, setRetryCount] = useState(0);
+
   // Reset history stack if modal was freshly opened from closed state
   useEffect(() => {
     if (!detailModal) {
@@ -257,6 +259,18 @@ export default function DetailModal() {
           if (!cancelled) {
             setDetail(data);
             setLoading(false);
+            if (data) {
+              // Auto-correct media type if TMDB returned a TV series for a movie request
+              const isActuallyTv = Boolean(
+                data.number_of_seasons ||
+                (data.seasons && data.seasons.length > 0) ||
+                data.first_air_date ||
+                (data.name && !data.title)
+              );
+              if (isActuallyTv && detailModal!.type === "movie") {
+                openDetail(detailModal!.id, "tv");
+              }
+            }
             if (data?.seasons?.length) {
               let savedSeason: number | null = null;
               try {
@@ -287,7 +301,7 @@ export default function DetailModal() {
     }
     load();
     return () => { cancelled = true; };
-  }, [detailModal]);
+  }, [detailModal, retryCount, openDetail]);
 
   // Background trailer playback for movie/tv (Native MP4 or Chromeless YouTube Embed)
   useEffect(() => {
@@ -459,7 +473,11 @@ export default function DetailModal() {
 
   // Load TV season episodes
   useEffect(() => {
-    const isTv = detailModal?.type === "tv" || detailModal?.type === "anime";
+    const isTv =
+      detailModal?.type === "tv" ||
+      detailModal?.type === "anime" ||
+      Boolean(detail?.number_of_seasons) ||
+      Boolean(detail?.seasons && detail.seasons.length > 0);
     if (!detail || !isTv || selectedSeason < 0) return;
     let cancelled = false;
     async function load() {
@@ -496,7 +514,13 @@ export default function DetailModal() {
 
   const isPerson = detailModal.type === "person";
   const d = detail;
-  const type = detailModal.type;
+  const isActuallyTv = Boolean(
+    d?.number_of_seasons ||
+    (d?.seasons && d.seasons.length > 0) ||
+    d?.first_air_date ||
+    (d?.name && !d?.title)
+  );
+  const type = detailModal.type === "person" ? "person" : (detailModal.type === "anime" ? "anime" : (isActuallyTv ? "tv" : detailModal.type));
   const title = isPerson ? (personDetail?.name || "") : (d?.title || d?.name || "");
   const date = d?.release_date || d?.first_air_date || "";
   const inWl = d ? watchlist.some((w) => w.id === d.id) : false;
@@ -531,7 +555,7 @@ export default function DetailModal() {
 
   function handlePlay(season?: number, episode?: number) {
     if (!d) return;
-    const isTv = type === "tv" || type === "anime";
+    const isTv = type === "tv" || type === "anime" || Boolean(d.number_of_seasons) || Boolean(d.seasons?.length);
     const playType = isTv ? "tv" : "movie";
     const finalSeason = isTv ? (season ?? selectedSeason ?? 1) : undefined;
     let resumeEp = episode;
@@ -1120,7 +1144,75 @@ export default function DetailModal() {
             </div>
           </>
         ) : (
-          <div style={{ textAlign: "center", padding: "60px 0", color: "var(--text-3)" }}>Failed to load details</div>
+          <div
+            className="fv-empty-detail-state"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "420px",
+              padding: "60px 20px",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                width: "64px",
+                height: "64px",
+                borderRadius: "50%",
+                background: "rgba(168, 85, 247, 0.12)",
+                border: "1px solid rgba(168, 85, 247, 0.25)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "16px",
+                color: "var(--cv-purple-light)",
+                fontSize: "24px",
+              }}
+            >
+              <i className="fas fa-satellite-dish" />
+            </div>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 600, color: "#f8fafc", marginBottom: "8px" }}>
+              Unable to load title details
+            </h3>
+            <p style={{ fontSize: "0.9rem", color: "var(--text-3)", maxWidth: "380px", marginBottom: "20px", lineHeight: "1.5" }}>
+              The server connection timed out or the media index was temporarily unreachable.
+            </p>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setRetryCount((c) => c + 1)}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "10px 22px",
+                  borderRadius: "10px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                <i className="fas fa-rotate-right" /> Try Again
+              </button>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={handleBack}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "10px 18px",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                }}
+              >
+                Go Back
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>

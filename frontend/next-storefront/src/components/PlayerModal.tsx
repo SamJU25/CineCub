@@ -432,9 +432,15 @@ export default function PlayerModal() {
   const handleSetStreamModeRef = useRef<(mode: StreamMode) => void>(() => {});
 
   const mediaTitle = playerModal?.title || "";
-  const mediaType = playerModal?.type || "movie";
   const mediaSeason = playerModal?.season;
   const mediaEpisode = playerModal?.episode;
+  const isExplicitTv = Boolean(
+    mediaSeason !== undefined ||
+    mediaEpisode !== undefined ||
+    playerModal?.type === "tv" ||
+    playerModal?.type === "anime"
+  );
+  const mediaType = isExplicitTv ? "tv" : (playerModal?.type || "movie");
   const mediaId = playerModal?.id;
   const curSeason = mediaSeason || 1;
   const curEpisode = mediaEpisode || 1;
@@ -707,8 +713,25 @@ export default function PlayerModal() {
 
   const getEmbedUrl = useCallback((idx: number) => {
     const server = CFG.SERVERS[idx] || CFG.SERVERS[0];
-    return server.url(mediaId || 0, mediaType, mediaSeason, mediaEpisode);
+    return server.url(mediaId || 0, mediaType, mediaSeason || 1, mediaEpisode || 1);
   }, [mediaId, mediaType, mediaSeason, mediaEpisode]);
+
+  const handleNextEmbedServer = useCallback(() => {
+    const nextIdx = (embedServerIdx + 1) % CFG.SERVERS.length;
+    setEmbedServerIdx(nextIdx);
+    setLoading(true);
+    showToast(`☁️ Switched to ${CFG.SERVERS[nextIdx].name}`, "info");
+  }, [embedServerIdx]);
+
+  // Safety auto-dismiss for Cloud Stream embed: dismiss loading overlay after 2.4s so slow third-party assets don't block user
+  useEffect(() => {
+    if (!playerModal || streamMode !== "cloud") return;
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2400);
+    return () => clearTimeout(timer);
+  }, [playerModal?.id, playerModal?.season, playerModal?.episode, embedServerIdx, streamMode]);
 
   const handleSetStreamMode = useCallback((mode: StreamMode) => {
     stopVideo();
@@ -2019,7 +2042,61 @@ if (video && video.duration > 0 && mediaId) {
                     }}
                   />
                 ) : (
-                  <iframe ref={iframeRef} id="main-player" className="player-iframe" src={getEmbedUrl(embedServerIdx)} allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write" allowFullScreen scrolling="no" title="CineCub Video Player" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none", zIndex: 2, borderRadius: "inherit" }} onLoad={() => setLoading(false)} onError={() => { setError(true); setLoading(false); }} />
+                  <>
+                    <iframe
+                      ref={iframeRef}
+                      id="main-player"
+                      className="player-iframe"
+                      src={getEmbedUrl(embedServerIdx)}
+                      allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write"
+                      allowFullScreen
+                      scrolling="no"
+                      title="CineCub Video Player"
+                      style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none", zIndex: 2, borderRadius: "inherit" }}
+                      onLoad={() => setLoading(false)}
+                      onError={() => { setError(true); setLoading(false); }}
+                    />
+                    <div
+                      className="cloud-server-quick-bar"
+                      style={{
+                        position: "absolute",
+                        top: "12px",
+                        right: "12px",
+                        zIndex: 25,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        pointerEvents: "auto",
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={handleNextEmbedServer}
+                        title="Buffering or slow? Click to switch cloud embed server"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          padding: "6px 12px",
+                          borderRadius: "20px",
+                          background: "rgba(14, 14, 23, 0.78)",
+                          backdropFilter: "blur(12px)",
+                          WebkitBackdropFilter: "blur(12px)",
+                          border: "1px solid rgba(255, 255, 255, 0.15)",
+                          color: "#f1f5f9",
+                          fontSize: "11.5px",
+                          fontWeight: 500,
+                          cursor: "pointer",
+                          boxShadow: "0 4px 14px rgba(0,0,0,0.4)",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        <i className="fas fa-server" style={{ color: "var(--cv-purple-light)", fontSize: "10px" }} />
+                        <span>Server {embedServerIdx + 1} ({CFG.SERVERS[embedServerIdx]?.name?.split(" ")[1] || "Fast"})</span>
+                        <i className="fas fa-chevron-right" style={{ fontSize: "9px", opacity: 0.7 }} />
+                      </button>
+                    </div>
+                  </>
                 )}
 
                 {loading && !isTorrent && (

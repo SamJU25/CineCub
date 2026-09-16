@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useLayoutEffect, useCallback, useMemo } from "react";
 import { useStore } from "@/lib/store";
-import { getTrending, getPopular, getTopRated, getUpcoming, getAnime, tmdbFetch, IMG, getTrailerSource, type TrailerSource, getDetail } from "@/lib/api";
+import { getTrending, getPopular, getTopRated, getUpcoming, getAnime, tmdbFetch, IMG, getTrailerSource, type TrailerSource, getDetail, prefetchDetail } from "@/lib/api";
 import type { MediaItem, HistoryItem } from "@/lib/types";
 import { CFG } from "@/lib/config";
 import { PosterCard, Top10Card, LandscapeCard, ContinueWatchingCard, CinematicTrailerCard } from "@/components/Cards";
@@ -877,7 +877,8 @@ function SpotlightCarousel({ items }: { items: MediaItem[] }) {
               {/* Touch & click shield: intercepts all gestures and clicks so the YouTube iframe cannot be clicked or paused */}
               <div
                 className="spotlight-touch-shield"
-                onClick={() => openDetail(item.id, item.media_type || "movie")}
+                onMouseEnter={() => prefetchDetail(item.id, item.media_type || (item.name && !item.title ? "tv" : "movie"))}
+                onClick={() => openDetail(item.id, item.media_type || (item.name && !item.title ? "tv" : "movie"))}
               />
 
               {/* Foreground content: Title, Metadata, Overview at Top, Action Buttons */}
@@ -902,7 +903,8 @@ function SpotlightCarousel({ items }: { items: MediaItem[] }) {
                   <button
                     type="button"
                     className="btn-cinejoy-play"
-                    onClick={() => openDetail(item.id, item.media_type || "movie")}
+                    onMouseEnter={() => prefetchDetail(item.id, item.media_type || (item.name && !item.title ? "tv" : "movie"))}
+                    onClick={() => openDetail(item.id, item.media_type || (item.name && !item.title ? "tv" : "movie"))}
                     title="Watch Movie or Series"
                   >
                     <i className="fas fa-play" /> <span>Play</span>
@@ -927,7 +929,8 @@ function SpotlightCarousel({ items }: { items: MediaItem[] }) {
                   <button
                     type="button"
                     className="btn-cinejoy-icon"
-                    onClick={() => openDetail(item.id, item.media_type || "movie")}
+                    onMouseEnter={() => prefetchDetail(item.id, item.media_type || (item.name && !item.title ? "tv" : "movie"))}
+                    onClick={() => openDetail(item.id, item.media_type || (item.name && !item.title ? "tv" : "movie"))}
                     title="More Information"
                     aria-label="More Info"
                   >
@@ -1580,15 +1583,23 @@ export default function HomePage() {
           <div className="tr-label"><i className="fas fa-bolt" /> Trending</div>
           <div className="tr-scroll-wrap">
             <div className="tr-scroll" id="trending-scroll">
-              {trending.slice(0, 20).map((item, i) => (
-                <div key={item.id} className="tr-item" onClick={() => openDetail(item.id, item.media_type || "movie")}>
-                  <span className="tr-item-num">#{i + 1}</span>
-                  <span>{item.title || item.name}</span>
-                  <span className="tr-item-rating">
-                    <i className="fas fa-star" /> {item.vote_average ? item.vote_average.toFixed(1) : "N/A"}
-                  </span>
-                </div>
-              ))}
+              {trending.slice(0, 20).map((item, i) => {
+                const mediaType = item.media_type || (item.name && !item.title ? "tv" : "movie");
+                return (
+                  <div
+                    key={item.id}
+                    className="tr-item"
+                    onMouseEnter={() => prefetchDetail(item.id, mediaType)}
+                    onClick={() => openDetail(item.id, mediaType)}
+                  >
+                    <span className="tr-item-num">#{i + 1}</span>
+                    <span>{item.title || item.name}</span>
+                    <span className="tr-item-rating">
+                      <i className="fas fa-star" /> {item.vote_average ? item.vote_average.toFixed(1) : "N/A"}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

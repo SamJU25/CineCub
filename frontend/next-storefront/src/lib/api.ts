@@ -69,7 +69,7 @@ async function fetchJSON<T = unknown>(
       }
       return null;
     } catch (err) {
-      if (signal?.aborted || (err instanceof Error && err.name === "AbortError")) return null;
+      if (signal?.aborted) return null;
       if (attempt < retries) await new Promise((r) => setTimeout(r, backoff * (attempt + 1)));
       else return null;
     }
@@ -138,11 +138,10 @@ export async function prefetchDetail(id: number, type: string): Promise<void> {
     return;
   }
   const normType = type === "anime" ? "tv" : (type || "movie");
-  const url = `${CFG.BASE}/${normType}/${id}?append_to_response=credits,videos,similar,recommendations,keywords,external_ids`;
-  const cached = cache.get(url);
+  const fullUrl = `${CFG.BASE}/${normType}/${id}?append_to_response=credits,videos,similar,recommendations,keywords,external_ids`;
+  const cached = cache.get(fullUrl);
   if (!cached || Date.now() - cached.ts > CACHE_TTL) {
-    const data = await fetchJSON(url);
-    if (data) cache.set(url, { data, ts: Date.now() });
+    getDetail(id, normType).catch(() => {});
   }
 }
 
@@ -151,11 +150,39 @@ export async function getDetail<T = MediaDetail>(id: number, type: string): Prom
     return (await getPerson(id)) as T | null;
   }
   const normType = type === "anime" ? "tv" : (type || "movie");
-  const url = `${CFG.BASE}/${normType}/${id}?append_to_response=credits,videos,similar,recommendations,keywords,external_ids`;
-  const cached = cache.get(url);
+  const fullUrl = `${CFG.BASE}/${normType}/${id}?append_to_response=credits,videos,similar,recommendations,keywords,external_ids`;
+  const cached = cache.get(fullUrl);
   if (cached && Date.now() - cached.ts < CACHE_TTL) return cached.data as T;
-  const data = await fetchJSON<T>(url);
-  if (data) cache.set(url, { data, ts: Date.now() });
+
+  // 1. Primary request with rich metadata (credits, trailers, recommendations)
+  let data = await fetchJSON<T>(fullUrl);
+
+  // 2. Resilient type fallback: if "movie" returned 404/null, auto-retry as "tv", and vice versa
+  if (!data && (normType === "movie" || normType === "tv")) {
+    const altType = normType === "movie" ? "tv" : "movie";
+    const altUrl = `${CFG.BASE}/${altType}/${id}?append_to_response=credits,videos,similar,recommendations,keywords,external_ids`;
+    const altCached = cache.get(altUrl);
+    if (altCached && Date.now() - altCached.ts < CACHE_TTL) return altCached.data as T;
+    data = await fetchJSON<T>(altUrl);
+    if (data) {
+      cache.set(altUrl, { data, ts: Date.now() });
+      cache.set(fullUrl, { data, ts: Date.now() });
+      return data;
+    }
+  }
+
+  // 3. Fallback to lean query (credits & videos only) if upstream TMDB 500s or times out on heavy payload
+  if (!data) {
+    const leanUrl = `${CFG.BASE}/${normType}/${id}?append_to_response=credits,videos`;
+    data = await fetchJSON<T>(leanUrl);
+    if (!data && (normType === "movie" || normType === "tv")) {
+      const altType = normType === "movie" ? "tv" : "movie";
+      const altLeanUrl = `${CFG.BASE}/${altType}/${id}?append_to_response=credits,videos`;
+      data = await fetchJSON<T>(altLeanUrl);
+    }
+  }
+
+  if (data) cache.set(fullUrl, { data, ts: Date.now() });
   return data;
 }
 

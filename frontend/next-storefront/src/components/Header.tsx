@@ -102,7 +102,8 @@ export default function Header() {
     setDropdown(false);
     setSearchOpen(false);
     setSearchQuery("");
-    useStore.getState().openDetail(item.id, item.media_type || "movie");
+    const mediaType = item.media_type || (item.name && !item.title ? "tv" : "movie");
+    useStore.getState().openDetail(item.id, mediaType);
   }
 
   function viewAllResults() {

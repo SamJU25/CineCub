@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, memo } from "react";
-import { IMG, getTrailerSource, type TrailerSource } from "@/lib/api";
+import { IMG, getTrailerSource, prefetchDetail, type TrailerSource } from "@/lib/api";
 import { useStore } from "@/lib/store";
 import { showToast } from "@/components/Toast";
 import type { MediaItem } from "@/lib/types";
@@ -21,7 +21,7 @@ export const PosterCard = memo(function PosterCard({ item, type }: { item: Media
   const user = useStore((s) => s.user);
   const openAuth = useStore((s) => s.openAuth);
 
-  const mediaType = type || item.media_type || "movie";
+  const mediaType = type || item.media_type || (item.name && !item.title ? "tv" : "movie");
   const title = item.title || item.name || "Untitled";
   const date = item.release_date || item.first_air_date || "";
   const isNew = isRecentRelease(date);
@@ -67,6 +67,8 @@ export const PosterCard = memo(function PosterCard({ item, type }: { item: Media
     <a
       href={`/?id=${item.id}&type=${mediaType}`}
       className="poster-card"
+      onMouseEnter={() => prefetchDetail(item.id, mediaType)}
+      onFocus={() => prefetchDetail(item.id, mediaType)}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest(".pc-wl-btn")) {
           e.preventDefault();
@@ -457,7 +459,7 @@ export const CinematicTrailerCard = memo(function CinematicTrailerCard({ item, t
 
 export const LandscapeCard = memo(function LandscapeCard({ item, type }: { item: MediaItem; type?: string }) {
   const openDetail = useStore((s) => s.openDetail);
-  const mediaType = type || item.media_type || "movie";
+  const mediaType = type || item.media_type || (item.name && !item.title ? "tv" : "movie");
   const title = item.title || item.name || "Untitled";
   const date = item.release_date || item.first_air_date || "";
   const year = date ? date.slice(0, 4) : "";
@@ -474,6 +476,8 @@ export const LandscapeCard = memo(function LandscapeCard({ item, type }: { item:
     <a
       href={`/?id=${item.id}&type=${mediaType}`}
       className="landscape-card"
+      onMouseEnter={() => prefetchDetail(item.id, mediaType)}
+      onFocus={() => prefetchDetail(item.id, mediaType)}
       onClick={(e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
         e.preventDefault();
@@ -519,7 +523,7 @@ export const Top10Card = memo(function Top10Card({ item, rank }: { item: MediaIt
   const user = useStore((s) => s.user);
   const openAuth = useStore((s) => s.openAuth);
 
-  const mediaType = item.media_type || "movie";
+  const mediaType = item.media_type || (item.name && !item.title ? "tv" : "movie");
   const title = item.title || item.name || "Untitled";
   const date = item.release_date || item.first_air_date || "";
   const year = date ? date.slice(0, 4) : "";
@@ -573,6 +577,8 @@ export const Top10Card = memo(function Top10Card({ item, rank }: { item: MediaIt
     <a
       href={`/?id=${item.id}&type=${mediaType}`}
       className={`poster-card top10-poster-card top10-podium-${rank}`}
+      onMouseEnter={() => prefetchDetail(item.id, mediaType)}
+      onFocus={() => prefetchDetail(item.id, mediaType)}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest(".pc-wl-btn")) {
           e.preventDefault();
@@ -677,6 +683,7 @@ export const ContinueWatchingCard = memo(function ContinueWatchingCard({ item }:
   return (
     <div
       className="poster-card cw-card"
+      onMouseEnter={() => prefetchDetail(item.id, mediaType)}
       onClick={() => openPlayer(item.id, mediaType, title, s, ep, posterPath ?? undefined)}
       role="button"
       tabIndex={0}
