@@ -104,13 +104,17 @@ export default function ProfilePage() {
   const updateShelfArrows = useCallback(() => {
     if (wlScrollRef.current) {
       const el = wlScrollRef.current;
-      setCanScrollWlLeft(el.scrollLeft > 10);
-      setCanScrollWlRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 10);
+      const canLeft = el.scrollLeft > 10;
+      const canRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 10;
+      setCanScrollWlLeft((prev) => (prev !== canLeft ? canLeft : prev));
+      setCanScrollWlRight((prev) => (prev !== canRight ? canRight : prev));
     }
     if (histScrollRef.current) {
       const el = histScrollRef.current;
-      setCanScrollHistLeft(el.scrollLeft > 10);
-      setCanScrollHistRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 10);
+      const canLeft = el.scrollLeft > 10;
+      const canRight = el.scrollLeft + el.clientWidth < el.scrollWidth - 10;
+      setCanScrollHistLeft((prev) => (prev !== canLeft ? canLeft : prev));
+      setCanScrollHistRight((prev) => (prev !== canRight ? canRight : prev));
     }
   }, []);
 

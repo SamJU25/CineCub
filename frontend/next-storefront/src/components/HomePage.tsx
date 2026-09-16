@@ -334,16 +334,12 @@ function SyncedToggle({
 
   useEffect(() => {
     const handleResize = () => syncRef.current(false);
-    const container = containerRef.current;
-    const handleScroll = () => syncRef.current(false);
     window.addEventListener("resize", handleResize, { passive: true });
-    container?.addEventListener("scroll", handleScroll, { passive: true });
     if (document.fonts?.ready) {
       document.fonts.ready.then(() => syncRef.current(false));
     }
     return () => {
       window.removeEventListener("resize", handleResize);
-      container?.removeEventListener("scroll", handleScroll);
     };
   }, []);
 

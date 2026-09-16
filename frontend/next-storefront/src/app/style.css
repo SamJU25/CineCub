@@ -2712,8 +2712,7 @@ iframe {
 }
 
 .section-wrapper {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 320px;
+  contain: style;
 }
 
 .cv-hscroll {
@@ -7140,8 +7139,7 @@ a.telegram-nav-item {
 }
 
 .fv-cast-section {
-  content-visibility: auto;
-  contain-intrinsic-size: 0 160px;
+  contain: style;
   margin-top: 24px;
 }
 
@@ -9614,8 +9612,7 @@ body:has(.auth-modal) .mobile-bottom-bar {
 }
 
 .row-container, .compact-list, .grid {
-  content-visibility: auto;
-  contain-intrinsic-size: 250px;
+  contain: style;
 }
 
 .modal-content, .spotlight-bg {

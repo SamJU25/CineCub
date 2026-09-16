@@ -595,7 +595,10 @@ export default function DetailModal() {
         className="fv-modal"
         id="fv-modal"
         onClick={(e) => e.stopPropagation()}
-        onScroll={(e) => setIsScrolled(e.currentTarget.scrollTop > 20)}
+        onScroll={(e) => {
+          const isPast = e.currentTarget.scrollTop > 20;
+          setIsScrolled((prev) => (prev !== isPast ? isPast : prev));
+        }}
       >
         <header className={`fv-top-nav${isScrolled ? " scrolled" : ""}`} id="fv-top-nav">
           <div className="fv-top-nav-inner">
