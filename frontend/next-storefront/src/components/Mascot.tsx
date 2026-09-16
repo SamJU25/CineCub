@@ -186,12 +186,10 @@ export function Mascot({
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });
-    window.addEventListener("scroll", aim, { passive: true });
     armIdleTimer();
 
     return () => {
       window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("scroll", aim);
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
   }, [armIdleTimer, wake]);

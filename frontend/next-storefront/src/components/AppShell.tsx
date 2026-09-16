@@ -49,7 +49,6 @@ export default function AppShell({
   const setActivePage = useStore((s) => s.setActivePage);
   const sidebarCollapsed = useStore((s) => s.sidebarCollapsed);
   const playerModal = useStore((s) => s.playerModal);
-  const [showBackToTop, setShowBackToTop] = useState(false);
   const [visitedPages, setVisitedPages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -144,7 +143,16 @@ export default function AppShell({
   }, [activePage]);
 
   useEffect(() => {
-    const onScroll = () => setShowBackToTop(window.scrollY > 300);
+    const btn = document.getElementById("back-to-top");
+    if (!btn) return;
+    let isVisible = false;
+    const onScroll = () => {
+      const shouldShow = window.scrollY > 300;
+      if (shouldShow !== isVisible) {
+        isVisible = shouldShow;
+        btn.classList.toggle("visible", shouldShow);
+      }
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -228,7 +236,8 @@ export default function AppShell({
 
       <button
         id="back-to-top"
-        className={`back-to-top${showBackToTop ? " visible" : ""}`}
+        className="back-to-top"
+        aria-label="Back to top"
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       >
         <i className="fas fa-chevron-up" />

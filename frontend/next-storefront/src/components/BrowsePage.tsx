@@ -268,14 +268,19 @@ export default function BrowsePage() {
 
   // 2. High-performance window scroll listener to ensure UNLIMITED loading even if observer hiccups
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      if (fetchingRef.current || !hasMoreRef.current || loading) return;
-      const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const clientHeight = window.innerHeight || document.documentElement.clientHeight;
-      if (scrollTop + clientHeight >= scrollHeight - 800) {
-        loadNextPage();
-      }
+      if (ticking || fetchingRef.current || !hasMoreRef.current || loading) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const clientHeight = window.innerHeight || document.documentElement.clientHeight;
+        if (scrollTop + clientHeight >= scrollHeight - 800) {
+          loadNextPage();
+        }
+      });
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);

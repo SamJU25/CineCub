@@ -40,8 +40,13 @@ export default function Header() {
 
   // Detect window scroll for subtle frosted glass darkening
   useEffect(() => {
+    let prevScrolled = false;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const isPast = window.scrollY > 20;
+      if (isPast !== prevScrolled) {
+        prevScrolled = isPast;
+        setScrolled(isPast);
+      }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);

@@ -51,8 +51,10 @@ export default function HScrollWrapper({
     if (!el) return;
     const scrollLeft = el.scrollLeft;
     const maxScroll = el.scrollWidth - el.clientWidth;
-    setCanScrollLeft(scrollLeft > 15);
-    setCanScrollRight((hasMoreRef.current && maxScroll > 15) || (maxScroll > 15 && scrollLeft < maxScroll - 15));
+    const newCanLeft = scrollLeft > 15;
+    const newCanRight = (hasMoreRef.current && maxScroll > 15) || (maxScroll > 15 && scrollLeft < maxScroll - 15);
+    setCanScrollLeft((prev) => (prev !== newCanLeft ? newCanLeft : prev));
+    setCanScrollRight((prev) => (prev !== newCanRight ? newCanRight : prev));
   }, [containerRef]);
 
   const checkNearEnd = useCallback(() => {
