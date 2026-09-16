@@ -289,34 +289,11 @@ function SyncedToggle({
     const targetWidth = activeBtn.offsetWidth;
 
     if (!animate) {
-      indicator.getAnimations().forEach((a) => a.cancel());
       indicator.style.transition = "none";
       indicator.style.left = `${targetLeft}px`;
       indicator.style.width = `${targetWidth}px`;
       void indicator.offsetHeight; // Force reflow
       indicator.style.transition = "";
-      return;
-    }
-
-    const cs = getComputedStyle(indicator);
-    const fromLeft = parseFloat(cs.left) || 0;
-    const fromWidth = parseFloat(cs.width) || 0;
-    if (Math.abs(fromLeft - targetLeft) > 0.5 || Math.abs(fromWidth - targetWidth) > 0.5) {
-      indicator.style.left = cs.left;
-      indicator.style.width = cs.width;
-      indicator.getAnimations().forEach((a) => a.cancel());
-      const anim = indicator.animate(
-        [
-          { left: `${fromLeft}px`, width: `${fromWidth}px` },
-          { left: `${targetLeft}px`, width: `${targetWidth}px` },
-        ],
-        { duration: 240, easing: "cubic-bezier(.16, 1, .3, 1)", fill: "forwards" }
-      );
-      anim.onfinish = () => {
-        indicator.style.left = `${targetLeft}px`;
-        indicator.style.width = `${targetWidth}px`;
-        try { anim.cancel(); } catch {}
-      };
       return;
     }
 
@@ -358,9 +335,7 @@ function SyncedToggle({
 
   const handleClick = (i: number, el: HTMLElement) => {
     const container = containerRef.current;
-    if (container) {
-      container.querySelectorAll(".bgt-btn").forEach((b) => b.classList.remove("active"));
-      el.classList.add("active");
+    if (container && container.scrollWidth > container.clientWidth) {
       // Center the button in the scroll container
       const scrollLeftTarget = el.offsetLeft - container.clientWidth / 2 + el.offsetWidth / 2;
       container.scrollTo({ left: Math.max(0, scrollLeftTarget), behavior: "smooth" });
@@ -417,7 +392,6 @@ function GenrePillRow({
     const tHeight = activeBtn.offsetHeight;
 
     if (!animate) {
-      indicator.getAnimations().forEach((a) => a.cancel());
       indicator.style.transition = "none";
       indicator.style.left = `${tLeft}px`;
       indicator.style.top = `${tTop}px`;
@@ -425,37 +399,6 @@ function GenrePillRow({
       indicator.style.height = `${tHeight}px`;
       void indicator.offsetHeight; // Force reflow
       indicator.style.transition = "";
-      return;
-    }
-
-    const cs = getComputedStyle(indicator);
-    const fromL = parseFloat(cs.left) || 0;
-    const fromT = parseFloat(cs.top) || 0;
-    const fromW = parseFloat(cs.width) || 0;
-    const fromH = parseFloat(cs.height) || 0;
-    if (
-      Math.abs(fromL - tLeft) > 0.5 ||
-      Math.abs(fromT - tTop) > 0.5 ||
-      Math.abs(fromW - tWidth) > 0.5 ||
-      Math.abs(fromH - tHeight) > 0.5
-    ) {
-      indicator.style.left = cs.left;
-      indicator.style.top = cs.top;
-      indicator.style.width = cs.width;
-      indicator.style.height = cs.height;
-      indicator.getAnimations().forEach((a) => a.cancel());
-      indicator.animate(
-        [
-          {
-            left: `${fromL}px`,
-            top: `${fromT}px`,
-            width: `${fromW}px`,
-            height: `${fromH}px`,
-          },
-          { left: `${tLeft}px`, top: `${tTop}px`, width: `${tWidth}px`, height: `${tHeight}px` },
-        ],
-        { duration: 260, easing: "cubic-bezier(.16, 1, .3, 1)", fill: "forwards" }
-      );
       return;
     }
 
@@ -490,9 +433,7 @@ function GenrePillRow({
 
   const handleClick = (id: number | null, el: HTMLDivElement) => {
     const container = containerRef.current;
-    if (container) {
-      container.querySelectorAll(".genre-sq-btn").forEach((b) => b.classList.remove("active"));
-      el.classList.add("active");
+    if (container && container.scrollWidth > container.clientWidth) {
       const scrollLeftTarget = el.offsetLeft - container.clientWidth / 2 + el.offsetWidth / 2;
       container.scrollTo({ left: Math.max(0, scrollLeftTarget), behavior: "smooth" });
     }
