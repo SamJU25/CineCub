@@ -1142,20 +1142,22 @@ export default function DetailModal() {
                         key={c.id}
                         className="cast-card"
                         onClick={() => navigateTo(c.id, "person")}
-                        title={c.name}
+                        title={c.character ? `${c.name} as ${c.character}` : c.name}
                       >
-                        <img
-                          alt={c.name}
-                          className="cast-avatar"
-                          src={(c.profile_path ? IMG.profile(c.profile_path, "w185") : null) || IMG.placeholder(110, 140)}
-                          loading="lazy"
-                          decoding="async"
-                          onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).src = IMG.placeholder(110, 140);
-                          }}
-                        />
+                        <div className="cast-avatar-wrap">
+                          <img
+                            alt={c.name}
+                            className="cast-avatar"
+                            src={(c.profile_path ? IMG.profile(c.profile_path, "w185") : null) || IMG.placeholder(110, 110)}
+                            loading="lazy"
+                            decoding="async"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = IMG.placeholder(110, 110);
+                            }}
+                          />
+                        </div>
                         <div className="cast-name">{c.name}</div>
-                        <div className="cast-char">{c.character || ""}</div>
+                        <div className="cast-char">{c.character || c.known_for_department || "Cast"}</div>
                       </div>
                     ))}
                   </HScrollWrapper>

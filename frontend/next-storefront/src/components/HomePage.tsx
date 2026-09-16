@@ -1579,7 +1579,7 @@ export default function HomePage() {
           </div>
           <div className="stat-card">
             <div className="stat-icon"><i className="fas fa-video" /></div>
-            <div><div className="stat-value">4K</div><div className="stat-label">Ultra HD Quality</div></div>
+            <div><div className="stat-value">4K</div><div className="stat-label"><span className="stat-live-dot" /> Ultra HD Quality</div></div>
           </div>
         </div>
 
