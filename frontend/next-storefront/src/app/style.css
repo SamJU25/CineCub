@@ -641,38 +641,17 @@ iframe {
   color: #b47cff;
 }
 
-/* Original image logo: mobile/touch only (desktop uses the mascot + text lockup).
-   !important needed because .header-web-logo's display:block appears later in the sheet */
+/* Mascot + CineCub text lockup displays seamlessly across all devices */
 .mobile-brand-logo {
   display: none !important;
 }
 
 @media (max-width: 768px) {
-  .header-mascot-top,
+  .header-mascot-top {
+    margin-bottom: -18px;
+  }
   .header-brand-stacked .header-brand-text {
-    display: none;
-  }
-
-  /* Show the original image logo on mobile instead — slightly larger for visibility */
-  .mobile-brand-logo {
-    display: block !important;
-    height: 54px !important;
-    max-width: 190px !important;
-  }
-}
-
-/* Tablets & touch devices: keep the image logo — only true desktops (fine pointer + hover)
-   get the mascot + text lockup, where cursor tracking actually works */
-@media (min-width: 769px) and (hover: none), (min-width: 769px) and (pointer: coarse) {
-  .header-mascot-top,
-  .header-brand-stacked .header-brand-text {
-    display: none;
-  }
-
-  .mobile-brand-logo {
-    display: block !important;
-    height: 50px !important;
-    max-width: 180px !important;
+    font-size: 18px;
   }
 }
 

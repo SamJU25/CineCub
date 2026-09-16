@@ -195,6 +195,88 @@ export function Mascot({
     };
   }, [armIdleTimer, size, wake]);
 
+  // Mobile & touch: scroll-direction gaze (looks where the user scrolls)
+  useEffect(() => {
+    let scrollTimeout: ReturnType<typeof setTimeout> | undefined;
+    let lastScrollY = typeof window !== "undefined" ? window.scrollY : 0;
+    const isTouch = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+
+    const onScroll = () => {
+      wake();
+      armIdleTimer();
+
+      if (!isTouch || asleepRef.current) return;
+
+      const currentScrollY = window.scrollY;
+      const delta = currentScrollY - lastScrollY;
+      lastScrollY = currentScrollY;
+
+      if (Math.abs(delta) > 4) {
+        setDirection(delta > 0 ? "down" : "up");
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          setDirection("center");
+        }, 600);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+    };
+  }, [armIdleTimer, wake]);
+
+  // Autonomous ambient life (subtle natural blinks & glances when idle)
+  useEffect(() => {
+    let ambientTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const tick = () => {
+      if (document.hidden || asleepRef.current) {
+        ambientTimer = setTimeout(tick, 3000);
+        return;
+      }
+
+      // Only perform ambient animation if no active reaction
+      setReaction((curReaction) => {
+        if (curReaction === null) {
+          const rand = Math.random();
+          if (rand < 0.65) {
+            // Quick natural blink
+            timersRef.current.push(setTimeout(() => setReaction(null), 160));
+            return "blink";
+          } else if (rand < 0.82) {
+            // Gentle glance left
+            setDirection("left");
+            timersRef.current.push(setTimeout(() => setDirection("center"), 1000));
+          } else {
+            // Gentle glance right
+            setDirection("right");
+            timersRef.current.push(setTimeout(() => setDirection("center"), 1000));
+          }
+        }
+        return curReaction;
+      });
+
+      const nextInterval = 4500 + Math.random() * 5500;
+      ambientTimer = setTimeout(tick, nextInterval);
+    };
+
+    ambientTimer = setTimeout(tick, 4000);
+
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        armIdleTimer();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      if (ambientTimer) clearTimeout(ambientTimer);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [armIdleTimer]);
+
   useEffect(() => {
     return () => {
       timersRef.current.forEach(clearTimeout);
@@ -202,11 +284,23 @@ export function Mascot({
     };
   }, []);
 
-  const boop = (e?: React.MouseEvent) => {
+  const boop = (e?: React.MouseEvent | React.TouchEvent) => {
     e?.stopPropagation();
+
     const now = Date.now();
     const boops = boopsRef.current;
     const isDizzy = now - boops.at < DIZZY_WINDOW && boops.count + 1 >= DIZZY_AFTER;
+
+    // Mobile haptic feedback on supported touch devices
+    if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+      try {
+        if (isDizzy) {
+          navigator.vibrate([24, 40, 24]);
+        } else {
+          navigator.vibrate(12);
+        }
+      } catch {}
+    }
 
     clearTimers();
     if (isDizzy) {
@@ -247,7 +341,7 @@ export function Mascot({
       onClick={boop}
       onPointerEnter={onEnter}
       aria-label={`Boop the ${label}`}
-      className={className}
+      className={`mascot-btn ${className || ""}`.trim()}
       style={{
         position: "relative",
         display: "block",
@@ -260,6 +354,8 @@ export function Mascot({
         appearance: "none",
         cursor: "pointer",
         userSelect: "none",
+        touchAction: "manipulation",
+        WebkitTapHighlightColor: "transparent",
       }}
     >
       <span
