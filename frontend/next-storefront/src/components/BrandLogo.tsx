@@ -43,8 +43,8 @@ export function BrandLogo({
       {/* Desktop lockup: mascot above the text wordmark */}
       <span className="header-mascot-top">
         <Mascot
-          directions="/mascots/bear-directions.webp"
-          reactions="/mascots/bear-reactions.webp"
+          directions="/mascots/cinecub-directions.webp"
+          reactions="/mascots/cinecub-reactions.webp"
           size={mascotSize}
           label="CineCub bear mascot"
         />
