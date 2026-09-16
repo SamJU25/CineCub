@@ -44,7 +44,6 @@ const CLOCKWISE: MascotDirection[] = [
 ];
 const SECTOR = (Math.PI * 2) / CLOCKWISE.length;
 const HYSTERESIS = 0.12;
-const DEAD_ZONE = 70;
 const PAYOFFS: MascotReaction[] = ["heart", "sparkle", "delighted"];
 const BOOP_PAYOFF = 120;
 const BOOP_END = 560;
@@ -151,12 +150,11 @@ export function Mascot({
     idleTimerRef.current = setTimeout(sleep, idleMs);
   }, [idleMs, sleep]);
 
-  // Head tracking (fine pointers only) + idle doze-off
+  // Head tracking (mouse & fine pointers) + idle doze-off
   useEffect(() => {
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-
     let sector = -1;
     let pointer: { x: number; y: number } | null = null;
+    const deadZone = Math.max(18, Math.min(32, size * 0.45));
 
     const aim = () => {
       const button = buttonRef.current;
@@ -164,7 +162,7 @@ export function Mascot({
       const box = button.getBoundingClientRect();
       const dx = pointer.x - (box.left + box.width / 2);
       const dy = pointer.y - (box.top + box.height / 2);
-      if (Math.hypot(dx, dy) < DEAD_ZONE) {
+      if (Math.hypot(dx, dy) < deadZone) {
         sector = -1;
         setDirection("center");
         return;
@@ -179,6 +177,7 @@ export function Mascot({
     };
 
     const onPointerMove = (event: PointerEvent) => {
+      if (event.pointerType === "touch") return;
       pointer = { x: event.clientX, y: event.clientY };
       wake();
       armIdleTimer();
@@ -192,7 +191,7 @@ export function Mascot({
       window.removeEventListener("pointermove", onPointerMove);
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
-  }, [armIdleTimer, wake]);
+  }, [armIdleTimer, size, wake]);
 
   useEffect(() => {
     return () => {
@@ -201,7 +200,8 @@ export function Mascot({
     };
   }, []);
 
-  const boop = () => {
+  const boop = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     const now = Date.now();
     const boops = boopsRef.current;
     const isDizzy = now - boops.at < DIZZY_WINDOW && boops.count + 1 >= DIZZY_AFTER;
