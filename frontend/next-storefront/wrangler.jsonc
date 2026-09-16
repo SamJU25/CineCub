@@ -1,0 +1,36 @@
+{
+  "name": "cinecub-next",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-09-03",
+  "compatibility_flags": ["nodejs_als"],
+  "assets": {
+    "directory": "./.open-next/assets",
+    "binding": "ASSETS"
+  },
+  // Non-sensitive runtime variables.
+  // Secrets (JWT_SECRET, RESEND_API_KEY, TMDB_API_KEY, SUBDL_API_KEY) must be set via `wrangler secret put <KEY>`.
+  "vars": {
+    "RESEND_FROM_EMAIL": "CineCub <noreply@cinecub.stream>",
+    "RESEND_FALLBACK_FROM_EMAIL": "CineCub <onboarding@resend.dev>"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cinecub-db",
+      "database_id": "07d2f85e-0c14-4b44-a8ed-de12049281ce"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "STORAGE",
+      "bucket_name": "cinecub-data"
+    }
+  ],
+  "routes": [
+    { "pattern": "cinecub.stream/*", "zone_name": "cinecub.stream" },
+    { "pattern": "www.cinecub.stream/*", "zone_name": "cinecub.stream" }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

@@ -1,0 +1,272 @@
+﻿---
+name: graphify
+description: >
+  Turn any folder of files (code, docs, PDFs, images, papers, screenshots) into a
+  queryable knowledge graph with community detection, an audit trail, and three
+  outputs: interactive HTML, GraphRAG-ready JSON, and a plain-language
+  GRAPH_REPORT.md. Trigger with /graphify. Source: https://github.com/Graphify-Labs/graphify
+trigger: /graphify
+---
+
+# /graphify
+
+Turn any folder of files into a navigable knowledge graph with community detection, an honest audit trail, and three outputs: interactive HTML, GraphRAG-ready JSON, and a plain-language GRAPH_REPORT.md.
+
+## Usage
+
+```
+/graphify                                             # full pipeline on current directory
+/graphify <path>                                      # full pipeline on specific path
+/graphify <path> --mode deep                          # thorough extraction, richer INFERRED edges
+/graphify <path> --update                             # incremental - re-extract only new/changed files
+/graphify <path> --cluster-only                       # rerun clustering on existing graph
+/graphify <path> --no-viz                             # skip visualization, just report + JSON
+/graphify <path> --svg                                # also export graph.svg (embeds in Notion, GitHub)
+/graphify <path> --graphml                            # export graph.graphml (Gephi, yEd)
+/graphify <path> --neo4j                              # generate graphify-out/cypher.txt for Neo4j
+/graphify <path> --neo4j-push bolt://localhost:7687   # push directly to Neo4j
+/graphify <path> --mcp                                # start MCP stdio server for agent access
+/graphify <path> --watch                              # watch folder, auto-rebuild on code changes
+/graphify add <url>                                   # fetch URL, save to ./raw, update graph
+/graphify add <url> --author "Name"                   # tag who wrote it
+/graphify add <url> --contributor "Name"              # tag who added it to the corpus
+/graphify query "<question>"                          # BFS traversal - broad context
+/graphify query "<question>" --dfs                    # DFS - trace a specific path
+/graphify query "<question>" --budget 1500            # cap answer at N tokens
+/graphify path "ConceptA" "ConceptB"                  # shortest path between two concepts
+/graphify explain "NodeName"                          # plain-language explanation of a node
+```
+
+## Outputs
+
+```
+graphify-out/
+├── graph.html       interactive graph - click nodes, search, filter by community
+├── obsidian/        open as Obsidian vault
+├── GRAPH_REPORT.md  god nodes, surprising connections, suggested questions
+├── graph.json       persistent graph - query weeks later without re-reading
+└── cache/           SHA256 cache - re-runs only process changed files
+```
+
+## What graphify is for
+
+Three things it does that Claude/Gemini alone cannot:
+1. **Persistent graph** - relationships stored in graph.json survive across sessions. Ask questions weeks later without re-reading everything.
+2. **Honest audit trail** - every edge is tagged EXTRACTED, INFERRED, or AMBIGUOUS. You know what was found vs invented.
+3. **Cross-document surprise** - community detection finds connections between concepts in different files you would never think to ask about directly.
+
+Use it for:
+- A codebase you are new to (understand architecture before touching anything)
+- A reading list (papers + tweets + notes → one navigable graph)
+- A research corpus (citation graph + concept graph in one)
+- Your personal /raw folder (drop everything in, let it grow, query it)
+
+---
+
+## What You Must Do When Invoked
+
+If no path was given, use `.` (current directory). Do not ask the user for a path.
+
+Follow these steps in order. Do not skip steps.
+
+### Step 1 - Ensure graphify is installed
+
+```bash
+python3 -c "import graphify" 2>/dev/null || pip install graphifyy -q --break-system-packages 2>&1 | tail -3
+```
+
+Windows: if `graphify` is not found after install, add `%APPDATA%\Python\Python3xx\Scripts` to PATH,
+or use `pip install graphifyy --user`. The PyPI package is `graphifyy`; the CLI command is `graphify`.
+
+If the import succeeds, print nothing and move to Step 2.
+
+### Step 2 - Detect files
+
+```bash
+python3 -c "
+import json
+from graphify.detect import detect
+from pathlib import Path
+result = detect(Path('INPUT_PATH'))
+print(json.dumps(result))
+" > .graphify_detect.json
+```
+
+Replace INPUT_PATH with the actual path. Do NOT cat or print the JSON - read it silently and present a clean summary:
+
+```
+Corpus: X files · ~Y words
+  code:     N files (.py .ts .go ...)
+  docs:     N files (.md .txt ...)
+  papers:   N files (.pdf ...)
+  images:   N files
+```
+
+Then act on it:
+- If `total_files` is 0: stop with "No supported files found in [path]."
+- If `skipped_sensitive` is non-empty: mention file count skipped, not the names.
+- If `total_words` > 2,000,000 OR `total_files` > 200: show warning + top 5 subdirectories by file count, ask which subfolder to run on. Wait for user answer before proceeding.
+- Otherwise: proceed directly to Step 3.
+
+### Step 3 - Extract entities and relationships
+
+Note whether `--mode deep` was given. Pass DEEP_MODE=true to every subagent if it was.
+
+#### Part A - Structural extraction for code files
+
+```bash
+python3 -c "
+import sys, json
+from graphify.extract import collect_files, extract
+from pathlib import Path
+import json
+
+code_files = []
+detect = json.loads(Path('.graphify_detect.json').read_text())
+for f in detect.get('files', {}).get('code', []):
+    code_files.extend(collect_files(Path(f)) if Path(f).is_dir() else [Path(f)])
+
+if code_files:
+    result = extract(code_files)
+    Path('.graphify_ast.json').write_text(json.dumps(result, indent=2))
+    print(f'AST: {len(result[chr(34)]nodes[chr(34)])} nodes, {len(result[chr(34)]edges[chr(34)])} edges')
+else:
+    Path('.graphify_ast.json').write_text(json.dumps({'nodes':[],'edges':[],'input_tokens':0,'output_tokens':0}))
+    print('No code files - skipping AST extraction')
+"
+```
+
+#### Part B - Semantic extraction (parallel subagents)
+
+**Fast path:** If detection found zero docs, papers, and images (code-only corpus), skip Part B. AST handles code.
+
+**MANDATORY: You MUST use the Agent tool here. Reading files yourself one-by-one is forbidden - it is 5-10x slower.**
+
+Before dispatching subagents, print: "Semantic extraction: ~N files → X agents, estimated ~Ys"
+
+**Step B0 - Check extraction cache first**
+
+```bash
+python3 -c "
+import json
+from graphify.cache import check_semantic_cache
+from pathlib import Path
+
+detect = json.loads(Path('.graphify_detect.json').read_text())
+all_files = [f for files in detect['files'].values() for f in files]
+cached_nodes, cached_edges, uncached = check_semantic_cache(all_files)
+if cached_nodes or cached_edges:
+    Path('.graphify_cached.json').write_text(json.dumps({'nodes': cached_nodes, 'edges': cached_edges}))
+Path('.graphify_uncached.txt').write_text('\n'.join(uncached))
+print(f'Cache: {len(all_files)-len(uncached)} files hit, {len(uncached)} files need extraction')
+"
+```
+
+Only dispatch subagents for files in `.graphify_uncached.txt`. If all cached, skip to Part C.
+
+**Step B1 - Split into chunks of 20-25 files. Each image gets its own chunk.**
+
+**Step B2 - Dispatch ALL subagents in a single message (one Agent call per chunk).**
+
+Each subagent prompt:
+
+```
+You are a graphify extraction subagent. Read the files listed and extract a knowledge graph fragment.
+Output ONLY valid JSON matching the schema below - no explanation, no markdown fences, no preamble.
+
+Files (chunk CHUNK_NUM of TOTAL_CHUNKS):
+FILE_LIST
+
+Rules:
+- EXTRACTED: relationship explicit in source (import, call, citation)
+- INFERRED: reasonable inference (shared data structure, implied dependency)
+- AMBIGUOUS: uncertain - flag for review, do not omit
+
+Code files: focus on semantic edges AST cannot find. Do not re-extract imports.
+Doc/paper files: extract named concepts, entities, citations.
+Image files: use vision. UI screenshot: layout, design decisions. Chart: metric, trend.
+  Tweet: claim as node, author, concepts. Diagram: components and connections.
+  Handwritten: ideas and arrows, mark uncertain AMBIGUOUS.
+
+DEEP_MODE: be aggressive with INFERRED edges. Mark uncertain ones AMBIGUOUS.
+
+If a file has YAML frontmatter, copy source_url, captured_at, author, contributor onto every node.
+
+Output exactly this JSON:
+{"nodes":[{"id":"filestem_entityname","label":"Human Readable Name","file_type":"code|document|paper|image","source_file":"relative/path","source_location":null,"source_url":null,"captured_at":null,"author":null,"contributor":null}],"edges":[{"source":"node_id","target":"node_id","relation":"calls|implements|references|cites|conceptually_related_to|shares_data_with","confidence":"EXTRACTED|INFERRED|AMBIGUOUS","source_file":"relative/path","source_location":null,"weight":1.0}],"input_tokens":0,"output_tokens":0}
+```
+
+**Step B3 - Collect, cache, and merge results. If >50% of chunks failed, stop and tell the user.**
+
+Merge cached + new into `.graphify_semantic.json`, then clean up temp files.
+
+#### Part C - Merge AST + semantic into `.graphify_extract.json`
+
+Deduplicate nodes by id (AST nodes take priority). Concatenate edges.
+
+### Step 4 - Build the graph
+
+```bash
+python3 -c "
+from graphify.build import build
+from pathlib import Path
+import json
+
+extract = json.loads(Path('.graphify_extract.json').read_text())
+result = build(extract, output_dir=Path('graphify-out'))
+print(json.dumps(result))
+"
+```
+
+### Step 5 - Generate GRAPH_REPORT.md
+
+```bash
+python3 -c "
+from graphify.report import report
+from pathlib import Path
+import json
+
+graph = json.loads(Path('graphify-out/graph.json').read_text())
+md = report(graph)
+Path('graphify-out/GRAPH_REPORT.md').write_text(md)
+print('Report written to graphify-out/GRAPH_REPORT.md')
+"
+```
+
+### Step 6 - Final summary to user
+
+```
+✓ graphify complete
+
+  Nodes:       X
+  Edges:       Y  (Z EXTRACTED, W INFERRED, V AMBIGUOUS)
+  Communities: N
+
+  Outputs:
+    graphify-out/graph.html        ← open in browser
+    graphify-out/graph.json        ← persistent graph
+    graphify-out/GRAPH_REPORT.md   ← audit + suggested questions
+    graphify-out/obsidian/         ← open as Obsidian vault
+
+  Tokens used: ~X in / ~Y out
+  Cache: Z files saved (next run will be faster)
+
+Open graph.html to explore. Ask me: /graphify query "<anything>"
+```
+
+---
+
+## Edge Confidence Legend
+
+| Tag | Meaning |
+|---|---|
+| EXTRACTED | Relationship explicit in source (import, call, citation) |
+| INFERRED | Reasonable inference (shared data, implied dependency) |
+| AMBIGUOUS | Uncertain - flagged for review, not omitted |
+
+## Token Efficiency
+
+graphify is ~71.5x more token-efficient per query than reading raw files.
+- graph.json is the only thing read on subsequent queries
+- SHA256 cache means re-runs only process changed files
+- Use --update to merge new files into an existing graph without re-extracting everything

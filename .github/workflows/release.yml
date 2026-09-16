@@ -1,0 +1,144 @@
+# .github/workflows/release.yml
+#
+# Automates the StreamHeaven Android release sync on every tag push (e.g., v1.0.9).
+#
+# Required repository secrets:
+#   KEYSTORE_BASE64   — base64-encoded release keystore file (e.g., `base64 -w0 release.keystore`)
+#   KEY_ALIAS         — keystore key alias
+#   KEY_PASSWORD      — key password
+#   STORE_PASSWORD    — keystore store password
+#
+# What this workflow does:
+#   1. Checks out the full repo (fetch-depth: 0 for git push-back)
+#   2. Sets up JDK 17 (temurin) with Gradle cache
+#   3. Decodes KEYSTORE_BASE64 → frontend/android-app/release.keystore
+#   4. Writes frontend/android-app/keystore.properties from secrets
+#   5. Runs ./gradlew assembleRelease in frontend/android-app/
+#   6. Runs pwsh frontend/android-app/scripts/release.ps1 from repo root
+#   7. Commits frontend/storefront/public/version.json + StreamHeaven.apk and pushes to main
+
+name: Release — Android APK + Storefront Sync
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Build and sync release artifacts
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # needed to push the commit back
+
+    steps:
+      # -----------------------------------------------------------------------
+      # 1. Checkout
+      # -----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history required for the push-back commit
+
+      # -----------------------------------------------------------------------
+      # 2. Set up JDK 17 with Gradle cache
+      # -----------------------------------------------------------------------
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: "gradle"
+
+      # -----------------------------------------------------------------------
+      # 3. Decode keystore and write keystore.properties
+      # -----------------------------------------------------------------------
+      - name: Decode release keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > frontend/android-app/release.keystore
+          if [ ! -s frontend/android-app/release.keystore ]; then
+            echo "ERROR: Decoded keystore is empty — check the KEYSTORE_BASE64 secret." >&2
+            exit 1
+          fi
+
+      - name: Write keystore.properties
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          printf 'storeFile=release.keystore\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "$STORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" \
+            > frontend/android-app/keystore.properties
+
+      # -----------------------------------------------------------------------
+      # 4. Make Gradle wrapper executable and build the release APK
+      # -----------------------------------------------------------------------
+      - name: Make gradlew executable
+        run: chmod +x frontend/android-app/gradlew
+
+      - name: Build release APK
+        working-directory: frontend/android-app
+        run: ./gradlew assembleRelease --no-daemon
+
+      # -----------------------------------------------------------------------
+      # 5. Verify PowerShell is available
+      # -----------------------------------------------------------------------
+      - name: Verify PowerShell is available
+        run: pwsh --version
+
+      # -----------------------------------------------------------------------
+      # 6. Run release sync script
+      # -----------------------------------------------------------------------
+      - name: Run release.ps1 (sync version.json and StreamHeaven.apk)
+        run: pwsh frontend/android-app/scripts/release.ps1
+
+      # -----------------------------------------------------------------------
+      # 7. Commit and push updated storefront artifacts
+      # -----------------------------------------------------------------------
+      - name: Determine version info for commit message
+        id: version
+        run: |
+          VERSION_CODE=$(grep -oP 'versionCode\s*=\s*\K\d+' frontend/android-app/app/build.gradle.kts)
+          VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' frontend/android-app/app/build.gradle.kts)
+          echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+          echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Configure git identity
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+      - name: Stage release artifacts
+        run: |
+          git add frontend/next-storefront/public/version.json frontend/next-storefront/public/CineCub.apk
+
+      - name: Commit if there are changes
+        run: |
+          if git diff --cached --quiet; then
+            echo "No changes to commit — artifacts are already up to date."
+          else
+            git commit -m "release: sync v${{ steps.version.outputs.name }} artifacts [skip ci]"
+          fi
+
+      - name: Push to default branch
+        run: |
+          git push origin HEAD:main
+
+      # -----------------------------------------------------------------------
+      # 8. Job summary
+      # -----------------------------------------------------------------------
+      - name: Write job summary
+        run: |
+          echo "## Release Sync Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Tag | \`${{ github.ref_name }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| versionCode | \`${{ steps.version.outputs.code }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| versionName | \`${{ steps.version.outputs.name }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          APK_SIZE=$(du -m frontend/next-storefront/public/CineCub.apk | cut -f1)
+          echo "| APK size | ${APK_SIZE} MB |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "frontend/next-storefront/public/ has been updated and pushed to \`main\`." >> "$GITHUB_STEP_SUMMARY"

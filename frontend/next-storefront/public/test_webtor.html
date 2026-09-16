@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineCub Torrent Stream Player Test</title>
+  <style>
+    body { margin: 0; background: #08080d; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+    #player-wrap { width: 90%; max-width: 960px; height: 540px; background: #0e0e17; border-radius: 14px; overflow: hidden; position: relative; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    #webtor-target { width: 100%; height: 100%; }
+    #webtor-target iframe { width: 100% !important; height: 100% !important; border: none; }
+    .info { margin-top: 15px; font-size: 14px; color: #aaa; }
+  </style>
+</head>
+<body>
+  <h2>CineCub Personal Watch: Torrent Player Test</h2>
+  <div id="player-wrap">
+    <div id="webtor-target"></div>
+  </div>
+  <div class="info" id="status-info">Initializing Webtor Torrent Engine...</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@webtor/embed-sdk-js/dist/index.min.js" charset="utf-8" async></script>
+  <script>
+    // Sintel open-source test magnet
+    const testMagnet = 'magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel';
+    window.webtor = window.webtor || [];
+    window.webtor.push({
+      id: 'webtor-target',
+      magnet: testMagnet,
+      width: '100%',
+      height: '100%',
+      header: false,
+      on: function(e) {
+        console.log('[Webtor Event]', e.name, e);
+        const el = document.getElementById('status-info');
+        if (el) el.innerText = 'Webtor Event: ' + e.name;
+      }
+    });
+  </script>
+</body>
+</html>

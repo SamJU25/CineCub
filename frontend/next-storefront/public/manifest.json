@@ -1,0 +1,74 @@
+{
+  "name": "CineCub - Watch Free Movies, Series & Anime",
+  "short_name": "CineCub",
+  "description": "Watch free movie online, free series online, and free anime online in HD quality with no registration.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "categories": ["entertainment", "movies", "video"],
+  "prefer_related_applications": true,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://cinecub.stream/CineCub.apk",
+      "id": "stream.cinecub.app"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/assets/images/favicon-48x48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/images/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/images/app-logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Trending Now",
+      "short_name": "Trending",
+      "description": "Browse today's trending movies and series",
+      "url": "/?page=browse&cat=trending",
+      "icons": [{ "src": "/assets/images/favicon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Movies",
+      "short_name": "Movies",
+      "description": "Watch free movies in Full HD",
+      "url": "/?page=browse&cat=movie",
+      "icons": [{ "src": "/assets/images/favicon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "TV Series",
+      "short_name": "Series",
+      "description": "Watch television series episodes",
+      "url": "/?page=browse&cat=tv",
+      "icons": [{ "src": "/assets/images/favicon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Anime",
+      "short_name": "Anime",
+      "description": "Watch subbed and dubbed anime series",
+      "url": "/?page=browse&cat=anime",
+      "icons": [{ "src": "/assets/images/favicon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

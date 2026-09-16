@@ -1,0 +1,53 @@
+# CineCub
+
+> CineCub is a modern, high-definition online streaming web application providing free access to over 1.2 million movies, television series, and anime titles in 1080p and 4K quality with multi-server playback, adaptive HLS/MP4 streams, and multi-language subtitles.
+
+- [Full LLM Specification](https://cinecub.stream/llms-full.txt): Complete platform architecture, API endpoints, schema structures, and genre taxonomy.
+
+## Core Information
+- **Official URL**: https://cinecub.stream
+- **Platform Type**: Streaming Media Web Application (Storefront + Edge API)
+- **Catalogue Size**: 1,200,000+ indexed titles powered by TMDB metadata
+- **Supported Media**: Feature Films, Television Series, Japanese Anime (Sub & Dub), Documentaries
+- **Playback Quality**: 4K UHD, 1080p Full HD, 720p HD with adaptive bitrate (ABR)
+- **Key Features**: Ad-free streaming engine, multi-server redundancy, resume playback, personal watchlist & history sync via Cloudflare D1, responsive mobile & desktop UI, PWA support.
+
+## URL Navigation Patterns
+- [Homepage](https://cinecub.stream/): Featured spotlight banner, trending rows, continue watching carousel.
+- [Movie Catalog](https://cinecub.stream/?page=browse&cat=movie): Filterable movie listings by genre, release year, rating, and sort order.
+- [TV Series Catalog](https://cinecub.stream/?page=browse&cat=tv): Full season television series and episode guides.
+- [Anime Catalog](https://cinecub.stream/?page=browse&cat=anime): Japanese animation with genre filtering (Shonen, Seinen, Isekai, Romance).
+- [Trending Content](https://cinecub.stream/?page=browse&cat=trending): Real-time daily trending titles across all formats.
+- [Top Rated](https://cinecub.stream/?page=browse&cat=toprated): Critically acclaimed movies and series of all time.
+- [Popular](https://cinecub.stream/?page=browse&cat=popular): Most-watched community titles.
+- [Upcoming](https://cinecub.stream/?page=browse&cat=upcoming): Future cinematic and television releases.
+- [Search System](https://cinecub.stream/?q={query}): Live multi-match title and cast query search.
+
+## Direct Detail & Player Deep Links
+- **Movie Detail**: `https://cinecub.stream/?detail={tmdb_id}&type=movie`
+  - Example: `https://cinecub.stream/?detail=550&type=movie` (Fight Club)
+- **TV Series Detail**: `https://cinecub.stream/?detail={tmdb_id}&type=tv`
+  - Example: `https://cinecub.stream/?detail=1399&type=tv` (Game of Thrones)
+- **TV Series Episode Direct Play**: `https://cinecub.stream/?detail={tmdb_id}&type=tv&season={s}&episode={e}`
+  - Example: `https://cinecub.stream/?detail=1399&type=tv&season=1&episode=1`
+
+## Genre Taxonomies
+- [Action](https://cinecub.stream/?page=browse&cat=movie&genre=28) (ID: 28)
+- [Adventure](https://cinecub.stream/?page=browse&cat=movie&genre=12) (ID: 12)
+- [Animation](https://cinecub.stream/?page=browse&cat=movie&genre=16) (ID: 16)
+- [Comedy](https://cinecub.stream/?page=browse&cat=movie&genre=35) (ID: 35)
+- [Crime](https://cinecub.stream/?page=browse&cat=movie&genre=80) (ID: 80)
+- [Documentary](https://cinecub.stream/?page=browse&cat=movie&genre=99) (ID: 99)
+- [Drama](https://cinecub.stream/?page=browse&cat=movie&genre=18) (ID: 18)
+- [Fantasy](https://cinecub.stream/?page=browse&cat=movie&genre=14) (ID: 14)
+- [Horror](https://cinecub.stream/?page=browse&cat=movie&genre=27) (ID: 27)
+- [Mystery](https://cinecub.stream/?page=browse&cat=movie&genre=9648) (ID: 9648)
+- [Romance](https://cinecub.stream/?page=browse&cat=movie&genre=10749) (ID: 10749)
+- [Sci-Fi](https://cinecub.stream/?page=browse&cat=movie&genre=878) (ID: 878)
+- [Thriller](https://cinecub.stream/?page=browse&cat=movie&genre=53) (ID: 53)
+
+## Technical Architecture
+- **Storefront**: Next.js 16 App Router on Cloudflare Workers (`cinecub-next`).
+- **Edge Backend**: TypeScript Workers (`cinecub-api-edge`) with KV cache and D1 database.
+- **Backend Stream Extractor**: Go 1.21+ API on Render (`https://steamheaven.onrender.com`).
+- **Data Governance & DMCA**: CineCub is a metadata index and does not host copyrighted media files on its servers. DMCA notices are handled through the built-in legal compliance modal.

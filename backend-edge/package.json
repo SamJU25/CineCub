@@ -1,0 +1,20 @@
+{
+  "name": "cinecub-edge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CineCub backend — event-driven Cloudflare Workers architecture (Queues + KV + R2)",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260902.1",
+    "typescript": "^5.6.2",
+    "wrangler": "^4.128.0"
+  },
+  "allowScripts": {
+    "@cloudflare/workers-types@5.20260902.1": true
+  }
+}

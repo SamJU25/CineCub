@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+Allow: /_next/static/
+Allow: /_next/image/
+Disallow: /api/
+Disallow: /m3u8-proxy
+Disallow: /ts-proxy
+Disallow: /profile
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /_next/
+
+# Explicitly allow AI Search Engines for discovery and citation
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+Sitemap: https://cinecub.stream/sitemap.xml
+Host: https://cinecub.stream

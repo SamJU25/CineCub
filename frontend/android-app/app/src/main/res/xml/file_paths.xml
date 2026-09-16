@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Only the specific folder used for downloaded APK updates is exposed -->
+    <external-files-path name="download_files" path="Download" />
+    <cache-path name="apk_cache" path="apk-updates" />
+</paths>

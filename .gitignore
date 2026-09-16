@@ -1,0 +1,72 @@
+node_modules/
+.DS_Store
+.env
+.dev.vars
+.wrangler/
+dist/
+build/
+StreamHeaven-API/
+/server/
+*firebase-adminsdk*.json
+serviceAccountKey.json
+credentials.json
+token.json
+.tmp/
+*.pdf
+
+# Render/backend local secrets & runtime config
+*.env
+SteamHeaven.env
+streamheaven-api.env
+CineCub.env
+cinecub*.env
+backend/.env
+backend/serviceAccountKey.json
+backend/utils/auth-users.json
+backend/utils/user-config.json
+backend/restart.trigger
+backend/tmp_context
+backend/providers/.cache
+backend/.cache/
+backend/**/.cache/
+
+# Cloudflare Workers & Next.js build runtime artifacts
+backend-edge/node_modules/
+backend-edge/.wrangler/
+backend-edge/.dev.vars
+backend-edge/dist/
+.next/
+.open-next/
+*.tsbuildinfo
+
+# Android build artifacts and local configs
+.gradle/
+**/android-app/.gradle/
+**/android-app/build/
+**/android-app/app/build/
+**/android-app/local.properties
+**/android-app/.idea/
+**/android-app/keystore.properties
+**/android-app/*.keystore
+**/android-app/*.jks
+*.iml
+
+.commandcode/
+
+# AI tool local configs (machine-specific, not source-controlled)
+# Skills live canonically in .agents/skills/
+.claude/
+.kiro/
+.kilo/
+opencode.json
+
+# Graphify knowledge graph (regenerable - run /graphify to rebuild)
+graphify-out/
+.graphify_*.json
+.graphify_*.txt
+.graphify_chunk_*.txt
+
+# Go build artifacts
+backend/bin/
+
+.playwright-mcp/

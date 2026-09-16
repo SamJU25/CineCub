@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: streamheaven-server
+    runtime: go
+    plan: free
+    healthCheckPath: /api/health
+    buildCommand: go build -o server ./cmd/server
+    startCommand: ./server
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: APP_URL
+        value: https://cinecub.stream
+      - key: TMDB_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ENABLE_PROXY
+        value: "true"

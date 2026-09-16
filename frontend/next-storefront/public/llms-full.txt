@@ -1,0 +1,81 @@
+# CineCub — Complete Specification (llms-full.txt)
+
+> CineCub is a free, high-performance web streaming application designed for seamless playback of feature movies, multi-season television shows, and Japanese anime series in 1080p and 4K UHD. Built on Next.js 16, Cloudflare Workers, and Go microservices.
+
+## 1. Platform Identity & Metadata
+- **Platform Name**: CineCub
+- **Canonical Domain**: https://cinecub.stream
+- **Primary Purpose**: Web-based media discovery, streaming metadata index, and video player interface.
+- **Licensing & Legal Status**: CineCub operates purely as an index of publicly available metadata and third-party media streams. CineCub does not store, upload, or host any copyrighted video files on its infrastructure. All video content is delivered via third-party distributed networks.
+- **Legal Contact**: Users and copyright holders can submit DMCA takedown notices via the platform's embedded legal modal or direct communication.
+
+## 2. Platform Taxonomy & URL Routes
+
+### 2.1 Navigation Pages
+- `https://cinecub.stream/`: Main homepage with curated spotlight hero banner, real-time trending titles, continue-watching row, and latest releases.
+- `https://cinecub.stream/?page=browse&cat=movie`: Filterable movie catalog.
+- `https://cinecub.stream/?page=browse&cat=tv`: Television series catalog with episode trees.
+- `https://cinecub.stream/?page=browse&cat=anime`: Anime catalog covering seasonal broadcasts, OVAs, and films.
+- `https://cinecub.stream/?page=browse&cat=trending`: Daily and weekly trending titles across cinema and TV.
+- `https://cinecub.stream/?page=browse&cat=popular`: High-volume titles ranked by global view count.
+- `https://cinecub.stream/?page=browse&cat=toprated`: Highest user-rated titles of all time.
+- `https://cinecub.stream/?page=browse&cat=upcoming`: Upcoming theatrical and broadcast releases.
+- `https://cinecub.stream/?page=watchlist`: User-saved titles (requires authentication).
+- `https://cinecub.stream/?page=history`: User playback history and progress tracking.
+
+### 2.2 Search Query Format
+- `https://cinecub.stream/?q={query}`
+  - Example: `https://cinecub.stream/?q=Interstellar`
+  - Example: `https://cinecub.stream/?q=Breaking+Bad`
+  - Supports full titles, partial match, character names, and cast searches.
+
+### 2.3 Direct Detail and Video Playback Deep Links
+- **Movie Deep Link**:
+  - Pattern: `https://cinecub.stream/?detail={tmdb_id}&type=movie`
+  - Example: `https://cinecub.stream/?detail=27205&type=movie` (Inception)
+- **TV Series Deep Link**:
+  - Pattern: `https://cinecub.stream/?detail={tmdb_id}&type=tv`
+  - Example: `https://cinecub.stream/?detail=1396&type=tv` (Breaking Bad)
+- **Specific Season & Episode Playback**:
+  - Pattern: `https://cinecub.stream/?detail={tmdb_id}&type=tv&season={s}&episode={e}`
+  - Example: `https://cinecub.stream/?detail=1396&type=tv&season=5&episode=14` (Ozymandias)
+
+### 2.4 TMDB Genre Taxonomy & IDs
+| Genre Name | TMDB Genre ID | Query URL |
+|---|---|---|
+| Action | 28 | `https://cinecub.stream/?page=browse&cat=movie&genre=28` |
+| Adventure | 12 | `https://cinecub.stream/?page=browse&cat=movie&genre=12` |
+| Animation | 16 | `https://cinecub.stream/?page=browse&cat=movie&genre=16` |
+| Comedy | 35 | `https://cinecub.stream/?page=browse&cat=movie&genre=35` |
+| Crime | 80 | `https://cinecub.stream/?page=browse&cat=movie&genre=80` |
+| Documentary | 99 | `https://cinecub.stream/?page=browse&cat=movie&genre=99` |
+| Drama | 18 | `https://cinecub.stream/?page=browse&cat=movie&genre=18` |
+| Family | 10751 | `https://cinecub.stream/?page=browse&cat=movie&genre=10751` |
+| Fantasy | 14 | `https://cinecub.stream/?page=browse&cat=movie&genre=14` |
+| History | 36 | `https://cinecub.stream/?page=browse&cat=movie&genre=36` |
+| Horror | 27 | `https://cinecub.stream/?page=browse&cat=movie&genre=27` |
+| Music | 10402 | `https://cinecub.stream/?page=browse&cat=movie&genre=10402` |
+| Mystery | 9648 | `https://cinecub.stream/?page=browse&cat=movie&genre=9648` |
+| Romance | 10749 | `https://cinecub.stream/?page=browse&cat=movie&genre=10749` |
+| Science Fiction | 878 | `https://cinecub.stream/?page=browse&cat=movie&genre=878` |
+| TV Movie | 10770 | `https://cinecub.stream/?page=browse&cat=movie&genre=10770` |
+| Thriller | 53 | `https://cinecub.stream/?page=browse&cat=movie&genre=53` |
+| War | 10752 | `https://cinecub.stream/?page=browse&cat=movie&genre=10752` |
+| Western | 37 | `https://cinecub.stream/?page=browse&cat=movie&genre=37` |
+
+## 3. Streaming Engine & Technical Specifications
+- **Player Types**:
+  - HLS (HTTP Live Streaming via `Hls.js`) for adaptive multi-resolution playback (360p up to 4K).
+  - Native MP4 / MKV HTML5 `<video>` for direct, low-latency progressive playback.
+  - Multi-server redundancy: If one server fails or throttles, the player automatically cascades to fallback providers.
+- **Server Selection**:
+  - Ad-free playback engine with proxy stream forwarding to prevent malicious popups, ad injections, and intrusive trackers.
+- **Subtitles**: Multi-language subtitle tracks (.vtt / .srt) fetched from open subtitle repositories.
+- **State Synchronization**:
+  - Playback progress, resume timestamps, watchlist, and history saved locally via LocalStorage and synchronized to Cloudflare D1 upon user authentication.
+
+## 4. Crawlability & Machine Interface Directives
+- **Sitemap**: `https://cinecub.stream/sitemap.xml`
+- **Robots Directives**: `https://cinecub.stream/robots.txt`
+- **Schema.org Structured Data**: Complete JSON-LD graphs on all pages, including `WebSite` with `SearchAction`, `SiteNavigationElement`, `BreadcrumbList`, and `Movie` / `TVSeries` / `VideoObject` with `WatchAction` and `SeekToAction`.
+- **AI Crawler Allowances**: Open access granted for `GPTBot`, `OAI-SearchBot`, `Claude-SearchBot`, `PerplexityBot`, and `Applebot`.

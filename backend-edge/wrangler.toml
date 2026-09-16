@@ -1,0 +1,13 @@
+name = "streamheaven-edge"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+# Keep-alive cron trigger disabled while Render service is offline
+# [triggers]
+# crons = ["*/10 * * * *"]
+
+[vars]
+APP_URL = "https://cinecub.stream"
+RENDER_BASE_URL = "https://steamheaven.onrender.com"
