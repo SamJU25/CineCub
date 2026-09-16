@@ -62,7 +62,18 @@ export default function WatchlistPage() {
             const posterSrc = IMG.poster(item.poster || item.poster_path, "w342") || IMG.placeholder();
 
             return (
-              <div key={`${item.id}-${item.type}`} className="poster-card" onClick={() => openDetail(item.id, mediaType)}>
+              <div
+                key={`${item.id}-${item.type}`}
+                className="poster-card"
+                onClick={(e) => {
+                  if ((e.target as HTMLElement).closest(".pc-wl-btn")) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                  }
+                  openDetail(item.id, mediaType);
+                }}
+              >
                 <div className="poster-card-img-wrap">
                   <img
                     className="poster-card-img"
@@ -82,12 +93,16 @@ export default function WatchlistPage() {
                     ) : null}
                   </div>
                   <button
+                    type="button"
                     className="pc-wl-btn in-list"
                     onClick={(e) => {
+                      e.preventDefault();
                       e.stopPropagation();
                       removeFromWatchlist(item.id);
                       showToast(`Removed "${item.title || item.name}" from watchlist`, "info");
                     }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
                     title="Remove from watchlist"
                     aria-label="Remove from watchlist"
                   >

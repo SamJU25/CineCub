@@ -911,7 +911,13 @@ function SpotlightCarousel({ items }: { items: MediaItem[] }) {
                   <button
                     type="button"
                     className={`btn-cinejoy-icon${inWl ? " in-watchlist" : ""}`}
-                    onClick={() => toggleWl(item)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleWl(item);
+                    }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
                     title={inWl ? "Remove from Watchlist" : "Add to Watchlist"}
                     aria-label="Toggle Watchlist"
                   >

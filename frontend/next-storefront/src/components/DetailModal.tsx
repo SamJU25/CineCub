@@ -152,7 +152,14 @@ export default function DetailModal() {
         key={`${item.id}-${customSubtitle || itemTitle}`}
         className="poster-card"
         style={{ width, flexShrink: 0, cursor: "pointer" }}
-        onClick={() => navigateTo(item.id, itemMediaType)}
+        onClick={(e) => {
+          if ((e.target as HTMLElement).closest(".pc-wl-btn")) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+          navigateTo(item.id, itemMediaType);
+        }}
       >
         <div className="poster-card-img-wrap">
           <img
@@ -175,8 +182,10 @@ export default function DetailModal() {
             ) : null}
           </div>
           <button
+            type="button"
             className={`pc-wl-btn${inWl ? " in-list" : ""}`}
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               if (inWl) {
                 removeFromWatchlist(item.id);
@@ -199,6 +208,8 @@ export default function DetailModal() {
                 showToast(`Added "${itemTitle}" to watchlist`, "success");
               }
             }}
+            onMouseDown={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
             title={inWl ? "Remove from watchlist" : "Add to watchlist"}
             aria-label={inWl ? "Remove from watchlist" : "Add to watchlist"}
           >

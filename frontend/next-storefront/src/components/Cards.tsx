@@ -29,6 +29,7 @@ export const PosterCard = memo(function PosterCard({ item, type }: { item: Media
   const rating = item.vote_average ? item.vote_average.toFixed(1) : "";
 
   function toggleWl(e: React.MouseEvent) {
+    e.preventDefault();
     e.stopPropagation();
     if (inWl) {
       removeFromWatchlist(item.id);
@@ -67,6 +68,11 @@ export const PosterCard = memo(function PosterCard({ item, type }: { item: Media
       href={`/?id=${item.id}&type=${mediaType}`}
       className="poster-card"
       onClick={(e) => {
+        if ((e.target as HTMLElement).closest(".pc-wl-btn")) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
         e.preventDefault();
         openDetail(item.id, mediaType);
@@ -102,6 +108,8 @@ export const PosterCard = memo(function PosterCard({ item, type }: { item: Media
           type="button"
           className={`pc-wl-btn${inWl ? " in-list" : ""}`}
           onClick={toggleWl}
+          onMouseDown={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
           title={inWl ? "Remove from watchlist" : "Add to watchlist"}
           aria-label={inWl ? "Remove from watchlist" : "Add to watchlist"}
         >
@@ -144,6 +152,7 @@ export const CinematicTrailerCard = memo(function CinematicTrailerCard({ item, t
   const rating = item.vote_average ? item.vote_average.toFixed(1) : "";
 
   function toggleWl(e: React.MouseEvent) {
+    e.preventDefault();
     e.stopPropagation();
     if (inWl) {
       removeFromWatchlist(item.id);
@@ -303,6 +312,11 @@ export const CinematicTrailerCard = memo(function CinematicTrailerCard({ item, t
       href={`/?id=${item.id}&type=${mediaType}`}
       className={`cinematic-trailer-card${isPlaying ? " active" : ""}`}
       onClick={(e) => {
+        if ((e.target as HTMLElement).closest(".ctc-wl-btn")) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
         e.preventDefault();
         openDetail(item.id, mediaType);
@@ -419,6 +433,8 @@ export const CinematicTrailerCard = memo(function CinematicTrailerCard({ item, t
           type="button"
           className={`ctc-wl-btn${inWl ? " in-list" : ""}`}
           onClick={toggleWl}
+          onMouseDown={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
           title={inWl ? "Remove from watchlist" : "Add to watchlist"}
           aria-label={inWl ? "Remove from watchlist" : "Add to watchlist"}
         >
@@ -510,6 +526,7 @@ export const Top10Card = memo(function Top10Card({ item, rank }: { item: MediaIt
   const rating = item.vote_average ? item.vote_average.toFixed(1) : "";
 
   function toggleWl(e: React.MouseEvent) {
+    e.preventDefault();
     e.stopPropagation();
     if (inWl) {
       removeFromWatchlist(item.id);
@@ -557,6 +574,11 @@ export const Top10Card = memo(function Top10Card({ item, rank }: { item: MediaIt
       href={`/?id=${item.id}&type=${mediaType}`}
       className={`poster-card top10-poster-card top10-podium-${rank}`}
       onClick={(e) => {
+        if ((e.target as HTMLElement).closest(".pc-wl-btn")) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
         e.preventDefault();
         openDetail(item.id, mediaType);
@@ -596,6 +618,8 @@ export const Top10Card = memo(function Top10Card({ item, rank }: { item: MediaIt
           type="button"
           className={`pc-wl-btn${inWl ? " in-list" : ""}`}
           onClick={toggleWl}
+          onMouseDown={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
           title={inWl ? "Remove from watchlist" : "Add to watchlist"}
           aria-label={inWl ? "Remove from watchlist" : "Add to watchlist"}
         >
