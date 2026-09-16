@@ -61,13 +61,41 @@ def build():
     bg_mask = np.isin(labels, list(border_labels))
 
     # 2. Signed distance transform for antialiasing & defringing
+    # The source artwork contains a 3.5px white sticker halo around the characters.
+    # Contracting by 3.5px strips the white border completely, landing squarely
+    # on the crisp dark brown outline with smooth 1.2px antialiasing.
     dist_out = ndimage.distance_transform_edt(bg_mask)
     dist_in = ndimage.distance_transform_edt(~bg_mask)
     signed_dist = dist_in - dist_out
-    smooth_alpha = np.clip((signed_dist - 0.7) / 1.0, 0.0, 1.0) * 255.0
+    smooth_alpha = np.clip((signed_dist - 3.5) / 1.2, 0.0, 1.0) * 255.0
 
     rgba = np.dstack([arr.astype(np.uint8), smooth_alpha.astype(np.uint8)])
     full_im = Image.fromarray(rgba, "RGBA")
+
+    def clean_cell(cell_img, min_accessory_size=1000):
+        """Erase stray neighboring fragments touching edges while keeping main body & symbols."""
+        a = np.array(cell_img)
+        opaque = a[..., 3] > 40
+        labels, count = ndimage.label(opaque)
+        if count <= 1:
+            return cell_img
+        sizes = ndimage.sum(opaque, labels, range(1, count + 1))
+        main_label = int(np.argmax(sizes)) + 1
+        
+        # Identify components that touch cell borders (bleeds from adjacent cells)
+        border_labels = set(np.unique(np.concatenate([
+            labels[:2, :].ravel(), labels[-2:, :].ravel(),
+            labels[:, :2].ravel(), labels[:, -2:].ravel()
+        ]))) - {0, main_label}
+
+        keep = [main_label]
+        for idx, s in enumerate(sizes):
+            lbl_id = idx + 1
+            if lbl_id != main_label and lbl_id not in border_labels and s > min_accessory_size:
+                keep.append(lbl_id)
+        
+        a[~np.isin(labels, keep), 3] = 0
+        return Image.fromarray(a, "RGBA")
 
     # 3. Extract 9 Directions (Columns 0, 1, 2)
     print("Processing 9 direction cells...")
@@ -76,24 +104,9 @@ def build():
         for c in range(3):
             x0, x1 = X_SPLITS[c], X_SPLITS[c + 1]
             y0, y1 = Y_SPLITS[r], Y_SPLITS[r + 1]
-            cell = full_im.crop((x0, y0, x1, y1))
+            cell = clean_cell(full_im.crop((x0, y0, x1, y1)), min_accessory_size=1000)
 
-            # Filter out tiny stray specks < 1000 px
             a = np.array(cell)[..., 3]
-            opaque = a > 50
-            lbl, cnt = ndimage.label(opaque)
-            if cnt > 1:
-                sizes = ndimage.sum(opaque, lbl, range(1, cnt + 1))
-                main_label = int(np.argmax(sizes)) + 1
-                keep = [main_label]
-                for idx, s in enumerate(sizes):
-                    if s > 1000:
-                        keep.append(idx + 1)
-                cell_arr = np.array(cell)
-                cell_arr[~np.isin(lbl, keep), 3] = 0
-                cell = Image.fromarray(cell_arr, "RGBA")
-                a = cell_arr[..., 3]
-
             ys, xs = np.where(a > 50)
             content = cell.crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
 
@@ -114,23 +127,9 @@ def build():
         for c in range(3, 6):
             x0, x1 = X_SPLITS[c], X_SPLITS[c + 1]
             y0, y1 = Y_SPLITS[r], Y_SPLITS[r + 1]
-            cell = full_im.crop((x0, y0, x1, y1))
+            cell = clean_cell(full_im.crop((x0, y0, x1, y1)), min_accessory_size=600)
 
             a = np.array(cell)[..., 3]
-            opaque = a > 50
-            lbl, cnt = ndimage.label(opaque)
-            if cnt > 1:
-                sizes = ndimage.sum(opaque, lbl, range(1, cnt + 1))
-                main_label = int(np.argmax(sizes)) + 1
-                keep = [main_label]
-                for idx, s in enumerate(sizes):
-                    if s > 800:  # Preserves heart, stars, and zzz
-                        keep.append(idx + 1)
-                cell_arr = np.array(cell)
-                cell_arr[~np.isin(lbl, keep), 3] = 0
-                cell = Image.fromarray(cell_arr, "RGBA")
-                a = cell_arr[..., 3]
-
             lbl_clean, cnt_clean = ndimage.label(a > 50)
             sizes_clean = ndimage.sum(a > 50, lbl_clean, range(1, cnt_clean + 1))
             main_idx = int(np.argmax(sizes_clean)) + 1
