@@ -305,13 +305,18 @@ function SyncedToggle({
       indicator.style.left = cs.left;
       indicator.style.width = cs.width;
       indicator.getAnimations().forEach((a) => a.cancel());
-      indicator.animate(
+      const anim = indicator.animate(
         [
           { left: `${fromLeft}px`, width: `${fromWidth}px` },
           { left: `${targetLeft}px`, width: `${targetWidth}px` },
         ],
-        { duration: 260, easing: "cubic-bezier(.16, 1, .3, 1)", fill: "forwards" }
+        { duration: 240, easing: "cubic-bezier(.16, 1, .3, 1)", fill: "forwards" }
       );
+      anim.onfinish = () => {
+        indicator.style.left = `${targetLeft}px`;
+        indicator.style.width = `${targetWidth}px`;
+        try { anim.cancel(); } catch {}
+      };
       return;
     }
 
@@ -339,8 +344,15 @@ function SyncedToggle({
     if (document.fonts?.ready) {
       document.fonts.ready.then(() => syncRef.current(false));
     }
+    const ro = typeof ResizeObserver !== "undefined" && containerRef.current
+      ? new ResizeObserver(() => syncRef.current(false))
+      : null;
+    if (ro && containerRef.current) {
+      ro.observe(containerRef.current);
+    }
     return () => {
       window.removeEventListener("resize", handleResize);
+      ro?.disconnect();
     };
   }, []);
 
@@ -1075,6 +1087,7 @@ export default function HomePage() {
   const [popular, setPopular] = useState<MediaItem[]>([]);
   const [popularPage, setPopularPage] = useState(2);
   const [popularHasMore, setPopularHasMore] = useState(true);
+  const [popularLoading, setPopularLoading] = useState(false);
   const [popularLoadingMore, setPopularLoadingMore] = useState(false);
   const popularFetchingRef = useRef(false);
 
@@ -1271,6 +1284,7 @@ export default function HomePage() {
     popularFetchingRef.current = false;
     setPopularPage(2);
     setPopularHasMore(true);
+    setPopularLoading(true);
 
     Promise.all([
       getPopularFetch(popularFilter, 1),
@@ -1291,7 +1305,11 @@ export default function HomePage() {
         }
       }
       setPopular(results);
-    }).catch(console.error);
+      setPopularLoading(false);
+    }).catch((err) => {
+      console.error(err);
+      if (!cancelled) setPopularLoading(false);
+    });
 
     return () => { cancelled = true; };
   }, [popularFilter]);
@@ -1813,7 +1831,12 @@ export default function HomePage() {
           <HScrollWrapper
             id="row-popular"
             scrollRef={popularScrollRef}
-            style={{ minHeight: 280, marginBottom: 10 }}
+            style={{
+              minHeight: 280,
+              marginBottom: 10,
+              opacity: popularLoading ? 0.55 : 1,
+              transition: "opacity 0.22s ease",
+            }}
             onLoadMore={loadMorePopular}
             hasMore={popularHasMore}
             isLoadingMore={popularLoadingMore}

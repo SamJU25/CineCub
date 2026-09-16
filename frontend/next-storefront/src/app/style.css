@@ -2754,13 +2754,32 @@ iframe {
     order: 1;
   }
 
-  .section-header.trending-header .trending-toggle,
+  .section-header.trending-header .trending-toggle {
+    flex-basis: 100%;
+    order: 2;
+    min-width: 0;
+    max-width: 100%;
+    margin-top: 4px;
+  }
+
   .section-header.popular-header .popular-toggle {
     flex-basis: 100%;
     order: 2;
     min-width: 0;
     max-width: 100%;
     margin-top: 4px;
+    width: 100%;
+    display: flex;
+  }
+
+  .section-header.popular-header .popular-toggle .bgt-btn {
+    flex: 1 1 0px !important;
+    min-width: max-content;
+    padding: 0 10px;
+    text-align: center;
+    justify-content: center;
+    font-size: 11px;
+    letter-spacing: 0.2px;
   }
 
   .cinejoy-hero-mute-btn {
@@ -7888,9 +7907,19 @@ a.telegram-nav-item {
     flex: 1;
   }
 
+  .popular-header .popular-toggle {
+    width: 100%;
+    display: flex;
+  }
+
   .popular-toggle .bgt-btn {
-    padding: 0 14px;
-    flex: none !important;
+    flex: 1 1 0px !important;
+    min-width: max-content;
+    padding: 0 10px;
+    text-align: center;
+    justify-content: center;
+    font-size: 11px;
+    letter-spacing: 0.2px;
   }
 
   .spotlight-section {
