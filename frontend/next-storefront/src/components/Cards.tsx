@@ -86,6 +86,9 @@ export const PosterCard = memo(function PosterCard({ item, type }: { item: Media
         />
 
         <div className="poster-card-grad" />
+        <div className="pc-hover-play" aria-hidden="true">
+          <i className="fas fa-play" />
+        </div>
         <div className="poster-card-top">
           {badge}
           {rating ? (
@@ -561,6 +564,9 @@ export const Top10Card = memo(function Top10Card({ item, rank }: { item: MediaIt
       title={`#${rank} in Top 10 Today: ${title}${year ? ` (${year})` : ""}`}
     >
       <div className="poster-card-img-wrap">
+        <span className={`top10-giant-rank rank-${rank}`} aria-hidden="true">
+          {rank}
+        </span>
         <img
           className="poster-card-img"
           src={IMG.poster(item.poster_path) || IMG.placeholder()}
@@ -572,6 +578,9 @@ export const Top10Card = memo(function Top10Card({ item, rank }: { item: MediaIt
           }}
         />
         <div className="poster-card-grad" />
+        <div className="pc-hover-play" aria-hidden="true">
+          <i className="fas fa-play" />
+        </div>
 
         <div className="poster-card-top">
           {rankBadge}

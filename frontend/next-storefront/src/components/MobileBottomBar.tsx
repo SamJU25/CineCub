@@ -25,7 +25,7 @@ export default function MobileBottomBar() {
   const active = currentId();
 
   return (
-    <nav className="mobile-bottom-bar">
+    <nav className="mobile-bottom-bar" aria-label="Mobile Navigation">
       {TABS.map((tab) => {
         const isAct = tab.category ? active === tab.category : active === tab.id;
         return (
@@ -34,12 +34,21 @@ export default function MobileBottomBar() {
             className={`mbb-btn${isAct ? " active" : ""}`}
             id={`mbb-${tab.id}`}
             onClick={() => {
+              try {
+                if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+                  navigator.vibrate(10);
+                }
+              } catch {}
               closeDetail();
               if (tab.category) setBrowseCategory(tab.category);
               setActivePage(tab.page);
             }}
+            aria-current={isAct ? "page" : undefined}
           >
-            <i className={tab.icon} />
+            <div className="mbb-icon-wrap">
+              <i className={tab.icon} />
+              {isAct && <span className="mbb-active-dot" aria-hidden="true" />}
+            </div>
             <span>{tab.label}</span>
           </button>
         );
