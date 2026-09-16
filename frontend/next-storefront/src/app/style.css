@@ -2071,7 +2071,20 @@ iframe {
 
 .tr-label i {
   color: #c77dff;
-  animation: pulseGlow 2.5s infinite;
+  display: inline-block;
+  font-size: 11.5px;
+  animation: boltNeonGlow 2.4s ease-in-out infinite;
+}
+
+@keyframes boltNeonGlow {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 3px rgba(199, 125, 255, 0.55));
+  }
+  50% {
+    transform: scale(1.14);
+    filter: drop-shadow(0 0 7px #c77dff) drop-shadow(0 0 14px rgba(157, 78, 221, 0.75));
+  }
 }
 
 .tr-scroll-wrap {
