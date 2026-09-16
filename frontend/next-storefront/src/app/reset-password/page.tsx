@@ -4,6 +4,7 @@ import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useStore } from "@/lib/store";
+import { BrandLogo } from "@/components/BrandLogo";
 
 function getPasswordStrength(pass: string): { score: number; label: string; color: string } {
   if (!pass) return { score: 0, label: "", color: "#334155" };
@@ -159,12 +160,8 @@ function ResetPasswordForm() {
         }}
       >
         <div style={{ textAlign: "center", marginBottom: "28px" }}>
-          <Link href="/" style={{ display: "inline-block", marginBottom: "16px" }}>
-            <img
-              src="/assets/images/web-logo.png"
-              alt="CineCub"
-              style={{ height: "40px", width: "auto", objectFit: "contain" }}
-            />
+          <Link href="/" style={{ display: "inline-flex", justifyContent: "center", textDecoration: "none", marginBottom: "16px" }}>
+            <BrandLogo mascotSize={64} className="auth-brand-lockup" />
           </Link>
           <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#f8fafc", margin: "0 0 8px" }}>
             Reset Your Password

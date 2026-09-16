@@ -3,6 +3,7 @@
 import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { BrandLogo } from "@/components/BrandLogo";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -72,12 +73,8 @@ function VerifyEmailContent() {
           boxShadow: "0 20px 50px rgba(0, 0, 0, 0.6)",
         }}
       >
-        <Link href="/" style={{ display: "inline-block", marginBottom: "24px" }}>
-          <img
-            src="/assets/images/web-logo.png"
-            alt="CineCub"
-            style={{ height: "40px", width: "auto", objectFit: "contain" }}
-          />
+        <Link href="/" style={{ display: "inline-flex", justifyContent: "center", textDecoration: "none", marginBottom: "20px" }}>
+          <BrandLogo mascotSize={64} className="auth-brand-lockup" />
         </Link>
 
         {loading ? (

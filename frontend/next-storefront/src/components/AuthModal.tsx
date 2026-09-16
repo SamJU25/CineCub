@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useStore } from "@/lib/store";
 import { showToast } from "@/components/Toast";
+import { BrandLogo } from "@/components/BrandLogo";
 
 type AuthView = "login" | "signup" | "forgot";
 
@@ -264,8 +265,8 @@ export default function AuthModal() {
         {/* LOGIN VIEW */}
         {view === "login" && (
           <div>
-            <div className="auth-header" style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", marginBottom: "20px" }}>
-              <img src="/assets/images/web-logo.png" alt="CineCub" style={{ height: "46px", width: "auto", objectFit: "contain", margin: "0 auto", display: "block" }} className="auth-logo-img" />
+            <div className="auth-header" style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", marginBottom: "16px" }}>
+              <BrandLogo mascotSize={64} className="auth-brand-lockup" />
             </div>
             <div className="auth-subtitle">WELCOME BACK</div>
             <h2 className="auth-heading">Sign in</h2>
@@ -325,8 +326,8 @@ export default function AuthModal() {
         {/* SIGNUP VIEW */}
         {view === "signup" && (
           <div>
-            <div className="auth-header" style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", marginBottom: "20px" }}>
-              <img src="/assets/images/web-logo.png" alt="CineCub" style={{ height: "46px", width: "auto", objectFit: "contain", margin: "0 auto", display: "block" }} className="auth-logo-img" />
+            <div className="auth-header" style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", marginBottom: "16px" }}>
+              <BrandLogo mascotSize={64} className="auth-brand-lockup" />
             </div>
             <div className="auth-subtitle">CREATE ACCOUNT</div>
             <h2 className="auth-heading">Join CineCub</h2>
@@ -457,8 +458,8 @@ export default function AuthModal() {
           <div>
             {!forgotSent ? (
               <div>
-                <div className="auth-header" style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", marginBottom: "20px" }}>
-                  <img src="/assets/images/web-logo.png" alt="CineCub" style={{ height: "46px", width: "auto", objectFit: "contain", margin: "0 auto", display: "block" }} className="auth-logo-img" />
+                <div className="auth-header" style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", marginBottom: "16px" }}>
+                  <BrandLogo mascotSize={64} className="auth-brand-lockup" />
                 </div>
                 <div className="auth-subtitle">RECOVERY</div>
                 <h2 className="auth-heading">Reset Password</h2>
@@ -497,7 +498,7 @@ export default function AuthModal() {
             ) : (
               <div className="auth-sent-container">
                 <div className="auth-header" style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", marginBottom: "16px" }}>
-                  <img src="/assets/images/web-logo.png" alt="CineCub" style={{ height: "44px", width: "auto", objectFit: "contain", margin: "0 auto", display: "block" }} className="auth-logo-img" />
+                  <BrandLogo mascotSize={56} className="auth-brand-lockup" />
                 </div>
                 <div className="auth-sent-icon-wrap">
                   <svg className="main-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>

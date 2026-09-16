@@ -8749,6 +8749,34 @@ body:has(.auth-modal) .mobile-bottom-bar {
   object-fit: contain;
 }
 
+.auth-brand-lockup {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  margin: 0 auto;
+}
+
+.auth-brand-lockup .header-mascot-top {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-brand-lockup .header-brand-text {
+  display: block !important;
+  font-family: var(--font-brand), var(--font-jakarta), sans-serif;
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.5px !important;
+  text-align: center;
+}
+
+.auth-brand-lockup .mobile-brand-logo {
+  display: none !important;
+}
+
 .auth-logo {
   background: var(--grad-primary);
   color: #fff;
