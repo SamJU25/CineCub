@@ -84,7 +84,7 @@ Routes (`wrangler.jsonc`): `cinecub.stream/*` and `www.cinecub.stream/*` on zone
 **Stack:** TypeScript + Cloudflare Workers (event-driven: Queues + KV + R2), Wrangler.
 
 **Deployment:** `npm run deploy` (from `backend-edge/`).
-Route: `https://streamheaven-edge.sampadchakma22.workers.dev` (`workers_dev = true`).
+Route: `https://cinecub.sampadchakma22.workers.dev` (`workers_dev = true`).
 
 **Key config (`wrangler.toml`):**
 | Key | Value | Purpose |
@@ -208,7 +208,7 @@ Key insight validated: this proxy is **not magic**. It fixes CORS/Range/headers 
 | Layer | Dir | Deploy command | Live URL |
 |---|---|---|---|
 | Storefront | `frontend/next-storefront/` | `npm run deploy` | `https://cinecub.stream` |
-| Edge Worker | `backend-edge/` | `npm run deploy` | `https://streamheaven-edge.sampadchakma22.workers.dev` |
+| Edge Worker | `backend-edge/` | `npm run deploy` | `https://cinecub.sampadchakma22.workers.dev` |
 | Render backend | `backend/` | push to GitHub `main` (auto-deploy) | `https://steamheaven.onrender.com` |
 
-Git remote: `https://github.com/SamJU25/SteamHeaven.git` (branch `main`).
+Git remote: `https://github.com/SamJU25/CineCub.git` (branch `main`).

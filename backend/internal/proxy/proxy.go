@@ -269,6 +269,7 @@ func isAuthorizedOrigin(r *http.Request) bool {
 		"www.cinecub.stream",
 		"streamheaven.online",
 		"steamheaven.onrender.com",
+		"cinecub.sampadchakma22.workers.dev",
 		"streamheaven-edge.sampadchakma22.workers.dev",
 		"localhost",
 		"127.0.0.1",
