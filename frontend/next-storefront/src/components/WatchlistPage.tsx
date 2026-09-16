@@ -22,6 +22,7 @@ export default function WatchlistPage() {
         <div className="browse-header" style={{ marginBottom: "20px" }}>
           <div className="browse-title-group">
             <div className="browse-breadcrumbs">CineCub &rsaquo; <span>My Watchlist</span></div>
+            <div className="section-header-kicker">SAVED TITLES</div>
             <h1 className="section-title" style={{ margin: 0, fontSize: "26px", fontWeight: 900 }}>My Watchlist</h1>
           </div>
         </div>

@@ -307,6 +307,7 @@ export default function BrowsePage() {
                 CineCub
               </Link> &rsaquo; <span id="browse-breadcrumb-title">{title}</span>
             </nav>
+            <div className="section-header-kicker">EXPLORE LIBRARY</div>
             <h1 className="section-title" id="browse-title">{title}</h1>
           </div>
           <div className="browse-filters-wrap">

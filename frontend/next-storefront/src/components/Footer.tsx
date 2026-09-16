@@ -23,6 +23,10 @@ export default function Footer() {
                 <i className="fas fa-download" /> Get App
               </button>
             </div>
+            <div className="footer-status-pill">
+              <span className="footer-status-dot" aria-hidden="true" />
+              <span>Streaming Clusters Operational</span>
+            </div>
           </div>
 
           <div>

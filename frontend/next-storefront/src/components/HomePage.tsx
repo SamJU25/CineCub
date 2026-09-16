@@ -998,8 +998,8 @@ function SpotlightCarousel({ items }: { items: MediaItem[] }) {
   );
 }
 
-function SectionRow({ id, title, subtitle, icon, iconBg, iconColor, items, type, children, viewAll, onLoadMore, hasMore, isLoadingMore }: {
-  id?: string; title: string; subtitle?: string; icon?: string; iconBg?: string; iconColor?: string;
+function SectionRow({ id, kicker, title, subtitle, icon, iconBg, iconColor, items, type, children, viewAll, onLoadMore, hasMore, isLoadingMore }: {
+  id?: string; kicker?: string; title: string; subtitle?: string; icon?: string; iconBg?: string; iconColor?: string;
   items: MediaItem[]; type?: string; children?: React.ReactNode; viewAll?: () => void;
   onLoadMore?: () => void; hasMore?: boolean; isLoadingMore?: boolean;
 }) {
@@ -1013,6 +1013,7 @@ function SectionRow({ id, title, subtitle, icon, iconBg, iconColor, items, type,
             <i className={`fas ${icon}`} />
           </div>
           <div>
+            {kicker && <div className="section-header-kicker">{kicker}</div>}
             <h2 className="section-title">{title}</h2>
             {subtitle && <div className="section-subtitle">{subtitle}</div>}
           </div>
@@ -1620,6 +1621,7 @@ export default function HomePage() {
                 <i className="fas fa-play" />
               </div>
               <div>
+                <div className="section-header-kicker">RESUME</div>
                 <h2 className="section-title">Continue Watching</h2>
                 <div className="section-subtitle">Jump back into your recent titles</div>
               </div>
@@ -1649,6 +1651,7 @@ export default function HomePage() {
                 <i className="fas fa-film" />
               </div>
               <div>
+                <div className="section-header-kicker">PREVIEWS</div>
                 <h2 className="section-title">Featured Cinematic Trailers</h2>
                 <div className="section-subtitle">Auto-playing trailers and blockbuster previews</div>
               </div>
@@ -1676,6 +1679,7 @@ export default function HomePage() {
                 <i className="fas fa-layer-group" />
               </div>
               <div>
+                <div className="section-header-kicker">CATALOGUE</div>
                 <h2 className="section-title">Explore by Genre</h2>
                 <div className="section-subtitle">Find movies and shows by category</div>
               </div>
@@ -1722,6 +1726,7 @@ export default function HomePage() {
                 <i className="fas fa-fire-alt" />
               </div>
               <div>
+                <div className="section-header-kicker">GLOBAL CHARTS</div>
                 <h2 className="section-title">Trending Now</h2>
                 <div className="section-subtitle">What everyone is watching</div>
               </div>
@@ -1768,6 +1773,7 @@ export default function HomePage() {
                 <i className="fas fa-chart-line" />
               </div>
               <div>
+                <div className="section-header-kicker">BLOCKBUSTERS</div>
                 <h2 className="section-title">Popular Movies</h2>
                 <div className="section-subtitle">Most streamed blockbusters &amp; hits</div>
               </div>
@@ -1815,6 +1821,7 @@ export default function HomePage() {
                 <i className="fas fa-crown" />
               </div>
               <div>
+                <div className="section-header-kicker">DAILY LEADERBOARD</div>
                 <h2 className="section-title">Top 10 Today</h2>
                 <div className="section-subtitle">Most viewed in the last 24 hours</div>
               </div>
@@ -1839,6 +1846,7 @@ export default function HomePage() {
                 <i className="fas fa-trophy" />
               </div>
               <div>
+                <div className="section-header-kicker">CRITICS' CHOICE</div>
                 <h2 className="section-title">Top Rated</h2>
                 <div className="section-subtitle">Critically acclaimed movies &amp; series</div>
               </div>
@@ -1857,6 +1865,7 @@ export default function HomePage() {
         {/* TV SHOWS ROW */}
         <SectionRow
           id="section-tvshows"
+          kicker="BINGE-WORTHY"
           title="Popular TV Series"
           subtitle="Binge-worthy TV series"
           icon="fa-tv"
@@ -1873,6 +1882,7 @@ export default function HomePage() {
         {/* POPULAR ANIME ROW */}
         <SectionRow
           id="section-anime"
+          kicker="ANIME VAULT"
           title="Popular Anime"
           subtitle="Top Japanese animation &amp; series"
           icon="fa-dragon"
@@ -1889,6 +1899,7 @@ export default function HomePage() {
         {/* NEW RELEASES ROW */}
         <SectionRow
           id="section-newreleases"
+          kicker="JUST ADDED"
           title="New Releases"
           subtitle="Just added to CineCub"
           icon="fa-star"
@@ -1943,6 +1954,7 @@ export default function HomePage() {
                   <i className="fas fa-question-circle" />
                 </div>
                 <div>
+                  <div className="section-header-kicker">HELP &amp; SUPPORT</div>
                   <h2 className="section-title">Frequently Asked Questions</h2>
                   <div className="section-subtitle">Learn more about watching movies and TV series online</div>
                 </div>

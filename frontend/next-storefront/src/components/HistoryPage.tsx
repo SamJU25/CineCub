@@ -137,6 +137,7 @@ export default function HistoryPage() {
         <div className="browse-header" style={{ marginBottom: "20px" }}>
           <div className="browse-title-group">
             <div className="browse-breadcrumbs">CineCub &rsaquo; <span>Watch History</span></div>
+            <div className="section-header-kicker">ACTIVITY LOG</div>
             <h1 className="section-title" style={{ margin: 0, fontSize: "26px", fontWeight: 900 }}>Watch History</h1>
           </div>
           {mounted && history.length > 0 && (

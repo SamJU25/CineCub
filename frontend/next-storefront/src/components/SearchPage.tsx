@@ -93,6 +93,7 @@ export default function SearchPage() {
                 <i className="fas fa-home" style={{ marginRight: "3px" }} /> Home
               </Link> &rsaquo; <span id="search-breadcrumb-query">Search Results</span>
             </nav>
+            <div className="section-header-kicker">DATABASE MATCHES</div>
             <h1 className="section-title" id="search-title" style={{ margin: 0, fontSize: "24px", fontWeight: 900 }}>Search Results</h1>
           </div>
         </div>

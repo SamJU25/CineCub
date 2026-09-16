@@ -40,7 +40,7 @@ export default function ToastContainer() {
     <div id="toast-container">
       {items.map((t) => (
         <div key={t.id} className={`toast toast-item toast-${t.type}`}>
-          {t.type === "success" && <i className="fa-solid fa-circle-check" style={{ color: "var(--accent, #e63946)", fontSize: "14px" }} />}
+          {t.type === "success" && <i className="fa-solid fa-circle-check" style={{ color: "#10b981", fontSize: "14px" }} />}
           {t.type === "error" && <i className="fa-solid fa-circle-exclamation" style={{ color: "#ef4444", fontSize: "14px" }} />}
           {t.type === "info" && <i className="fa-solid fa-circle-info" style={{ color: "#38bdf8", fontSize: "14px" }} />}
           <span>{t.text}</span>
