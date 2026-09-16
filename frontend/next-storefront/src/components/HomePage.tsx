@@ -8,6 +8,7 @@ import { CFG } from "@/lib/config";
 import { PosterCard, Top10Card, LandscapeCard, ContinueWatchingCard, CinematicTrailerCard } from "@/components/Cards";
 import HScrollWrapper from "@/components/HScrollWrapper";
 import { showToast } from "@/components/Toast";
+import CinemaStageCanvas from "@/components/CinemaStageCanvas";
 
 interface CWItem {
   id: number;
@@ -869,6 +870,9 @@ function SpotlightCarousel({ items }: { items: MediaItem[] }) {
                   )}
                 </div>
               ) : null}
+
+              {/* Floating ambient cinema embers */}
+              {isActive && <CinemaStageCanvas className="spotlight-canvas-layer" />}
 
               {/* Touch & click shield: intercepts all gestures and clicks so the YouTube iframe cannot be clicked or paused */}
               <div

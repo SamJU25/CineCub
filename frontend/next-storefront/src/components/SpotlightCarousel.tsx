@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useStore } from "@/lib/store";
+import CinemaStageCanvas from "@/components/CinemaStageCanvas";
 
 interface SpotlightItem {
   id: number;
@@ -108,6 +109,7 @@ export default function SpotlightCarousel() {
         style={{ backgroundImage: `url('${backdrop}')`, backgroundPosition: "center 25%" }}
       >
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,10,15,0.1)_0%,rgba(10,10,15,0.6)_45%,rgba(10,10,15,0.96)_100%),linear-gradient(90deg,rgba(10,10,15,0.95)_0%,rgba(10,10,15,0.7)_40%,transparent_80%)]" />
+        <CinemaStageCanvas />
 
         <div className="relative z-[2] p-[clamp(16px,4vw,36px)] max-w-[650px] flex flex-col gap-2.5">
           <span className="self-start px-2.5 py-1 bg-[rgba(157,78,221,0.25)] border border-[rgba(157,78,221,0.4)] text-[#c77dff] text-[11px] font-extrabold uppercase rounded-full tracking-[0.5px]">

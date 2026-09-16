@@ -4380,7 +4380,11 @@ a.telegram-nav-item {
 .fv-hero-grad {
   z-index: 3;
   pointer-events: none;
-  background: linear-gradient(to top, #050505 0%, #050505e0 22%, #05050559 55%, #0000 100%), linear-gradient(to right, #050505e0 0%, #05050599 35%, #05050526 70%, #0000 100%), linear-gradient(#05050599 0%, #0000 22%);
+  background:
+    radial-gradient(ellipse at 70% 30%, rgba(157, 78, 221, 0.16) 0%, transparent 60%),
+    linear-gradient(to top, #050505 0%, #050505e0 22%, #05050559 55%, #0000 100%),
+    linear-gradient(to right, #050505e0 0%, #05050599 35%, #05050526 70%, #0000 100%),
+    linear-gradient(#05050599 0%, #0000 22%);
   position: absolute;
   inset: 0;
 }
@@ -4608,6 +4612,9 @@ a.telegram-nav-item {
   color: #fff;
   background: rgba(157, 78, 221, 0.16);
   border: 1px solid rgba(199, 125, 255, 0.4);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 .fv-meta-badge.fv-meta-rating {
@@ -6978,13 +6985,19 @@ a.telegram-nav-item {
 .player-wrap {
   aspect-ratio: 16 / 9;
   border-radius: var(--r-lg);
-  border: 1px solid var(--b-2);
+  border: 1px solid rgba(199, 125, 255, 0.2);
   width: 100%;
   min-height: 240px;
-  box-shadow: var(--sh-xl);
+  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.9), 0 0 45px -10px rgba(157, 78, 221, 0.22);
   background: #000;
   position: relative;
   overflow: hidden;
+  transition: box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.player-wrap:hover {
+  border-color: rgba(199, 125, 255, 0.35);
+  box-shadow: 0 24px 70px -10px rgba(0, 0, 0, 0.95), 0 0 60px -8px rgba(157, 78, 221, 0.32);
 }
 
 .player-wrap:before {

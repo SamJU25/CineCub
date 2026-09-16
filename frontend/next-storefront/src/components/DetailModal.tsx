@@ -8,6 +8,7 @@ import HScrollWrapper from "@/components/HScrollWrapper";
 import CustomSelect from "@/components/CustomSelect";
 import { showToast } from "@/components/Toast";
 import { BrandLogo } from "@/components/BrandLogo";
+import CinemaStageCanvas from "@/components/CinemaStageCanvas";
 
 interface PersonDetail {
   id: number;
@@ -869,6 +870,7 @@ export default function DetailModal() {
                   ) : null}
                 </div>
                 <div className="fv-hero-grad" />
+                <CinemaStageCanvas className="fv-hero-canvas" />
                 <div className="fv-hero-touch-shield" />
               </div>
 
