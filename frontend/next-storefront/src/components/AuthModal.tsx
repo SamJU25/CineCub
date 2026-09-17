@@ -72,6 +72,10 @@ function GoogleIcon() {
   );
 }
 
+const DEFAULT_GOOGLE_CLIENT_ID =
+  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
+  "307176410598-7mlt6jtv723i2ki6eri6iu9cjqtp1r1v.apps.googleusercontent.com";
+
 export default function AuthModal() {
   const { authModal, closeAuth, setUser } = useStore((s) => s);
   const [view, setView] = useState<AuthView>("login");
@@ -93,9 +97,7 @@ export default function AuthModal() {
   const [resendCountdown, setResendCountdown] = useState(0);
   const [usernameStatus, setUsernameStatus] = useState<"checking" | "available" | "taken" | "invalid" | null>(null);
   const usernameCheckRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const [googleClientId, setGoogleClientId] = useState(
-    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""
-  );
+  const [googleClientId, setGoogleClientId] = useState(DEFAULT_GOOGLE_CLIENT_ID);
 
   useEffect(() => {
     fetch("/api/auth/config")
@@ -184,8 +186,7 @@ export default function AuthModal() {
     setSuccess("");
     setLoading(true);
 
-    const effectiveClientId = googleClientId || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    const g = typeof window !== "undefined" ? (window as any).google : null;
+    const effectiveClientId = googleClientId || DEFAULT_GOOGLE_CLIENT_ID;
 
     if (!effectiveClientId) {
       setError(
@@ -195,8 +196,17 @@ export default function AuthModal() {
       return;
     }
 
+    let g = typeof window !== "undefined" ? (window as any).google : null;
     if (!g?.accounts?.oauth2) {
-      setError("Google authentication service is initializing. Please try again in a few seconds.");
+      for (let i = 0; i < 25; i++) {
+        await new Promise((r) => setTimeout(r, 100));
+        g = typeof window !== "undefined" ? (window as any).google : null;
+        if (g?.accounts?.oauth2) break;
+      }
+    }
+
+    if (!g?.accounts?.oauth2) {
+      setError("Google authentication service is initializing. Please try again in a moment.");
       setLoading(false);
       return;
     }
@@ -257,7 +267,7 @@ export default function AuthModal() {
       setError(err?.message || "Failed to initialize Google Sign-in.");
       setLoading(false);
     }
-  }, [closeAuth, setUser]);
+  }, [closeAuth, setUser, googleClientId]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
