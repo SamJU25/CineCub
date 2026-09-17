@@ -244,6 +244,17 @@ export default function AuthModal() {
     setSuccess("");
     setLoading(true);
 
+    const effectiveClientId = googleClientId || DEFAULT_GOOGLE_CLIENT_ID;
+
+    if (!effectiveClientId) {
+      setError(
+        "Google Sign-In is awaiting Client ID configuration. Set NEXT_PUBLIC_GOOGLE_CLIENT_ID or GOOGLE_CLIENT_ID in your Cloudflare environment."
+      );
+      setLoading(false);
+      return;
+    }
+
+    // 1. If native Android bridge method is available, invoke it
     const androidBridge =
       typeof window !== "undefined"
         ? (window as any).CineCubAndroid || (window as any).StreamHeavenAndroid
@@ -254,10 +265,11 @@ export default function AuthModal() {
         androidBridge.signInWithGoogle();
         return;
       } catch (bridgeErr: any) {
-        console.warn("Native bridge signInWithGoogle failed, falling back to web:", bridgeErr);
+        console.warn("Native bridge signInWithGoogle failed, falling back to browser OAuth:", bridgeErr);
       }
     }
 
+    // 2. Check if running inside Android WebView shell or PWA where popup windows are blocked
     const isApp =
       typeof window !== "undefined" &&
       !!(
@@ -268,20 +280,17 @@ export default function AuthModal() {
       );
 
     if (isApp) {
-      setError(
-        "Google Sign-In on the Android app requires the new v1.7.0 update. Please log in with your email/username & password, or sign in via web browser."
-      );
-      setLoading(false);
-      return;
-    }
+      // In WebView shell or PWA, popups are restricted by Android OS.
+      // Redirect cleanly to Google's OAuth 2.0 authorization endpoint.
+      // After login, Google redirects to /auth/google/callback which deep-links back into cinecub://auth!
+      const redirectUri = "https://cinecub.stream/auth/google/callback";
+      const oauthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(
+        effectiveClientId
+      )}&redirect_uri=${encodeURIComponent(
+        redirectUri
+      )}&response_type=token&scope=${encodeURIComponent("email profile openid")}`;
 
-    const effectiveClientId = googleClientId || DEFAULT_GOOGLE_CLIENT_ID;
-
-    if (!effectiveClientId) {
-      setError(
-        "Google Sign-In is awaiting Client ID configuration. Set NEXT_PUBLIC_GOOGLE_CLIENT_ID or GOOGLE_CLIENT_ID in your Cloudflare environment."
-      );
-      setLoading(false);
+      window.location.href = oauthUrl;
       return;
     }
 

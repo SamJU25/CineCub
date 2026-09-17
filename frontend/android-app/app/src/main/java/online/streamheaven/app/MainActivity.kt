@@ -545,8 +545,8 @@ class MainActivity : AppCompatActivity() {
         val scheme = uri.scheme?.lowercase() ?: ""
         val host = uri.host?.lowercase() ?: ""
 
-        // 2. User-Initiated Social & External Contact (Telegram Community, Email, Phone, Socials)
-        if (host == "t.me" || host == "telegram.me" || scheme == "mailto" || scheme == "tel" ||
+        // 2. User-Initiated Social & External Contact (Telegram Community, Email, Phone, Socials, Google Auth)
+        if (host == "accounts.google.com" || host == "t.me" || host == "telegram.me" || scheme == "mailto" || scheme == "tel" ||
             host == "facebook.com" || host == "x.com" || host == "twitter.com" || host == "instagram.com"
         ) {
             return try {
@@ -827,13 +827,27 @@ class MainActivity : AppCompatActivity() {
             activity.runOnUiThread {
                 try {
                     activity.googleSignInClient.signOut().addOnCompleteListener {
-                        val signInIntent = activity.googleSignInClient.signInIntent
-                        activity.googleSignInLauncher.launch(signInIntent)
+                        try {
+                            val signInIntent = activity.googleSignInClient.signInIntent
+                            activity.googleSignInLauncher.launch(signInIntent)
+                        } catch (e: Exception) {
+                            activity.launchGoogleCustomTab()
+                        }
                     }
                 } catch (e: Exception) {
                     activity.launchGoogleCustomTab()
                 }
             }
+        }
+
+        @JavascriptInterface
+        fun getAppVersion(): String {
+            return "1.7.0"
+        }
+
+        @JavascriptInterface
+        fun getAppVersionCode(): Int {
+            return 20
         }
     }
 }
