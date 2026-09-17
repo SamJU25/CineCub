@@ -4276,17 +4276,6 @@ a.telegram-nav-item {
   transition: transform .15s, color .15s, filter .15s;
 }
 
-.mbb-active-dot {
-  position: absolute;
-  bottom: -3px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #c77dff;
-  box-shadow: 0 0 8px #c77dff, 0 0 14px #9d4edd;
-}
 
 .mbb-btn span {
   letter-spacing: .2px;

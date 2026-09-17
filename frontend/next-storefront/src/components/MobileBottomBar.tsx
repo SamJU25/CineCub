@@ -47,7 +47,6 @@ export default function MobileBottomBar() {
           >
             <div className="mbb-icon-wrap">
               <i className={tab.icon} />
-              {isAct && <span className="mbb-active-dot" aria-hidden="true" />}
             </div>
             <span>{tab.label}</span>
           </button>
