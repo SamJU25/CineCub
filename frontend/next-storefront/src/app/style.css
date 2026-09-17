@@ -1230,6 +1230,24 @@ iframe {
   overflow: hidden;
 }
 
+.spotlight-section.cinejoy-spotlight::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 240px;
+  background: linear-gradient(to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.18) 25%,
+    rgba(0, 0, 0, 0.58) 55%,
+    rgba(0, 0, 0, 0.92) 82%,
+    #000000 100%
+  );
+  pointer-events: none;
+  z-index: 6;
+}
+
 .spotlight-track {
   will-change: transform;
   height: 100%;
@@ -1328,7 +1346,7 @@ iframe {
   z-index: 2;
   pointer-events: none;
   background: linear-gradient(90deg, #06060c 0%, rgba(6, 6, 12, 0.8) 32%, rgba(6, 6, 12, 0.35) 60%, transparent 85%),
-              linear-gradient(0deg, #000 0%, rgba(6, 6, 12, 0.8) 25%, rgba(6, 6, 12, 0.2) 60%, transparent 100%);
+              linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0.95) 15%, rgba(6, 6, 12, 0.75) 35%, rgba(6, 6, 12, 0.2) 65%, transparent 100%);
   position: absolute;
   inset: 0;
 }
@@ -1337,7 +1355,7 @@ iframe {
   content: "";
   z-index: 2;
   pointer-events: none;
-  background: radial-gradient(ellipse 70% 60% at 20% 70%, rgba(157, 78, 221, 0.15) 0%, transparent 75%);
+  background: radial-gradient(ellipse 70% 50% at 20% 55%, rgba(157, 78, 221, 0.15) 0%, transparent 70%);
   position: absolute;
   inset: 0;
 }
@@ -4550,7 +4568,7 @@ a.telegram-nav-item {
 
 .fv-hero {
   box-sizing: border-box;
-  background: #050505;
+  background: var(--cv-dark-1, #06060c);
   flex-direction: column;
   flex-shrink: 0;
   justify-content: flex-end;
@@ -4559,6 +4577,24 @@ a.telegram-nav-item {
   display: flex;
   position: relative;
   overflow: hidden;
+}
+
+.fv-hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 240px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(6, 6, 12, 0.2) 25%,
+    rgba(6, 6, 12, 0.65) 60%,
+    rgba(6, 6, 12, 0.95) 85%,
+    var(--cv-dark-1, #06060c) 100%
+  );
+  pointer-events: none;
+  z-index: 3;
 }
 
 .fv-hero-bg-wrap {
@@ -4647,9 +4683,9 @@ a.telegram-nav-item {
   pointer-events: none;
   background:
     radial-gradient(ellipse at 70% 30%, rgba(157, 78, 221, 0.16) 0%, transparent 60%),
-    linear-gradient(to top, #050505 0%, #050505e0 22%, #05050559 55%, #0000 100%),
-    linear-gradient(to right, #050505e0 0%, #05050599 35%, #05050526 70%, #0000 100%),
-    linear-gradient(#05050599 0%, #0000 22%);
+    linear-gradient(to top, var(--cv-dark-1, #06060c) 0%, rgba(6, 6, 12, 0.96) 20%, rgba(6, 6, 12, 0.72) 45%, rgba(6, 6, 12, 0.25) 70%, transparent 100%),
+    linear-gradient(to right, rgba(6, 6, 12, 0.95) 0%, rgba(6, 6, 12, 0.75) 35%, rgba(6, 6, 12, 0.2) 70%, transparent 100%),
+    linear-gradient(rgba(6, 6, 12, 0.7) 0%, transparent 22%);
   position: absolute;
   inset: 0;
 }
@@ -5075,6 +5111,14 @@ a.telegram-nav-item {
   max-width: 1400px;
   margin: 0 auto;
   padding: 10px 48px 80px;
+}
+
+.fv-body > .fv-episodes-section:first-child,
+.fv-body > .fv-cast-section:first-child,
+.fv-body > div:first-of-type {
+  border-top: none !important;
+  margin-top: 8px;
+  padding-top: 8px;
 }
 
 .fv-theater-stage {
@@ -5817,7 +5861,7 @@ a.telegram-nav-item {
 
   .fv-hero {
     box-sizing: border-box;
-    background: #050505;
+    background: var(--cv-dark-1, #06060c);
     flex-direction: column;
     flex-shrink: 0;
     justify-content: flex-end;
@@ -5899,7 +5943,7 @@ a.telegram-nav-item {
   .fv-hero-grad {
     z-index: 3;
     pointer-events: none;
-    background: linear-gradient(to top, #050505 0% 5%, #050505d9 16%, #05050559 30%, #0505050d 45%, #0000 100%);
+    background: linear-gradient(to top, var(--cv-dark-1, #06060c) 0% 12%, rgba(6, 6, 12, 0.88) 28%, rgba(6, 6, 12, 0.45) 55%, transparent 100%);
     position: absolute;
     inset: 0;
   }
