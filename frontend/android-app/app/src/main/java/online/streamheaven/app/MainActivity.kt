@@ -35,17 +35,21 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.annotation.RequiresApi
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.browser.customtabs.CustomTabsIntent
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import org.json.JSONObject
 import com.google.android.material.button.MaterialButton
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
         const val TARGET_URL = "https://cinecub.stream"
+        const val GOOGLE_WEB_CLIENT_ID = "307176410598-7mlt6jtv723i2ki6eri6iu9cjqtp1r1v.apps.googleusercontent.com"
         private const val BACK_PRESS_INTERVAL = 2000L
     }
 
@@ -55,6 +59,40 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pageProgressBar: ProgressBar
     private lateinit var offlineLayout: LinearLayout
     private lateinit var btnRetry: MaterialButton
+
+    private lateinit var googleSignInClient: GoogleSignInClient
+
+    private val googleSignInLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                val account: GoogleSignInAccount = task.getResult(ApiException::class.java)
+                val idToken = account.idToken
+                if (!idToken.isNullOrBlank()) {
+                    val quotedToken = JSONObject.quote(idToken)
+                    webView.evaluateJavascript(
+                        "try { if (window.handleNativeGoogleSignInSuccess) { window.handleNativeGoogleSignInSuccess($quotedToken); } } catch(e){}",
+                        null
+                    )
+                } else {
+                    launchGoogleCustomTab()
+                }
+            } catch (e: ApiException) {
+                val statusCode = e.statusCode
+                if (statusCode == 12501) {
+                    // User canceled
+                    webView.evaluateJavascript(
+                        "try { if (window.handleNativeGoogleSignInError) { window.handleNativeGoogleSignInError('Cancelled'); } } catch(e){}",
+                        null
+                    )
+                } else {
+                    // Developer error (10) or missing SHA-1 on device -> fallback to Chrome Custom Tab!
+                    launchGoogleCustomTab()
+                }
+            } catch (e: Exception) {
+                launchGoogleCustomTab()
+            }
+        }
 
     private var customView: View? = null
     private var customViewCallback: WebChromeClient.CustomViewCallback? = null
@@ -78,6 +116,8 @@ class MainActivity : AppCompatActivity() {
         setupWebView()
         setupBackNavigation()
         setupOfflineHandling()
+        setupGoogleSignIn()
+        handleAuthIntent(intent)
 
         if (savedInstanceState != null) {
             webView.restoreState(savedInstanceState)
@@ -87,6 +127,67 @@ class MainActivity : AppCompatActivity() {
 
         // Check for App Updates in Background
         AppUpdater.checkForUpdate(this)
+    }
+
+    private fun setupGoogleSignIn() {
+        try {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(GOOGLE_WEB_CLIENT_ID)
+                .requestEmail()
+                .requestProfile()
+                .build()
+            googleSignInClient = GoogleSignIn.getClient(this, gso)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleAuthIntent(intent)
+    }
+
+    private fun handleAuthIntent(intent: Intent?) {
+        val data = intent?.data ?: return
+        if (data.scheme == "cinecub" && data.host == "auth") {
+            val token = data.getQueryParameter("token")
+                ?: data.getQueryParameter("id_token")
+                ?: data.getQueryParameter("access_token")
+            if (!token.isNullOrBlank()) {
+                val quoted = JSONObject.quote(token)
+                webView.evaluateJavascript(
+                    "try { if (window.handleNativeGoogleSignInSuccess) { window.handleNativeGoogleSignInSuccess($quoted); } } catch(e){}",
+                    null
+                )
+            }
+        }
+    }
+
+    fun launchGoogleCustomTab() {
+        runOnUiThread {
+            try {
+                val authUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
+                        "client_id=" + Uri.encode(GOOGLE_WEB_CLIENT_ID) +
+                        "&redirect_uri=" + Uri.encode("https://cinecub.stream/auth/google/callback") +
+                        "&response_type=token" +
+                        "&scope=" + Uri.encode("email profile openid")
+
+                val customTabsIntent = CustomTabsIntent.Builder()
+                    .setShowTitle(true)
+                    .build()
+                customTabsIntent.launchUrl(this, Uri.parse(authUrl))
+            } catch (e: Exception) {
+                try {
+                    val authUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
+                            "client_id=" + Uri.encode(GOOGLE_WEB_CLIENT_ID) +
+                            "&redirect_uri=" + Uri.encode("https://cinecub.stream/auth/google/callback") +
+                            "&response_type=token" +
+                            "&scope=" + Uri.encode("email profile openid")
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authUrl))
+                    startActivity(intent)
+                } catch (_: Exception) {}
+            }
+        }
     }
 
     private fun initViews() {
@@ -453,6 +554,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Deep link handler for internal auth scheme
+        if (scheme == "cinecub" && host == "auth") {
+            handleAuthIntent(Intent(Intent.ACTION_VIEW, uri))
+            return true
+        }
+
         // Only http/https links are allowed to navigate inside the WebView.
         if (scheme != "http" && scheme != "https") {
             return true
@@ -707,6 +814,21 @@ class MainActivity : AppCompatActivity() {
             // No-op: pull-to-refresh was removed (v1.3.0) because the SwipeRefreshLayout
             // intercepted scroll gestures and made the app feel unresponsive.
             if (!isTrustedPageContext()) return
+        }
+
+        @JavascriptInterface
+        fun signInWithGoogle() {
+            if (!isTrustedPageContext()) return
+            activity.runOnUiThread {
+                try {
+                    activity.googleSignInClient.signOut().addOnCompleteListener {
+                        val signInIntent = activity.googleSignInClient.signInIntent
+                        activity.googleSignInLauncher.launch(signInIntent)
+                    }
+                } catch (e: Exception) {
+                    activity.launchGoogleCustomTab()
+                }
+            }
         }
     }
 }

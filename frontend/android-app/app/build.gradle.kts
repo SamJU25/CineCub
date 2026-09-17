@@ -32,8 +32,8 @@ android {
         applicationId = "online.streamheaven.app"
         minSdk = 24
         targetSdk = 34
-        versionCode = 19
-        versionName = "1.6.0"
+        versionCode = 20
+        versionName = "1.7.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -94,6 +94,8 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.webkit:webkit:1.10.0")
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+    implementation("androidx.browser:browser:1.8.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
