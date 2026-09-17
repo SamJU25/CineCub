@@ -113,10 +113,10 @@ export function ConfirmModal({ title, text, onConfirm, onCancel }: {
 export function AppsModal() {
   const { appsModal, closeApps } = useStore((s) => s);
   const [showIosStep, setShowIosStep] = useState(false);
-  const [versionName, setVersionName] = useState("1.7.0");
+  const [versionName, setVersionName] = useState("1.7.1");
 
   useEffect(() => {
-    fetch("/version.json")
+    fetch(`/version.json?t=${Date.now()}`)
       .then((r) => r.json())
       .then((d) => {
         if (d?.versionName) setVersionName(d.versionName);
@@ -164,7 +164,7 @@ export function AppsModal() {
             <h2 style={{ marginTop: 0, marginBottom: "20px", fontSize: "1.25rem", color: "#fff" }}>Get CineCub</h2>
             <div className="apps-btn-group">
               <a
-                href="/CineCub.apk"
+                href={`/CineCub.apk?v=${encodeURIComponent(versionName)}`}
                 download="CineCub.apk"
                 className="app-btn app-btn-primary"
               >

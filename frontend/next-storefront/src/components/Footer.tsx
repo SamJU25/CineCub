@@ -1,10 +1,21 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
 
 export default function Footer() {
   const { openLegal, setActivePage, setBrowseCategory } = useStore((s) => s);
+  const [versionName, setVersionName] = useState("1.7.1");
+
+  useEffect(() => {
+    fetch(`/version.json?t=${Date.now()}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.versionName) setVersionName(d.versionName);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <footer className="cv-footer">
@@ -82,7 +93,7 @@ export default function Footer() {
             <img src="/assets/images/icon-logo.png" alt="CineCub" className="acf-logo" />
             <div className="acf-info">
               <div className="acf-name">CineCub</div>
-              <div className="acf-tagline">Unlimited Entertainment • v1.6.0</div>
+              <div className="acf-tagline">Unlimited Entertainment • v{versionName}</div>
             </div>
           </div>
           <div className="acf-actions">
