@@ -10,6 +10,7 @@ interface User {
   displayName: string;
   photoURL: string;
   username?: string;
+  hasPassword?: boolean;
   idToken?: string;
   refreshToken?: string;
 }

@@ -52,6 +52,7 @@ export default function ProfilePage() {
   // Modals state
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
   const [nameModalOpen, setNameModalOpen] = useState(false);
+  const [usernameModalOpen, setUsernameModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
@@ -71,16 +72,66 @@ export default function ProfilePage() {
   // Edit states
   const [selectedAvatar, setSelectedAvatar] = useState("");
   const [newName, setNewName] = useState("");
+  const [newUsername, setNewUsername] = useState("");
+  const [usernameStatus, setUsernameStatus] = useState<"checking" | "available" | "taken" | "invalid" | null>(null);
+  const usernameCheckRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [currEmail, setCurrEmail] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [emailPass, setEmailPass] = useState("");
   const [showEmailPass, setShowEmailPass] = useState(false);
   const [currPassword, setCurrPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showCurrPass, setShowCurrPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   const [sendingVerification, setSendingVerification] = useState(false);
+
+  // Sync profile data (such as hasPassword) if not loaded yet
+  useEffect(() => {
+    if (!user?.uid) return;
+    if (user.hasPassword === undefined) {
+      ensureToken(user as StoredUser).then((token) => {
+        if (!token) return;
+        fetch("/api/user/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((r) => r.json())
+          .then((d: any) => {
+            if (d.success && d.user) {
+              setUser({ ...user, ...d.user });
+            }
+          })
+          .catch(() => {});
+      });
+    }
+  }, [user?.uid]);
+
+  const checkUsername = useCallback(async (value: string) => {
+    const val = value.trim().toLowerCase();
+    if (!val) { setUsernameStatus(null); return; }
+    const regex = /^[a-zA-Z0-9_]+$/;
+    if (!regex.test(val) || val.length < 3 || val.length > 20) {
+      setUsernameStatus("invalid");
+      return;
+    }
+    if (user?.username && val === user.username.toLowerCase()) {
+      setUsernameStatus(null);
+      return;
+    }
+    setUsernameStatus("checking");
+    clearTimeout(usernameCheckRef.current);
+    usernameCheckRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/auth/check-username?username=${encodeURIComponent(val)}`);
+        const data = await res.json();
+        setUsernameStatus(data.available ? "available" : "taken");
+      } catch {
+        setUsernameStatus(null);
+      }
+    }, 400);
+  }, [user?.username]);
 
   // Shelf scroll refs
   const wlScrollRef = useRef<HTMLDivElement>(null);
@@ -330,53 +381,151 @@ export default function ProfilePage() {
     }
   }
 
-  function handleSaveEmail(e: React.FormEvent) {
+  async function handleSaveUsername(e: React.FormEvent) {
     e.preventDefault();
-    if (!currEmail.trim() || !newEmail.trim() || !emailPass) {
-      showToast("Please fill all fields.", "error");
+    const sanitized = newUsername.trim().toLowerCase();
+    if (!sanitized) {
+      showToast("Please enter a username.", "error");
       return;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    if (!emailRegex.test(currEmail) || !emailRegex.test(newEmail)) {
-      showToast("Please enter a valid email address.", "error");
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(sanitized)) {
+      showToast("Username must be 3-20 letters, numbers, or underscores.", "error");
       return;
     }
-    if (currEmail.toLowerCase() === newEmail.toLowerCase()) {
-      showToast("New email must be different from current email.", "error");
-      return;
-    }
-    if (user && currEmail.toLowerCase() !== user.email.toLowerCase()) {
-      showToast("The current email you entered is incorrect.", "error");
+    if (user && sanitized === user.username?.toLowerCase()) {
+      setUsernameModalOpen(false);
       return;
     }
     if (user) {
-      setUser({ ...user, email: newEmail.trim() });
-      showToast("Email updated successfully!", "success");
-      setEmailModalOpen(false);
-      setCurrEmail("");
-      setNewEmail("");
-      setEmailPass("");
+      try {
+        const token = (await ensureToken(user as StoredUser)) || user.idToken || "";
+        const res = await fetch("/api/user/profile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ username: sanitized }),
+        });
+        const data = (await res.json()) as { success?: boolean; message?: string; user?: Partial<StoredUser> };
+        if (!res.ok || !data.success) {
+          showToast(data.message || "Failed to update username.", "error");
+          return;
+        }
+        setUser({ ...user, username: sanitized, ...(data.user || {}) });
+        setUsernameModalOpen(false);
+        showToast("Username updated successfully!", "success");
+      } catch {
+        showToast("Network error updating username.", "error");
+      }
     }
   }
 
-  function handleSavePassword(e: React.FormEvent) {
+  async function handleSaveEmail(e: React.FormEvent) {
     e.preventDefault();
-    if (!currPassword || !newPassword) {
-      showToast("Please fill all fields.", "error");
+    const trimmedNew = newEmail.trim().toLowerCase();
+    if (!trimmedNew) {
+      showToast("Please enter a new email address.", "error");
       return;
     }
-    if (newPassword.length < 8) {
-      showToast("New password must be at least 8 characters long.", "error");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailRegex.test(trimmedNew)) {
+      showToast("Please enter a valid email address.", "error");
       return;
     }
-    if (currPassword === newPassword) {
+    if (user && trimmedNew === user.email.toLowerCase()) {
+      showToast("New email must be different from current email.", "error");
+      return;
+    }
+    if (user?.hasPassword !== false && !emailPass) {
+      showToast("Please enter your current password to update email.", "error");
+      return;
+    }
+    if (user) {
+      try {
+        const token = (await ensureToken(user as StoredUser)) || user.idToken || "";
+        const res = await fetch("/api/user/profile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            email: trimmedNew,
+            currentPassword: user.hasPassword !== false ? emailPass : undefined,
+          }),
+        });
+        const data = (await res.json()) as { success?: boolean; message?: string; user?: Partial<StoredUser> };
+        if (!res.ok || !data.success) {
+          showToast(data.message || "Failed to update email.", "error");
+          return;
+        }
+        setUser({ ...user, email: trimmedNew, ...(data.user || {}) });
+        showToast("Email updated successfully!", "success");
+        setEmailModalOpen(false);
+        setCurrEmail("");
+        setNewEmail("");
+        setEmailPass("");
+      } catch {
+        showToast("Network error updating email.", "error");
+      }
+    }
+  }
+
+  async function handleSavePassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (user?.hasPassword !== false && !currPassword) {
+      showToast("Please enter your current password.", "error");
+      return;
+    }
+    if (!newPassword) {
+      showToast("Please enter a new password.", "error");
+      return;
+    }
+    if (newPassword.length < 6) {
+      showToast("Password must be at least 6 characters long.", "error");
+      return;
+    }
+    if (user?.hasPassword === false && newPassword !== confirmPassword) {
+      showToast("Passwords do not match.", "error");
+      return;
+    }
+    if (user?.hasPassword !== false && currPassword === newPassword) {
       showToast("New password must be different from current password.", "error");
       return;
     }
-    showToast("Password updated successfully!", "success");
-    setPasswordModalOpen(false);
-    setCurrPassword("");
-    setNewPassword("");
+    if (user) {
+      try {
+        const token = (await ensureToken(user as StoredUser)) || user.idToken || "";
+        const res = await fetch("/api/user/profile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            currentPassword: user.hasPassword !== false ? currPassword : undefined,
+            newPassword,
+          }),
+        });
+        const data = (await res.json()) as { success?: boolean; message?: string; user?: Partial<StoredUser> };
+        if (!res.ok || !data.success) {
+          showToast(data.message || "Failed to update password.", "error");
+          return;
+        }
+        setUser({ ...user, hasPassword: true, ...(data.user || {}) });
+        const successMsg = user.hasPassword === false
+          ? "Password set! You can now log in with either Google or email/password."
+          : "Password updated successfully!";
+        showToast(successMsg, "success");
+        setPasswordModalOpen(false);
+        setCurrPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } catch {
+        showToast("Network error setting password.", "error");
+      }
+    }
   }
 
 
@@ -879,12 +1028,20 @@ export default function ProfilePage() {
           </div>
 
           <div className="pf-settings-list" style={{ marginTop: 20 }}>
-            <div className="pf-settings-row static">
+            <div
+              className="pf-settings-row"
+              onClick={() => {
+                setNewUsername(user.username || "");
+                setUsernameStatus(null);
+                setUsernameModalOpen(true);
+              }}
+            >
               <div className="pf-settings-row-icon"><i className="fas fa-id-badge" /></div>
               <div className="pf-settings-row-text">
                 <div className="pf-settings-row-label">Username</div>
                 <div className="pf-settings-row-val" id="settings-username-sub">{user.username || user.displayName}</div>
               </div>
+              <div className="pf-settings-row-arrow"><i className="fas fa-chevron-right" /></div>
             </div>
             <div className="pf-settings-row" onClick={() => { setNewName(user.displayName); setNameModalOpen(true); }}>
               <div className="pf-settings-row-icon"><i className="fas fa-user-edit" /></div>
@@ -932,11 +1089,27 @@ export default function ProfilePage() {
                 {sendingVerification ? "Sending..." : "Send Link"}
               </button>
             </div>
-            <div className="pf-settings-row" onClick={() => { setCurrPassword(""); setNewPassword(""); setPasswordModalOpen(true); }}>
+            <div
+              className="pf-settings-row"
+              onClick={() => {
+                setCurrPassword("");
+                setNewPassword("");
+                setConfirmPassword("");
+                setPasswordModalOpen(true);
+              }}
+            >
               <div className="pf-settings-row-icon"><i className="fas fa-lock" /></div>
               <div className="pf-settings-row-text">
                 <div className="pf-settings-row-label">Password</div>
-                <div className="pf-settings-row-val">••••••••</div>
+                <div className="pf-settings-row-val">
+                  {user.hasPassword === false ? (
+                    <span style={{ color: "#f59e0b", display: "inline-flex", alignItems: "center", gap: 6, fontWeight: 600 }}>
+                      <i className="fas fa-key" /> Set Password (Google Account)
+                    </span>
+                  ) : (
+                    "••••••••"
+                  )}
+                </div>
               </div>
               <div className="pf-settings-row-arrow"><i className="fas fa-chevron-right" /></div>
             </div>
@@ -1070,6 +1243,52 @@ export default function ProfilePage() {
         </div>
       )}
 
+      {/* MODAL: USERNAME */}
+      {usernameModalOpen && (
+        <div className="pf-modal-overlay open" id="modal-username" onClick={() => setUsernameModalOpen(false)}>
+          <div className="pf-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="pf-modal-title">Change Username</div>
+            <form className="pf-modal-form" onSubmit={handleSaveUsername}>
+              <div className="auth-input-group">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <label style={{ marginBottom: 0 }}>New Username</label>
+                  <span style={{ fontSize: 11, color: "var(--text-muted, #94a3b8)", fontWeight: 500 }}>
+                    {newUsername.length} / 20
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  id="new-username-input"
+                  className="auth-input"
+                  placeholder="Enter new username (3-20 characters)"
+                  maxLength={20}
+                  autoComplete="off"
+                  spellCheck="false"
+                  value={newUsername}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setNewUsername(v);
+                    checkUsername(v);
+                  }}
+                />
+                {usernameStatus && (
+                  <div style={{ fontSize: "12px", marginTop: "6px", display: "flex", alignItems: "center", gap: "6px", color: usernameStatus === "available" ? "#06d6a0" : usernameStatus === "taken" ? "#ff4b4b" : usernameStatus === "invalid" ? "#ff4b4b" : "var(--text-4)" }}>
+                    {usernameStatus === "checking" && <><i className="fas fa-circle-notch fa-spin" /> Checking availability...</>}
+                    {usernameStatus === "available" && <><i className="fas fa-check-circle" /> Username is available!</>}
+                    {usernameStatus === "taken" && <><i className="fas fa-times-circle" /> Username is already taken.</>}
+                    {usernameStatus === "invalid" && <><i className="fas fa-times-circle" /> 3-20 alphanumeric characters or underscores.</>}
+                  </div>
+                )}
+              </div>
+              <div className="pf-modal-actions">
+                <button type="button" className="pf-btn-secondary" onClick={() => setUsernameModalOpen(false)}>Cancel</button>
+                <button type="submit" className="pf-btn-login" id="btn-update-username">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* MODAL: EMAIL */}
       {emailModalOpen && (
         <div className="pf-modal-overlay open" id="modal-email" onClick={() => setEmailModalOpen(false)}>
@@ -1086,6 +1305,8 @@ export default function ProfilePage() {
                   placeholder="Enter current email"
                   autoComplete="email"
                   spellCheck="false"
+                  disabled
+                  style={{ opacity: 0.7 }}
                 />
               </div>
               <div className="auth-input-group">
@@ -1095,35 +1316,44 @@ export default function ProfilePage() {
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
                   className="auth-input"
-                  placeholder="Enter new email"
+                  placeholder="Enter new email address"
                   autoComplete="email"
                   spellCheck="false"
+                  required
                 />
               </div>
-              <div className="auth-input-group">
-                <label>Current Password (required)</label>
-                <div className="auth-input-wrap">
-                  <input
-                    type={showEmailPass ? "text" : "password"}
-                    value={emailPass}
-                    onChange={(e) => setEmailPass(e.target.value)}
-                    className="auth-input"
-                    placeholder="Current password"
-                    autoComplete="current-password"
-                  />
-                  <button
-                    aria-label="Toggle password visibility"
-                    type="button"
-                    className="auth-password-toggle"
-                    onClick={() => setShowEmailPass(!showEmailPass)}
-                  >
-                    <i className={showEmailPass ? "fas fa-eye-slash" : "fas fa-eye"} />
-                  </button>
+              {user.hasPassword !== false ? (
+                <div className="auth-input-group">
+                  <label>Current Password (required for security)</label>
+                  <div className="auth-input-wrap">
+                    <input
+                      type={showEmailPass ? "text" : "password"}
+                      value={emailPass}
+                      onChange={(e) => setEmailPass(e.target.value)}
+                      className="auth-input"
+                      placeholder="Current password"
+                      autoComplete="current-password"
+                      required
+                    />
+                    <button
+                      aria-label="Toggle password visibility"
+                      type="button"
+                      className="auth-password-toggle"
+                      onClick={() => setShowEmailPass(!showEmailPass)}
+                    >
+                      <i className={showEmailPass ? "fas fa-eye-slash" : "fas fa-eye"} />
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div style={{ fontSize: 12, color: "var(--text-3)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", padding: "10px 14px", borderRadius: 10, marginBottom: 16 }}>
+                  <i className="fas fa-info-circle" style={{ color: "#60a5fa", marginRight: 6 }} />
+                  Since you signed in with Google, no password is required to update your email.
+                </div>
+              )}
               <div className="pf-modal-actions">
                 <button type="button" className="pf-btn-secondary" onClick={() => setEmailModalOpen(false)}>Cancel</button>
-                <button type="submit" className="pf-btn-login">Update</button>
+                <button type="submit" className="pf-btn-login">Update Email</button>
               </div>
             </form>
           </div>
@@ -1164,43 +1394,55 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* MODAL: PASSWORD */}
+      {/* MODAL: PASSWORD (Set or Change) */}
       {passwordModalOpen && (
         <div className="pf-modal-overlay open" id="modal-password" onClick={() => setPasswordModalOpen(false)}>
           <div className="pf-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="pf-modal-title">Change Password</div>
-            <form className="pf-modal-form" onSubmit={handleSavePassword}>
-              <div className="auth-input-group">
-                <label>Current Password</label>
-                <div className="auth-input-wrap">
-                  <input
-                    type={showCurrPass ? "text" : "password"}
-                    value={currPassword}
-                    onChange={(e) => setCurrPassword(e.target.value)}
-                    className="auth-input"
-                    placeholder="Current password"
-                    autoComplete="current-password"
-                  />
-                  <button
-                    aria-label="Toggle password visibility"
-                    type="button"
-                    className="auth-password-toggle"
-                    onClick={() => setShowCurrPass(!showCurrPass)}
-                  >
-                    <i className={showCurrPass ? "fas fa-eye-slash" : "fas fa-eye"} />
-                  </button>
-                </div>
+            <div className="pf-modal-title">
+              {user.hasPassword === false ? "Set Account Password" : "Change Password"}
+            </div>
+            {user.hasPassword === false && (
+              <div style={{ fontSize: 12, color: "var(--text-3)", background: "rgba(157, 78, 221, 0.1)", border: "1px solid rgba(157, 78, 221, 0.25)", padding: "10px 14px", borderRadius: 10, marginBottom: 16 }}>
+                <i className="fas fa-shield-alt" style={{ color: "#c77dff", marginRight: 6 }} />
+                You signed in with Google. Setting a password allows you to log in with <strong>either Google OR your username/email + password</strong> on this exact same account!
               </div>
+            )}
+            <form className="pf-modal-form" onSubmit={handleSavePassword}>
+              {user.hasPassword !== false && (
+                <div className="auth-input-group">
+                  <label>Current Password</label>
+                  <div className="auth-input-wrap">
+                    <input
+                      type={showCurrPass ? "text" : "password"}
+                      value={currPassword}
+                      onChange={(e) => setCurrPassword(e.target.value)}
+                      className="auth-input"
+                      placeholder="Enter current password"
+                      autoComplete="current-password"
+                      required
+                    />
+                    <button
+                      aria-label="Toggle password visibility"
+                      type="button"
+                      className="auth-password-toggle"
+                      onClick={() => setShowCurrPass(!showCurrPass)}
+                    >
+                      <i className={showCurrPass ? "fas fa-eye-slash" : "fas fa-eye"} />
+                    </button>
+                  </div>
+                </div>
+              )}
               <div className="auth-input-group">
-                <label>New Password</label>
+                <label>{user.hasPassword === false ? "Create Password" : "New Password"}</label>
                 <div className="auth-input-wrap">
                   <input
                     type={showNewPass ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     className="auth-input"
-                    placeholder="New password (at least 8 characters)"
+                    placeholder="At least 6 characters"
                     autoComplete="new-password"
+                    required
                   />
                   <button
                     aria-label="Toggle password visibility"
@@ -1212,9 +1454,35 @@ export default function ProfilePage() {
                   </button>
                 </div>
               </div>
+              {user.hasPassword === false && (
+                <div className="auth-input-group">
+                  <label>Confirm Password</label>
+                  <div className="auth-input-wrap">
+                    <input
+                      type={showConfirmPass ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="auth-input"
+                      placeholder="Re-enter your password"
+                      autoComplete="new-password"
+                      required
+                    />
+                    <button
+                      aria-label="Toggle password visibility"
+                      type="button"
+                      className="auth-password-toggle"
+                      onClick={() => setShowConfirmPass(!showConfirmPass)}
+                    >
+                      <i className={showConfirmPass ? "fas fa-eye-slash" : "fas fa-eye"} />
+                    </button>
+                  </div>
+                </div>
+              )}
               <div className="pf-modal-actions">
                 <button type="button" className="pf-btn-secondary" onClick={() => setPasswordModalOpen(false)}>Cancel</button>
-                <button type="submit" className="pf-btn-login">Update</button>
+                <button type="submit" className="pf-btn-login">
+                  {user.hasPassword === false ? "Set Password" : "Save Changes"}
+                </button>
               </div>
             </form>
           </div>

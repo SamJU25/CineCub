@@ -313,6 +313,18 @@ export async function syncUserProfile(): Promise<StoredUser | null> {
         saveLS("cachedName", json.user.displayName);
         changed = true;
       }
+      if (json.user.username && json.user.username !== stored.username) {
+        updated.username = json.user.username;
+        changed = true;
+      }
+      if (json.user.email && json.user.email !== stored.email) {
+        updated.email = json.user.email;
+        changed = true;
+      }
+      if (json.user.hasPassword !== undefined && json.user.hasPassword !== stored.hasPassword) {
+        updated.hasPassword = json.user.hasPassword;
+        changed = true;
+      }
       if (json.user.idToken) {
         updated.idToken = json.user.idToken;
       }

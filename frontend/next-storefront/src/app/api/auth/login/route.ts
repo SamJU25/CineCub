@@ -145,6 +145,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if account was created with Google and has no custom password set yet
+    const isGoogleOnly = user.password_hash.startsWith("google:");
+    if (isGoogleOnly) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "GOOGLE_ACCOUNT_NO_PASSWORD",
+          message: "This account was created with Google. Please Sign in with Google, or set a password in your Profile after signing in.",
+        },
+        { status: 401, headers: { "Content-Type": "application/json", ...authCors } }
+      );
+    }
+
     // Verify password hash
     const isValid = await verifyPassword(password, user.password_hash);
     if (!isValid) {
@@ -175,6 +188,7 @@ export async function POST(request: NextRequest) {
           displayName: user.display_name,
           username: user.username,
           photoURL: user.photo_url || "/assets/avatars/av_1.png",
+          hasPassword: true,
           idToken,
           refreshToken: idToken,
         },

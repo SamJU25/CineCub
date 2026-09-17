@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCineCubBindings } from "@/lib/cloudflare";
-import { verifyJWT, signJWT } from "@/lib/auth-crypto";
+import { verifyJWT, signJWT, hashPassword, verifyPassword } from "@/lib/auth-crypto";
 
 const ALLOWED_AUTH_ORIGINS = new Set([
   "https://cinecub.stream",
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const row = await bindings.DB.prepare(
-      `SELECT id, username, email, display_name, photo_url, email_verified FROM users WHERE id = ? LIMIT 1`
+      `SELECT id, username, email, display_name, photo_url, email_verified, password_hash FROM users WHERE id = ? LIMIT 1`
     )
       .bind(authUser.uid)
       .first<{
@@ -67,6 +67,7 @@ export async function GET(request: NextRequest) {
         display_name: string;
         photo_url: string;
         email_verified: number;
+        password_hash: string;
       }>();
 
     if (!row) {
@@ -86,6 +87,7 @@ export async function GET(request: NextRequest) {
           displayName: row.display_name,
           photoURL: row.photo_url || "/assets/avatars/av_1.png",
           emailVerified: Boolean(row.email_verified),
+          hasPassword: !row.password_hash.startsWith("google:"),
         },
       },
       { status: 200, headers: { "Content-Type": "application/json", ...cors } }
@@ -99,7 +101,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST: Update user profile (avatar, display name) in Cloudflare D1 and R2
+// POST: Update user profile (avatar, display name, username, email, password) in Cloudflare D1 and R2
 export async function POST(request: NextRequest) {
   const cors = getCorsHeaders(request);
   const bindings = await getCineCubBindings();
@@ -123,14 +125,37 @@ export async function POST(request: NextRequest) {
     const body = (await request.json().catch(() => ({}))) as {
       photoURL?: string;
       displayName?: string;
+      username?: string;
+      email?: string;
+      currentPassword?: string;
+      newPassword?: string;
     };
 
-    const photoURL = typeof body.photoURL === "string" ? body.photoURL.trim() : undefined;
-    const displayName = typeof body.displayName === "string" ? body.displayName.trim() : undefined;
+    // 1. Fetch existing user record
+    const existing = await bindings.DB.prepare(
+      `SELECT id, username, email, display_name, photo_url, email_verified, password_hash FROM users WHERE id = ? LIMIT 1`
+    )
+      .bind(authUser.uid)
+      .first<{
+        id: string;
+        username: string;
+        email: string;
+        display_name: string;
+        photo_url: string;
+        email_verified: number;
+        password_hash: string;
+      }>();
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: "NOT_FOUND", message: "User not found" },
+        { status: 404, headers: { "Content-Type": "application/json", ...cors } }
+      );
+    }
 
     let sanitizedDisplayName: string | undefined = undefined;
-    if (displayName !== undefined) {
-      sanitizedDisplayName = displayName.replace(/<[^>]*>/g, "").replace(/[\u0000-\u001F\u007F-\u009F]/g, "").trim();
+    if (body.displayName !== undefined) {
+      sanitizedDisplayName = body.displayName.replace(/<[^>]*>/g, "").replace(/[\u0000-\u001F\u007F-\u009F]/g, "").trim();
       if (sanitizedDisplayName.length < 2 || sanitizedDisplayName.length > 50) {
         return NextResponse.json(
           { success: false, error: "INVALID_NAME", message: "Display name must be between 2 and 50 characters" },
@@ -140,12 +165,13 @@ export async function POST(request: NextRequest) {
     }
 
     let sanitizedPhotoURL: string | undefined = undefined;
-    if (photoURL !== undefined) {
-      const isKnownAvatar = /^\/assets\/avatars\/av_\d+\.png$/.test(photoURL);
+    if (body.photoURL !== undefined) {
+      const trimmedPhoto = body.photoURL.trim();
+      const isKnownAvatar = /^\/assets\/avatars\/av_\d+\.png$/.test(trimmedPhoto);
       let isValidHttps = false;
-      if (!isKnownAvatar && photoURL.length <= 500) {
+      if (!isKnownAvatar && trimmedPhoto.length <= 500) {
         try {
-          const u = new URL(photoURL);
+          const u = new URL(trimmedPhoto);
           isValidHttps = u.protocol === "https:";
         } catch {}
       }
@@ -156,10 +182,96 @@ export async function POST(request: NextRequest) {
           { status: 400, headers: { "Content-Type": "application/json", ...cors } }
         );
       }
-      sanitizedPhotoURL = photoURL;
+      sanitizedPhotoURL = trimmedPhoto;
     }
 
-    if (!sanitizedPhotoURL && !sanitizedDisplayName) {
+    let sanitizedUsername: string | undefined = undefined;
+    if (body.username !== undefined) {
+      sanitizedUsername = body.username.trim().toLowerCase();
+      if (!/^[a-zA-Z0-9_]{3,20}$/.test(sanitizedUsername)) {
+        return NextResponse.json(
+          { success: false, error: "INVALID_USERNAME", message: "Username must be 3-20 alphanumeric characters or underscores" },
+          { status: 400, headers: { "Content-Type": "application/json", ...cors } }
+        );
+      }
+      if (sanitizedUsername !== existing.username.toLowerCase()) {
+        const conflict = await bindings.DB.prepare(
+          `SELECT id FROM users WHERE username = ? AND id != ? LIMIT 1`
+        )
+          .bind(sanitizedUsername, authUser.uid)
+          .first<{ id: string }>();
+
+        if (conflict) {
+          return NextResponse.json(
+            { success: false, error: "USERNAME_TAKEN", message: "This username is already taken" },
+            { status: 409, headers: { "Content-Type": "application/json", ...cors } }
+          );
+        }
+      }
+    }
+
+    let sanitizedEmail: string | undefined = undefined;
+    if (body.email !== undefined) {
+      sanitizedEmail = body.email.trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail)) {
+        return NextResponse.json(
+          { success: false, error: "INVALID_EMAIL", message: "Please provide a valid email address" },
+          { status: 400, headers: { "Content-Type": "application/json", ...cors } }
+        );
+      }
+      if (sanitizedEmail !== existing.email.toLowerCase()) {
+        const conflict = await bindings.DB.prepare(
+          `SELECT id FROM users WHERE email = ? AND id != ? LIMIT 1`
+        )
+          .bind(sanitizedEmail, authUser.uid)
+          .first<{ id: string }>();
+
+        if (conflict) {
+          return NextResponse.json(
+            { success: false, error: "EMAIL_TAKEN", message: "An account with this email already exists" },
+            { status: 409, headers: { "Content-Type": "application/json", ...cors } }
+          );
+        }
+      }
+    }
+
+    let newPasswordHash: string | undefined = undefined;
+    if (body.newPassword !== undefined && body.newPassword.length > 0) {
+      if (body.newPassword.length < 6) {
+        return NextResponse.json(
+          { success: false, error: "PASSWORD_TOO_SHORT", message: "Password must be at least 6 characters" },
+          { status: 400, headers: { "Content-Type": "application/json", ...cors } }
+        );
+      }
+
+      const isGoogleOnly = existing.password_hash.startsWith("google:");
+      if (!isGoogleOnly) {
+        // User already has a custom password, current password is required
+        if (!body.currentPassword) {
+          return NextResponse.json(
+            { success: false, error: "MISSING_CURRENT_PASSWORD", message: "Current password is required to change password" },
+            { status: 400, headers: { "Content-Type": "application/json", ...cors } }
+          );
+        }
+        const isMatch = await verifyPassword(body.currentPassword, existing.password_hash);
+        if (!isMatch) {
+          return NextResponse.json(
+            { success: false, error: "INCORRECT_CURRENT_PASSWORD", message: "Current password is incorrect" },
+            { status: 400, headers: { "Content-Type": "application/json", ...cors } }
+          );
+        }
+      }
+
+      newPasswordHash = await hashPassword(body.newPassword);
+    }
+
+    if (
+      !sanitizedPhotoURL &&
+      !sanitizedDisplayName &&
+      !sanitizedUsername &&
+      !sanitizedEmail &&
+      !newPasswordHash
+    ) {
       return NextResponse.json(
         { success: false, error: "INVALID_REQUEST", message: "Nothing to update" },
         { status: 400, headers: { "Content-Type": "application/json", ...cors } }
@@ -167,76 +279,64 @@ export async function POST(request: NextRequest) {
     }
 
     const now = Date.now();
+    const finalPhoto = sanitizedPhotoURL ?? existing.photo_url;
+    const finalDisplayName = sanitizedDisplayName ?? existing.display_name;
+    const finalUsername = sanitizedUsername ?? existing.username;
+    const finalEmail = sanitizedEmail ?? existing.email;
+    const finalPasswordHash = newPasswordHash ?? existing.password_hash;
+    const finalEmailVerified =
+      sanitizedEmail && sanitizedEmail !== existing.email.toLowerCase()
+        ? 0
+        : existing.email_verified;
 
-    // 1. Update in Cloudflare D1
-    if (sanitizedPhotoURL && sanitizedDisplayName) {
-      await bindings.DB.prepare(
-        `UPDATE users SET photo_url = ?, display_name = ?, updated_at = ? WHERE id = ?`
-      )
-        .bind(sanitizedPhotoURL, sanitizedDisplayName, now, authUser.uid)
-        .run();
-    } else if (sanitizedPhotoURL) {
-      await bindings.DB.prepare(
-        `UPDATE users SET photo_url = ?, updated_at = ? WHERE id = ?`
-      )
-        .bind(sanitizedPhotoURL, now, authUser.uid)
-        .run();
-    } else if (sanitizedDisplayName) {
-      await bindings.DB.prepare(
-        `UPDATE users SET display_name = ?, updated_at = ? WHERE id = ?`
-      )
-        .bind(sanitizedDisplayName, now, authUser.uid)
-        .run();
-    }
-
-    // 2. Fetch fresh user row from D1
-    const row = await bindings.DB.prepare(
-      `SELECT id, username, email, display_name, photo_url, email_verified FROM users WHERE id = ? LIMIT 1`
+    // 2. Update D1
+    await bindings.DB.prepare(
+      `UPDATE users
+       SET photo_url = ?,
+           display_name = ?,
+           username = ?,
+           email = ?,
+           password_hash = ?,
+           email_verified = ?,
+           updated_at = ?
+       WHERE id = ?`
     )
-      .bind(authUser.uid)
-      .first<{
-        id: string;
-        username: string;
-        email: string;
-        display_name: string;
-        photo_url: string;
-        email_verified: number;
-      }>();
-
-    if (!row) {
-      return NextResponse.json(
-        { success: false, error: "NOT_FOUND", message: "User not found after update" },
-        { status: 404, headers: { "Content-Type": "application/json", ...cors } }
-      );
-    }
-
-    const updatedPhotoURL = row.photo_url || "/assets/avatars/av_1.png";
-    const updatedDisplayName = row.display_name;
+      .bind(
+        finalPhoto,
+        finalDisplayName,
+        finalUsername,
+        finalEmail,
+        finalPasswordHash,
+        finalEmailVerified,
+        now,
+        authUser.uid
+      )
+      .run();
 
     // 3. Issue fresh JWT with updated profile
     const idToken = await signJWT(
       {
-        uid: row.id,
-        email: row.email,
-        username: row.username,
-        displayName: updatedDisplayName,
-        photoURL: updatedPhotoURL,
+        uid: existing.id,
+        email: finalEmail,
+        username: finalUsername,
+        displayName: finalDisplayName,
+        photoURL: finalPhoto,
       },
       bindings.JWT_SECRET
     );
 
     // 4. Update avatar in Cloudflare R2 library bundle as secondary sync source
-    if (bindings.STORAGE && photoURL) {
+    if (bindings.STORAGE && sanitizedPhotoURL) {
       try {
-        const key = `users/${row.id}/library.json`;
+        const key = `users/${existing.id}/library.json`;
         const object = await bindings.STORAGE.get(key);
         if (object) {
           const text = await object.text();
           const bundle = JSON.parse(text);
-          bundle.avatar = updatedPhotoURL;
+          bundle.avatar = finalPhoto;
           await bindings.STORAGE.put(key, JSON.stringify(bundle), {
             httpMetadata: { contentType: "application/json" },
-            customMetadata: { userId: row.id, updatedAt: String(now) },
+            customMetadata: { userId: existing.id, updatedAt: String(now) },
           });
         }
       } catch (r2Err) {
@@ -247,14 +347,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: "Profile updated successfully",
+        message: newPasswordHash
+          ? existing.password_hash.startsWith("google:")
+            ? "Password set successfully! You can now log in with email/password or Google."
+            : "Password updated successfully"
+          : "Profile updated successfully",
         user: {
-          uid: row.id,
-          email: row.email,
-          displayName: updatedDisplayName,
-          username: row.username,
-          photoURL: updatedPhotoURL,
-          emailVerified: Boolean(row.email_verified),
+          uid: existing.id,
+          email: finalEmail,
+          displayName: finalDisplayName,
+          username: finalUsername,
+          photoURL: finalPhoto,
+          emailVerified: Boolean(finalEmailVerified),
+          hasPassword: !finalPasswordHash.startsWith("google:"),
           idToken,
           refreshToken: idToken,
         },

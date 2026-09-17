@@ -6,6 +6,7 @@ export interface StoredUser {
   displayName: string;
   photoURL: string;
   username?: string;
+  hasPassword?: boolean;
   idToken?: string;
   refreshToken?: string;
 }

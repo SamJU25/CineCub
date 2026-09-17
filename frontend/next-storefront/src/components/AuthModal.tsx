@@ -49,6 +49,29 @@ function PasswordToggle({ targetId }: { targetId: string }) {
   );
 }
 
+function GoogleIcon() {
+  return (
+    <svg className="auth-google-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.36 24 12 24z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.97 0 12s.45 3.84 1.25 5.42l4.03-3.15z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+      />
+    </svg>
+  );
+}
+
 export default function AuthModal() {
   const { authModal, closeAuth, setUser } = useStore((s) => s);
   const [view, setView] = useState<AuthView>("login");
@@ -123,6 +146,19 @@ export default function AuthModal() {
   }, [authModal]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const existing = document.getElementById("google-gsi-client");
+    if (!existing) {
+      const script = document.createElement("script");
+      script.id = "google-gsi-client";
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!authModal) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeAuth();
@@ -130,6 +166,84 @@ export default function AuthModal() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [authModal, closeAuth]);
+
+  const handleGoogleAuth = useCallback(async () => {
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const g = typeof window !== "undefined" ? (window as any).google : null;
+
+    if (!clientId) {
+      setError("Google Sign-In requires NEXT_PUBLIC_GOOGLE_CLIENT_ID to be configured.");
+      setLoading(false);
+      return;
+    }
+
+    if (!g?.accounts?.oauth2) {
+      setError("Google authentication service is initializing. Please try again in a few seconds.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const tokenClient = g.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: "email profile openid",
+        callback: async (tokenResponse: any) => {
+          if (tokenResponse.error) {
+            setError(tokenResponse.error_description || "Google sign-in was cancelled.");
+            setLoading(false);
+            return;
+          }
+
+          try {
+            const res = await fetch("/api/auth/google", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ accessToken: tokenResponse.access_token }),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+              setError(data.message || data.error || "Google sign-in failed.");
+              setLoading(false);
+              return;
+            }
+
+            if (data.user) {
+              const avatar = data.user.photoURL || "/assets/avatars/av_1.png";
+              setUser({
+                uid: data.user.uid,
+                email: data.user.email,
+                displayName: data.user.displayName || data.user.email.split("@")[0],
+                photoURL: avatar,
+                username: data.user.username,
+                hasPassword: data.user.hasPassword,
+                idToken: data.user.idToken,
+                refreshToken: data.user.refreshToken,
+              });
+            }
+
+            setSuccess("Signed in with Google! Redirecting...");
+            showToast("Signed in with Google!", "success");
+            setTimeout(() => {
+              closeAuth();
+              setLoading(false);
+            }, 1000);
+          } catch {
+            setError("Network error communicating with CineCub servers.");
+            setLoading(false);
+          }
+        },
+      });
+
+      tokenClient.requestAccessToken({ prompt: "select_account" });
+    } catch (err: any) {
+      setError(err?.message || "Failed to initialize Google Sign-in.");
+      setLoading(false);
+    }
+  }, [closeAuth, setUser]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,6 +269,7 @@ export default function AuthModal() {
           displayName: data.user.displayName || data.user.email.split("@")[0],
           photoURL: avatar,
           username: data.user.username,
+          hasPassword: data.user.hasPassword ?? true,
           idToken: data.user.idToken,
           refreshToken: data.user.refreshToken,
         });
@@ -208,6 +323,7 @@ export default function AuthModal() {
           displayName: data.user.displayName || signupName,
           photoURL: avatar,
           username: signupUser,
+          hasPassword: true,
           idToken: data.user.idToken,
           refreshToken: data.user.refreshToken,
         });
@@ -272,9 +388,25 @@ export default function AuthModal() {
             <h2 className="auth-heading">Sign in</h2>
             <p className="auth-desc">Use your username or registered email address with your password.</p>
 
+            {error && <div className="auth-error" id="auth-login-error" style={{ marginBottom: "14px" }}>{error}</div>}
+            {success && <div className="auth-success" style={{ marginBottom: "14px" }}>{success}</div>}
+
+            <button
+              type="button"
+              className="auth-btn-google"
+              id="btn-google-login"
+              onClick={handleGoogleAuth}
+              disabled={loading}
+            >
+              <GoogleIcon />
+              <span>Continue with Google</span>
+            </button>
+
+            <div className="auth-divider">
+              <span>OR CONTINUE WITH CREDENTIALS</span>
+            </div>
+
             <form onSubmit={handleLogin} className="auth-form">
-              {error && <div className="auth-error" id="auth-login-error">{error}</div>}
-              {success && <div className="auth-success">{success}</div>}
               <div className="auth-field">
                 <label>Username or email</label>
                 <div className="auth-input-wrap">
@@ -333,9 +465,25 @@ export default function AuthModal() {
             <h2 className="auth-heading">Join CineCub</h2>
             <p className="auth-desc">Create an account. Your username and email must be unique.</p>
 
+            {error && <div className="auth-error" id="auth-signup-error" style={{ marginBottom: "14px" }}>{error}</div>}
+            {success && <div className="auth-success" style={{ marginBottom: "14px" }}>{success}</div>}
+
+            <button
+              type="button"
+              className="auth-btn-google"
+              id="btn-google-signup"
+              onClick={handleGoogleAuth}
+              disabled={loading}
+            >
+              <GoogleIcon />
+              <span>Sign up with Google</span>
+            </button>
+
+            <div className="auth-divider">
+              <span>OR REGISTER WITH EMAIL</span>
+            </div>
+
             <form onSubmit={handleSignup} className="auth-form">
-              {error && <div className="auth-error" id="auth-signup-error">{error}</div>}
-              {success && <div className="auth-success">{success}</div>}
               <div className="auth-field">
                 <label>Name</label>
                 <div className="auth-input-wrap">
