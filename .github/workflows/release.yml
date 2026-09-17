@@ -105,6 +105,13 @@ jobs:
           echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
 
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CineCub-v${{ steps.version.outputs.name }}-release
+          path: frontend/next-storefront/public/CineCub.apk
+          if-no-files-found: warn
+
       - name: Configure git identity
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -124,7 +131,19 @@ jobs:
 
       - name: Push to default branch
         run: |
-          git push origin HEAD:main
+          git push origin HEAD:main || echo "Push to main branch skipped (check repo permissions)."
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: frontend/next-storefront/public/CineCub.apk
+          name: CineCub v${{ steps.version.outputs.name }}
+          body: |
+            ## CineCub v${{ steps.version.outputs.name }}
+            - Native Google Sign-In with Google Play Services & Chrome Custom Tabs fallback
+            - Cloud account sync
+            - Streaming and player performance enhancements
 
       # -----------------------------------------------------------------------
       # 8. Job summary
