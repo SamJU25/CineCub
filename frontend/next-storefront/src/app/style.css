@@ -2889,12 +2889,48 @@ iframe {
     width: 100% !important;
   }
 
-  /* When there are 3 comboboxes (or any odd remainder), the bottom combobox spans full 100% width */
+  /* When there are 3 comboboxes (or any odd remainder), the bottom combobox spans full 100% width and centers its text */
   .browse-filters-wrap .custom-select:nth-child(3):last-child,
   .browse-filters-wrap .custom-select:nth-child(odd):last-child {
     flex: 1 1 100% !important;
     width: 100% !important;
     max-width: 100% !important;
+  }
+
+  .browse-filters-wrap .custom-select:nth-child(3):last-child .select-selected,
+  .browse-filters-wrap .custom-select:nth-child(odd):last-child .select-selected {
+    justify-content: center !important;
+    text-align: center !important;
+    position: relative !important;
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+
+  .browse-filters-wrap .custom-select:nth-child(3):last-child .select-selected .select-text,
+  .browse-filters-wrap .custom-select:nth-child(odd):last-child .select-selected .select-text {
+    text-align: center !important;
+    justify-content: center !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .browse-filters-wrap .custom-select:nth-child(3):last-child .select-selected:after,
+  .browse-filters-wrap .custom-select:nth-child(odd):last-child .select-selected:after {
+    position: absolute !important;
+    right: 14px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    margin-left: 0 !important;
+  }
+
+  .browse-filters-wrap .custom-select:nth-child(3):last-child .select-selected.select-arrow-active:after,
+  .browse-filters-wrap .custom-select:nth-child(odd):last-child .select-selected.select-arrow-active:after {
+    transform: translateY(-50%) rotate(180deg) !important;
+  }
+
+  .browse-filters-wrap .custom-select:nth-child(3):last-child .select-items div,
+  .browse-filters-wrap .custom-select:nth-child(odd):last-child .select-items div {
+    text-align: center !important;
   }
 
   .browse-filters-wrap .select-selected {
