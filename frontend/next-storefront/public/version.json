@@ -1,12 +1,12 @@
-{
+﻿{
  "appName": "CineCub",
- "versionName": "1.7.0",
- "versionCode": 20,
+ "versionName": "1.7.1",
+ "versionCode": 21,
  "apkUrl": "https://cinecub.stream/CineCub.apk?v=170",
  "apkSha256": "127540a171195758e332248a49df1b2411e455c934817decd688e1770f4c7277",
  "downloadUrl": "https://cinecub.stream/CineCub.apk?v=170",
  "minSupportedVersion": 1,
  "mandatory": false,
  "releaseNotes": "CineCub 1.7.0: Native Google Sign-In with Play Services & Chrome Custom Tabs fallback, cloud sync, and streaming performance updates.",
- "updatedAt": "2026-09-17T07:39:05Z"
+ "updatedAt": "2026-09-17T08:13:38Z"
 }
