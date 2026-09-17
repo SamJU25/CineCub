@@ -93,8 +93,13 @@ export async function POST(request: NextRequest) {
   const authCors = getAuthCorsHeaders(request);
 
   try {
-    const body = await request.json().catch(() => ({}));
-    const credential = typeof body.credential === "string" ? body.credential.trim() : "";
+    const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+    const credential =
+      typeof body.credential === "string" && body.credential.trim()
+        ? body.credential.trim()
+        : typeof body.idToken === "string" && body.idToken.trim()
+        ? body.idToken.trim()
+        : "";
     const accessToken = typeof body.accessToken === "string" ? body.accessToken.trim() : "";
 
     if (!credential && !accessToken) {

@@ -181,10 +181,99 @@ export default function AuthModal() {
     return () => document.removeEventListener("keydown", onKey);
   }, [authModal, closeAuth]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    (window as any).handleNativeGoogleSignInSuccess = async (idToken: string) => {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch("/api/auth/google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          setError(data.message || data.error || "Google sign-in failed.");
+          setLoading(false);
+          return;
+        }
+
+        if (data.user) {
+          const avatar = data.user.photoURL || "/assets/avatars/av_1.png";
+          setUser({
+            uid: data.user.uid,
+            email: data.user.email,
+            displayName: data.user.displayName || data.user.email.split("@")[0],
+            photoURL: avatar,
+            username: data.user.username,
+            hasPassword: data.user.hasPassword,
+            idToken: data.user.idToken,
+            refreshToken: data.user.refreshToken,
+          });
+        }
+
+        setSuccess("Signed in with Google! Redirecting...");
+        showToast("Signed in with Google!", "success");
+        setTimeout(() => {
+          closeAuth();
+          setLoading(false);
+        }, 1000);
+      } catch {
+        setError("Network error communicating with CineCub servers.");
+        setLoading(false);
+      }
+    };
+
+    (window as any).handleNativeGoogleSignInError = (errMessage: string) => {
+      setLoading(false);
+      if (errMessage && errMessage !== "Cancelled" && errMessage !== "Canceled") {
+        setError(errMessage);
+      }
+    };
+
+    return () => {
+      delete (window as any).handleNativeGoogleSignInSuccess;
+      delete (window as any).handleNativeGoogleSignInError;
+    };
+  }, [closeAuth, setUser]);
+
   const handleGoogleAuth = useCallback(async () => {
     setError("");
     setSuccess("");
     setLoading(true);
+
+    const androidBridge =
+      typeof window !== "undefined"
+        ? (window as any).CineCubAndroid || (window as any).StreamHeavenAndroid
+        : null;
+
+    if (androidBridge && typeof androidBridge.signInWithGoogle === "function") {
+      try {
+        androidBridge.signInWithGoogle();
+        return;
+      } catch (bridgeErr: any) {
+        console.warn("Native bridge signInWithGoogle failed, falling back to web:", bridgeErr);
+      }
+    }
+
+    const isApp =
+      typeof window !== "undefined" &&
+      !!(
+        (window as any).CineCubAndroid ||
+        (window as any).AndroidShare ||
+        (window as any).StreamHeavenAndroid ||
+        document.documentElement.classList.contains("is-app-env")
+      );
+
+    if (isApp) {
+      setError(
+        "Google Sign-In on the Android app requires the new v1.7.0 update. Please log in with your email/username & password, or sign in via web browser."
+      );
+      setLoading(false);
+      return;
+    }
 
     const effectiveClientId = googleClientId || DEFAULT_GOOGLE_CLIENT_ID;
 
