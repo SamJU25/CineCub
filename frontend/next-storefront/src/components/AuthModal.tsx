@@ -215,6 +215,11 @@ export default function AuthModal() {
       const tokenClient = g.accounts.oauth2.initTokenClient({
         client_id: effectiveClientId,
         scope: "email profile openid",
+        error_callback: (err: any) => {
+          setLoading(false);
+          if (err?.type === "popup_closed") return;
+          setError(err?.message || "Google sign-in popup was closed or blocked.");
+        },
         callback: async (tokenResponse: any) => {
           if (tokenResponse.error) {
             setError(tokenResponse.error_description || "Google sign-in was cancelled.");

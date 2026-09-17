@@ -207,7 +207,7 @@ const JSON_LD = {
   ],
 };
 
-const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://image.tmdb.org https://upload.wikimedia.org https://*.googleusercontent.com https://i.ytimg.com https://*.ytimg.com https://img.youtube.com; media-src 'self' https: blob:; object-src 'none'; frame-src 'self' https: https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https:; base-uri 'self'; form-action 'self'; frame-ancestors 'none';";
+const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://static.cloudflareinsights.com https://www.googletagmanager.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://accounts.google.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://image.tmdb.org https://upload.wikimedia.org https://*.googleusercontent.com https://i.ytimg.com https://*.ytimg.com https://img.youtube.com; media-src 'self' https: blob:; object-src 'none'; frame-src 'self' https: https://www.youtube.com https://www.youtube-nocookie.com https://accounts.google.com; connect-src 'self' https: https://accounts.google.com https://oauth2.googleapis.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none';";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -217,6 +217,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="theme-color" content="#0a0a0f" />
         <meta httpEquiv="Content-Security-Policy" content={CSP} />
+        <link rel="preconnect" href="https://accounts.google.com" />
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
         <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://vidlink.pro" />
         <link rel="dns-prefetch" href="https://vidlink.pro" />
