@@ -23,7 +23,6 @@ export default function BrowsePage() {
   } = useStore((s) => s);
 
   const [items, setItems] = useState<MediaItem[]>([]);
-  const [viewDensity, setViewDensity] = useState<"cinematic" | "compact">("cinematic");
   const [, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -308,7 +307,6 @@ export default function BrowsePage() {
                 CineCub
               </Link> &rsaquo; <span id="browse-breadcrumb-title">{title}</span>
             </nav>
-            <div className="section-header-kicker">EXPLORE LIBRARY</div>
             <h1 className="section-title" id="browse-title">{title}</h1>
           </div>
           <div className="browse-filters-wrap">
@@ -381,59 +379,17 @@ export default function BrowsePage() {
                 className="browse-trending-time-wrap"
               />
             )}
-            {/* View Density Switcher */}
-            <div className="browse-density-toggle" role="group" aria-label="Grid Density">
-              <button
-                type="button"
-                className={`density-btn${viewDensity === "cinematic" ? " active" : ""}`}
-                onClick={() => setViewDensity("cinematic")}
-                title="Cinematic View"
-                aria-label="Cinematic View"
-              >
-                <i className="fas fa-th-large" />
-              </button>
-              <button
-                type="button"
-                className={`density-btn${viewDensity === "compact" ? " active" : ""}`}
-                onClick={() => setViewDensity("compact")}
-                title="Compact Grid"
-                aria-label="Compact Grid"
-              >
-                <i className="fas fa-th" />
-              </button>
-            </div>
           </div>
-        </div>
-
-        {/* Quick Genre Pills Cloud */}
-        <div className="browse-genre-pills-bar" id="browse-genre-chips" role="tablist" aria-label="Quick genre filters">
-          <button
-            type="button"
-            className={`browse-genre-pill${!browseGenreId ? " active" : ""}`}
-            onClick={() => setBrowseGenreId(null)}
-          >
-            All Genres
-          </button>
-          {CFG.GENRES.map((g) => (
-            <button
-              key={g.id}
-              type="button"
-              className={`browse-genre-pill${browseGenreId === g.id ? " active" : ""}`}
-              onClick={() => setBrowseGenreId(browseGenreId === g.id ? null : g.id)}
-            >
-              {g.name}
-            </button>
-          ))}
         </div>
 
         {loading ? (
-          <div className={`poster-grid ${viewDensity === "compact" ? "grid-compact" : "grid-cinematic"}`} id="browse-grid">
+          <div className="poster-grid" id="browse-grid">
             {Array.from({ length: 18 }).map((_, i) => (
-              <div key={i} className="skeleton-card frosted-shimmer" />
+              <div key={i} className="skeleton-card" />
             ))}
           </div>
         ) : items.length > 0 ? (
-          <div className={`poster-grid ${viewDensity === "compact" ? "grid-compact" : "grid-cinematic"}`} id="browse-grid">
+          <div className="poster-grid" id="browse-grid">
             {items.map((item) => {
               const itemType =
                 browseCategory === "anime" || browseType === "anime"
