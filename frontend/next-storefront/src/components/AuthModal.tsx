@@ -93,6 +93,18 @@ export default function AuthModal() {
   const [resendCountdown, setResendCountdown] = useState(0);
   const [usernameStatus, setUsernameStatus] = useState<"checking" | "available" | "taken" | "invalid" | null>(null);
   const usernameCheckRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [googleClientId, setGoogleClientId] = useState(
+    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""
+  );
+
+  useEffect(() => {
+    fetch("/api/auth/config")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.googleClientId) setGoogleClientId(d.googleClientId);
+      })
+      .catch(() => {});
+  }, []);
 
   const switchView = useCallback((v: AuthView) => {
     setView(v);
@@ -172,11 +184,13 @@ export default function AuthModal() {
     setSuccess("");
     setLoading(true);
 
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const effectiveClientId = googleClientId || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const g = typeof window !== "undefined" ? (window as any).google : null;
 
-    if (!clientId) {
-      setError("Google Sign-In requires NEXT_PUBLIC_GOOGLE_CLIENT_ID to be configured.");
+    if (!effectiveClientId) {
+      setError(
+        "Google Sign-In is awaiting Client ID configuration. Set NEXT_PUBLIC_GOOGLE_CLIENT_ID or GOOGLE_CLIENT_ID in your Cloudflare environment."
+      );
       setLoading(false);
       return;
     }
@@ -189,7 +203,7 @@ export default function AuthModal() {
 
     try {
       const tokenClient = g.accounts.oauth2.initTokenClient({
-        client_id: clientId,
+        client_id: effectiveClientId,
         scope: "email profile openid",
         callback: async (tokenResponse: any) => {
           if (tokenResponse.error) {

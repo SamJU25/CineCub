@@ -9,6 +9,8 @@ export interface CineCubBindings {
   RESEND_API_KEY?: string;
   RESEND_FROM_EMAIL?: string;
   RESEND_FALLBACK_FROM_EMAIL?: string;
+  GOOGLE_CLIENT_ID?: string;
+  NEXT_PUBLIC_GOOGLE_CLIENT_ID?: string;
 }
 
 /**
@@ -26,6 +28,8 @@ export async function getCineCubBindings(): Promise<CineCubBindings> {
       RESEND_API_KEY: env.RESEND_API_KEY || process.env.RESEND_API_KEY || "",
       RESEND_FROM_EMAIL: env.RESEND_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || "CineCub <noreply@cinecub.stream>",
       RESEND_FALLBACK_FROM_EMAIL: env.RESEND_FALLBACK_FROM_EMAIL || process.env.RESEND_FALLBACK_FROM_EMAIL || "CineCub <onboarding@resend.dev>",
+      GOOGLE_CLIENT_ID: env.GOOGLE_CLIENT_ID || env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID: env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID || "",
     };
   } catch {
     return {
@@ -34,6 +38,8 @@ export async function getCineCubBindings(): Promise<CineCubBindings> {
       RESEND_API_KEY: process.env.RESEND_API_KEY || "",
       RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL || "CineCub <noreply@cinecub.stream>",
       RESEND_FALLBACK_FROM_EMAIL: process.env.RESEND_FALLBACK_FROM_EMAIL || "CineCub <onboarding@resend.dev>",
+      GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID || "",
     };
   }
 }
