@@ -2795,7 +2795,7 @@ iframe {
   }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 820px) {
   .section-header.trending-header, .section-header.popular-header {
     gap: 10px;
     margin-bottom: 14px;
@@ -2883,6 +2883,18 @@ iframe {
     width: calc(50% - 4px) !important;
     min-width: 0 !important;
     max-width: calc(50% - 4px) !important;
+  }
+
+  .browse-filters-wrap .custom-select .select-selected {
+    width: 100% !important;
+  }
+
+  /* When there are 3 comboboxes (or any odd remainder), the bottom combobox spans full 100% width */
+  .browse-filters-wrap .custom-select:nth-child(3):last-child,
+  .browse-filters-wrap .custom-select:nth-child(odd):last-child {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .browse-filters-wrap .select-selected {
