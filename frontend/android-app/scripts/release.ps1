@@ -28,10 +28,11 @@ $ErrorActionPreference = "Stop"
 # ---------------------------------------------------------------------------
 $androidAppDir = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $frontendRoot  = (Resolve-Path (Join-Path $androidAppDir "..")).Path
-$gradleFile   = Join-Path $androidAppDir "app\build.gradle.kts"
-$apkSrc       = Join-Path $androidAppDir "app\build\outputs\apk\release\app-release.apk"
-$versionJson  = Join-Path $frontendRoot "next-storefront\public\version.json"
-$apkDst       = Join-Path $frontendRoot "next-storefront\public\CineCub.apk"
+$gradleFile   = [System.IO.Path]::Combine($androidAppDir, "app", "build.gradle.kts")
+$apkSrc       = [System.IO.Path]::Combine($androidAppDir, "app", "build", "outputs", "apk", "release", "app-release.apk")
+$versionJson  = [System.IO.Path]::Combine($frontendRoot, "next-storefront", "public", "version.json")
+$apkDst       = [System.IO.Path]::Combine($frontendRoot, "next-storefront", "public", "CineCub.apk")
+
 
 
 Write-Host ""
