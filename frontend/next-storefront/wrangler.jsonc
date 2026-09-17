@@ -11,7 +11,9 @@
   // Secrets (JWT_SECRET, RESEND_API_KEY, TMDB_API_KEY, SUBDL_API_KEY) must be set via `wrangler secret put <KEY>`.
   "vars": {
     "RESEND_FROM_EMAIL": "CineCub <noreply@cinecub.stream>",
-    "RESEND_FALLBACK_FROM_EMAIL": "CineCub <onboarding@resend.dev>"
+    "RESEND_FALLBACK_FROM_EMAIL": "CineCub <onboarding@resend.dev>",
+    "NEXT_PUBLIC_GOOGLE_CLIENT_ID": "307176410598-7mlt6jtv723i2ki6eri6iu9cjqtp1r1v.apps.googleusercontent.com",
+    "GOOGLE_CLIENT_ID": "307176410598-7mlt6jtv723i2ki6eri6iu9cjqtp1r1v.apps.googleusercontent.com"
   },
   "d1_databases": [
     {
