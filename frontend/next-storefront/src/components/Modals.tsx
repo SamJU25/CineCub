@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useStore } from "@/lib/store";
 import { CustomerSupportCard } from "@/components/CustomerSupportCard";
 
@@ -113,6 +113,17 @@ export function ConfirmModal({ title, text, onConfirm, onCancel }: {
 export function AppsModal() {
   const { appsModal, closeApps } = useStore((s) => s);
   const [showIosStep, setShowIosStep] = useState(false);
+  const [versionName, setVersionName] = useState("1.7.0");
+
+  useEffect(() => {
+    fetch("/version.json")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.versionName) setVersionName(d.versionName);
+      })
+      .catch(() => {});
+  }, []);
+
   if (
     !appsModal ||
     (typeof document !== "undefined" &&
@@ -159,7 +170,7 @@ export function AppsModal() {
               >
                 <div className="app-btn-icon"><i className="fab fa-android" /></div>
                 <div className="app-btn-text">
-                  <strong>Android APK (v1.6.0)</strong>
+                  <strong>Android APK (v{versionName})</strong>
                   <span>For phones & tablets</span>
                 </div>
                 <div className="app-btn-action"><i className="fas fa-download" /></div>

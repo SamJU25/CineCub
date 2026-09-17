@@ -23,6 +23,7 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
 
 jobs:
   release:
@@ -52,25 +53,24 @@ jobs:
           cache: "gradle"
 
       # -----------------------------------------------------------------------
-      # 3. Decode keystore and write keystore.properties
+      # 3. Decode keystore and write keystore.properties (if configured)
       # -----------------------------------------------------------------------
-      - name: Decode release keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > frontend/android-app/release.keystore
-          if [ ! -s frontend/android-app/release.keystore ]; then
-            echo "ERROR: Decoded keystore is empty — check the KEYSTORE_BASE64 secret." >&2
-            exit 1
-          fi
-
-      - name: Write keystore.properties
+      - name: Configure keystore
         env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          printf 'storeFile=release.keystore\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
-            "$STORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" \
-            > frontend/android-app/keystore.properties
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > frontend/android-app/release.keystore
+            printf 'storeFile=release.keystore\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+              "$STORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" \
+              > frontend/android-app/keystore.properties
+            echo "Release keystore configured successfully."
+          else
+            echo "KEYSTORE_BASE64 secret not set. Building with debug signature fallback."
+          fi
 
       # -----------------------------------------------------------------------
       # 4. Make Gradle wrapper executable and build the release APK
