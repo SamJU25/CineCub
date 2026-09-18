@@ -189,6 +189,7 @@ export async function POST(request: NextRequest) {
           username: user.username,
           photoURL: user.photo_url || "/assets/avatars/av_1.png",
           hasPassword: true,
+          emailVerified: Boolean(user.email_verified),
           idToken,
           refreshToken: idToken,
         },

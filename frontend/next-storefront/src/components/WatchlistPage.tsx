@@ -1,9 +1,11 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { IMG } from "@/lib/api";
 import { showToast } from "@/components/Toast";
+import { ConfirmModal } from "@/components/Modals";
 
 /* 60-day cutoff computed once at module level — avoids impure Date.now() in render */
 const NEW_CUTOFF = Date.now() - 60 * 24 * 60 * 60 * 1000;
@@ -13,8 +15,19 @@ const getSnapshot = () => true;
 const getServerSnapshot = () => false;
 
 export default function WatchlistPage() {
-  const { watchlist, removeFromWatchlist, setActivePage, openDetail, user, openAuth } = useStore((s) => s);
+  const { watchlist, removeFromWatchlist, clearWatchlist, setActivePage, openDetail, user, openAuth } = useStore(
+    useShallow((s) => ({
+      watchlist: s.watchlist,
+      removeFromWatchlist: s.removeFromWatchlist,
+      clearWatchlist: s.clearWatchlist,
+      setActivePage: s.setActivePage,
+      openDetail: s.openDetail,
+      user: s.user,
+      openAuth: s.openAuth,
+    }))
+  );
   const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   return (
     <div className="page-inner">
@@ -25,6 +38,37 @@ export default function WatchlistPage() {
             <div className="section-header-kicker">SAVED TITLES</div>
             <h1 className="section-title" style={{ margin: 0, fontSize: "26px", fontWeight: 900 }}>My Watchlist</h1>
           </div>
+          {mounted && user && watchlist.length > 0 && (
+            <button
+              onClick={() => setShowClearConfirm(true)}
+              style={{
+                background: "rgba(230, 57, 70, 0.12)",
+                color: "#e63946",
+                border: "1px solid rgba(230, 57, 70, 0.3)",
+                borderRadius: "var(--r-pill)",
+                padding: "10px 20px",
+                fontSize: "13px",
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                flexShrink: 0,
+                transition: "background 0.2s, border-color 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(230, 57, 70, 0.25)";
+                e.currentTarget.style.borderColor = "rgba(230, 57, 70, 0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(230, 57, 70, 0.12)";
+                e.currentTarget.style.borderColor = "rgba(230, 57, 70, 0.3)";
+              }}
+            >
+              <i className="fas fa-trash-alt" />
+              Clear Watchlist
+            </button>
+          )}
         </div>
 
         <div className="poster-grid" id="wl-grid">
@@ -123,6 +167,18 @@ export default function WatchlistPage() {
           })}
         </div>
       </div>
+      {showClearConfirm && (
+        <ConfirmModal
+          title="Clear Watchlist"
+          text="Are you sure you want to clear your entire watchlist? This cannot be undone."
+          onConfirm={() => {
+            clearWatchlist();
+            setShowClearConfirm(false);
+            showToast("Watchlist cleared", "info");
+          }}
+          onCancel={() => setShowClearConfirm(false)}
+        />
+      )}
     </div>
   );
 }

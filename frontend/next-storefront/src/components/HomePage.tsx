@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useLayoutEffect, useCallback, useMemo } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { getTrending, getPopular, getTopRated, getUpcoming, getAnime, tmdbFetch, IMG, getTrailerSource, type TrailerSource, getDetail, prefetchDetail } from "@/lib/api";
 import type { MediaItem, HistoryItem } from "@/lib/types";
 import { CFG } from "@/lib/config";
@@ -481,7 +482,16 @@ function SpotlightCarousel({ items }: { items: MediaItem[] }) {
   const isPlayingRef = useRef(false);
   const isLoopingRef = useRef(false);
   const revealTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const { openDetail, watchlist, addToWatchlist, removeFromWatchlist, user, openAuth } = useStore((s) => s);
+  const { openDetail, watchlist, addToWatchlist, removeFromWatchlist, user, openAuth } = useStore(
+    useShallow((s) => ({
+      openDetail: s.openDetail,
+      watchlist: s.watchlist,
+      addToWatchlist: s.addToWatchlist,
+      removeFromWatchlist: s.removeFromWatchlist,
+      user: s.user,
+      openAuth: s.openAuth,
+    }))
+  );
 
   const activeItem = items[current];
   const inWl = activeItem ? watchlist.some((w) => w.id === activeItem.id) : false;
@@ -1076,7 +1086,13 @@ export default function HomePage() {
   const trendingScrollRef = useRef<HTMLDivElement>(null);
   const popularScrollRef = useRef<HTMLDivElement>(null);
 
-  const { setActivePage, setBrowseCategory, openDetail } = useStore((s) => s);
+  const { setActivePage, setBrowseCategory, openDetail } = useStore(
+    useShallow((s) => ({
+      setActivePage: s.setActivePage,
+      setBrowseCategory: s.setBrowseCategory,
+      openDetail: s.openDetail,
+    }))
+  );
 
   const trendingTimeWindow = trendingTimeIdx === 0 ? "day" : "week";
   const popularFilter: PopularFilterKey = popularFilterKey[popularFilterIdx];
@@ -1821,7 +1837,7 @@ export default function HomePage() {
                 <i className="fas fa-trophy" />
               </div>
               <div>
-                <div className="section-header-kicker">CRITICS' CHOICE</div>
+                <div className="section-header-kicker">CRITICS&apos; CHOICE</div>
                 <h2 className="section-title">Top Rated</h2>
                 <div className="section-subtitle">Critically acclaimed movies &amp; series</div>
               </div>

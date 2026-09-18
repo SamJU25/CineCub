@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { IMG, getDetail } from "@/lib/api";
+import { showToast } from "@/components/Toast";
+import { ConfirmModal } from "@/components/Modals";
 import type { MediaDetail, HistoryItem } from "@/lib/types";
 
 /* 60-day cutoff computed once at module level — avoids impure Date.now() in render */
@@ -35,9 +38,18 @@ function getLiveProgress(
 }
 
 export default function HistoryPage() {
-  const { history, clearHistory, setActivePage, openDetail, openPlayer } = useStore((s) => s);
-  const progress = useStore((s) => s.progress);
+  const { history, clearHistory, setActivePage, openDetail, openPlayer, progress } = useStore(
+    useShallow((s) => ({
+      history: s.history,
+      clearHistory: s.clearHistory,
+      setActivePage: s.setActivePage,
+      openDetail: s.openDetail,
+      openPlayer: s.openPlayer,
+      progress: s.progress,
+    }))
+  );
   const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   useEffect(() => {
     const missing = history.filter((item) => !item.poster && !item.poster_path);
@@ -126,9 +138,7 @@ export default function HistoryPage() {
   }, [history]);
 
   const handleClearHistory = () => {
-    if (window.confirm("Are you sure you want to clear your entire watch history? This cannot be undone.")) {
-      clearHistory();
-    }
+    setShowClearConfirm(true);
   };
 
   return (
@@ -261,6 +271,18 @@ export default function HistoryPage() {
           })}
         </div>
       </div>
+      {showClearConfirm && (
+        <ConfirmModal
+          title="Clear Watch History"
+          text="Are you sure you want to clear your entire watch history? This cannot be undone."
+          onConfirm={() => {
+            clearHistory();
+            setShowClearConfirm(false);
+            showToast("Watch history cleared", "info");
+          }}
+          onCancel={() => setShowClearConfirm(false)}
+        />
+      )}
     </div>
   );
 }

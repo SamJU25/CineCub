@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { getDetail, getSeasonEpisodes, IMG, year, runtime, genreNames, formatRating, getTrailerSource, type TrailerSource } from "@/lib/api";
 import type { MediaDetail, CastMember, CrewMember, Video, Episode, Season, MediaItem } from "@/lib/types";
 import HScrollWrapper from "@/components/HScrollWrapper";
-import CustomSelect from "@/components/CustomSelect";
 import { showToast } from "@/components/Toast";
 import { BrandLogo } from "@/components/BrandLogo";
 import CinemaStageCanvas from "@/components/CinemaStageCanvas";
@@ -67,7 +67,24 @@ export default function DetailModal() {
     setBrowseCategory,
     user,
     openAuth,
-  } = useStore((s) => s);
+  } = useStore(
+    useShallow((s) => ({
+      detailModal: s.detailModal,
+      closeDetail: s.closeDetail,
+      openPlayer: s.openPlayer,
+      openTrailer: s.openTrailer,
+      openDetail: s.openDetail,
+      watchlist: s.watchlist,
+      isInWatchlist: s.isInWatchlist,
+      addToWatchlist: s.addToWatchlist,
+      removeFromWatchlist: s.removeFromWatchlist,
+      addToHistory: s.addToHistory,
+      setActivePage: s.setActivePage,
+      setBrowseCategory: s.setBrowseCategory,
+      user: s.user,
+      openAuth: s.openAuth,
+    }))
+  );
   const [detail, setDetail] = useState<MediaDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSeason, setSelectedSeason] = useState(1);
@@ -751,7 +768,10 @@ export default function DetailModal() {
                         className="fv-person-img"
                         id="fv-person-img"
                         alt={personDetail.name}
-                        src={IMG.profile(personDetail.profile_path, "h632") || IMG.profile(personDetail.profile_path, "w342") || ""}
+                        src={IMG.profile(personDetail.profile_path, "h632") || IMG.profile(personDetail.profile_path, "w342") || IMG.placeholder(342, 513)}
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = IMG.placeholder(342, 513);
+                        }}
                       />
                     ) : (
                       <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cv-dark-3)", borderRadius: "12px" }}>
@@ -1096,10 +1116,13 @@ export default function DetailModal() {
                           {ep.still_path ? (
                             <img
                               className="fv-episode-thumb"
-                              src={IMG.backdrop(ep.still_path, "w300") || ""}
+                              src={IMG.backdrop(ep.still_path, "w300") || IMG.placeholder(300, 169)}
                               alt={ep.name || `Episode ${ep.episode_number}`}
                               loading="lazy"
                               decoding="async"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).src = IMG.placeholder(300, 169);
+                              }}
                             />
                           ) : (
                             <div className="fv-episode-placeholder">
@@ -1171,7 +1194,14 @@ export default function DetailModal() {
                     {d.videos.results.filter((v: Video) => v.site === "YouTube").slice(0, 5).map((v: Video) => (
                       <div key={v.id} className="fv-trailer-card" onClick={() => openTrailer(v.name, v.key)}>
                         <div className="fv-trailer-thumb-wrap">
-                          <img className="fv-trailer-thumb" src={`https://img.youtube.com/vi/${v.key}/mqdefault.jpg`} alt="" />
+                          <img
+                            className="fv-trailer-thumb"
+                            src={`https://img.youtube.com/vi/${v.key}/mqdefault.jpg`}
+                            alt=""
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = IMG.placeholder(320, 180);
+                            }}
+                          />
                           <div className="fv-trailer-play-badge"><i className="fas fa-play" /></div>
                         </div>
                         <div className="fv-trailer-info">

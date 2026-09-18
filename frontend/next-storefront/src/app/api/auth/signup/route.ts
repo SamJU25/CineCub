@@ -129,6 +129,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const RESERVED_USERNAMES = new Set([
+      "admin", "root", "superuser", "moderator", "support", "help",
+      "streamheaven", "cinecub", "system", "null", "undefined",
+    ]);
+    if (RESERVED_USERNAMES.has(username)) {
+      return NextResponse.json(
+        { success: false, error: "RESERVED_USERNAME", message: "This username is reserved and cannot be chosen." },
+        { status: 400, headers: { "Content-Type": "application/json", ...authCors } }
+      );
+    }
+
     if (!email || !email.includes("@")) {
       return NextResponse.json(
         { success: false, error: "INVALID_EMAIL", message: "Please provide a valid email address." },
@@ -224,6 +235,8 @@ export async function POST(request: NextRequest) {
           displayName: name,
           username,
           photoURL: photoUrl,
+          hasPassword: true,
+          emailVerified: false,
           idToken,
           refreshToken: idToken,
         },

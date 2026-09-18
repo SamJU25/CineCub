@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Baloo_2 } from "next/font/google";
 import Script from "next/script";
 import "./style.css";
@@ -18,6 +18,13 @@ const baloo = Baloo_2({
   display: "swap",
   variable: "--font-brand",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0a0a0f",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://cinecub.stream"),
@@ -214,7 +221,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning className={`${jakarta.variable} ${baloo.variable}`}>
       <head>
         <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
         <meta name="theme-color" content="#0a0a0f" />
         <meta httpEquiv="Content-Security-Policy" content={CSP} />
         <link rel="preconnect" href="https://accounts.google.com" />

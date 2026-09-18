@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { WatchlistItem, HistoryItem, ProgressData, StreamMode } from "./types";
-import { scheduleCloudPush, syncUserOnLogin } from "./sync";
+import { scheduleCloudPush, syncUserOnLogin, cancelCloudPush, clearLocalLibraryData } from "./sync";
 
 export type Page = "home" | "browse" | "search" | "watchlist" | "history" | "profile";
 
@@ -11,6 +11,7 @@ interface User {
   photoURL: string;
   username?: string;
   hasPassword?: boolean;
+  emailVerified?: boolean;
   idToken?: string;
   refreshToken?: string;
 }
@@ -20,7 +21,7 @@ interface AppState {
   setActivePage: (p: Page) => void;
 
   user: User | null;
-  setUser: (user: User) => void;
+  setUser: (user: User, options?: { isNewAccount?: boolean }) => void;
   logout: () => void;
 
   profilePanelOpen: boolean;
@@ -122,25 +123,44 @@ export const useStore = create<AppState>((set, get) => ({
   setActivePage: (p) => set({ activePage: p }),
 
   user: loadJSON<User | null>("sh_user", null),
-  setUser: (user) => {
+  setUser: (user, options) => {
     saveJSON("sh_user", user);
     saveJSON("cachedAvatar", user.photoURL);
     saveJSON("cachedName", user.displayName);
     if (user.username) saveJSON("cachedUsername", user.username);
-    set({ user });
+    if (options?.isNewAccount) {
+      clearLocalLibraryData();
+      set({ user, watchlist: [], history: [], progress: {} });
+    } else {
+      set({ user });
+    }
     if (user.uid && typeof window !== "undefined") {
-      syncUserOnLogin(user.uid);
+      syncUserOnLogin(user.uid, options);
     }
   },
   logout: () => {
+    cancelCloudPush();
+    clearLocalLibraryData();
     try {
       localStorage.removeItem("sh_user");
       localStorage.removeItem("cachedAvatar");
       localStorage.removeItem("cachedName");
       localStorage.removeItem("cachedUsername");
       localStorage.removeItem("sh_last_synced_at");
+      localStorage.removeItem("sh_last_synced_uid");
     } catch {}
-    set({ user: null, profilePanelOpen: false });
+    set({
+      user: null,
+      profilePanelOpen: false,
+      logoutConfirmOpen: false,
+      watchlist: [],
+      history: [],
+      progress: {},
+    });
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("playback-progress-updated"));
+      window.dispatchEvent(new Event("sh-sync-complete"));
+    }
   },
 
   profilePanelOpen: false,
@@ -421,7 +441,24 @@ if (typeof window !== "undefined") {
     } else if (e.key === "sh_progress_store") {
       useStore.setState({ progress: loadJSON<Record<string, ProgressData>>("sh_progress_store", {}) });
     } else if (e.key === "sh_user") {
-      useStore.setState({ user: loadJSON<User | null>("sh_user", null) });
+      const newUser = loadJSON<User | null>("sh_user", null);
+      if (!newUser) {
+        useStore.setState({
+          user: null,
+          profilePanelOpen: false,
+          logoutConfirmOpen: false,
+          watchlist: [],
+          history: [],
+          progress: {},
+        });
+      } else {
+        useStore.setState({
+          user: newUser,
+          watchlist: loadJSON<WatchlistItem[]>("sh_watchlist", []),
+          history: loadJSON<HistoryItem[]>("sh_history", []),
+          progress: loadJSON<Record<string, ProgressData>>("sh_progress_store", {}),
+        });
+      }
     }
   });
   window.addEventListener("sh-sync-complete", () => {
@@ -439,5 +476,8 @@ if (typeof window !== "undefined") {
     } else {
       useStore.setState({ user: loadJSON<User | null>("sh_user", null) });
     }
+  });
+  window.addEventListener("sh-session-expired", () => {
+    useStore.getState().logout();
   });
 }

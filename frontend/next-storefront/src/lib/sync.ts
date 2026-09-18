@@ -6,6 +6,7 @@ const LS_HISTORY = "sh_history";
 const LS_PROGRESS = "sh_progress_store";
 const LS_USER = "sh_user";
 const LS_LAST_SYNCED = "sh_last_synced_at";
+const LS_LAST_SYNCED_UID = "sh_last_synced_uid";
 
 function loadLS<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -21,6 +22,28 @@ function saveLS(key: string, data: unknown) {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(key, JSON.stringify(data));
+  } catch {}
+}
+
+export function cancelCloudPush() {
+  if (pushTimer) {
+    clearTimeout(pushTimer);
+    pushTimer = null;
+  }
+}
+
+export function clearLocalLibraryData() {
+  if (typeof window === "undefined") return;
+  try {
+    cancelCloudPush();
+    localStorage.removeItem(LS_WATCHLIST);
+    localStorage.removeItem(LS_HISTORY);
+    localStorage.removeItem(LS_PROGRESS);
+    localStorage.removeItem(LS_LAST_SYNCED);
+    localStorage.removeItem(LS_LAST_SYNCED_UID);
+    localStorage.removeItem("sh_watchlist_store");
+    localStorage.removeItem("vidLinkProgress");
+    localStorage.removeItem("sh_history_backfilled");
   } catch {}
 }
 
@@ -196,6 +219,12 @@ export function scheduleCloudPush() {
 export async function pushLocalToCloud(uid: string): Promise<boolean> {
   if (typeof window === "undefined") return false;
   const stored = loadLS<StoredUser | null>(LS_USER, null) || { uid } as StoredUser;
+  if (!stored || stored.uid !== uid) return false;
+  const lastUid = loadLS<string>(LS_LAST_SYNCED_UID, "");
+  if (lastUid && lastUid !== uid) {
+    console.warn("[sync] Aborting cloud push: local data belongs to user", lastUid, "not", uid);
+    return false;
+  }
   const token = await ensureToken(stored);
   if (!token) return false;
   const now = Date.now();
@@ -210,6 +239,7 @@ export async function pushLocalToCloud(uid: string): Promise<boolean> {
     const ok = await pushCloudData(uid, token, bundle);
     if (ok) {
       saveLS(LS_LAST_SYNCED, now);
+      saveLS(LS_LAST_SYNCED_UID, uid);
     }
     return ok;
   } catch (e) {
@@ -218,7 +248,7 @@ export async function pushLocalToCloud(uid: string): Promise<boolean> {
   }
 }
 
-export async function syncUserOnLogin(uid: string): Promise<boolean> {
+export async function syncUserOnLogin(uid: string, options?: { isNewAccount?: boolean }): Promise<boolean> {
   if (typeof window === "undefined") return false;
   const stored = loadLS<StoredUser | null>(LS_USER, null);
   if (!stored || stored.uid !== uid) return false;
@@ -226,10 +256,65 @@ export async function syncUserOnLogin(uid: string): Promise<boolean> {
   if (!token) return false;
 
   try {
-    const remote = await fetchCloudData(uid, token);
     const lastSync = loadLS<number>(LS_LAST_SYNCED, 0);
+    const lastSyncedUid = loadLS<string>(LS_LAST_SYNCED_UID, "");
+    const isNew = Boolean(options?.isNewAccount);
+    const isDifferentUser = Boolean(lastSyncedUid && lastSyncedUid !== uid);
+
+    // 1. Explicit new account: enforce pristine blank library. Never inherit previous user's data!
+    if (isNew) {
+      clearLocalLibraryData();
+      saveLS(LS_WATCHLIST, []);
+      saveLS(LS_HISTORY, []);
+      saveLS(LS_PROGRESS, {});
+      saveLS(LS_LAST_SYNCED, Date.now());
+      saveLS(LS_LAST_SYNCED_UID, uid);
+      saveLS(LS_USER, stored);
+
+      syncUserProfile().catch(() => {});
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.removeItem("vidLinkProgress");
+        } catch {}
+        window.dispatchEvent(new Event("sh-sync-complete"));
+      }
+      return true;
+    }
+
+    // 2. Fetch authoritative cloud data from R2
+    const remote = await fetchCloudData(uid, token);
     const cloudUpdatedAt = remote?.updatedAt || 0;
 
+    // 3. If switching accounts or first login on this device with no matching UID: cloud is 100% authoritative
+    if (isDifferentUser || !lastSyncedUid) {
+      const authWatchlist = remote?.watchlist || [];
+      const authHistory = remote?.history || [];
+      const authProgress = remote?.progress || {};
+
+      saveLS(LS_WATCHLIST, authWatchlist);
+      saveLS(LS_HISTORY, authHistory);
+      saveLS(LS_PROGRESS, authProgress);
+      saveLS(LS_LAST_SYNCED, Math.max(cloudUpdatedAt, Date.now()));
+      saveLS(LS_LAST_SYNCED_UID, uid);
+
+      if (remote?.avatar && stored.photoURL !== remote.avatar) {
+        stored.photoURL = remote.avatar;
+        saveLS(LS_USER, stored);
+        saveLS("cachedAvatar", remote.avatar);
+        window.dispatchEvent(new CustomEvent("sh-profile-updated", { detail: stored }));
+      }
+
+      syncUserProfile().catch(() => {});
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.removeItem("vidLinkProgress");
+        } catch {}
+        window.dispatchEvent(new Event("sh-sync-complete"));
+      }
+      return true;
+    }
+
+    // 4. Returning user on same device: reconcile local offline additions with cloud
     const localWatchlist = loadLS<WatchlistItem[]>(LS_WATCHLIST, []);
     const localHistory = loadLS<HistoryItem[]>(LS_HISTORY, []);
     const localProgress = loadLS<Record<string, ProgressData>>(LS_PROGRESS, {});
@@ -241,6 +326,7 @@ export async function syncUserOnLogin(uid: string): Promise<boolean> {
     saveLS(LS_WATCHLIST, mergedWatchlist);
     saveLS(LS_HISTORY, mergedHistory);
     saveLS(LS_PROGRESS, mergedProgress);
+    saveLS(LS_LAST_SYNCED_UID, uid);
 
     if (remote?.avatar && stored.photoURL !== remote.avatar) {
       stored.photoURL = remote.avatar;
@@ -251,7 +337,6 @@ export async function syncUserOnLogin(uid: string): Promise<boolean> {
       }
     }
 
-    // Determine if we have local offline additions or if it's first-time login
     const hasLocalOfflineAdditions =
       lastSync === 0 ||
       mergedWatchlist.length > (remote?.watchlist || []).length ||
@@ -298,8 +383,24 @@ export async function syncUserProfile(): Promise<StoredUser | null> {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    if (res.status === 401) {
+      console.warn("[sync] Session expired or invalid (401). Clearing stale session.");
+      clearLocalLibraryData();
+      try {
+        localStorage.removeItem(LS_USER);
+        localStorage.removeItem("cachedAvatar");
+        localStorage.removeItem("cachedName");
+        localStorage.removeItem("cachedUsername");
+      } catch {}
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("sh-session-expired"));
+      }
+      return null;
+    }
+
     if (!res.ok) return null;
-    const json = (await res.json()) as { success?: boolean; user?: Partial<StoredUser> };
+    const json = (await res.json()) as { success?: boolean; user?: Partial<StoredUser> & { emailVerified?: boolean } };
     if (json.success && json.user) {
       let changed = false;
       const updated = { ...stored };
@@ -325,8 +426,14 @@ export async function syncUserProfile(): Promise<StoredUser | null> {
         updated.hasPassword = json.user.hasPassword;
         changed = true;
       }
-      if (json.user.idToken) {
+      if (json.user.emailVerified !== undefined && json.user.emailVerified !== (stored as any).emailVerified) {
+        (updated as any).emailVerified = json.user.emailVerified;
+        changed = true;
+      }
+      if (json.user.idToken && json.user.idToken !== stored.idToken) {
         updated.idToken = json.user.idToken;
+        updated.refreshToken = json.user.idToken;
+        changed = true;
       }
       if (changed) {
         saveLS(LS_USER, updated);

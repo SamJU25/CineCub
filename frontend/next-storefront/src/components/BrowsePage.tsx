@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { fetchBrowse } from "@/lib/api";
 import { CFG } from "@/lib/config";
 import type { MediaItem } from "@/lib/types";
@@ -20,7 +21,19 @@ export default function BrowsePage() {
     setBrowseSort,
     setBrowseGenreId,
     setBrowseTrendingTime,
-  } = useStore((s) => s);
+  } = useStore(
+    useShallow((s) => ({
+      browseCategory: s.browseCategory,
+      browseType: s.browseType,
+      browseSort: s.browseSort,
+      browseGenreId: s.browseGenreId,
+      browseTrendingTime: s.browseTrendingTime,
+      setBrowseType: s.setBrowseType,
+      setBrowseSort: s.setBrowseSort,
+      setBrowseGenreId: s.setBrowseGenreId,
+      setBrowseTrendingTime: s.setBrowseTrendingTime,
+    }))
+  );
 
   const [items, setItems] = useState<MediaItem[]>([]);
   const [, setPage] = useState(1);

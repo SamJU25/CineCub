@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useStore, type Page } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 
 export default function Sidebar() {
   const {
@@ -18,7 +19,22 @@ export default function Sidebar() {
     openLogoutConfirm,
     watchlist,
     history,
-  } = useStore((s) => s);
+  } = useStore(
+    useShallow((s) => ({
+      activePage: s.activePage,
+      setActivePage: s.setActivePage,
+      browseCategory: s.browseCategory,
+      setBrowseCategory: s.setBrowseCategory,
+      sidebarCollapsed: s.sidebarCollapsed,
+      sidebarOpen: s.sidebarOpen,
+      closeSidebar: s.closeSidebar,
+      openAuth: s.openAuth,
+      user: s.user,
+      openLogoutConfirm: s.openLogoutConfirm,
+      watchlist: s.watchlist,
+      history: s.history,
+    }))
+  );
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -133,7 +149,13 @@ export default function Sidebar() {
             <>
               <Link href="/?page=profile" className="sf-profile" onClick={(e) => handleNav("profile", undefined, e)} style={{ cursor: "pointer", textDecoration: "none", color: "inherit" }}>
                 <div className="sf-avatar active">
-                  <img src={user.photoURL} alt="User Avatar" />
+                  <img
+                    src={user.photoURL}
+                    alt="User Avatar"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "/assets/avatars/av_1.png";
+                    }}
+                  />
                 </div>
                 <div className="sf-info">
                   <div className="sf-name">{user.displayName}</div>

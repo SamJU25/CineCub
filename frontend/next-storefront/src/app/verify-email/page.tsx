@@ -4,6 +4,7 @@ import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { BrandLogo } from "@/components/BrandLogo";
+import { useStore } from "@/lib/store";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -35,6 +36,12 @@ function VerifyEmailContent() {
           setSuccess(true);
           setMessage(data.message || "Your email address has been verified successfully!");
           if (data.email) setVerifiedEmail(data.email);
+          try {
+            const currentUser = useStore.getState().user;
+            if (currentUser && (!data.email || currentUser.email.toLowerCase() === data.email.toLowerCase())) {
+              useStore.getState().setUser({ ...currentUser, emailVerified: true });
+            }
+          } catch {}
         } else {
           setSuccess(false);
           setMessage(data.message || data.error || "This verification link is invalid or has already been used.");

@@ -131,6 +131,8 @@ export async function POST(request: NextRequest) {
         message: "Your password has been reset successfully!",
         user: {
           ...jwtPayload,
+          hasPassword: true,
+          emailVerified: true,
           idToken: tokenJwt,
           refreshToken: tokenJwt,
         },

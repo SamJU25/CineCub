@@ -154,12 +154,24 @@ export function Mascot({
   useEffect(() => {
     let sector = -1;
     let pointer: { x: number; y: number } | null = null;
+    let cachedBox: DOMRect | null = null;
+    let rafId: number | null = null;
     const deadZone = Math.max(18, Math.min(32, size * 0.45));
 
+    const updateBox = () => {
+      if (buttonRef.current) {
+        cachedBox = buttonRef.current.getBoundingClientRect();
+      }
+    };
+
     const aim = () => {
+      rafId = null;
       const button = buttonRef.current;
       if (!button || !pointer) return;
-      const box = button.getBoundingClientRect();
+      if (!cachedBox) {
+        cachedBox = button.getBoundingClientRect();
+      }
+      const box = cachedBox;
       const dx = pointer.x - (box.left + box.width / 2);
       const dy = pointer.y - (box.top + box.height / 2);
       if (Math.hypot(dx, dy) < deadZone) {
@@ -176,21 +188,35 @@ export function Mascot({
       setDirection(CLOCKWISE[sector]);
     };
 
+    const scheduleAim = () => {
+      if (rafId === null) {
+        rafId = window.requestAnimationFrame(aim);
+      }
+    };
+
     const onPointerMove = (event: PointerEvent) => {
       if (event.pointerType === "touch") return;
       pointer = { x: event.clientX, y: event.clientY };
       wake();
       armIdleTimer();
-      aim();
+      scheduleAim();
+    };
+
+    const onScrollOrResize = () => {
+      updateBox();
+      scheduleAim();
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });
-    window.addEventListener("scroll", aim, { passive: true });
+    window.addEventListener("scroll", onScrollOrResize, { passive: true });
+    window.addEventListener("resize", onScrollOrResize, { passive: true });
     armIdleTimer();
 
     return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
       window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("scroll", aim);
+      window.removeEventListener("scroll", onScrollOrResize);
+      window.removeEventListener("resize", onScrollOrResize);
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
   }, [armIdleTimer, size, wake]);

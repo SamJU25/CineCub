@@ -14,7 +14,7 @@ const ALLOWED_AUTH_ORIGINS = new Set([
 function getCorsHeaders(request: NextRequest): Record<string, string> {
   const origin = request.headers.get("Origin") || "";
   const headers: Record<string, string> = {
-    "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, DELETE, PATCH, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Max-Age": "86400",
   };
@@ -77,6 +77,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const refreshedToken = await signJWT(
+      {
+        uid: row.id,
+        email: row.email,
+        username: row.username,
+        displayName: row.display_name,
+        photoURL: row.photo_url || "/assets/avatars/av_1.png",
+      },
+      bindings.JWT_SECRET
+    );
+
     return NextResponse.json(
       {
         success: true,
@@ -88,6 +99,8 @@ export async function GET(request: NextRequest) {
           photoURL: row.photo_url || "/assets/avatars/av_1.png",
           emailVerified: Boolean(row.email_verified),
           hasPassword: !row.password_hash.startsWith("google:"),
+          idToken: refreshedToken,
+          refreshToken: refreshedToken,
         },
       },
       { status: 200, headers: { "Content-Type": "application/json", ...cors } }
@@ -194,6 +207,16 @@ export async function POST(request: NextRequest) {
           { status: 400, headers: { "Content-Type": "application/json", ...cors } }
         );
       }
+      const RESERVED_USERNAMES = new Set([
+        "admin", "root", "superuser", "moderator", "support", "help",
+        "streamheaven", "cinecub", "system", "null", "undefined",
+      ]);
+      if (RESERVED_USERNAMES.has(sanitizedUsername)) {
+        return NextResponse.json(
+          { success: false, error: "RESERVED_USERNAME", message: "This username is reserved and cannot be chosen" },
+          { status: 400, headers: { "Content-Type": "application/json", ...cors } }
+        );
+      }
       if (sanitizedUsername !== existing.username.toLowerCase()) {
         const conflict = await bindings.DB.prepare(
           `SELECT id FROM users WHERE username = ? AND id != ? LIMIT 1`
@@ -220,6 +243,22 @@ export async function POST(request: NextRequest) {
         );
       }
       if (sanitizedEmail !== existing.email.toLowerCase()) {
+        const isGoogleOnly = existing.password_hash.startsWith("google:");
+        if (!isGoogleOnly) {
+          if (!body.currentPassword) {
+            return NextResponse.json(
+              { success: false, error: "MISSING_CURRENT_PASSWORD", message: "Current password is required to change email" },
+              { status: 400, headers: { "Content-Type": "application/json", ...cors } }
+            );
+          }
+          const isMatch = await verifyPassword(body.currentPassword, existing.password_hash);
+          if (!isMatch) {
+            return NextResponse.json(
+              { success: false, error: "INCORRECT_CURRENT_PASSWORD", message: "Current password is incorrect" },
+              { status: 400, headers: { "Content-Type": "application/json", ...cors } }
+            );
+          }
+        }
         const conflict = await bindings.DB.prepare(
           `SELECT id FROM users WHERE email = ? AND id != ? LIMIT 1`
         )
@@ -370,6 +409,52 @@ export async function POST(request: NextRequest) {
     console.error("[Profile POST Error]", err);
     return NextResponse.json(
       { success: false, error: "UPDATE_FAILED", message: "Failed to update profile" },
+      { status: 500, headers: { "Content-Type": "application/json", ...cors } }
+    );
+  }
+}
+
+// DELETE: Permanently delete user account from Cloudflare D1 and wipe user library from R2
+export async function DELETE(request: NextRequest) {
+  const cors = getCorsHeaders(request);
+  const bindings = await getCineCubBindings();
+  const authUser = await authenticate(request, bindings.JWT_SECRET);
+
+  if (!authUser) {
+    return NextResponse.json(
+      { success: false, error: "UNAUTHORIZED", message: "Authentication required" },
+      { status: 401, headers: { "Content-Type": "application/json", ...cors } }
+    );
+  }
+
+  if (!bindings.DB) {
+    return NextResponse.json(
+      { success: false, error: "DATABASE_UNAVAILABLE", message: "Database service unavailable" },
+      { status: 503, headers: { "Content-Type": "application/json", ...cors } }
+    );
+  }
+
+  try {
+    // 1. Delete user record from Cloudflare D1
+    await bindings.DB.prepare("DELETE FROM users WHERE id = ?").bind(authUser.uid).run();
+
+    // 2. Delete user library bundle from Cloudflare R2
+    if (bindings.STORAGE) {
+      try {
+        await bindings.STORAGE.delete(`users/${authUser.uid}/library.json`);
+      } catch (r2Err) {
+        console.warn("[Delete Account R2 Warning]", r2Err);
+      }
+    }
+
+    return NextResponse.json(
+      { success: true, message: "Account deleted successfully" },
+      { status: 200, headers: { "Content-Type": "application/json", ...cors } }
+    );
+  } catch (err: unknown) {
+    console.error("[Delete Account Error]", err);
+    return NextResponse.json(
+      { success: false, error: "DELETE_FAILED", message: "Failed to delete account" },
       { status: 500, headers: { "Content-Type": "application/json", ...cors } }
     );
   }

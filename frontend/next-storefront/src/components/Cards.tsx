@@ -235,6 +235,8 @@ export const CinematicTrailerCard = memo(function CinematicTrailerCard({ item, t
 
   // Seamless auto-loop and auto-resume for YouTube iframe (eliminates pause button and transport HUD)
   useEffect(() => {
+    if (!isHovered) return;
+
     const handleMsg = (e: MessageEvent) => {
       try {
         const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;

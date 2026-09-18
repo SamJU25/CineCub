@@ -73,25 +73,35 @@ export default function HScrollWrapper({
 
     updateArrows();
     const timer = setTimeout(updateArrows, 400);
+    let scrollRaf: number | null = null;
 
     const handleScroll = () => {
-      window.requestAnimationFrame(() => {
-        updateArrows();
-        checkNearEnd();
-      });
+      if (scrollRaf === null) {
+        scrollRaf = window.requestAnimationFrame(() => {
+          scrollRaf = null;
+          updateArrows();
+          checkNearEnd();
+        });
+      }
     };
 
     el.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", updateArrows);
 
-    // Watch for dynamic card additions/removals
+    // Watch for dynamic direct card additions/removals
     const observer = new MutationObserver(() => {
-      setTimeout(updateArrows, 100);
+      if (scrollRaf === null) {
+        scrollRaf = window.requestAnimationFrame(() => {
+          scrollRaf = null;
+          updateArrows();
+        });
+      }
     });
-    observer.observe(el, { childList: true, subtree: true });
+    observer.observe(el, { childList: true });
 
     return () => {
       clearTimeout(timer);
+      if (scrollRaf !== null) cancelAnimationFrame(scrollRaf);
       el.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", updateArrows);
       observer.disconnect();

@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useStore } from "@/lib/store";
 
 export default function Footer() {
-  const { openLegal, setActivePage, setBrowseCategory } = useStore((s) => s);
+  const openLegal = useStore((s) => s.openLegal);
+  const setActivePage = useStore((s) => s.setActivePage);
+  const setBrowseCategory = useStore((s) => s.setBrowseCategory);
   const [versionName, setVersionName] = useState("1.7.1");
 
   useEffect(() => {

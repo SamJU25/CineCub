@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { showToast } from "@/components/Toast";
 import { IMG } from "@/lib/api";
 import { CustomerSupportCard } from "@/components/CustomerSupportCard";
@@ -25,7 +26,22 @@ export default function ProfilePage() {
     openAuth,
     openLegal,
     openLogoutConfirm,
-  } = useStore((s) => s);
+  } = useStore(
+    useShallow((s) => ({
+      user: s.user,
+      setUser: s.setUser,
+      logout: s.logout,
+      watchlist: s.watchlist,
+      history: s.history,
+      clearHistory: s.clearHistory,
+      clearWatchlist: s.clearWatchlist,
+      setActivePage: s.setActivePage,
+      openDetail: s.openDetail,
+      openAuth: s.openAuth,
+      openLegal: s.openLegal,
+      openLogoutConfirm: s.openLogoutConfirm,
+    }))
+  );
 
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [isMobileDetail, setIsMobileDetail] = useState(false);
@@ -286,15 +302,19 @@ export default function ProfilePage() {
       title: "Delete Account",
       message: "Do you want to delete your profile? This action is permanent and will delete all your data from the server.",
       confirmText: "Delete Account",
-      onConfirm: () => {
-        logout();
-        clearWatchlist();
-        clearHistory();
+      onConfirm: async () => {
         try {
-          localStorage.removeItem("sh_watchlist");
-          localStorage.removeItem("sh_history");
-          localStorage.removeItem("sh_progress_store");
-        } catch {}
+          const token = (await ensureToken(user as StoredUser)) || user?.idToken || "";
+          if (token) {
+            await fetch("/api/user/profile", {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${token}` },
+            });
+          }
+        } catch (err) {
+          console.warn("[Profile] Server deletion error:", err);
+        }
+        logout();
         setConfirmModal((prev) => ({ ...prev, open: false }));
         setActivePage("home");
         showToast("Profile deleted successfully", "success");
@@ -486,7 +506,7 @@ export default function ProfilePage() {
       showToast("Password must be at least 6 characters long.", "error");
       return;
     }
-    if (user?.hasPassword === false && newPassword !== confirmPassword) {
+    if (newPassword !== confirmPassword) {
       showToast("Passwords do not match.", "error");
       return;
     }
@@ -531,7 +551,8 @@ export default function ProfilePage() {
 
   const handleSendVerification = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!user?.idToken) {
+    const token = (await ensureToken(user as StoredUser)) || user?.idToken || "";
+    if (!token) {
       showToast("Please log in again to verify your email.", "error");
       return;
     }
@@ -541,13 +562,13 @@ export default function ProfilePage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${user.idToken}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ idToken: user.idToken }),
+        body: JSON.stringify({ idToken: token }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        showToast("Verification link sent to " + (user.email || "your email") + "!", "success");
+        showToast("Verification link sent to " + (user?.email || "your email") + "!", "success");
       } else {
         showToast(data.message || "Failed to send verification email.", "error");
       }
@@ -561,19 +582,28 @@ export default function ProfilePage() {
   // 1. If Guest (not logged in)
   if (!user) {
     return (
-      <div className="pf-layout" id="pf-guest" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh", paddingTop: "calc(var(--header-h, 70px) + 32px)" }}>
+      <div className="pf-layout" id="pf-guest">
         <div className="pf-guest-wall">
           <div className="pf-guest-icon"><i className="fas fa-user-lock" /></div>
           <h2>Sign in to view your Profile</h2>
           <p>Create a free account to save your watchlist,<br />track your watch history, and more.</p>
-          <a
-            className="pf-btn-login"
-            href="#"
-            onClick={(e) => { e.preventDefault(); openAuth(); }}
-            style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
-          >
-            <i className="fas fa-sign-in-alt" style={{ marginRight: 8 }} />Go to CineCub
-          </a>
+          <div className="pf-modal-actions" style={{ maxWidth: 360, margin: "24px auto 0", display: "flex", gap: "12px" }}>
+            <a
+              className="pf-btn-login"
+              href="#"
+              onClick={(e) => { e.preventDefault(); openAuth(); }}
+              style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+            >
+              <i className="fas fa-sign-in-alt" style={{ marginRight: 8 }} />Sign In / Sign Up
+            </a>
+            <button
+              type="button"
+              className="pf-btn-secondary"
+              onClick={() => setActivePage("home")}
+            >
+              <i className="fas fa-home" style={{ marginRight: 8 }} />Back to Home
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -581,7 +611,7 @@ export default function ProfilePage() {
 
   // 2. Logged-In View
   return (
-    <div className={`pf-layout${isMobileDetail ? " is-mobile-detail" : ""}`} id="pf-logged-in" style={{ display: "flex" }}>
+    <div className={`pf-layout${isMobileDetail ? " is-mobile-detail" : ""}`} id="pf-logged-in">
       {/* SIDEBAR */}
       <aside className="pf-sidebar">
         <a className="pf-sidebar-brand" href="#" onClick={(e) => { e.preventDefault(); setActivePage("home"); }}>
@@ -677,11 +707,21 @@ export default function ProfilePage() {
 
       {/* MAIN CONTENT */}
       <main className="pf-main">
-        {/* Mobile Back Bar Button */}
-        <button type="button" className="pf-mobile-back-bar" onClick={showMobileMenu}>
-          <i className="fas fa-chevron-left" />
-          <span>Back to Profile Menu</span>
-        </button>
+        {/* Mobile Top Navigation Bar */}
+        <div className="pf-mobile-top-bar">
+          <button type="button" className="pf-mobile-back-bar" onClick={showMobileMenu}>
+            <i className="fas fa-chevron-left" />
+            <span>Back to Profile Menu</span>
+          </button>
+          <button
+            type="button"
+            className="pf-mobile-home-btn"
+            onClick={() => setActivePage("home")}
+            title="Go to Home"
+          >
+            <i className="fas fa-home" />
+          </button>
+        </div>
 
         {/* PANE 1: ACCOUNT OVERVIEW */}
         <div className={`pf-tab-pane${activeTab === "overview" ? " active" : ""}`} id="pane-overview">
@@ -844,10 +884,13 @@ export default function ProfilePage() {
                           { }
                           <img
                             className="poster-card-img"
-                            src={IMG.poster(poster, "w342") || "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"}
+                            src={IMG.poster(poster, "w342") || IMG.placeholder(342, 513)}
                             loading="lazy"
                             decoding="async"
                             alt={title}
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = IMG.placeholder(342, 513);
+                            }}
                           />
                           <div className="poster-card-grad" />
                           <div className="poster-card-top">
@@ -959,10 +1002,13 @@ export default function ProfilePage() {
                           { }
                           <img
                             className="poster-card-img"
-                            src={IMG.poster(poster, "w342") || "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"}
+                            src={IMG.poster(poster, "w342") || IMG.placeholder(342, 513)}
                             loading="lazy"
                             decoding="async"
                             alt={title}
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = IMG.placeholder(342, 513);
+                            }}
                           />
                           <div className="poster-card-grad" />
                           <div className="poster-card-top">
@@ -1059,35 +1105,31 @@ export default function ProfilePage() {
               </div>
               <div className="pf-settings-row-arrow"><i className="fas fa-chevron-right" /></div>
             </div>
-            <div className="pf-settings-row static" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <div className="pf-settings-row-icon"><i className="fas fa-shield-alt" style={{ color: "#10b981" }} /></div>
-                <div className="pf-settings-row-text">
-                  <div className="pf-settings-row-label">Email Verification</div>
-                  <div className="pf-settings-row-val" style={{ fontSize: 12, color: "var(--text-3)" }}>
-                    Receive a verification link to confirm your email
-                  </div>
+            <div className="pf-settings-row static">
+              <div className="pf-settings-row-icon">
+                <i className={user.emailVerified ? "fas fa-check-circle" : "fas fa-shield-alt"} style={{ color: user.emailVerified ? "#10b981" : "var(--pf-purple)" }} />
+              </div>
+              <div className="pf-settings-row-text">
+                <div className="pf-settings-row-label">Email Verification</div>
+                <div className="pf-settings-row-val">
+                  {user.emailVerified ? "Verified & Secure" : "Unverified • Tap to verify"}
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={handleSendVerification}
-                disabled={sendingVerification}
-                style={{
-                  background: "rgba(157, 78, 221, 0.15)",
-                  border: "1px solid rgba(157, 78, 221, 0.35)",
-                  color: "#c77dff",
-                  padding: "7px 16px",
-                  borderRadius: 10,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: sendingVerification ? "not-allowed" : "pointer",
-                  transition: "all 0.2s ease",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {sendingVerification ? "Sending..." : "Send Link"}
-              </button>
+              {user.emailVerified ? (
+                <span className="pf-status-badge verified">
+                  <i className="fas fa-check" /> Verified
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  className="pf-btn-verify-action"
+                  onClick={handleSendVerification}
+                  disabled={sendingVerification}
+                >
+                  {sendingVerification ? <i className="fas fa-spinner fa-spin" /> : <i className="fas fa-paper-plane" />}
+                  <span>{sendingVerification ? "Sending..." : "Verify"}</span>
+                </button>
+              )}
             </div>
             <div
               className="pf-settings-row"
@@ -1454,30 +1496,28 @@ export default function ProfilePage() {
                   </button>
                 </div>
               </div>
-              {user.hasPassword === false && (
-                <div className="auth-input-group">
-                  <label>Confirm Password</label>
-                  <div className="auth-input-wrap">
-                    <input
-                      type={showConfirmPass ? "text" : "password"}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="auth-input"
-                      placeholder="Re-enter your password"
-                      autoComplete="new-password"
-                      required
-                    />
-                    <button
-                      aria-label="Toggle password visibility"
-                      type="button"
-                      className="auth-password-toggle"
-                      onClick={() => setShowConfirmPass(!showConfirmPass)}
-                    >
-                      <i className={showConfirmPass ? "fas fa-eye-slash" : "fas fa-eye"} />
-                    </button>
-                  </div>
+              <div className="auth-input-group">
+                <label>Confirm Password</label>
+                <div className="auth-input-wrap">
+                  <input
+                    type={showConfirmPass ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="auth-input"
+                    placeholder="Re-enter your password"
+                    autoComplete="new-password"
+                    required
+                  />
+                  <button
+                    aria-label="Toggle password visibility"
+                    type="button"
+                    className="auth-password-toggle"
+                    onClick={() => setShowConfirmPass(!showConfirmPass)}
+                  >
+                    <i className={showConfirmPass ? "fas fa-eye-slash" : "fas fa-eye"} />
+                  </button>
                 </div>
-              )}
+              </div>
               <div className="pf-modal-actions">
                 <button type="button" className="pf-btn-secondary" onClick={() => setPasswordModalOpen(false)}>Cancel</button>
                 <button type="submit" className="pf-btn-login">

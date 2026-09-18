@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { showToast } from "@/components/Toast";
 import CustomSelect from "./CustomSelect";
 import { getStreams, getDetail, getTorrents, IMG } from "@/lib/api";
@@ -47,6 +48,16 @@ const VERIFIED_FILE_HOSTS = [
   "video-downloads.googleusercontent.com", "googleusercontent.com",
 ];
 const PROGRESS_SAVE_INTERVAL_MS = 5000;
+
+const HLS_CONFIG = {
+  maxBufferLength: 30,
+  maxMaxBufferLength: 60,
+  maxBufferSize: 60 * 1000 * 1000,
+  backBufferLength: 30,
+  enableWorker: true,
+  lowLatencyMode: false,
+  startLevel: -1,
+};
 
 const speeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 const aspects = [
@@ -118,6 +129,15 @@ function detectStreamType(s: StreamSource): "mp4" | "m3u8" {
   const u = (s.url || "").toLowerCase();
   if (s.format === "hls" || u.includes("/api/v/manifest") || u.includes("/m3u8-proxy") || u.includes(".m3u8")) return "m3u8";
   return "mp4";
+}
+
+function formatTime(s: number): string {
+  if (!s || isNaN(s)) return "0:00";
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = Math.floor(s % 60);
+  if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+  return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
 function prioritizeFileStreams(streams: StreamSource[]): StreamSource[] {
@@ -367,7 +387,13 @@ const BUILTIN_ADDONS = [
    PlayerModal Component
 ================================================================ */
 export default function PlayerModal() {
-  const { playerModal, closePlayer, openPlayer } = useStore((s) => s);
+  const { playerModal, closePlayer, openPlayer } = useStore(
+    useShallow((s) => ({
+      playerModal: s.playerModal,
+      closePlayer: s.closePlayer,
+      openPlayer: s.openPlayer,
+    }))
+  );
 
   const [streamMode, setStreamMode] = useState<StreamMode>(() => getStoredStreamMode());
   const [directStreams, setDirectStreams] = useState<StreamSource[]>([]);
@@ -422,6 +448,10 @@ export default function PlayerModal() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const timelinePlayedRef = useRef<HTMLDivElement>(null);
+  const timelineTooltipRef = useRef<HTMLDivElement>(null);
+  const timeCurrentRef = useRef<HTMLSpanElement>(null);
+  const timeDurationRef = useRef<HTMLSpanElement>(null);
   const hlsRef = useRef<Hls | null>(null);
   const serverGroupsRef = useRef<ServerGroup[]>([]);
   const activeGroupIdxRef = useRef<number>(0);
@@ -504,9 +534,22 @@ export default function PlayerModal() {
     const video = videoRef.current;
     if (!video || !mediaId) return;
     const ct = video.currentTime;
-    const dur = video.duration;
-    setCurrentTime(ct);
-    setDuration(dur);
+    const dur = video.duration || 0;
+
+    // Direct DOM updates: 60fps smooth timeline with ZERO React re-render overhead
+    if (timelinePlayedRef.current && dur > 0) {
+      const pct = Math.min(100, Math.max(0, (ct / dur) * 100));
+      timelinePlayedRef.current.style.width = `${pct}%`;
+    }
+    if (timeCurrentRef.current) {
+      timeCurrentRef.current.textContent = formatTime(ct);
+    }
+    if (timeDurationRef.current && dur > 0) {
+      timeDurationRef.current.textContent = formatTime(dur);
+    }
+
+    // Only update duration state if it actually changed
+    setDuration((prev) => (Math.abs(prev - dur) > 0.5 ? dur : prev));
 
     if (typeof navigator !== "undefined" && "mediaSession" in navigator && "setPositionState" in navigator.mediaSession && dur > 0 && !isNaN(dur)) {
       try {
@@ -794,7 +837,7 @@ export default function PlayerModal() {
           if (streamType === "m3u8") {
             const Hls = await loadHls();
             if (Hls.isSupported()) {
-              const hls = new Hls({ maxBufferLength: 30, maxMaxBufferLength: 60, startLevel: -1 });
+              const hls = new Hls(HLS_CONFIG);
               hlsRef.current = hls;
               hls.loadSource(s.url);
               hls.attachMedia(video);
@@ -971,7 +1014,7 @@ export default function PlayerModal() {
             if (cancelled) return;
             if (Hls.isSupported()) {
               cleanupHls();
-              const hls = new Hls({ maxBufferLength: 30, maxMaxBufferLength: 60, startLevel: -1 });
+              const hls = new Hls(HLS_CONFIG);
               hlsRef.current = hls;
               hls.loadSource(s.url);
               hls.attachMedia(video);
@@ -1039,7 +1082,68 @@ export default function PlayerModal() {
   const togglePlay = useCallback(() => { const v = videoRef.current; if (!v) return; if (v.paused) { v.play(); setIsPlaying(true); } else { v.pause(); setIsPlaying(false); } }, []);
   const toggleMute = useCallback(() => { const v = videoRef.current; if (!v) return; v.muted = !v.muted; setIsMuted(v.muted); }, []);
   const handleVolumeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => { const v = videoRef.current; if (!v) return; const val = parseFloat(e.target.value); v.volume = val; setVolume(val); if (val === 0) { v.muted = true; setIsMuted(true); } else if (v.muted) { v.muted = false; setIsMuted(false); } }, []);
-  const handleSeek = useCallback((e: React.MouseEvent<HTMLDivElement>) => { const v = videoRef.current; const bar = progressRef.current; if (!v || !bar) return; const rect = bar.getBoundingClientRect(); const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)); v.currentTime = pct * v.duration; }, []);
+  const isSeekingRef = useRef(false);
+
+  const seekFromClientX = useCallback((clientX: number, commit: boolean) => {
+    const v = videoRef.current;
+    const bar = progressRef.current;
+    if (!bar) return;
+    const rect = bar.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    const dur = v?.duration || 0;
+    const targetTime = dur > 0 ? pct * dur : 0;
+    if (timelinePlayedRef.current) {
+      timelinePlayedRef.current.style.width = `${pct * 100}%`;
+    }
+    if (timeCurrentRef.current && dur > 0) {
+      timeCurrentRef.current.textContent = formatTime(targetTime);
+    }
+    if (timelineTooltipRef.current) {
+      timelineTooltipRef.current.textContent = formatTime(targetTime);
+      timelineTooltipRef.current.style.left = `${pct * 100}%`;
+    }
+    if (commit && v) {
+      v.currentTime = targetTime;
+      setCurrentTime(targetTime);
+    }
+  }, []);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    isSeekingRef.current = true;
+    if (progressRef.current) progressRef.current.classList.add("dragging");
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {}
+    seekFromClientX(e.clientX, true);
+  }, [seekFromClientX]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (isSeekingRef.current) {
+      seekFromClientX(e.clientX, true);
+    } else {
+      const bar = progressRef.current;
+      if (!bar) return;
+      const rect = bar.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const dur = videoRef.current?.duration || 0;
+      if (timelineTooltipRef.current && dur > 0) {
+        timelineTooltipRef.current.textContent = formatTime(pct * dur);
+        timelineTooltipRef.current.style.left = `${pct * 100}%`;
+      }
+    }
+  }, [seekFromClientX]);
+
+  const handlePointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (isSeekingRef.current) {
+      isSeekingRef.current = false;
+      if (progressRef.current) progressRef.current.classList.remove("dragging");
+      try {
+        (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {}
+      seekFromClientX(e.clientX, true);
+    }
+  }, [seekFromClientX]);
+
   const togglePiP = useCallback(async () => { const v = videoRef.current; if (!v) return; try { if (document.pictureInPictureElement) await document.exitPictureInPicture(); else await v.requestPictureInPicture(); } catch { showToast("Picture-in-Picture not supported", "error"); } }, []);
 
   // curSeason and curEpisode already declared above (lines 353-354)
@@ -1123,8 +1227,6 @@ if (video && video.duration > 0 && mediaId) {
       openPlayer(playerModal.id, "tv", playerModal.title, s, e + 1, currentPoster || undefined);
     }
   }, [playerModal, mediaType, mediaSeason, mediaEpisode, maxEpisodes, seasonsList, currentPoster, openPlayer]);
-
-  const formatTime = (s: number) => { if (!s || isNaN(s)) return "0:00"; const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); const sec = Math.floor(s % 60); if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`; return `${m}:${sec.toString().padStart(2, "0")}`; };
 
   const handleShare = useCallback(() => {
     if (!mediaId) return;
@@ -1291,7 +1393,7 @@ if (video && video.duration > 0 && mediaId) {
             if (streamType === "m3u8") {
               const Hls = await loadHls();
               if (Hls.isSupported()) {
-                const hls = new Hls({ maxBufferLength: 30, maxMaxBufferLength: 60, startLevel: -1 });
+                const hls = new Hls(HLS_CONFIG);
                 hlsRef.current = hls;
                 hls.loadSource(s.url);
                 hls.attachMedia(video);
@@ -2242,12 +2344,19 @@ if (video && video.duration > 0 && mediaId) {
 
                   {/* Bottom Control Bar */}
                   <div className="player-bottom-bar" id="player-bottom-bar">
-                    <div className="player-timeline-wrap" ref={progressRef} onClick={handleSeek}>
+                    <div
+                      className="player-timeline-wrap"
+                      ref={progressRef}
+                      onPointerDown={handlePointerDown}
+                      onPointerMove={handlePointerMove}
+                      onPointerUp={handlePointerUp}
+                      onPointerCancel={handlePointerUp}
+                    >
                       <div className="player-timeline-rail">
                         <div className="player-timeline-buffer" />
-                        <div className="player-timeline-played" style={{ width: duration ? `${(currentTime / duration) * 100}%` : "0%" }}><div className="player-timeline-thumb" /></div>
+                        <div className="player-timeline-played" ref={timelinePlayedRef} style={{ width: duration ? `${(currentTime / duration) * 100}%` : "0%" }}><div className="player-timeline-thumb" /></div>
                       </div>
-                      <div className="player-timeline-tooltip">{formatTime(currentTime)}</div>
+                      <div className="player-timeline-tooltip" ref={timelineTooltipRef}>{formatTime(currentTime)}</div>
                     </div>
                     <div className="player-controls-row">
                       <div className="player-ctrls-left">
@@ -2263,7 +2372,7 @@ if (video && video.duration > 0 && mediaId) {
                           </button>
                           <div className="player-volume-slider-wrap"><input type="range" className="player-volume-slider" min="0" max="1" step="0.02" value={volume} onChange={handleVolumeChange} aria-label="Volume" /></div>
                         </div>
-                        <div className="player-time-display"><span>{formatTime(currentTime)}</span><span className="player-time-sep">/</span><span>{formatTime(duration)}</span></div>
+                        <div className="player-time-display"><span ref={timeCurrentRef}>{formatTime(currentTime)}</span><span className="player-time-sep">/</span><span ref={timeDurationRef}>{formatTime(duration)}</span></div>
                         <div className="player-ctrls-divider" />
                         <div className="player-media-title" title={mediaTitle}>{mediaTitle}</div>
                       </div>
@@ -2272,7 +2381,7 @@ if (video && video.duration > 0 && mediaId) {
                         <button type="button" className="player-icon-btn" title="Settings" onClick={() => { setShowSettings(!showSettings); setSettingsPanel("main"); }}><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" /></svg></button>
                         {mediaType === "tv" && (<button type="button" className="player-icon-btn" onClick={handleNextEpisode} title="Next Episode (n)"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" /></svg></button>)}
                         <button type="button" className="player-icon-btn" onClick={handleShare} title="Share Stream Link"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button>
-                        <button type="button" className="player-icon-btn" onClick={() => setShowShortcuts((s) => !s)} title="Shortcuts (?)"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg></button>
+                        <button type="button" className="player-icon-btn player-shortcuts-btn" onClick={() => setShowShortcuts((s) => !s)} title="Shortcuts (?)"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg></button>
                         <button type="button" className="player-icon-btn player-pip-btn" id="player-btn-pip" onClick={togglePiP} title="Picture-in-Picture (p)"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 7h-8v6h8V7zm2-4H3c-1.1 0-2 .9-2 2v14c0 1.1.9 1.98 2 1.98h18c1.1 0 2-.88 2-1.98V5c0-1.1-.9-2-2-2zm0 16.01H3V4.98h18v14.03z" /></svg></button>
                         <button type="button" className="player-icon-btn" title="Fullscreen (f)" onClick={toggleFullscreen}>
                           <svg className="icon-fullscreen" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style={{ display: isFullscreen ? "none" : "block" }}><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" /></svg>

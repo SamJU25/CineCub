@@ -3,12 +3,19 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { searchTMDB } from "@/lib/api";
 import type { MediaItem } from "@/lib/types";
 import { PosterCard } from "@/components/Cards";
 
 export default function SearchPage() {
-  const { searchQuery, setActivePage, activePage } = useStore((s) => s);
+  const { searchQuery, setActivePage, activePage } = useStore(
+    useShallow((s) => ({
+      searchQuery: s.searchQuery,
+      setActivePage: s.setActivePage,
+      activePage: s.activePage,
+    }))
+  );
   const [items, setItems] = useState<MediaItem[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);

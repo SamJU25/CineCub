@@ -84,6 +84,9 @@ export default function Watchlist() {
                 width={150}
                 height={225}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = "/placeholder.svg";
+                }}
               />
               <button
                 onClick={(e) => removeItem(e, item.id)}

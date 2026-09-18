@@ -122,6 +122,9 @@ export default function ContinueWatching() {
                 width={180}
                 height={100}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = "/placeholder.svg";
+                }}
               />
               <div className="absolute inset-0 bg-[rgba(0,0,0,0.35)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <span className="w-[34px] h-[34px] rounded-full bg-[#9d4edd] text-white flex items-center justify-center text-[14px] pl-[2px] shadow-[0_4px_16px_rgba(0,0,0,0.5)]">▶</span>

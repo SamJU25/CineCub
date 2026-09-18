@@ -17,27 +17,59 @@
       --pf-danger-hover: #2c1317;
     }
 
-    /* Global Layout */
+    /* Lock Page & AppShell when Profile is Active */
+    body:has(#page-profile.active) {
+      overflow: hidden !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+    }
+    body:has(#page-profile.active) #cv-header {
+      display: none !important;
+    }
+    body:has(#page-profile.active) .cv-main {
+      overflow: hidden !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+    body:has(#page-profile.active) .cv-footer {
+      display: none !important;
+    }
+    #page-profile.active {
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column;
+      box-sizing: border-box;
+      padding: 24px var(--profile-gutter);
+    }
+
+    /* Global Layout - Locked at Position */
     .pf-layout {
       display: flex;
       width: 100%;
-      max-width: 1140px;
+      max-width: 1200px;
+      height: 100%;
       margin: 0 auto;
-      padding: calc(var(--header-h, 70px) + 28px) var(--profile-gutter) 48px;
-      gap: 24px;
-      align-items: flex-start;
+      padding: 0;
+      gap: 20px;
+      align-items: stretch;
       animation: pfFadeIn 180ms ease-out;
       will-change: opacity, transform;
       box-sizing: border-box;
+      overflow: hidden;
     }
     @keyframes pfFadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
     
-    /* Sidebar */
+    /* Sidebar - Fixed at position, internal scroll if needed */
     .pf-sidebar {
       width: 280px;
+      height: 100%;
       background: var(--pf-bg-sidebar);
       border: 1px solid var(--pf-border);
       border-radius: 18px;
@@ -47,9 +79,10 @@
       flex-direction: column;
       gap: 14px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      position: sticky;
-      top: calc(var(--header-h, 70px) + 20px);
-      align-self: flex-start;
+      box-sizing: border-box;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(157, 78, 221, 0.3) transparent;
     }
 
     .pf-sidebar-brand {
@@ -356,6 +389,11 @@
       flex-direction: column;
       gap: 18px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      height: 100%;
+      box-sizing: border-box;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(157, 78, 221, 0.3) transparent;
     }
 
     /* Mobile Back Bar Button */
@@ -975,6 +1013,56 @@
       margin-left: 8px;
     }
     
+    .pf-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      margin-left: auto;
+    }
+    .pf-status-badge.verified {
+      background: rgba(16, 185, 129, 0.12);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.28);
+    }
+    .pf-status-badge.verified i {
+      font-size: 10px;
+    }
+    
+    .pf-btn-verify-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 13px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: inherit;
+      background: rgba(157, 78, 221, 0.15);
+      border: 1px solid rgba(157, 78, 221, 0.35);
+      color: var(--pf-purple);
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+      margin-left: auto;
+      transition: all 0.18s ease;
+    }
+    .pf-btn-verify-action:hover {
+      background: rgba(157, 78, 221, 0.25);
+      border-color: rgba(157, 78, 221, 0.55);
+      color: #ffffff;
+    }
+    .pf-btn-verify-action:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
     /* Danger Actions List */
     .pf-settings-danger-list {
       background: var(--pf-card-bg);
@@ -1044,7 +1132,16 @@
     }
     
     /* Guest Wall */
-    .pf-guest-wall { text-align: center; padding: 80px 24px; max-width: 600px; margin: 0 auto; }
+    #pf-guest {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      height: 100% !important;
+      width: 100% !important;
+      box-sizing: border-box;
+      overflow: hidden !important;
+    }
+    .pf-guest-wall { text-align: center; padding: 32px 24px; max-width: 600px; margin: auto; }
     .pf-guest-icon { width: 90px; height: 90px; border-radius: 50%; background: rgba(157,78,221,0.12); display: flex; align-items: center; justify-content: center; font-size: 36px; color: #c77dff; margin: 0 auto 24px; border: 1px solid rgba(157,78,221,0.2); }
     .pf-guest-wall h2 { font-size: 22px; font-weight: 900; margin-bottom: 10px; }
     .pf-modal-actions { display: flex; gap: 12px; margin-top: 24px; width: 100%; }
@@ -1068,62 +1165,90 @@
     
     /* Responsive */
     @media (min-width: 901px) {
+      #page-profile.active {
+        padding: 24px var(--profile-gutter);
+      }
       .pf-layout {
         display: flex !important;
         flex-direction: row;
         margin: 0 auto;
-        padding: calc(var(--header-h, 70px) + 28px) var(--profile-gutter) 48px;
+        height: 100%;
+        max-width: 1200px;
+        padding: 0;
+        gap: 20px;
+        box-sizing: border-box;
+        overflow: hidden;
       }
       .pf-sidebar {
         width: 280px;
+        height: 100%;
         display: flex !important;
-        position: sticky;
-        top: calc(var(--header-h, 70px) + 20px);
-        align-self: flex-start;
+        position: static;
+        align-self: stretch;
+        overflow-y: auto;
+        scrollbar-width: thin;
       }
-      .pf-main { flex: 1; display: flex !important; min-width: 0; }
+      .pf-main {
+        flex: 1;
+        height: 100%;
+        display: flex !important;
+        min-width: 0;
+        overflow-y: auto;
+        scrollbar-width: thin;
+      }
+      .pf-mobile-top-bar,
       .pf-mobile-back-bar { display: none !important; }
     }
     @media (min-width: 601px) and (max-width: 900px) {
       .pf-stats { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 900px) {
+      #page-profile.active {
+        padding: 14px 12px;
+      }
       .pf-layout {
         flex-direction: column;
         align-items: stretch;
         margin: 0 auto;
-        padding: 12px 16px;
+        padding: 0;
         gap: 0;
         width: 100%;
+        height: 100%;
         box-sizing: border-box;
+        overflow: hidden;
       }
       
       /* In Menu Hub State (default on mobile) */
       .pf-layout:not(.is-mobile-detail) {
-        min-height: 100dvh;
-        min-height: 100vh;
-        display: flex;
+        height: 100%;
+        display: flex !important;
         flex-direction: column;
         justify-content: center;
-        padding: calc(var(--header-h, 70px) + 14px) 16px 28px;
+        align-items: center;
+        padding: 0;
+        overflow: hidden;
       }
       .pf-layout:not(.is-mobile-detail) .pf-sidebar {
         width: 100%;
-        max-width: 440px;
+        max-width: 420px;
+        height: auto !important;
         margin: auto;
-        padding: 18px 18px;
+        padding: 18px 18px 20px;
         gap: 12px;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+        border-radius: 22px;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 0 1px var(--pf-border);
+        max-height: calc(100dvh - 28px);
+        overflow-y: auto;
+        scrollbar-width: thin;
       }
       .pf-layout:not(.is-mobile-detail) .pf-sidebar-brand {
-        padding-bottom: 10px;
+        padding-bottom: 12px;
         margin-bottom: 0;
         gap: 10px;
       }
       .pf-layout:not(.is-mobile-detail) .pf-sidebar-brand img {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
       }
       .pf-layout:not(.is-mobile-detail) .pf-sidebar-brand span {
         font-size: 19px;
@@ -1136,8 +1261,8 @@
         align-items: center;
       }
       .pf-layout:not(.is-mobile-detail) .pf-avatar-container {
-        width: 56px;
-        height: 56px;
+        width: 52px;
+        height: 52px;
         margin: 0;
         flex-shrink: 0;
       }
@@ -1172,16 +1297,18 @@
         border-radius: 8px;
       }
       .pf-layout:not(.is-mobile-detail) .pf-sidebar-actions {
+        display: flex;
         flex-direction: row;
-        gap: 8px;
-        padding-top: 10px;
-        margin-top: 0;
+        gap: 10px;
+        padding-top: 12px;
+        margin-top: 4px;
+        border-top: 1px solid rgba(255,255,255,0.06);
       }
       .pf-layout:not(.is-mobile-detail) .pf-sidebar-btn {
         flex: 1;
-        padding: 10px 12px;
+        padding: 11px 12px;
         font-size: 12.5px;
-        border-radius: 10px;
+        border-radius: 12px;
         gap: 8px;
       }
       .pf-layout:not(.is-mobile-detail) .pf-main {
@@ -1220,13 +1347,13 @@
 
       /* In Section Detail State (when a tab is selected on mobile) */
       .pf-layout.is-mobile-detail {
-        min-height: 100dvh;
-        min-height: 100vh;
-        display: flex;
+        height: 100%;
+        display: flex !important;
         flex-direction: column;
         justify-content: flex-start;
-        padding: calc(var(--header-h, 70px) + 14px) 14px 28px;
+        padding: 0;
         margin: 0 auto;
+        overflow: hidden;
       }
       .pf-layout.is-mobile-detail .pf-sidebar {
         display: none !important;
@@ -1235,17 +1362,55 @@
         display: flex !important;
         width: 100%;
         max-width: 580px;
+        height: 100%;
         margin: 0 auto;
-        padding: 18px 16px;
+        padding: 14px 14px;
         border-radius: 20px;
-        gap: 16px;
+        gap: 14px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        box-sizing: border-box;
       }
-      .pf-layout.is-mobile-detail .pf-mobile-back-bar {
+      .pf-mobile-top-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        margin-bottom: 4px;
+        flex-shrink: 0;
+      }
+      .pf-mobile-top-bar .pf-mobile-back-bar {
+        flex: 1;
+        margin-bottom: 0;
         display: inline-flex !important;
+        align-items: center;
+        gap: 8px;
         padding: 10px 14px;
         font-size: 13px;
         border-radius: 12px;
-        margin-bottom: 4px;
+      }
+      .pf-mobile-home-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #e8e8f0;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        flex-shrink: 0;
+      }
+      .pf-mobile-home-btn:hover {
+        background: rgba(157, 78, 221, 0.15);
+        border-color: rgba(157, 78, 221, 0.35);
+        color: #c77dff;
+      }
+      .pf-mobile-home-btn:active {
+        transform: scale(0.96);
       }
       .pf-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
       .pf-stat-card { padding: 12px 10px; gap: 8px; }

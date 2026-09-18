@@ -110,6 +110,11 @@ const BANNER_CSS = `
     opacity: 1;
   }
 }
+@media (max-width: 992px) {
+  .install-banner-wrap {
+    bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+  }
+}
 `;
 
 export default function InstallBanner() {

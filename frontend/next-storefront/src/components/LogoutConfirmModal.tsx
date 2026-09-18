@@ -2,10 +2,20 @@
 
 import { useEffect } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { showToast } from "@/components/Toast";
 
 export default function LogoutConfirmModal() {
-  const { logoutConfirmOpen, closeLogoutConfirm, logout, user, activePage, setActivePage } = useStore((s) => s);
+  const { logoutConfirmOpen, closeLogoutConfirm, logout, user, activePage, setActivePage } = useStore(
+    useShallow((s) => ({
+      logoutConfirmOpen: s.logoutConfirmOpen,
+      closeLogoutConfirm: s.closeLogoutConfirm,
+      logout: s.logout,
+      user: s.user,
+      activePage: s.activePage,
+      setActivePage: s.setActivePage,
+    }))
+  );
 
   useEffect(() => {
     if (!logoutConfirmOpen) return;

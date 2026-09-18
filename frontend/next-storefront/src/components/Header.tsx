@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { searchTMDB, IMG } from "@/lib/api";
 import type { MediaItem } from "@/lib/types";
 import ProfilePanel from "@/components/ProfilePanel";
@@ -19,7 +20,20 @@ export default function Header() {
     openApps,
     user,
     toggleProfilePanel,
-  } = useStore((s) => s);
+  } = useStore(
+    useShallow((s) => ({
+      activePage: s.activePage,
+      setActivePage: s.setActivePage,
+      browseCategory: s.browseCategory,
+      setBrowseCategory: s.setBrowseCategory,
+      searchQuery: s.searchQuery,
+      setSearchQuery: s.setSearchQuery,
+      openAuth: s.openAuth,
+      openApps: s.openApps,
+      user: s.user,
+      toggleProfilePanel: s.toggleProfilePanel,
+    }))
+  );
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [dropdown, setDropdown] = useState(false);
@@ -43,7 +57,7 @@ export default function Header() {
   useEffect(() => {
     let prevScrolled = false;
     const handleScroll = () => {
-      const isPast = window.scrollY > 20;
+      const isPast = window.scrollY > 80;
       if (isPast !== prevScrolled) {
         prevScrolled = isPast;
         setScrolled(isPast);
@@ -248,6 +262,10 @@ export default function Header() {
   const handleDownloadClick = () => {
     openApps();
   };
+
+  if (activePage === "profile") {
+    return null;
+  }
 
   return (
     <header className={`cv-header cinejoy-header${scrolled ? " scrolled" : ""}${activePage !== "home" ? " non-home-nav" : ""}`} id="cv-header">
@@ -458,10 +476,13 @@ export default function Header() {
                 >
                   <img
                     className="srd-poster"
-                    src={IMG.poster(item.poster_path, "w92") || ""}
+                    src={IMG.poster(item.poster_path, "w92") || IMG.placeholder(92, 138)}
                     alt={item.title || item.name || ""}
                     loading="lazy"
                     decoding="async"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = IMG.placeholder(92, 138);
+                    }}
                   />
                   <div className="srd-info">
                     <div className="srd-title">{item.title || item.name}</div>
@@ -505,7 +526,7 @@ export default function Header() {
         {/* User Profile Section */}
         <div className="cinejoy-profile-wrap" id="header-profile-container">
           <button
-            className={`cinejoy-profile-btn${activePage === "profile" ? " active" : ""}`}
+            className="cinejoy-profile-btn"
             id="header-profile-btn"
             onClick={mounted && user ? toggleProfilePanel : openAuth}
             title={mounted && user ? (user.displayName || "My Profile") : "Sign In / Profile"}
@@ -516,6 +537,9 @@ export default function Header() {
                 src={user.photoURL}
                 alt={user.displayName || "User"}
                 className="cinejoy-profile-img"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = "/assets/avatars/av_1.png";
+                }}
               />
             ) : mounted && user ? (
               <span className="cinejoy-profile-initial">

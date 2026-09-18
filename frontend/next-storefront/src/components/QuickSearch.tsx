@@ -152,11 +152,14 @@ export default function QuickSearch() {
                 }}
               >
                 <img
-                  src={`https://image.tmdb.org/t/p/w92${item.poster_path}`}
+                  src={item.poster_path ? `https://image.tmdb.org/t/p/w92${item.poster_path}` : "/placeholder.svg"}
                   alt={title}
                   width={36}
                   height={54}
                   className="rounded-[6px] object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = "/placeholder.svg";
+                  }}
                 />
                 <div className="flex flex-col min-w-0">
                   <span className="text-[13px] font-semibold whitespace-nowrap overflow-hidden text-ellipsis">{title}</span>

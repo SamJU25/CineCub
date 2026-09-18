@@ -18,13 +18,15 @@ export function CinemaStageCanvas({ className = "" }: { className?: string }) {
     let animId: number;
     let width = (canvas.width = canvas.offsetWidth || 1200);
     let height = (canvas.height = canvas.offsetHeight || 600);
+    let cachedRect = canvas.getBoundingClientRect();
 
-    const onResize = () => {
+    const updateDimensions = () => {
       if (!canvas) return;
       width = canvas.width = canvas.offsetWidth || 1200;
       height = canvas.height = canvas.offsetHeight || 600;
+      cachedRect = canvas.getBoundingClientRect();
     };
-    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("resize", updateDimensions, { passive: true });
 
     // Subtle cinematic golden and amethyst particles
     const PARTICLE_COUNT = 24;
@@ -38,13 +40,31 @@ export function CinemaStageCanvas({ className = "" }: { className?: string }) {
       color: Math.random() > 0.4 ? "255, 183, 3" : "199, 125, 255",
     }));
 
-    let isVisible = !document.hidden;
+    let isDocumentVisible = !document.hidden;
+    let isIntersecting = true;
+
     const onVisibility = () => {
-      isVisible = !document.hidden;
+      isDocumentVisible = !document.hidden;
     };
     document.addEventListener("visibilitychange", onVisibility);
 
-    // Interactive pointer proximity (img2threejs principles)
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined") {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0]) {
+            isIntersecting = entries[0].isIntersecting;
+            if (isIntersecting) {
+              cachedRect = canvas.getBoundingClientRect();
+            }
+          }
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(canvas);
+    }
+
+    // Interactive pointer proximity (cached rect prevents layout thrashing)
     let pointerX = -9999;
     let pointerY = -9999;
     let targetScrollImpulse = 0;
@@ -52,9 +72,8 @@ export function CinemaStageCanvas({ className = "" }: { className?: string }) {
     let lastScrollY = typeof window !== "undefined" ? window.scrollY : 0;
 
     const onPointerMove = (e: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      pointerX = e.clientX - rect.left;
-      pointerY = e.clientY - rect.top;
+      pointerX = e.clientX - cachedRect.left;
+      pointerY = e.clientY - cachedRect.top;
     };
     const onPointerLeave = () => {
       pointerX = -9999;
@@ -72,7 +91,8 @@ export function CinemaStageCanvas({ className = "" }: { className?: string }) {
     window.addEventListener("scroll", onScroll, { passive: true });
 
     const render = () => {
-      if (!isVisible) {
+      // Pause completely when hidden or scrolled out of view
+      if (!isDocumentVisible || !isIntersecting) {
         animId = requestAnimationFrame(render);
         return;
       }
@@ -81,7 +101,8 @@ export function CinemaStageCanvas({ className = "" }: { className?: string }) {
       currentScrollImpulse += (targetScrollImpulse - currentScrollImpulse) * 0.08;
       targetScrollImpulse *= 0.92;
 
-      for (const p of particles) {
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const p = particles[i];
         // Pointer avoidance / gentle air turbulence
         const dx = p.x - pointerX;
         const dy = p.y - pointerY;
@@ -107,11 +128,17 @@ export function CinemaStageCanvas({ className = "" }: { className?: string }) {
         if (p.x < -10) p.x = width + 10;
         if (p.x > width + 10) p.x = -10;
 
+        // High performance glowing ember without expensive ctx.shadowBlur
+        // 1. Soft halo
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${p.color}, ${p.alpha * 0.28})`;
+        ctx.fill();
+
+        // 2. Core bright ember
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
-        ctx.shadowBlur = 8;
-        ctx.shadowColor = `rgba(${p.color}, ${p.alpha})`;
         ctx.fill();
       }
 
@@ -122,7 +149,8 @@ export function CinemaStageCanvas({ className = "" }: { className?: string }) {
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", onResize);
+      observer?.disconnect();
+      window.removeEventListener("resize", updateDimensions);
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerleave", onPointerLeave);

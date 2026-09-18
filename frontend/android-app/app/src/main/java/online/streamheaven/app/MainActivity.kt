@@ -237,7 +237,7 @@ class MainActivity : AppCompatActivity() {
             settings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            settings.offscreenPreRaster = true
+            settings.offscreenPreRaster = false
         }
         settings.setGeolocationEnabled(false)
         @Suppress("DEPRECATION")
@@ -842,12 +842,22 @@ class MainActivity : AppCompatActivity() {
 
         @JavascriptInterface
         fun getAppVersion(): String {
-            return "1.7.0"
+            return runCatching {
+                activity.packageManager.getPackageInfo(activity.packageName, 0).versionName ?: "1.7.1"
+            }.getOrDefault("1.7.1")
         }
 
         @JavascriptInterface
         fun getAppVersionCode(): Int {
-            return 20
+            return runCatching {
+                val pInfo = activity.packageManager.getPackageInfo(activity.packageName, 0)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    pInfo.longVersionCode.toInt()
+                } else {
+                    @Suppress("DEPRECATION")
+                    pInfo.versionCode
+                }
+            }.getOrDefault(21)
         }
     }
 }

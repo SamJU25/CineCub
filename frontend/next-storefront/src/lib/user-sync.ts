@@ -7,6 +7,7 @@ export interface StoredUser {
   photoURL: string;
   username?: string;
   hasPassword?: boolean;
+  emailVerified?: boolean;
   idToken?: string;
   refreshToken?: string;
 }
@@ -30,6 +31,13 @@ export async function fetchCloudData(uid: string, idToken: string): Promise<Clou
         Authorization: `Bearer ${idToken}`,
       },
     });
+
+    if (res.status === 401) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("sh-session-expired"));
+      }
+      return null;
+    }
 
     if (res.status === 404) return null;
     if (!res.ok) {
@@ -68,6 +76,13 @@ export async function pushCloudData(
       },
       body: JSON.stringify(data),
     });
+
+    if (res.status === 401) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("sh-session-expired"));
+      }
+      return false;
+    }
 
     if (!res.ok) {
       console.warn(`[Cloudflare R2 Sync] Push failed with status: ${res.status}`);

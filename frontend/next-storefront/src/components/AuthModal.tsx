@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 import { showToast } from "@/components/Toast";
 import { BrandLogo } from "@/components/BrandLogo";
 
@@ -77,7 +78,13 @@ const DEFAULT_GOOGLE_CLIENT_ID =
   "307176410598-7mlt6jtv723i2ki6eri6iu9cjqtp1r1v.apps.googleusercontent.com";
 
 export default function AuthModal() {
-  const { authModal, closeAuth, setUser } = useStore((s) => s);
+  const { authModal, closeAuth, setUser } = useStore(
+    useShallow((s) => ({
+      authModal: s.authModal,
+      closeAuth: s.closeAuth,
+      setUser: s.setUser,
+    }))
+  );
   const [view, setView] = useState<AuthView>("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -184,14 +191,20 @@ export default function AuthModal() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    (window as any).handleNativeGoogleSignInSuccess = async (idToken: string) => {
+    (window as any).handleNativeGoogleSignInSuccess = async (token: string) => {
       setLoading(true);
       setError("");
       try {
+        const cleanToken = typeof token === "string" ? token.trim() : "";
+        const isJwt = cleanToken.startsWith("ey") && cleanToken.includes(".");
         const res = await fetch("/api/auth/google", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken }),
+          body: JSON.stringify({
+            token: cleanToken,
+            idToken: isJwt ? cleanToken : undefined,
+            accessToken: !isJwt ? cleanToken : undefined,
+          }),
         });
         const data = await res.json();
         if (!res.ok || !data.success) {
@@ -209,13 +222,15 @@ export default function AuthModal() {
             photoURL: avatar,
             username: data.user.username,
             hasPassword: data.user.hasPassword,
+            emailVerified: true,
             idToken: data.user.idToken,
             refreshToken: data.user.refreshToken,
-          });
+          }, { isNewAccount: Boolean(data.isNewUser) });
         }
 
-        setSuccess("Signed in with Google! Redirecting...");
-        showToast("Signed in with Google!", "success");
+        const msg = data.isNewUser ? "Account created! Welcome to CineCub." : "Signed in with Google! Redirecting...";
+        setSuccess(msg);
+        showToast(data.isNewUser ? "Welcome to CineCub!" : "Signed in with Google!", "success");
         setTimeout(() => {
           closeAuth();
           setLoading(false);
@@ -326,10 +341,11 @@ export default function AuthModal() {
           }
 
           try {
+            const token = tokenResponse.access_token;
             const res = await fetch("/api/auth/google", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ accessToken: tokenResponse.access_token }),
+              body: JSON.stringify({ accessToken: token, token }),
             });
             const data = await res.json();
             if (!res.ok || !data.success) {
@@ -347,13 +363,15 @@ export default function AuthModal() {
                 photoURL: avatar,
                 username: data.user.username,
                 hasPassword: data.user.hasPassword,
+                emailVerified: true,
                 idToken: data.user.idToken,
                 refreshToken: data.user.refreshToken,
-              });
+              }, { isNewAccount: Boolean(data.isNewUser) });
             }
 
-            setSuccess("Signed in with Google! Redirecting...");
-            showToast("Signed in with Google!", "success");
+            const msg = data.isNewUser ? "Account created! Welcome to CineCub." : "Signed in with Google! Redirecting...";
+            setSuccess(msg);
+            showToast(data.isNewUser ? "Welcome to CineCub!" : "Signed in with Google!", "success");
             setTimeout(() => {
               closeAuth();
               setLoading(false);
@@ -397,6 +415,7 @@ export default function AuthModal() {
           photoURL: avatar,
           username: data.user.username,
           hasPassword: data.user.hasPassword ?? true,
+          emailVerified: Boolean(data.user.emailVerified),
           idToken: data.user.idToken,
           refreshToken: data.user.refreshToken,
         });
@@ -451,9 +470,10 @@ export default function AuthModal() {
           photoURL: avatar,
           username: signupUser,
           hasPassword: true,
+          emailVerified: false,
           idToken: data.user.idToken,
           refreshToken: data.user.refreshToken,
-        });
+        }, { isNewAccount: true });
       }
       setSuccess("Account created! Redirecting...");
       if (data.verificationEmailSent) {

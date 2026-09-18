@@ -1,6 +1,7 @@
 "use client";
 
 import { useStore } from "@/lib/store";
+import { useShallow } from "zustand/react/shallow";
 
 const TABS = [
   { id: "home", icon: "fas fa-home", label: "Home", page: "home" as const },
@@ -11,9 +12,19 @@ const TABS = [
 ];
 
 export default function MobileBottomBar() {
-  const { activePage, browseCategory, setActivePage, setBrowseCategory, closeDetail, authModal, playerModal } = useStore((s) => s);
+  const { activePage, browseCategory, setActivePage, setBrowseCategory, closeDetail, authModal, playerModal } = useStore(
+    useShallow((s) => ({
+      activePage: s.activePage,
+      browseCategory: s.browseCategory,
+      setActivePage: s.setActivePage,
+      setBrowseCategory: s.setBrowseCategory,
+      closeDetail: s.closeDetail,
+      authModal: s.authModal,
+      playerModal: s.playerModal,
+    }))
+  );
 
-  if (authModal || Boolean(playerModal)) return null;
+  if (authModal || Boolean(playerModal) || activePage === "profile") return null;
 
   function currentId() {
     if (activePage === "home") return "home";

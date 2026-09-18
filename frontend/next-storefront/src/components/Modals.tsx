@@ -5,7 +5,8 @@ import { useStore } from "@/lib/store";
 import { CustomerSupportCard } from "@/components/CustomerSupportCard";
 
 export function TrailerModal() {
-  const { trailerModal, closeTrailer } = useStore((s) => s);
+  const trailerModal = useStore((s) => s.trailerModal);
+  const closeTrailer = useStore((s) => s.closeTrailer);
   if (!trailerModal) return null;
 
   return (
@@ -35,7 +36,8 @@ export function TrailerModal() {
 }
 
 export function LegalModal() {
-  const { legalModal, closeLegal } = useStore((s) => s);
+  const legalModal = useStore((s) => s.legalModal);
+  const closeLegal = useStore((s) => s.closeLegal);
   if (!legalModal) return null;
 
   if (legalModal.type === "contact") {
@@ -96,14 +98,80 @@ export function LegalModal() {
 export function ConfirmModal({ title, text, onConfirm, onCancel }: {
   title: string; text: string; onConfirm: () => void; onCancel: () => void;
 }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onCancel();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onCancel]);
+
   return (
-    <div className="modal-overlay open" id="confirm-modal-overlay" onClick={onCancel}>
-      <div className="auth-modal" style={{ maxWidth: "400px", padding: "24px" }} onClick={(e) => e.stopPropagation()}>
-        <div className="legal-title" id="confirm-modal-title" style={{ marginBottom: "12px", fontSize: "20px", fontWeight: 800, color: "var(--cv-red)" }}>{title}</div>
-        <div className="legal-body" id="confirm-modal-text" style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", marginBottom: "24px" }}>{text}</div>
+    <div
+      className="modal-overlay open"
+      id="confirm-modal-overlay"
+      onClick={onCancel}
+      style={{
+        zIndex: 100000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "20px",
+        background: "rgba(0, 0, 0, 0.85)",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+      }}
+    >
+      <div
+        className="auth-modal"
+        style={{
+          maxWidth: "400px",
+          padding: "28px 24px",
+          background: "#101018",
+          border: "1px solid rgba(255, 255, 255, 0.12)",
+          borderRadius: "20px",
+          boxShadow: "0 24px 48px rgba(0, 0, 0, 0.8)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="legal-title" id="confirm-modal-title" style={{ marginBottom: "12px", fontSize: "20px", fontWeight: 800, color: "#ff4b4b" }}>{title}</div>
+        <div className="legal-body" id="confirm-modal-text" style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "14px", lineHeight: "1.5", marginBottom: "24px" }}>{text}</div>
         <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
-          <button onClick={onCancel} style={{ background: "rgba(255,255,255,0.05)", color: "#fff", padding: "10px 20px", borderRadius: "var(--r-box, 12px)", border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", fontWeight: 600, flex: 1 }}>Cancel</button>
-          <button onClick={onConfirm} style={{ background: "var(--cv-red)", color: "#fff", padding: "10px 20px", borderRadius: "var(--r-box, 12px)", border: "none", cursor: "pointer", fontWeight: 600, flex: 1 }}>Confirm</button>
+          <button
+            onClick={onCancel}
+            style={{
+              background: "rgba(255, 255, 255, 0.08)",
+              color: "#ffffff",
+              padding: "11px 20px",
+              borderRadius: "12px",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: "13px",
+              flex: 1,
+              transition: "background 0.2s",
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            style={{
+              background: "linear-gradient(135deg, #e63946, #d90429)",
+              color: "#ffffff",
+              padding: "11px 20px",
+              borderRadius: "12px",
+              border: "none",
+              cursor: "pointer",
+              fontWeight: 700,
+              fontSize: "13px",
+              flex: 1,
+              boxShadow: "0 4px 14px rgba(230, 57, 70, 0.4)",
+              transition: "opacity 0.2s",
+            }}
+          >
+            Confirm
+          </button>
         </div>
       </div>
     </div>
@@ -111,7 +179,8 @@ export function ConfirmModal({ title, text, onConfirm, onCancel }: {
 }
 
 export function AppsModal() {
-  const { appsModal, closeApps } = useStore((s) => s);
+  const appsModal = useStore((s) => s.appsModal);
+  const closeApps = useStore((s) => s.closeApps);
   const [showIosStep, setShowIosStep] = useState(false);
   const [versionName, setVersionName] = useState("1.7.1");
 
