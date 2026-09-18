@@ -1,11 +1,9 @@
 "use client";
 
-import { useState, useEffect, useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { useStore } from "@/lib/store";
 import { useShallow } from "zustand/react/shallow";
 import { IMG, getDetail } from "@/lib/api";
-import { showToast } from "@/components/Toast";
-import { ConfirmModal } from "@/components/Modals";
 import type { MediaDetail, HistoryItem } from "@/lib/types";
 
 /* 60-day cutoff computed once at module level — avoids impure Date.now() in render */
@@ -38,10 +36,9 @@ function getLiveProgress(
 }
 
 export default function HistoryPage() {
-  const { history, clearHistory, setActivePage, openDetail, openPlayer, progress } = useStore(
+  const { history, setActivePage, openDetail, openPlayer, progress } = useStore(
     useShallow((s) => ({
       history: s.history,
-      clearHistory: s.clearHistory,
       setActivePage: s.setActivePage,
       openDetail: s.openDetail,
       openPlayer: s.openPlayer,
@@ -49,7 +46,6 @@ export default function HistoryPage() {
     }))
   );
   const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   useEffect(() => {
     const missing = history.filter((item) => !item.poster && !item.poster_path);
@@ -137,10 +133,6 @@ export default function HistoryPage() {
     };
   }, [history]);
 
-  const handleClearHistory = () => {
-    setShowClearConfirm(true);
-  };
-
   return (
     <div className="page-inner">
       <div className="cv-container">
@@ -150,37 +142,6 @@ export default function HistoryPage() {
             <div className="section-header-kicker">ACTIVITY LOG</div>
             <h1 className="section-title" style={{ margin: 0, fontSize: "26px", fontWeight: 900 }}>Watch History</h1>
           </div>
-          {mounted && history.length > 0 && (
-            <button
-              onClick={handleClearHistory}
-              style={{
-                background: "rgba(230, 57, 70, 0.12)",
-                color: "#e63946",
-                border: "1px solid rgba(230, 57, 70, 0.3)",
-                borderRadius: "var(--r-pill)",
-                padding: "10px 20px",
-                fontSize: "13px",
-                fontWeight: 700,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                flexShrink: 0,
-                transition: "background 0.2s, border-color 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(230, 57, 70, 0.25)";
-                e.currentTarget.style.borderColor = "rgba(230, 57, 70, 0.5)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(230, 57, 70, 0.12)";
-                e.currentTarget.style.borderColor = "rgba(230, 57, 70, 0.3)";
-              }}
-            >
-              <i className="fas fa-trash-alt" />
-              Clear History
-            </button>
-          )}
         </div>
 
         <div className="poster-grid" id="history-grid">
@@ -271,18 +232,6 @@ export default function HistoryPage() {
           })}
         </div>
       </div>
-      {showClearConfirm && (
-        <ConfirmModal
-          title="Clear Watch History"
-          text="Are you sure you want to clear your entire watch history? This cannot be undone."
-          onConfirm={() => {
-            clearHistory();
-            setShowClearConfirm(false);
-            showToast("Watch history cleared", "info");
-          }}
-          onCancel={() => setShowClearConfirm(false)}
-        />
-      )}
     </div>
   );
 }
