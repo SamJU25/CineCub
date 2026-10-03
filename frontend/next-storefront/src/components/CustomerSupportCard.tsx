@@ -38,7 +38,7 @@ export function CustomerSupportCard({ onClose }: CustomerSupportCardProps) {
         padding: "28px 24px 24px",
         width: "100%",
         maxWidth: "430px",
-        boxShadow: "0 24px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(157, 78, 221, 0.1)",
+        boxShadow: "0 24px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06)",
         position: "relative",
       }}
     >
@@ -49,12 +49,12 @@ export function CustomerSupportCard({ onClose }: CustomerSupportCardProps) {
             width: "50px",
             height: "50px",
             borderRadius: "15px",
-            background: "rgba(157, 78, 221, 0.18)",
-            border: "1px solid rgba(157, 78, 221, 0.35)",
+            background: "rgba(255, 255, 255, 0.08)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            color: "#c77dff",
+            color: "#ffffff",
             fontSize: "22px",
             flexShrink: 0,
           }}
@@ -154,18 +154,18 @@ export function CustomerSupportCard({ onClose }: CustomerSupportCardProps) {
               alignItems: "center",
               justifyContent: "center",
               gap: "8px",
-              background: "linear-gradient(135deg, #9d4edd 0%, #7b2cbf 100%)",
-              color: "#ffffff",
+              background: "#ffffff",
+              color: "#000000",
               border: "none",
               borderRadius: "13px",
               padding: "12px 14px",
               fontSize: "14px",
               fontWeight: 700,
               cursor: "pointer",
-              boxShadow: "0 4px 14px rgba(157, 78, 221, 0.35)",
+              boxShadow: "0 4px 14px rgba(0, 0, 0, 0.3)",
               transition: "filter 0.15s ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.filter = "brightness(1.1)")}
+            onMouseEnter={(e) => (e.currentTarget.style.filter = "brightness(0.92)")}
             onMouseLeave={(e) => (e.currentTarget.style.filter = "brightness(1)")}
           >
             <i className={opening ? "fas fa-spinner fa-spin" : "fas fa-paper-plane"} />

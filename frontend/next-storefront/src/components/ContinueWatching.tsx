@@ -98,8 +98,8 @@ export default function ContinueWatching() {
   return (
     <section className="mb-8">
       <div className="flex items-center justify-between mb-3.5">
-        <h2 className="text-xl font-extrabold text-white tracking-tight">▶ Continue Watching</h2>
-        <span className="text-xs font-bold text-[#9d4edd] bg-[rgba(157,78,221,0.12)] px-2.5 py-[3px] rounded-full">
+        <h2 className="text-xl font-extrabold text-white tracking-tight">Continue Watching</h2>
+        <span className="text-xs font-semibold text-white/70 bg-white/10 px-2.5 py-[3px] rounded-full">
           {items.length} in progress
         </span>
       </div>
@@ -112,7 +112,7 @@ export default function ContinueWatching() {
             role="button"
             tabIndex={0}
             onKeyDown={(e) => e.key === "Enter" && resume(item)}
-            className="group flex-shrink-0 w-[200px] bg-[#14141f] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-[3px] hover:border-[rgba(157,78,221,0.45)] transition-all duration-[180ms]"
+            className="group flex-shrink-0 w-[200px] bg-[#14141f] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-[3px] hover:border-white/20 transition-all duration-[180ms]"
           >
             <div className="relative w-full aspect-video bg-[#0d0d14] overflow-hidden">
               <img
@@ -127,17 +127,18 @@ export default function ContinueWatching() {
                 }}
               />
               <div className="absolute inset-0 bg-[rgba(0,0,0,0.35)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <span className="w-[34px] h-[34px] rounded-full bg-[#9d4edd] text-white flex items-center justify-center text-[14px] pl-[2px] shadow-[0_4px_16px_rgba(0,0,0,0.5)]">▶</span>
+                <span className="w-[34px] h-[34px] rounded-full bg-white text-black flex items-center justify-center text-[13px] pl-[2px] shadow-[0_4px_16px_rgba(0,0,0,0.5)]">▶</span>
               </div>
               <button
                 onClick={(e) => removeItem(e, item)}
                 title="Remove from Continue Watching"
-                className="absolute top-1.5 right-1.5 w-[22px] h-[22px] rounded-full bg-[rgba(0,0,0,0.6)] text-white border-none text-[10px] flex items-center justify-center cursor-pointer opacity-0 hover:opacity-100 hover:bg-[rgba(255,59,48,0.8)] transition-all duration-200 z-[3]"
+                aria-label="Remove from Continue Watching"
+                className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/70 text-white/90 border border-white/10 text-xs flex items-center justify-center cursor-pointer opacity-90 md:opacity-0 md:group-hover:opacity-100 hover:bg-red-500/80 transition-all duration-150 z-[3]"
               >
                 ✕
               </button>
               <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-[rgba(255,255,255,0.2)]">
-                <div className="h-full bg-[#9d4edd]" style={{ width: `${item.pct}%` }} />
+                <div className="h-full bg-red-500" style={{ width: `${item.pct}%` }} />
               </div>
             </div>
             <div className="px-2.5 py-2 flex flex-col gap-0.5">

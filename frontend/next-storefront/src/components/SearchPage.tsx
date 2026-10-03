@@ -95,7 +95,7 @@ export default function SearchPage() {
                     setActivePage("home");
                   }
                 }}
-                style={{ cursor: "pointer", color: "var(--cv-purple)", fontWeight: 600, textDecoration: "none" }}
+                style={{ cursor: "pointer", color: "inherit", fontWeight: 600, textDecoration: "none" }}
               >
                 <i className="fas fa-home" style={{ marginRight: "3px" }} /> Home
               </Link> &rsaquo; <span id="search-breadcrumb-query">Search Results</span>

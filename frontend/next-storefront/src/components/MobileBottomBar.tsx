@@ -6,7 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 const TABS = [
   { id: "home", icon: "fas fa-home", label: "Home", page: "home" as const },
   { id: "movies", icon: "fas fa-film", label: "Movies", page: "browse" as const, category: "movie" },
-  { id: "tv", icon: "fas fa-tv", label: "TV Series", page: "browse" as const, category: "tv" },
+  { id: "tv", icon: "fas fa-tv", label: "Series", page: "browse" as const, category: "tv" },
   { id: "anime", icon: "fas fa-dragon", label: "Anime", page: "browse" as const, category: "anime" },
   { id: "watchlist", icon: "fas fa-heart", label: "Watchlist", page: "watchlist" as const },
 ];

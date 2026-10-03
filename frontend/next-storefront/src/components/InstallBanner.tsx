@@ -23,9 +23,9 @@ const BANNER_CSS = `
   background: rgba(18, 18, 28, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(157, 78, 221, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.85);
   padding: 12px;
   animation: installSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -67,27 +67,26 @@ const BANNER_CSS = `
   flex-shrink: 0;
 }
 .install-banner-btn-main {
-  background: linear-gradient(135deg, #7b2cbf 0%, #9d4edd 100%);
-  color: #ffffff;
+  background: #ffffff;
+  color: #000000;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
   padding: 8px 16px;
-  border-radius: 10px;
+  border-radius: 9999px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(157, 78, 221, 0.4);
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.25);
   transition: transform 0.15s ease, filter 0.15s ease;
 }
 .install-banner-btn-main:hover {
   transform: scale(1.04);
-  filter: brightness(1.1);
 }
 .install-banner-btn-close {
   background: rgba(255, 255, 255, 0.08);
-  color: #7e8094;
-  border: none;
-  width: 26px;
-  height: 26px;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;

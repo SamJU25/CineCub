@@ -850,13 +850,13 @@ function SpotlightCarousel({ items }: { items: MediaItem[] }) {
               <div className="spotlight-content cinejoy-hero-content">
                 <h2 className="spotlight-title cinejoy-hero-title">{item.title || item.name}</h2>
 
-                {/* Metadata row directly below Title: ★ 8.0/10 · 📅 2026 · ⚔ Action */}
+                {/* Metadata row directly below Title: ★ 8.0 · 2026 · Action · 4K HDR */}
                 <div className="spotlight-meta cinejoy-hero-meta">
                   <span className="hero-rating"><i className="fas fa-star" /> {ratingVal}</span>
                   <span className="hero-separator">·</span>
-                  <span className="hero-year"><i className="far fa-calendar-alt" /> {releaseYear}</span>
+                  <span className="hero-year">{releaseYear}</span>
                   <span className="hero-separator">·</span>
-                  <span className="hero-genre"><i className="fas fa-crosshairs" /> {genreName}</span>
+                  <span className="hero-genre">{genreName}</span>
                   <span className="spotlight-quality">4K HDR</span>
                 </div>
 

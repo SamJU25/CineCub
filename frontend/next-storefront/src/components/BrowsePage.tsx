@@ -445,13 +445,13 @@ export default function BrowsePage() {
                 width: "64px",
                 height: "64px",
                 borderRadius: "50%",
-                background: "rgba(157, 78, 221, 0.12)",
-                border: "1px solid rgba(157, 78, 221, 0.3)",
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: "24px",
-                color: "var(--cv-purple-light, #c77dff)",
+                color: "#ffffff",
                 marginBottom: "16px",
               }}
             >
@@ -477,14 +477,14 @@ export default function BrowsePage() {
               }}
               style={{
                 padding: "10px 24px",
-                borderRadius: "20px",
-                background: "linear-gradient(135deg, #7b2cbf, #9d4edd)",
-                color: "#ffffff",
+                borderRadius: "9999px",
+                background: "#ffffff",
+                color: "#000000",
                 border: "none",
                 fontWeight: 600,
                 fontSize: "14px",
                 cursor: "pointer",
-                boxShadow: "0 4px 14px rgba(157, 78, 221, 0.35)",
+                boxShadow: "0 4px 14px rgba(0, 0, 0, 0.25)",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "8px",
@@ -511,7 +511,7 @@ export default function BrowsePage() {
                 className="fas fa-circle-notch fa-spin"
                 style={{
                   fontSize: "26px",
-                  color: "var(--cv-purple)",
+                  color: "#ffffff",
                   marginBottom: "8px",
                   display: "inline-block",
                 }}
@@ -536,9 +536,9 @@ export default function BrowsePage() {
                 style={{
                   padding: "8px 24px",
                   borderRadius: "20px",
-                  background: "rgba(157, 78, 221, 0.12)",
-                  border: "1px solid rgba(157, 78, 221, 0.3)",
-                  color: "var(--cv-purple-light, #c77dff)",
+                  background: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.14)",
+                  color: "#ffffff",
                   fontSize: "13px",
                   fontWeight: 600,
                   cursor: "pointer",
@@ -548,12 +548,12 @@ export default function BrowsePage() {
                   gap: "6px",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(157, 78, 221, 0.22)";
-                  e.currentTarget.style.borderColor = "var(--cv-purple-light, #c77dff)";
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.14)";
+                  e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.25)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(157, 78, 221, 0.12)";
-                  e.currentTarget.style.borderColor = "rgba(157, 78, 221, 0.3)";
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
+                  e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.14)";
                 }}
               >
                 <i className="fas fa-angles-down" /> Load More Titles

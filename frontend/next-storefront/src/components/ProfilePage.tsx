@@ -789,7 +789,7 @@ export default function ProfilePage() {
                 onClick={() => switchDashboardTab("library")}
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", padding: "14px 16px", borderRadius: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 12, transition: "all 0.18s ease" }}
               >
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(157,78,221,0.15)", color: "#c77dff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.08)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>
                   <i className="fas fa-film" />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -1444,8 +1444,8 @@ export default function ProfilePage() {
               {user.hasPassword === false ? "Set Account Password" : "Change Password"}
             </div>
             {user.hasPassword === false && (
-              <div style={{ fontSize: 12, color: "var(--text-3)", background: "rgba(157, 78, 221, 0.1)", border: "1px solid rgba(157, 78, 221, 0.25)", padding: "10px 14px", borderRadius: 10, marginBottom: 16 }}>
-                <i className="fas fa-shield-alt" style={{ color: "#c77dff", marginRight: 6 }} />
+              <div style={{ fontSize: 12, color: "var(--text-3)", background: "rgba(255, 255, 255, 0.06)", border: "1px solid rgba(255, 255, 255, 0.12)", padding: "10px 14px", borderRadius: 10, marginBottom: 16 }}>
+                <i className="fas fa-shield-alt" style={{ color: "#ffffff", marginRight: 6 }} />
                 You signed in with Google. Setting a password allows you to log in with <strong>either Google OR your username/email + password</strong> on this exact same account!
               </div>
             )}

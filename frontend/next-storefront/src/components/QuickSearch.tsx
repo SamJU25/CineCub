@@ -118,10 +118,10 @@ export default function QuickSearch() {
           aria-autocomplete="list"
           onFocus={() => setIsOpen(true)}
           onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-          className="w-full py-[9px] pl-9 pr-9 bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] rounded-[10px] text-white text-[13px] outline-none focus:bg-[rgba(255,255,255,0.1)] focus:border-[#9d4edd] transition-colors duration-200"
+          className="w-full py-[9px] pl-9 pr-9 bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] rounded-[10px] text-white text-[13px] outline-none focus:bg-[rgba(255,255,255,0.1)] focus:border-white/30 transition-colors duration-200"
         />
         {loading ? (
-          <span className="absolute right-3 w-[14px] h-[14px] border-2 border-[rgba(255,255,255,0.2)] border-t-[#9d4edd] rounded-full animate-[spin_0.6s_linear_infinite]" />
+          <span className="absolute right-3 w-[14px] h-[14px] border-2 border-[rgba(255,255,255,0.2)] border-t-white rounded-full animate-[spin_0.6s_linear_infinite]" />
         ) : query ? (
           <button
             onClick={() => setQuery("")}

@@ -681,7 +681,6 @@ export default function DetailModal() {
                     className="cinejoy-nav-item"
                     onClick={() => handleNav("home")}
                   >
-                    <i className="fas fa-home cinejoy-nav-icon" />
                     <span>Home</span>
                   </button>
                   <button
@@ -690,7 +689,6 @@ export default function DetailModal() {
                     onClick={() => handleNav("browse", "movie")}
                     aria-current={activeNavType === "movie" ? "page" : undefined}
                   >
-                    <i className="fas fa-film cinejoy-nav-icon" />
                     <span>Movies</span>
                   </button>
                   <button
@@ -699,7 +697,6 @@ export default function DetailModal() {
                     onClick={() => handleNav("browse", "tv")}
                     aria-current={activeNavType === "tv" ? "page" : undefined}
                   >
-                    <i className="fas fa-tv cinejoy-nav-icon" />
                     <span>TV Series</span>
                   </button>
                   <button
@@ -708,7 +705,6 @@ export default function DetailModal() {
                     onClick={() => handleNav("browse", "anime")}
                     aria-current={activeNavType === "anime" ? "page" : undefined}
                   >
-                    <i className="fas fa-dragon cinejoy-nav-icon" />
                     <span>Anime</span>
                   </button>
                   <button
@@ -716,7 +712,6 @@ export default function DetailModal() {
                     className="cinejoy-nav-item"
                     onClick={() => handleNav("watchlist")}
                   >
-                    <i className="fas fa-heart cinejoy-nav-icon" />
                     <span>Watchlist</span>
                   </button>
                 </div>

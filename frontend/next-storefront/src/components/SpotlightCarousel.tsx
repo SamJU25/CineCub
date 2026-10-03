@@ -110,7 +110,7 @@ export default function SpotlightCarousel({ items: initialItems }: SpotlightCaro
     return (
       <div className="relative w-full rounded-[24px] overflow-hidden mb-8 border border-[rgba(255,255,255,0.08)] shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
         <div className="aspect-[21/9] min-h-[340px] bg-[#101018] flex items-center justify-center">
-          <span className="w-10 h-10 border-[3px] border-[rgba(255,255,255,0.12)] border-t-[#9d4edd] rounded-full animate-[spin_0.7s_linear_infinite]" />
+          <span className="w-10 h-10 border-[3px] border-[rgba(255,255,255,0.12)] border-t-white rounded-full animate-[spin_0.7s_linear_infinite]" />
         </div>
       </div>
     );
@@ -203,7 +203,7 @@ export default function SpotlightCarousel({ items: initialItems }: SpotlightCaro
           <div className="flex items-center gap-3.5 mt-2">
             <button
               onClick={playCurrent}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-[#7b2cbf] to-[#9d4edd] text-white font-extrabold text-[15px] px-7 py-3 rounded-full border-none cursor-pointer shadow-[0_8px_28px_rgba(157,78,221,0.45)] hover:brightness-110 hover:scale-[1.03] active:scale-[0.98] transition-all duration-200"
+              className="inline-flex items-center gap-2 bg-white text-black font-extrabold text-[15px] px-7 py-3 rounded-full border-none cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:bg-neutral-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
             >
               <i className="fas fa-play text-[13px]" />
               <span>Watch Now</span>
@@ -212,9 +212,9 @@ export default function SpotlightCarousel({ items: initialItems }: SpotlightCaro
               onClick={() => {
                 openDetail(currentItem.id, isMovie ? "movie" : "tv");
               }}
-              className="inline-flex items-center gap-2 bg-[rgba(255,255,255,0.09)] hover:bg-[rgba(255,255,255,0.16)] border border-[rgba(255,255,255,0.16)] hover:border-[#c77dff] text-white font-bold text-[14px] px-6 py-3 rounded-full backdrop-blur-md transition-all duration-200"
+              className="inline-flex items-center gap-2 bg-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.18)] border border-[rgba(255,255,255,0.18)] text-white font-bold text-[14px] px-6 py-3 rounded-full backdrop-blur-md transition-all duration-200"
             >
-              <i className="fas fa-info-circle text-[14px] text-[#c77dff]" />
+              <i className="fas fa-info-circle text-[14px] text-white/70" />
               <span>Details</span>
             </button>
           </div>
@@ -224,14 +224,14 @@ export default function SpotlightCarousel({ items: initialItems }: SpotlightCaro
         <button
           onClick={prev}
           aria-label="Previous slide"
-          className="absolute top-1/2 -translate-y-1/2 left-4 z-[5] bg-[rgba(10,10,18,0.55)] hover:bg-[rgba(157,78,221,0.7)] backdrop-blur-md border border-[rgba(255,255,255,0.16)] text-white text-xl w-10 h-10 rounded-full flex items-center justify-center cursor-pointer opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-200 max-sm:hidden"
+          className="absolute top-1/2 -translate-y-1/2 left-4 z-[5] bg-[rgba(10,10,18,0.65)] hover:bg-[rgba(255,255,255,0.15)] backdrop-blur-md border border-[rgba(255,255,255,0.16)] text-white text-xl w-10 h-10 rounded-full flex items-center justify-center cursor-pointer opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-200 max-sm:hidden"
         >
           <i className="fas fa-chevron-left text-[14px]" />
         </button>
         <button
           onClick={next}
           aria-label="Next slide"
-          className="absolute top-1/2 -translate-y-1/2 right-4 z-[5] bg-[rgba(10,10,18,0.55)] hover:bg-[rgba(157,78,221,0.7)] backdrop-blur-md border border-[rgba(255,255,255,0.16)] text-white text-xl w-10 h-10 rounded-full flex items-center justify-center cursor-pointer opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-200 max-sm:hidden"
+          className="absolute top-1/2 -translate-y-1/2 right-4 z-[5] bg-[rgba(10,10,18,0.65)] hover:bg-[rgba(255,255,255,0.15)] backdrop-blur-md border border-[rgba(255,255,255,0.16)] text-white text-xl w-10 h-10 rounded-full flex items-center justify-center cursor-pointer opacity-70 hover:opacity-100 hover:scale-105 transition-all duration-200 max-sm:hidden"
         >
           <i className="fas fa-chevron-right text-[14px]" />
         </button>
@@ -252,7 +252,7 @@ export default function SpotlightCarousel({ items: initialItems }: SpotlightCaro
                 {isCur && (
                   <span
                     key={`progress-${activeIndex}`}
-                    className="absolute inset-0 bg-gradient-to-r from-[#9d4edd] to-[#c77dff] rounded-full origin-left"
+                    className="absolute inset-0 bg-white rounded-full origin-left"
                     style={{
                       animation: isPaused ? "none" : "spotlightProgress 6s linear forwards",
                     }}

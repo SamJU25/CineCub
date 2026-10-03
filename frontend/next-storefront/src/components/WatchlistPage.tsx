@@ -77,7 +77,7 @@ export default function WatchlistPage() {
               <i className="fa-regular fa-heart" style={{ fontSize: "48px", color: "var(--text-4)", marginBottom: "16px", display: "block" }} />
               <h3 style={{ color: "#fff", fontSize: "18px", fontWeight: 800, marginBottom: "8px" }}>Sign In to View Your Watchlist</h3>
               <p style={{ color: "var(--text-3)", fontSize: "14px", marginBottom: "20px" }}>Save movies, series, and anime to your personal list and sync them across all your devices.</p>
-              <button onClick={() => openAuth()} style={{ background: "linear-gradient(135deg, var(--cv-purple), #7928ca)", color: "#fff", padding: "10px 24px", borderRadius: "var(--r-md)", border: "none", cursor: "pointer", fontWeight: 700, fontSize: "14px", boxShadow: "0 4px 14px rgba(157, 78, 221, 0.4)" }}>
+              <button onClick={() => openAuth()} style={{ background: "#ffffff", color: "#000000", padding: "10px 24px", borderRadius: "9999px", border: "none", cursor: "pointer", fontWeight: 700, fontSize: "14px", boxShadow: "0 4px 14px rgba(0, 0, 0, 0.25)" }}>
                 Sign In / Register
               </button>
             </div>
@@ -85,7 +85,7 @@ export default function WatchlistPage() {
             <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "60px 0" }}>
               <i className="fa-regular fa-heart" style={{ fontSize: "48px", color: "var(--text-4)", marginBottom: "16px", display: "block" }} />
               <p style={{ color: "var(--text-3)", fontSize: "14px", marginBottom: "16px" }}>Your watchlist is empty</p>
-              <button onClick={() => setActivePage("home")} style={{ background: "var(--cv-purple)", color: "#fff", padding: "10px 20px", borderRadius: "var(--r-md)", border: "none", cursor: "pointer", fontWeight: 700, fontSize: "13px" }}>
+              <button onClick={() => setActivePage("home")} style={{ background: "#ffffff", color: "#000000", padding: "10px 22px", borderRadius: "9999px", border: "none", cursor: "pointer", fontWeight: 700, fontSize: "13px", boxShadow: "0 4px 14px rgba(0, 0, 0, 0.25)" }}>
                 Browse Content
               </button>
             </div>

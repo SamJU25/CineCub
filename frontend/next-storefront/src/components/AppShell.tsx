@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useStore, type Page } from "@/lib/store";
 import { syncUserOnLogin, syncUserProfile } from "@/lib/sync";
-import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import MobileBottomBar from "@/components/MobileBottomBar";
 import Footer from "@/components/Footer";
@@ -196,8 +195,6 @@ export default function AppShell({
     <div className="cv-app">
       <ProgressBar />
       <ToastContainer />
-
-      <Sidebar />
 
       <main id="cv-main" className={`cv-main${sidebarCollapsed ? " sidebar-collapsed" : ""}`}>
         <Header />

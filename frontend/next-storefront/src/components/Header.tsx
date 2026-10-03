@@ -287,7 +287,7 @@ export default function Header() {
       </div>
 
       {/* CENTER: Primary navigation menu - Home, Movies, TV Series, Anime, and Watchlist */}
-      <nav className="cinejoy-nav-center" aria-label="Primary site navigation">
+      <nav className={`cinejoy-nav-center${searchOpen ? " search-open" : ""}`} aria-label="Primary site navigation">
         <div className="cinejoy-nav-pill" ref={navPillRef}>
           <span className="cinejoy-nav-active" ref={navIndicatorRef} aria-hidden="true" />
           <button
@@ -296,7 +296,6 @@ export default function Header() {
             onClick={() => handleNav("home")}
             aria-current={isNavActive("home") ? "page" : undefined}
           >
-            <i className="fas fa-home cinejoy-nav-icon" />
             <span>Home</span>
           </button>
           <button
@@ -305,7 +304,6 @@ export default function Header() {
             onClick={() => handleNav("browse", "movie")}
             aria-current={isNavActive("movie") ? "page" : undefined}
           >
-            <i className="fas fa-film cinejoy-nav-icon" />
             <span>Movies</span>
           </button>
           <button
@@ -314,7 +312,6 @@ export default function Header() {
             onClick={() => handleNav("browse", "tv")}
             aria-current={isNavActive("tv") ? "page" : undefined}
           >
-            <i className="fas fa-tv cinejoy-nav-icon" />
             <span>TV Series</span>
           </button>
           <button
@@ -323,7 +320,6 @@ export default function Header() {
             onClick={() => handleNav("browse", "anime")}
             aria-current={isNavActive("anime") ? "page" : undefined}
           >
-            <i className="fas fa-dragon cinejoy-nav-icon" />
             <span>Anime</span>
           </button>
           <button
@@ -332,7 +328,6 @@ export default function Header() {
             onClick={() => handleNav("watchlist")}
             aria-current={isNavActive("watchlist") ? "page" : undefined}
           >
-            <i className="fas fa-heart cinejoy-nav-icon" />
             <span>Watchlist</span>
           </button>
         </div>

@@ -24,28 +24,31 @@ export interface BrandLogoProps {
 export function BrandLogo({
   onClick,
   className = "",
-  mascotSize = 46,
+  mascotSize,
   title = "CineCub Home",
 }: BrandLogoProps) {
+  const isAuth = className.includes("auth-brand-lockup");
+  const resolvedSize = mascotSize ?? (isAuth ? 64 : 36);
+
   return (
     <div
-      className={`header-brand-logo header-brand-stacked ${className}`.trim()}
+      className={`header-brand-logo ${className}`.trim()}
       onClick={onClick}
       title={title}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => {
+        if ((e.key === "Enter" || e.key === " ") && onClick) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
     >
-      {/* Original image logo — shown on mobile / touch devices */}
-      <img
-        src="/assets/images/web-logo.png"
-        alt="CineCub"
-        className="header-web-logo mobile-brand-logo"
-      />
-
-      {/* Desktop lockup: mascot above the text wordmark */}
-      <span className="header-mascot-top">
+      <span className="header-mascot-wrap">
         <Mascot
           directions="/mascots/cinecub-directions.webp"
           reactions="/mascots/cinecub-reactions.webp"
-          size={mascotSize}
+          size={resolvedSize}
           label="CineCub bear mascot"
         />
       </span>

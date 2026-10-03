@@ -149,7 +149,7 @@ export default function HistoryPage() {
             <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "60px 0" }}>
               <i className="fas fa-history" style={{ fontSize: "48px", color: "var(--text-4)", marginBottom: "16px", display: "block" }} />
               <p style={{ color: "var(--text-3)", fontSize: "14px", marginBottom: "16px" }}>No watch history yet</p>
-              <button onClick={() => setActivePage("home")} style={{ background: "var(--cv-purple)", color: "#fff", padding: "10px 20px", borderRadius: "var(--r-md)", border: "none", cursor: "pointer", fontWeight: 700, fontSize: "13px" }}>
+              <button onClick={() => setActivePage("home")} style={{ background: "#ffffff", color: "#000000", padding: "10px 22px", borderRadius: "9999px", border: "none", cursor: "pointer", fontWeight: 700, fontSize: "13px", boxShadow: "0 4px 14px rgba(0, 0, 0, 0.25)" }}>
                 Browse Content
               </button>
             </div>
