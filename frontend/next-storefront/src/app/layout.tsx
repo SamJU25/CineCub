@@ -214,7 +214,7 @@ const JSON_LD = {
   ],
 };
 
-const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://static.cloudflareinsights.com https://www.googletagmanager.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://accounts.google.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://image.tmdb.org https://upload.wikimedia.org https://*.googleusercontent.com https://i.ytimg.com https://*.ytimg.com https://img.youtube.com; media-src 'self' https: blob:; object-src 'none'; frame-src 'self' https: https://www.youtube.com https://www.youtube-nocookie.com https://accounts.google.com; connect-src 'self' https: https://accounts.google.com https://oauth2.googleapis.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none';";
+const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://static.cloudflareinsights.com https://www.googletagmanager.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://accounts.google.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://image.tmdb.org https://upload.wikimedia.org https://*.googleusercontent.com https://i.ytimg.com https://*.ytimg.com https://img.youtube.com; media-src 'self' https: blob:; object-src 'none'; frame-src 'self' https: https://www.youtube.com https://www.youtube-nocookie.com https://accounts.google.com; connect-src 'self' https: https://accounts.google.com https://oauth2.googleapis.com; base-uri 'self'; form-action 'self';";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

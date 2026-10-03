@@ -712,19 +712,6 @@ export async function getTrailerSource(id: number, mediaType: string = "movie"):
         }
       }
 
-      // 2. Fallback to native MP4 trailer if available
-      try {
-        const res = await fetch(`https://trailer.shegu.st/trailer?tmdb=${encodeURIComponent(id)}&type=${normType}`, { signal: getTimeoutSignal(1200) });
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.url) {
-            const result: TrailerSource = { type: "mp4", src: data.url };
-            setTrailerCache(key, result);
-            return result;
-          }
-        }
-      } catch {}
-
       setTrailerCache(key, null);
       return null;
     } catch {

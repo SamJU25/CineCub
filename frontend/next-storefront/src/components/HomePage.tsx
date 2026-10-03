@@ -497,21 +497,25 @@ function SpotlightCarousel({ items }: { items: MediaItem[] }) {
   const inWl = activeItem ? watchlist.some((w) => w.id === activeItem.id) : false;
   const activeTrailer = activeItem ? trailers[activeItem.id] : null;
 
-  // Pre-fetch trailers (MP4 or official YouTube key) for all spotlight items
+  // Pre-fetch trailers (MP4 or official YouTube key) after initial hero paint
   useEffect(() => {
     if (!items || items.length === 0) return;
 
-    items.forEach((it) => {
-      const id = it.id;
-      if (trailersRef.current[id] !== undefined) return;
-      getTrailerSource(id, it.media_type || "movie")
-        .then((source) => {
-          setTrailers((prev) => (prev[id] !== undefined ? prev : { ...prev, [id]: source }));
-        })
-        .catch(() => {
-          setTrailers((prev) => (prev[id] !== undefined ? prev : { ...prev, [id]: null }));
-        });
-    });
+    const timer = setTimeout(() => {
+      items.forEach((it) => {
+        const id = it.id;
+        if (trailersRef.current[id] !== undefined) return;
+        getTrailerSource(id, it.media_type || "movie")
+          .then((source) => {
+            setTrailers((prev) => (prev[id] !== undefined ? prev : { ...prev, [id]: source }));
+          })
+          .catch(() => {
+            setTrailers((prev) => (prev[id] !== undefined ? prev : { ...prev, [id]: null }));
+          });
+      });
+    }, 1800);
+
+    return () => clearTimeout(timer);
   }, [items]);
 
   // Handle active video playback on slide rotation
@@ -775,17 +779,15 @@ function SpotlightCarousel({ items }: { items: MediaItem[] }) {
                   transition: "opacity 0.8s ease, transform 8s ease",
                 }}
               >
-                {i === 0 && (
-                  <img
-                    src={IMG.backdrop(item.backdrop_path, "w1280") || IMG.backdrop(item.backdrop_path, "original") || IMG.poster(item.poster_path, "w780") || ""}
-                    alt=""
-                    aria-hidden="true"
-                    fetchPriority="high"
-                    loading="eager"
-                    decoding="async"
-                    style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }}
-                  />
-                )}
+                <img
+                  src={IMG.backdrop(item.backdrop_path, "w1280") || IMG.backdrop(item.backdrop_path, "original") || IMG.poster(item.poster_path, "w780") || ""}
+                  alt={item.title || item.name || "Featured Title"}
+                  aria-hidden={!isActive}
+                  fetchPriority={i === 0 ? "high" : "low"}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
+                />
               </div>
 
               {/* Dynamic Cinematic Video Trailer (Native MP4 or Chromeless YouTube Embed) */}

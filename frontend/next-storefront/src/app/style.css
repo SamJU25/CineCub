@@ -1596,7 +1596,19 @@ iframe {
   transition: width .35s cubic-bezier(.2, .9, .3, 1), height .35s cubic-bezier(.2, .9, .3, 1), border-radius .35s cubic-bezier(.2, .9, .3, 1), background-color .25s, transform .2s, box-shadow .25s;
   display: block;
   position: relative;
-  overflow: hidden;
+}
+
+.spotlight-dot::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  pointer-events: auto;
 }
 
 .spotlight-dot:hover:not(.active) {
@@ -8187,14 +8199,14 @@ a.telegram-nav-item {
   }
 
   .spotlight-dot {
-    width: 5.5px;
-    height: 5.5px;
+    width: 8px;
+    height: 8px;
   }
 
   .spotlight-dot.active {
     border-radius: 9999px;
     width: 24px;
-    height: 5.5px;
+    height: 8px;
   }
 
   .btn-spotlight-play, .btn-spotlight-info {
@@ -8432,14 +8444,14 @@ a.telegram-nav-item {
   }
 
   .spotlight-dot {
-    width: 5px;
-    height: 5px;
+    width: 8px;
+    height: 8px;
   }
 
   .spotlight-dot.active {
     border-radius: 9999px;
-    width: 20px;
-    height: 5px;
+    width: 22px;
+    height: 8px;
   }
 
   .btn-spotlight-play {

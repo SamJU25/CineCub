@@ -25,7 +25,7 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <div className="footer-logo" style={{ display: "flex", alignItems: "center" }}>
-              <img src="/assets/images/web-logo.png" alt="CineCub" style={{ height: "46px", width: "auto", objectFit: "contain", filter: "drop-shadow(0 2px 10px rgba(157,78,221,0.35))" }} />
+              <img src="/assets/images/web-logo.png" alt="CineCub" width={126} height={46} style={{ height: "46px", width: "auto", objectFit: "contain", filter: "drop-shadow(0 2px 10px rgba(157,78,221,0.35))" }} />
             </div>
             <p className="footer-desc">Your ultimate high-definition destination for movies, TV series, anime, and classics. Discover trending cinema anytime, anywhere.</p>
             <div className="footer-brand-actions">
