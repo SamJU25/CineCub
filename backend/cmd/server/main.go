@@ -81,15 +81,15 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"appName":             "CineCub",
-			"versionName":         "1.6.0",
-			"versionCode":         19,
-			"apkUrl":              "https://cinecub.stream/CineCub.apk?v=160",
-			"apkSha256":           "de4a7b06d4cae8c94ce0b59d8945424ad94bd8afd20f654fc5c5a8797e2147ad",
-			"downloadUrl":         "https://cinecub.stream/CineCub.apk?v=160",
+			"versionName":         "1.7.1",
+			"versionCode":         21,
+			"apkUrl":              "https://cinecub.stream/CineCub.apk?v=171",
+			"apkSha256":           "c7e96386dc66cb621550d5c95cdb09aec15225dc58960134ed430168dd4df564",
+			"downloadUrl":         "https://cinecub.stream/CineCub.apk?v=171",
 			"minSupportedVersion": 1,
 			"mandatory":           false,
-			"releaseNotes":        "CineCub 1.6.0: Restored original UI and layout, full high-speed movie & TV streaming, and clean detail buttons.",
-			"updatedAt":           "2026-09-04T05:05:00Z",
+			"releaseNotes":        "CineCub 1.7.1: Enhanced Google Sign-In with full annotation preservation, automatic browser OAuth fallback, and streaming performance updates.",
+			"updatedAt":           "2026-09-17T08:14:00Z",
 		})
 	}
 	mux.HandleFunc("/version.json", versionHandler)

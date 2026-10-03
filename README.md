@@ -3,7 +3,7 @@
 ## *High-Performance Cinematic Streaming Monorepo & Native Android Ecosystem*
 
 [![Live Website](https://img.shields.io/badge/Live_Site-cinecub.stream-9d4edd?style=for-the-badge&logo=googlechrome&logoColor=white)](https://cinecub.stream)
-[![Android Native APK](https://img.shields.io/badge/Android_APK-v1.6.0_Release-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://cinecub.stream/CineCub.apk)
+[![Android Native APK](https://img.shields.io/badge/Android_APK-v1.7.1_Release-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://cinecub.stream/CineCub.apk)
 [![Cloudflare Workers](https://img.shields.io/badge/Edge_Network-Cloudflare_Workers-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://workers.cloudflare.com)
 [![Next.js 16](https://img.shields.io/badge/Frontend-Next.js_16_React_19-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
 [![Cloudflare D1](https://img.shields.io/badge/Database-Cloudflare_D1_SQL-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://developers.cloudflare.com/d1/)
